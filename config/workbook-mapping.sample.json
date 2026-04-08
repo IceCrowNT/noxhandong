@@ -1,0 +1,21 @@
+{
+  "managementWorkbook": {
+    "customerSheetName": "Danh sách khách hàng",
+    "paymentHistorySheetName": "Lịch sử đóng phí",
+    "customerColumns": {
+      "apartmentCode": ["Mã căn hộ", "Mã căn", "Số căn hộ", "Số căn"],
+      "ownerName": ["Họ và tên chủ hộ", "Chủ hộ"],
+      "residentInfo": ["Thông tin cư dân"],
+      "status": ["Tình trạng"],
+      "note": ["Ghi chú"]
+    }
+  },
+  "statementWorkbook": {
+    "transactionDate": ["Ngày giao dịch", "Date"],
+    "amount": ["Số tiền", "Amount", "Credit"],
+    "description": ["Nội dung", "Description", "Diễn giải"],
+    "senderName": ["Tên người chuyển", "Sender Name"],
+    "senderAccount": ["Tài khoản chuyển", "Sender Account"],
+    "transactionId": ["Mã giao dịch", "Transaction ID", "Reference"]
+  }
+}
