@@ -2,9 +2,17 @@
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { AnalyzeResponse, ReviewRow } from "@/lib/types";
+import {
+  getCategoryLabel,
+  getRowCategory,
+  getStatusLabel,
+  isMatchedStatus,
+  isNeedReviewStatus,
+  ReviewCategory
+} from "@/lib/review/presentation";
 import { summarizeRows } from "@/lib/review/summary";
 
-type FilterMode = "ALL" | "MATCHED" | "REVIEW" | "UNAPPROVED";
+type FilterMode = ReviewCategory;
 
 const ELIGIBLE_APPROVAL_STATUSES = new Set<ReviewRow["matchStatus"]>([
   "EXACT_MATCH",
@@ -58,11 +66,17 @@ export function ReviewDashboard() {
       const byFilter =
         filterMode === "ALL"
           ? true
-          : filterMode === "MATCHED"
-            ? ["EXACT_MATCH", "NORMALIZED_MATCH", "MANUAL_FIXED", "APPROVED"].includes(row.matchStatus)
-            : filterMode === "REVIEW"
-              ? ["UNPARSED", "INVALID_CODE", "MULTI_MATCH", "NEED_REVIEW"].includes(row.matchStatus)
-              : !row.approved;
+          : filterMode === "UNAPPROVED"
+            ? !row.approved
+            : filterMode === "MATCHED"
+              ? isMatchedStatus(row.matchStatus)
+              : filterMode === "REVIEW"
+                ? isNeedReviewStatus(row.matchStatus)
+                : filterMode === "INVALID"
+                  ? row.matchStatus === "INVALID_CODE"
+                  : filterMode === "UNPARSED"
+                    ? row.matchStatus === "UNPARSED"
+                    : row.matchStatus === "IGNORED_INTERNAL";
 
       if (!byFilter) {
         return false;
@@ -79,7 +93,33 @@ export function ReviewDashboard() {
   }, [filterMode, hideIgnored, query, rows]);
 
   const summary = useMemo(() => summarizeRows(rows), [rows]);
+  const categorizedCountTotal =
+    summary.matchedCount +
+    summary.needReviewCount +
+    summary.invalidCount +
+    summary.unparsedCount +
+    summary.ignoredCount;
+  const categorizedAmountTotal =
+    summary.matchedAmount +
+    summary.needReviewAmount +
+    summary.invalidAmount +
+    summary.unparsedAmount +
+    summary.ignoredAmount;
+  const totalsBalanced =
+    categorizedCountTotal === summary.totalTransactions &&
+    categorizedAmountTotal === summary.totalAmount;
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+  const categoryRows: Array<{
+    category: Exclude<ReviewCategory, "ALL" | "UNAPPROVED">;
+    count: number;
+    amount: number;
+  }> = [
+    { category: "MATCHED", count: summary.matchedCount, amount: summary.matchedAmount },
+    { category: "REVIEW", count: summary.needReviewCount, amount: summary.needReviewAmount },
+    { category: "INVALID", count: summary.invalidCount, amount: summary.invalidAmount },
+    { category: "UNPARSED", count: summary.unparsedCount, amount: summary.unparsedAmount },
+    { category: "IGNORED", count: summary.ignoredCount, amount: summary.ignoredAmount }
+  ];
   const paginatedRows = useMemo(() => {
     const startIndex = (page - 1) * pageSize;
     return filteredRows.slice(startIndex, startIndex + pageSize);
@@ -273,15 +313,75 @@ export function ReviewDashboard() {
       </section>
 
       <section className="summary-grid">
-        <SummaryCard label="Tổng giao dịch" value={summary.totalTransactions} />
-        <SummaryCard label="Đã lọc bỏ" value={summary.ignoredCount} />
-        <SummaryCard label="Matched" value={summary.matchedCount} />
-        <SummaryCard label="Cần rà soát" value={summary.needReviewCount} />
-        <SummaryCard label="Invalid" value={summary.invalidCount} />
-        <SummaryCard label="Unparsed" value={summary.unparsedCount} />
-        <SummaryCard label="Đã duyệt" value={summary.approvedCount} />
-        <SummaryCard label="Tổng tiền matched" value={currency(summary.matchedAmount)} />
-        <SummaryCard label="Chưa xác nhận" value={currency(summary.pendingAmount)} />
+        <SummaryCard label="Tổng giao dịch sao kê" value={summary.totalTransactions} secondary={`Tổng tiền: ${currency(summary.totalAmount)}`} />
+        <SummaryCard label="Tổng tiền sao kê" value={currency(summary.totalAmount)} secondary="Tổng gốc từ file sao kê" />
+        <SummaryCard
+          label="Tổng tiền đã phân loại"
+          value={currency(summary.classifiedAmount)}
+          secondary={summary.amountGap === 0 ? "Đã khớp với tổng sao kê" : `Còn lệch: ${currency(summary.amountGap)}`}
+        />
+        <SummaryCard
+          label={getCategoryLabel("MATCHED")}
+          value={summary.matchedCount}
+          secondary={`Số tiền: ${currency(summary.matchedAmount)}`}
+        />
+        <SummaryCard label="Cần rà soát" value={summary.needReviewCount} secondary={`Số tiền: ${currency(summary.needReviewAmount)}`} />
+        <SummaryCard
+          label={getCategoryLabel("INVALID")}
+          value={summary.invalidCount}
+          secondary={`Số tiền: ${currency(summary.invalidAmount)}`}
+        />
+        <SummaryCard
+          label={getCategoryLabel("UNPARSED")}
+          value={summary.unparsedCount}
+          secondary={`Số tiền: ${currency(summary.unparsedAmount)}`}
+        />
+        <SummaryCard
+          label={getCategoryLabel("IGNORED")}
+          value={summary.ignoredCount}
+          secondary={`Số tiền: ${currency(summary.ignoredAmount)}`}
+        />
+        <SummaryCard label="Đã duyệt" value={summary.approvedCount} secondary="Workflow" />
+        <SummaryCard label="Chưa xác nhận" value={currency(summary.pendingAmount)} secondary="Chưa tick duyệt" />
+      </section>
+
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Đối Soát Tổng</p>
+            <h2>Phân Tách Theo Hạng Mục</h2>
+          </div>
+          <p className={`reconcile-pill ${totalsBalanced ? "reconcile-ok" : "reconcile-warn"}`}>
+            {totalsBalanced && summary.amountGap === 0
+              ? "Tổng tiền và số đơn đã khớp toàn bộ sao kê"
+              : "Tổng phân loại chưa khớp, cần kiểm tra lại"}
+          </p>
+        </div>
+        <div className="reconcile-table-wrap">
+          <table className="reconcile-table">
+            <thead>
+              <tr>
+                <th>Hạng mục</th>
+                <th>Số đơn</th>
+                <th>Tổng tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categoryRows.map((item) => (
+                <tr key={item.category}>
+                  <td>{getCategoryLabel(item.category)}</td>
+                  <td>{item.count}</td>
+                  <td>{currency(item.amount)}</td>
+                </tr>
+              ))}
+              <tr className="reconcile-total">
+                <td>Tổng sao kê</td>
+                <td>{summary.totalTransactions}</td>
+                <td>{currency(summary.totalAmount)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="panel">
@@ -298,10 +398,13 @@ export function ReviewDashboard() {
               onChange={(event) => setQuery(event.target.value)}
             />
             <select className="select-input" value={filterMode} onChange={(event) => setFilterMode(event.target.value as FilterMode)}>
-              <option value="ALL">Tất cả</option>
-              <option value="MATCHED">Chỉ dòng khớp</option>
-              <option value="REVIEW">Chỉ dòng cần rà soát</option>
-              <option value="UNAPPROVED">Chỉ dòng chưa duyệt</option>
+              <option value="ALL">Tất cả hạng mục</option>
+              <option value="MATCHED">{getCategoryLabel("MATCHED")}</option>
+              <option value="REVIEW">{getCategoryLabel("REVIEW")}</option>
+              <option value="INVALID">{getCategoryLabel("INVALID")}</option>
+              <option value="UNPARSED">{getCategoryLabel("UNPARSED")}</option>
+              <option value="IGNORED">{getCategoryLabel("IGNORED")}</option>
+              <option value="UNAPPROVED">Chưa tick duyệt</option>
             </select>
             <label className="toggle-inline">
               <input type="checkbox" checked={hideIgnored} onChange={(event) => setHideIgnored(event.target.checked)} />
@@ -362,10 +465,14 @@ export function ReviewDashboard() {
                     <td>{row.parsedApartmentCode || "-"}</td>
                     <td>{currentCode || "-"}</td>
                     <td>
-                      <span className={`status-pill status-${row.matchStatus.toLowerCase()}`}>{row.matchStatus}</span>
+                      <span className={`status-pill status-${row.matchStatus.toLowerCase()}`}>{getStatusLabel(row.matchStatus)}</span>
                     </td>
                     <td>{row.matchConfidence.toFixed(2)}</td>
-                    <td className="wide-column">{row.matchReason}</td>
+                    <td className="wide-column">
+                      <strong>{getCategoryLabel(getRowCategory(row))}</strong>
+                      <br />
+                      {row.matchReason}
+                    </td>
                     <td>{row.ownerName || "-"}</td>
                     <td>
                       <input
@@ -443,11 +550,20 @@ export function ReviewDashboard() {
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: string | number }) {
+function SummaryCard({
+  label,
+  value,
+  secondary
+}: {
+  label: string;
+  value: string | number;
+  secondary?: string;
+}) {
   return (
     <article className="summary-card">
       <p>{label}</p>
       <strong>{value}</strong>
+      {secondary ? <span className="summary-subtext">{secondary}</span> : null}
     </article>
   );
 }

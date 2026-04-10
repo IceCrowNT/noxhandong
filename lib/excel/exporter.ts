@@ -1,5 +1,6 @@
 import * as XLSX from "xlsx";
 import { ReviewRow } from "@/lib/types";
+import { getCategoryLabel, getRowCategory, getStatusLabel } from "@/lib/review/presentation";
 import { summarizeRows } from "@/lib/review/summary";
 
 function reviewedSheetRows(rows: ReviewRow[]) {
@@ -13,9 +14,10 @@ function reviewedSheetRows(rows: ReviewRow[]) {
       "Số tiền": row.amount,
       "Nội dung chuyển khoản gốc": row.rawDescription,
       "Nội dung chuẩn hóa": row.normalizedDescription,
-      "Trạng thái match": row.matchStatus,
+      "Hạng mục": getCategoryLabel(getRowCategory(row)),
+      "Trạng thái xử lý": getStatusLabel(row.matchStatus),
       "Ghi chú xử lý": row.reviewNote || "",
-      "Người dùng đã duyệt": row.approved ? "YES" : "NO"
+      "Người dùng đã duyệt": row.approved ? "ĐÃ DUYỆT" : "CHƯA DUYỆT"
     }));
 }
 
@@ -33,10 +35,11 @@ function needReviewRows(rows: ReviewRow[]) {
       "Nội dung gốc": row.rawDescription,
       "Mã căn parse": row.parsedApartmentCode || "",
       "Mã căn đã match": row.matchedApartmentCode || "",
-      "Trạng thái": row.matchStatus,
+      "Hạng mục": getCategoryLabel(getRowCategory(row)),
+      "Trạng thái": getStatusLabel(row.matchStatus),
       "Lý do": row.matchReason,
       "Gợi ý": row.suggestions.join(", "),
-      "Đã duyệt": row.approved ? "YES" : "NO",
+      "Đã duyệt": row.approved ? "ĐÃ DUYỆT" : "CHƯA DUYỆT",
       "Ghi chú": row.reviewNote || ""
     }));
 }
@@ -63,14 +66,15 @@ function originalTransactionRows(rows: ReviewRow[]) {
     normalized_description: row.normalizedDescription,
     parsed_apartment_code: row.parsedApartmentCode || "",
     matched_apartment_code: row.manualApartmentCode || row.matchedApartmentCode || "",
-    match_status: row.matchStatus,
+    review_category: getCategoryLabel(getRowCategory(row)),
+    match_status: getStatusLabel(row.matchStatus),
     match_confidence: row.matchConfidence,
     match_reason: row.matchReason,
     owner_name: row.ownerName || "",
     sender_name: row.senderName || "",
     sender_account: row.senderAccount || "",
     transaction_id: row.transactionId || "",
-    approved: row.approved ? "YES" : "NO",
+    approved: row.approved ? "ĐÃ DUYỆT" : "CHƯA DUYỆT",
     review_note: row.reviewNote || ""
   }));
 }
@@ -78,14 +82,21 @@ function originalTransactionRows(rows: ReviewRow[]) {
 function summaryRows(rows: ReviewRow[]) {
   const summary = summarizeRows(rows);
   return [
-    { Metric: "Tổng số giao dịch liên quan căn hộ", Value: summary.totalTransactions },
-    { Metric: "Số lệnh đã lọc bỏ", Value: summary.ignoredCount },
-    { Metric: "Số dòng matched", Value: summary.matchedCount },
-    { Metric: "Số dòng cần rà soát", Value: summary.needReviewCount },
-    { Metric: "Số dòng invalid", Value: summary.invalidCount },
-    { Metric: "Số dòng unparsed", Value: summary.unparsedCount },
+    { Metric: "Tổng số giao dịch", Value: summary.totalTransactions },
+    { Metric: "Tổng số tiền", Value: summary.totalAmount },
+    { Metric: "Tổng tiền đã phân loại", Value: summary.classifiedAmount },
+    { Metric: "Chênh lệch tổng tiền", Value: summary.amountGap },
+    { Metric: `${getCategoryLabel("MATCHED")} - số đơn`, Value: summary.matchedCount },
+    { Metric: `${getCategoryLabel("MATCHED")} - số tiền`, Value: summary.matchedAmount },
+    { Metric: `${getCategoryLabel("REVIEW")} - số đơn`, Value: summary.needReviewCount },
+    { Metric: `${getCategoryLabel("REVIEW")} - số tiền`, Value: summary.needReviewAmount },
+    { Metric: `${getCategoryLabel("INVALID")} - số đơn`, Value: summary.invalidCount },
+    { Metric: `${getCategoryLabel("INVALID")} - số tiền`, Value: summary.invalidAmount },
+    { Metric: `${getCategoryLabel("UNPARSED")} - số đơn`, Value: summary.unparsedCount },
+    { Metric: `${getCategoryLabel("UNPARSED")} - số tiền`, Value: summary.unparsedAmount },
+    { Metric: `${getCategoryLabel("IGNORED")} - số đơn`, Value: summary.ignoredCount },
+    { Metric: `${getCategoryLabel("IGNORED")} - số tiền`, Value: summary.ignoredAmount },
     { Metric: "Số dòng đã duyệt", Value: summary.approvedCount },
-    { Metric: "Tổng số tiền matched", Value: summary.matchedAmount },
     { Metric: "Tổng số tiền chưa xác nhận", Value: summary.pendingAmount }
   ];
 }

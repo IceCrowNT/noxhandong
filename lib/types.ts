@@ -70,13 +70,20 @@ export interface ReviewRow {
 
 export interface ReviewSummary {
   totalTransactions: number;
+  totalAmount: number;
+  classifiedAmount: number;
+  amountGap: number;
   ignoredCount: number;
+  ignoredAmount: number;
   matchedCount: number;
-  needReviewCount: number;
-  invalidCount: number;
-  unparsedCount: number;
-  approvedCount: number;
   matchedAmount: number;
+  needReviewCount: number;
+  needReviewAmount: number;
+  invalidCount: number;
+  invalidAmount: number;
+  unparsedCount: number;
+  unparsedAmount: number;
+  approvedCount: number;
   pendingAmount: number;
 }
 
