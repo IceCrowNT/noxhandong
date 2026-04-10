@@ -86,7 +86,16 @@ export function ReviewDashboard() {
         return true;
       }
 
-      return [row.rawDescription, row.ownerName, row.matchedApartmentCode, row.parsedApartmentCode]
+      return [
+        row.rawDescription,
+        row.ownerName,
+        row.matchedApartmentCode,
+        row.parsedApartmentCode,
+        row.reviewNote,
+        row.senderName,
+        row.senderAccount,
+        row.transactionId
+      ]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(loweredQuery));
     });
@@ -128,6 +137,12 @@ export function ReviewDashboard() {
   useEffect(() => {
     setPage(1);
   }, [filterMode, hideIgnored, query, pageSize, rows.length]);
+
+  useEffect(() => {
+    if (filterMode === "IGNORED" && hideIgnored) {
+      setHideIgnored(false);
+    }
+  }, [filterMode, hideIgnored]);
 
   useEffect(() => {
     if (page > totalPages) {
