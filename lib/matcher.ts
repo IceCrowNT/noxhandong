@@ -1,66 +1,65 @@
 import { ApartmentParseResult, CustomerRecord, ReviewRow, TransactionRecord } from "@/lib/types";
+import { FILTER_RULES } from "@/lib/filter-rules";
 import { normalizeApartmentCode } from "@/lib/utils/text";
-
-const INTERNAL_KEYWORDS = [
-  "TRA LAI TAI KHOAN",
-  "DDA",
-  "BQT",
-  "BHXH",
-  "BHYT",
-  "BHTN",
-  "LUONG",
-  "THU LAO",
-  "NOXH",
-  "BAN QUAN TRI"
-];
-
-const GENERIC_NON_APARTMENT_KEYWORDS = [
-  "CHUYEN KHOAN NHANH",
-  "QUA ZALO",
-  "CHUYEN KHOAN",
-  "CK NHANH",
-  "NHANH QUA",
-  "NAP TIEN",
-  "HOAN TIEN"
-];
-
-const APARTMENT_CONTEXT_KEYWORDS = [
-  "CAN",
-  "CAN HO",
-  "PHI",
-  "QLVH",
-  "QLCC",
-  "DONG",
-  "NOP",
-  "THANG",
-  "CHUNG CU",
-  "CC"
-];
 
 function hasApartmentContext(parseResult: ApartmentParseResult): boolean {
   const content = parseResult.normalizedDescription;
   return (
     parseResult.candidates.length > 0 ||
     /\bL[1-9][A-C]?\b/.test(content) ||
-    APARTMENT_CONTEXT_KEYWORDS.some((keyword) => content.includes(keyword))
+    FILTER_RULES.apartmentContextKeywords.some((keyword) => content.includes(keyword))
   );
 }
 
-function isInternalTransaction(transaction: TransactionRecord, parseResult: ApartmentParseResult): boolean {
-  if (transaction.amount <= 0 || transaction.amount < 100000) {
-    return true;
+function hasResidentPaymentSignal(
+  transaction: TransactionRecord,
+  parseResult: ApartmentParseResult,
+  hasValidApartmentCode: boolean
+): boolean {
+  const content = `${transaction.description} ${parseResult.normalizedDescription}`.toUpperCase();
+
+  return (
+    (parseResult.candidates.length > 0 || hasValidApartmentCode) &&
+    FILTER_RULES.residentPaymentKeywords.some((keyword) => content.includes(keyword))
+  );
+}
+
+function detectInternalRule(
+  transaction: TransactionRecord,
+  parseResult: ApartmentParseResult,
+  hasValidApartmentCode: boolean
+): string | undefined {
+  if (transaction.amount <= 0) {
+    return "Bị lọc vì số tiền nhỏ hơn hoặc bằng 0.";
   }
 
   const content = `${transaction.description} ${parseResult.normalizedDescription}`.toUpperCase();
-  if (INTERNAL_KEYWORDS.some((keyword) => content.includes(keyword))) {
-    return true;
+  const hasResidentSignal = hasResidentPaymentSignal(transaction, parseResult, hasValidApartmentCode);
+  const matchedHardKeyword = FILTER_RULES.hardInternalKeywords.find((keyword) => content.includes(keyword));
+
+  if (matchedHardKeyword) {
+    return `Bị lọc vì chứa từ khóa nội bộ cứng: ${matchedHardKeyword}.`;
   }
 
-  if (!hasApartmentContext(parseResult) && GENERIC_NON_APARTMENT_KEYWORDS.some((keyword) => content.includes(keyword))) {
-    return true;
+  if (!hasResidentSignal && transaction.amount < FILTER_RULES.minimumResidentAmount) {
+    return `Bị lọc vì số tiền nhỏ hơn ngưỡng tối thiểu ${FILTER_RULES.minimumResidentAmount.toLocaleString("vi-VN")} và không có tín hiệu cư dân đóng phí.`;
   }
 
-  return false;
+  const matchedSoftKeyword = FILTER_RULES.softInternalKeywords.find((keyword) => content.includes(keyword));
+  if (!hasResidentSignal && matchedSoftKeyword) {
+    return `Bị lọc vì chứa từ khóa nội bộ mềm: ${matchedSoftKeyword}, trong khi không có tín hiệu cư dân đóng phí.`;
+  }
+
+  if (
+    !hasResidentSignal &&
+    !hasApartmentContext(parseResult) &&
+    FILTER_RULES.genericNonApartmentKeywords.some((keyword) => content.includes(keyword))
+  ) {
+    const matchedGenericKeyword = FILTER_RULES.genericNonApartmentKeywords.find((keyword) => content.includes(keyword));
+    return `Bị lọc vì là giao dịch chuyển khoản chung chung (${matchedGenericKeyword}) và không có ngữ cảnh căn hộ.`;
+  }
+
+  return undefined;
 }
 
 function makeId(index: number, transaction: TransactionRecord): string {
@@ -88,22 +87,24 @@ export function buildReviewRows(
     const normalizedParsed = parseResult.parsedApartmentCode
       ? normalizeApartmentCode(parseResult.parsedApartmentCode)
       : undefined;
+    const hasValidApartmentCode = normalizedParsed ? validCodes.has(normalizedParsed) : false;
 
     let matchStatus: ReviewRow["matchStatus"] = "UNPARSED";
     let matchedApartmentCode: string | undefined;
     let ownerName: string | undefined;
     let matchReason = parseResult.matchReason;
     let matchConfidence = 0.1;
+    const internalRuleReason = detectInternalRule(transaction, parseResult, hasValidApartmentCode);
 
-    if (isInternalTransaction(transaction, parseResult)) {
+    if (internalRuleReason) {
       matchStatus = "IGNORED_INTERNAL";
-      matchReason = "Internal or non-resident transaction";
+      matchReason = internalRuleReason;
       matchConfidence = 0.05;
     } else if (suggestions.length > 1) {
       matchStatus = "MULTI_MATCH";
       matchConfidence = 0.45;
     } else if (normalizedParsed) {
-      if (validCodes.has(normalizedParsed)) {
+      if (hasValidApartmentCode) {
         matchedApartmentCode = normalizedParsed;
         ownerName = customerMap.get(normalizedParsed)?.ownerName;
         matchStatus =

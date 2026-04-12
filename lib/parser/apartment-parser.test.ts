@@ -20,7 +20,13 @@ describe("parseApartmentCode", () => {
     ["307/L4A nop phi cc", "L4A.307"],
     ["L1A 111C nop phi", "L1A.111C"],
     ["111B L1B dong phi", "L1B.111B"],
-    ["l2a205f", "L2A.205F"]
+    ["l2a205f", "L2A.205F"],
+    ["LK2-24 nop phi", "LK2.24"],
+    ["lk2 26 nop phi ql", "LK2.26"],
+    ["phi trung cu can L2 so nha 128", "L2.128"],
+    ["107lo2 co k phi chung cu t42026", "L2.107"],
+    ["IBFT L4B 424nop phi cc den t8 2026", "L4B.424"],
+    ["IK2-25 nop phi QLVH thang 1-4-2026 den 30-9-2026", "LK2.25"]
   ];
 
   it.each(cases)("parses %s", (input, expected) => {

@@ -3,13 +3,30 @@ import { normalizeApartmentCode, normalizeFreeText } from "@/lib/utils/text";
 
 const BLOCK_CAPTURE = "([1-9][A-C]?)";
 const ROOM_CAPTURE = "([1-9]\\d{2}[A-Z]?)";
+const LK_BLOCK_CAPTURE = "(LK[1-9])";
+const LK_BLOCK_ALIAS_CAPTURE = "((?:LK|IK)[1-9])";
+const LK_ROOM_CAPTURE = "([1-9]\\d?)";
 
-function formatApartmentCode(block: string, room: string): string {
-  return `L${block}.${room}`;
+function formatApartmentCode(block: string, room: string, prefix = "L"): string {
+  return `${prefix}${block}.${room}`;
 }
 
-function buildCandidate(block: string, room: string, reason: string, score: number) {
-  const normalized = normalizeApartmentCode(formatApartmentCode(block, room));
+function buildCandidate(block: string, room: string, reason: string, score: number, prefix = "L") {
+  const normalized = normalizeApartmentCode(formatApartmentCode(block, room, prefix));
+  if (!normalized) {
+    return undefined;
+  }
+
+  return {
+    code: normalized,
+    reason,
+    score
+  } satisfies ApartmentParseCandidate;
+}
+
+function buildLkCandidate(block: string, room: string, reason: string, score: number) {
+  const normalizedBlock = block.startsWith("IK") ? `LK${block.slice(2)}` : block;
+  const normalized = normalizeApartmentCode(`${normalizedBlock}.${room}`);
   if (!normalized) {
     return undefined;
   }
@@ -56,6 +73,14 @@ function buildCompactRoomBlockCandidate(token: string, reason: string, score: nu
   return buildCandidate(block, room, reason, score);
 }
 
+function splitNumericWordBoundaryToken(token: string): string[] {
+  return token
+    .replace(/([0-9])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z])([0-9])/g, "$1 $2")
+    .split(" ")
+    .filter(Boolean);
+}
+
 function collectCandidates(normalizedDescription: string): ApartmentParseCandidate[] {
   const candidates: ApartmentParseCandidate[] = [];
   const push = (candidate?: ApartmentParseCandidate) => {
@@ -65,12 +90,12 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     candidates.push(candidate);
   };
 
-  const dotPattern = new RegExp(`\\bL${BLOCK_CAPTURE}\\s+${ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");
+  const fillerWordPattern = "(?:CAN|CANHO|HO|TOA|TOANHA|NHA|CHUNGCU|CC|PHI|DONG|NOP|TIEN|THANG|T|QLVH|PQLCC)";
+  const dotPattern = new RegExp(`\\bL${BLOCK_CAPTURE}\\s+${ROOM_CAPTURE}(?=${fillerWordPattern}|\\b|[^A-Z])`, "g");
   for (const match of normalizedDescription.matchAll(dotPattern)) {
     push(buildCandidate(match[1], match[2], "BLOCK_ROOM_SPACED", 0.98));
   }
 
-  const fillerWordPattern = "(?:CAN|CANHO|HO|TOA|TOANHA|NHA|CHUNGCU|CC|PHI|DONG|NOP|TIEN|THANG|T|QLVH|PQLCC)";
   const blockThenRoomFlexiblePattern = new RegExp(
     `\\bL${BLOCK_CAPTURE}\\b(?:\\s+${fillerWordPattern}){0,4}\\s+${ROOM_CAPTURE}(?=\\b|[^A-Z])`,
     "g"
@@ -92,13 +117,55 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildCandidate(match[2], match[1], "ROOM_BLOCK_FLEXIBLE", 0.94));
   }
 
+  const lkPattern = new RegExp(`\\b${LK_BLOCK_ALIAS_CAPTURE}\\s+${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");
+  for (const match of normalizedDescription.matchAll(lkPattern)) {
+    push(buildLkCandidate(match[1], match[2], "LK_BLOCK_ROOM_SPACED", 0.98));
+  }
+
+  const lkCompactPattern = new RegExp(`\\b${LK_BLOCK_ALIAS_CAPTURE}${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");
+  for (const match of normalizedDescription.matchAll(lkCompactPattern)) {
+    push(buildLkCandidate(match[1], match[2], "LK_BLOCK_ROOM_COMPACT", 0.96));
+  }
+
+  const roomThenLkPattern = new RegExp(`\\b${LK_ROOM_CAPTURE}\\s+${LK_BLOCK_ALIAS_CAPTURE}(?=\\b|[^A-Z])`, "g");
+  for (const match of normalizedDescription.matchAll(roomThenLkPattern)) {
+    push(buildLkCandidate(match[2], match[1], "LK_ROOM_BLOCK_SPACED", 0.95));
+  }
+
+  const loBlockPattern = new RegExp(`\\b${LK_ROOM_CAPTURE}\\s+LO\\s*([1-9])(?=\\b|[^A-Z])`, "g");
+  for (const match of normalizedDescription.matchAll(loBlockPattern)) {
+    push(buildCandidate(match[2], match[1], "ROOM_LO_ALIAS", 0.93));
+  }
+
+  const compactLoBlockPattern = new RegExp(`\\b([1-9]\\d{2})LO([1-9])(?=\\b|[^A-Z])`, "g");
+  for (const match of normalizedDescription.matchAll(compactLoBlockPattern)) {
+    push(buildCandidate(match[2], match[1], "ROOM_LO_COMPACT_ALIAS", 0.94));
+  }
+
+  const blockSoNhaPattern = new RegExp(`\\bL${BLOCK_CAPTURE}\\b(?:\\s+(?:SO|NHA|SO NHA)){1,2}\\s+${ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");
+  for (const match of normalizedDescription.matchAll(blockSoNhaPattern)) {
+    push(buildCandidate(match[1], match[2], "BLOCK_SO_NHA_ROOM", 0.95));
+  }
+
   for (const token of normalizedDescription.split(" ").filter(Boolean)) {
     push(buildCompactBlockRoomCandidate(token, "BLOCK_ROOM_COMPACT_TOKEN", 0.93));
     push(buildCompactRoomBlockCandidate(token, "ROOM_BLOCK_COMPACT_TOKEN", 0.92));
+
+    const tokenParts = splitNumericWordBoundaryToken(token);
+    if (tokenParts.length > 1) {
+      for (const part of tokenParts) {
+        push(buildCompactBlockRoomCandidate(part, "BLOCK_ROOM_SPLIT_TOKEN", 0.91));
+        push(buildCompactRoomBlockCandidate(part, "ROOM_BLOCK_SPLIT_TOKEN", 0.9));
+      }
+    }
   }
 
   const filteredCandidates = candidates.filter((candidate) => {
     const [candidateBlock, candidateRoom] = candidate.code.split(".");
+    if (candidateBlock.startsWith("LK")) {
+      return true;
+    }
+
     const exactWithSuffix = candidates.find((other) => {
       if (other.code === candidate.code) {
         return false;

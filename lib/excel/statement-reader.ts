@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { DEFAULT_STATEMENT_COLUMN_ALIASES } from "@/lib/constants";
+import { DEFAULT_STATEMENT_COLUMN_ALIASES, MANAGEMENT_SHEET_NAMES } from "@/lib/constants";
 import { TransactionRecord } from "@/lib/types";
 import { normalizeHeader, safeString } from "@/lib/utils/text";
 
@@ -106,6 +106,11 @@ function findMatchingSheet(workbook: XLSX.WorkBook): XLSX.WorkSheet {
   return workbook.Sheets[workbook.SheetNames[0]];
 }
 
+function looksLikeManagementWorkbook(workbook: XLSX.WorkBook): boolean {
+  return workbook.SheetNames.includes(MANAGEMENT_SHEET_NAMES.customers) &&
+    workbook.SheetNames.includes(MANAGEMENT_SHEET_NAMES.paymentHistory);
+}
+
 function detectHeaderRow(rows: unknown[][]): number {
   let bestIndex = -1;
   let bestScore = 0;
@@ -190,6 +195,11 @@ function parseAmount(value: unknown): number {
 
 export function readStatementWorkbook(buffer: ArrayBuffer): TransactionRecord[] {
   const workbook = XLSX.read(buffer, { type: "array" });
+
+  if (looksLikeManagementWorkbook(workbook)) {
+    throw new Error("File sao kê có vẻ là file quản lý chung cư. Hãy chọn đúng file sao kê ngân hàng.");
+  }
+
   const sheet = findMatchingSheet(workbook);
   const matrix = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
     header: 1,

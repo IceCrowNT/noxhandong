@@ -16,6 +16,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Cần upload đủ file quản lý và file sao kê." }, { status: 400 });
     }
 
+    if (managementFile.name === statementFile.name && managementFile.size === statementFile.size) {
+      return NextResponse.json(
+        { error: "File quản lý và file sao kê đang là cùng một file. Hãy chọn đúng file sao kê ngân hàng." },
+        { status: 400 }
+      );
+    }
+
     const managementBuffer = await managementFile.arrayBuffer();
     const managementData = readManagementWorkbook(managementBuffer);
     const transactions = await readStatementFile(statementFile);
