@@ -94,13 +94,7 @@ export function buildReviewRows(
     let ownerName: string | undefined;
     let matchReason = parseResult.matchReason;
     let matchConfidence = 0.1;
-    const internalRuleReason = detectInternalRule(transaction, parseResult, hasValidApartmentCode);
-
-    if (internalRuleReason) {
-      matchStatus = "IGNORED_INTERNAL";
-      matchReason = internalRuleReason;
-      matchConfidence = 0.05;
-    } else if (suggestions.length > 1) {
+    if (suggestions.length > 1) {
       matchStatus = "MULTI_MATCH";
       matchConfidence = 0.45;
     } else if (normalizedParsed) {
@@ -117,6 +111,13 @@ export function buildReviewRows(
         matchStatus = "INVALID_CODE";
         matchConfidence = 0.4;
         matchReason = `Parsed apartment code ${normalizedParsed} does not exist in customer list`;
+      }
+    } else {
+      const internalRuleReason = detectInternalRule(transaction, parseResult, hasValidApartmentCode);
+      if (internalRuleReason) {
+        matchStatus = "IGNORED_INTERNAL";
+        matchReason = internalRuleReason;
+        matchConfidence = 0.05;
       }
     }
 

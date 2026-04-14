@@ -40,4 +40,31 @@ describe("buildReviewRows", () => {
     expect(row.matchStatus).toBe("IGNORED_INTERNAL");
     expect(row.matchReason).toContain("số tiền nhỏ hơn hoặc bằng 0");
   });
+
+  it("prioritizes parsed apartment rows before internal filtering", () => {
+    const customers: CustomerRecord[] = [
+      { apartmentCode: "L2.131", ownerName: "Duong Hoang Nam", rawRow: {} },
+      { apartmentCode: "L4C.234", ownerName: "Pham Thi Thu Huong", rawRow: {} },
+      { apartmentCode: "L4B.308", ownerName: "Nguyen Thi Thu Luong", rawRow: {} }
+    ];
+    const transactions = [
+      makeTransaction(
+        "CT DEN:164T2640A1ZC3ULE MBVCB.13680497981.997609.L2.131 .CT tu 0031000224700 DUONG HOANG NAM toi 116002961023 BQT KHU NHA O XA HOI TAI XA AN DONG tai VIETINBANK",
+        1500000
+      ),
+      makeTransaction(
+        "CT DEN:164T26407EY96MQN MBVCB.13660639968.002585.PHAM THI THU HUONG chuyen tien so 234/l4c hoang huy an dong hp.CT tu 0031000384697 PHAM THI THU HUONG toi 116002961023 BQT KHU NHA O XA HOI TAI XA AN DONG tai VIETINBANK",
+        250000
+      ),
+      makeTransaction(
+        "CT DEN:164T26403CTGAFZF MBVCB.13623575830.879831.L4B.308 + 0584249755 + phi QLVH T1.2026.CT tu 9896319703 NGUYEN THI THU LUONG toi 116002961023 BQT KHU NHA O XA HOI TAI XA AN DONG tai VIETINBANK",
+        250000
+      )
+    ];
+
+    const rows = buildReviewRows(transactions, transactions.map((item) => parseApartmentCode(item.description)), customers);
+
+    expect(rows.map((row) => row.matchStatus)).toEqual(["EXACT_MATCH", "NORMALIZED_MATCH", "EXACT_MATCH"]);
+    expect(rows.map((row) => row.matchedApartmentCode)).toEqual(["L2.131", "L4C.234", "L4B.308"]);
+  });
 });
