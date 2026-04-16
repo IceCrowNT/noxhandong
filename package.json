@@ -8,11 +8,20 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prisma:generate": "prisma generate",
+    "prisma:validate": "prisma validate",
+    "prisma:studio": "prisma studio",
+    "prisma:migrate:dev": "prisma migrate dev"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "dotenv": "^17.4.2",
     "next": "15.2.4",
     "pdf-parse": "^2.4.5",
+    "pg": "^8.20.0",
+    "prisma": "^7.7.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "xlsx": "0.18.5"
