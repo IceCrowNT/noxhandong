@@ -147,6 +147,14 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildCandidate(match[1], match[2], "BLOCK_SO_NHA_ROOM", 0.95));
   }
 
+  const compactWithTrailingDigitsPattern = new RegExp(
+    `\\bL${BLOCK_CAPTURE}${ROOM_CAPTURE}(\\d{6,})(?=\\s+(?:NOP|PHI|QLVH|QLCC|PQLCC|DONG|CAN|CC|THANG)\\b)`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(compactWithTrailingDigitsPattern)) {
+    push(buildCandidate(match[1], match[2], "BLOCK_ROOM_TRAILING_DIGITS", 0.89));
+  }
+
   for (const token of normalizedDescription.split(" ").filter(Boolean)) {
     push(buildCompactBlockRoomCandidate(token, "BLOCK_ROOM_COMPACT_TOKEN", 0.93));
     push(buildCompactRoomBlockCandidate(token, "ROOM_BLOCK_COMPACT_TOKEN", 0.92));
@@ -164,6 +172,21 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     const [candidateBlock, candidateRoom] = candidate.code.split(".");
     if (candidateBlock.startsWith("LK")) {
       return true;
+    }
+
+    if (candidate.reason.startsWith("ROOM_BLOCK")) {
+      const strongerSameRoomCandidate = candidates.find((other) => {
+        if (other.code === candidate.code || !other.reason.startsWith("BLOCK_ROOM")) {
+          return false;
+        }
+
+        const [, otherRoom] = other.code.split(".");
+        return otherRoom === candidateRoom && other.score >= candidate.score;
+      });
+
+      if (strongerSameRoomCandidate) {
+        return false;
+      }
     }
 
     const exactWithSuffix = candidates.find((other) => {

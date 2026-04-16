@@ -66,6 +66,23 @@ export interface ReviewRow {
   senderAccount?: string;
   transactionId?: string;
   suggestions: string[];
+  allocationDrafts?: AllocationDraft[];
+}
+
+export interface AllocationDraft {
+  apartmentCode: string;
+  amount: number;
+  note?: string;
+}
+
+export interface TransactionAllocation {
+  sourceRowId: string;
+  transactionDate?: string;
+  rawDescription: string;
+  apartmentCode: string;
+  amount: number;
+  allocationNote: string;
+  allocationKind: "SINGLE" | "MULTI_EXACT" | "MULTI_PRORATED";
 }
 
 export interface ReviewSummary {

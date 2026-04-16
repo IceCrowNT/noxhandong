@@ -1,0 +1,1470 @@
+# Scan desktop-asng7jb
+
+- Root path: `/Volumes/desktop-asng7jb`
+- Scan date: `2026-04-14`
+- Excluded: `Back up`
+
+## Tổng quan nhanh
+
+- Đây là một ổ tài liệu vận hành chung cư, không chỉ riêng thu phí.
+- Nhánh nghiệp vụ mạnh nhất là `1. THU`, trong đó có đủ `THU PHÍ HÀNG THÁNG`, `SAO KÊ NGÂN HÀNG`, `BIÊN NHẬN TIỀN`, `BÁO CÁO`, `CÔNG NỢ AN ĐIỀN`.
+- Có dấu hiệu rất rõ của quy trình đối soát theo tháng, theo mã căn, theo chứng từ ảnh/PDF, và theo ngoại lệ như `ck nhầm`, `ghi nhầm mã căn`, `kế toán ck hộ`, `An Điền`.
+- Ổ này cũng chứa các nhánh vận hành rộng hơn: `CHI`, `THÔNG BÁO`, `HỢP ĐỒNG`, `BIỂU MẪU`, `TÀI LIỆU NỘI BỘ`, `CHECK LIST`, `BIÊN BẢN`, `BẢO HIỂM CHÁY NỔ`.
+
+## Nhận định nghiệp vụ
+
+### 1. Nhánh thu phí là trục chính
+
+- `1. THU/THU PHÍ HÀNG THÁNG` chứa workbook theo dõi thu phí theo tháng, liên tục từ 2024 đến 2026.
+- `1. THU/SAO KÊ NGÂN HÀNG` chứa sao kê theo năm/tháng, có cả Excel, PDF, file gốc ngân hàng, file đã xử lý và file `so sánh ghi chép vs sao kê`.
+- `1. THU/BIÊN NHẬN TIỀN` chứa ảnh chứng từ theo ngày/tháng và đặt tên theo mã căn hộ, bao gồm cả các ghi chú ngoại lệ ngay trong tên file.
+
+### 2. Mã căn là khóa nghiệp vụ xuyên suốt
+
+- Tên file trong `BIÊN NHẬN TIỀN` cho thấy mã căn là identity chính để tra cứu hồ sơ.
+- Hệ mã hiện diện gồm cả `L...` và `LK...`, và có nhiều tình huống đặc biệt như nhiều căn trong cùng một giao dịch, ghi nhầm mã, chuyển khoản nhầm sang An Điền, đóng bù nhiều tháng.
+
+### 3. App hiện tại mới bao phủ một phần hẹp
+
+- Bản MVP đang làm tốt phần `sao kê -> parse mã căn -> rà soát -> export`.
+- Nhưng từ cấu trúc ổ đĩa này, app phù hợp hơn nếu trở thành một console vận hành cho cả khối `Thu`, rồi mở rộng sang `Chi`, `Thông báo`, `Biên bản`, `Checklist`.
+
+## Tính năng nên làm cho web app
+
+### Giai đoạn 1: Chuẩn hóa quy trình thu phí
+
+1. Đọc sao kê ngân hàng từ Excel/PDF và chuẩn hóa giao dịch.
+2. Match giao dịch với mã căn, hỗ trợ `L...` và `LK...`, nhiều biến thể nhập sai.
+3. Liên kết giao dịch với workbook `Theo dõi thu phí T*.xlsx` theo tháng.
+4. Tách rõ các bucket: khớp, cần rà soát, mã không hợp lệ, chưa nhận diện, không liên quan, chuyển nhầm An Điền, nộp hộ, ghi sai mã căn.
+5. Export workbook rà soát an toàn, không ghi đè file gốc.
+
+### Giai đoạn 2: Nối với chứng từ và hồ sơ
+
+1. Tra cứu `Biên nhận tiền` theo mã căn, ngày giao dịch, tháng thu.
+2. Gợi ý chứng từ liên quan dựa trên tên file ảnh/PDF.
+3. Đánh dấu dòng đã có hoặc chưa có chứng từ kèm theo.
+4. Lưu note ngoại lệ như `ck nhầm`, `kế toán ck hộ`, `ghi nhầm mã căn`, `đóng bù nhiều tháng`.
+
+### Giai đoạn 3: Mở rộng thành console vận hành
+
+1. Module `Chi`: quản lý chi phí theo tháng, hồ sơ thanh toán, chứng từ.
+2. Module `Thông báo`: sinh mẫu thông báo từ dữ liệu công nợ hoặc vi phạm.
+3. Module `Biên bản` và `Checklist`: tra cứu mẫu, điền nhanh, tạo hồ sơ theo căn/nhân sự/sự vụ.
+4. Module `Bảo hiểm cháy nổ`: theo dõi danh sách căn tham gia, hồ sơ theo căn, tình trạng nộp phí.
+
+## Rủi ro và dữ liệu cần chuẩn hóa
+
+- Có nhiều file Office tạm như `~$...`, cần bỏ qua mặc định.
+- Có thư mục hệ thống như `$RECYCLE.BIN`, `System Volume Information`, `.DS_Store`, `pagefile.sys`, cần loại khỏi scan nghiệp vụ.
+- Có trùng mẫu tài liệu và thư mục test như `abc`, `LT`, cần phân biệt với hồ sơ vận hành thật.
+- Cần chuẩn hóa dictionary cho: mã căn, loại ngoại lệ, loại chứng từ, loại báo cáo, loại thông báo.
+
+## Folder Tree
+
+```text
+desktop-asng7jb
+- $RECYCLE.BIN
+  - S-1-5-18
+  - S-1-5-21-1113839796-1353593918-919949737-1001
+  - S-1-5-21-2169221706-899161380-1264690327-1001
+  - S-1-5-21-2765430332-4153782530-390940838-1001
+  - S-1-5-21-2800687128-566568502-1112790091-1000
+- 1. THU
+  - BÁO CÁO
+    - 2024
+      - BC 6 THÁNG ĐẦU 010324 - 310824
+        - BC 6 THÁNG - PDF
+      - BC CUỐI NĂM 25122024
+      - BC thu phí hàng tháng
+    - 2025
+      - BC 6 THÁNG 010725-311225
+        - BC 6 THÁNG CUỐI NĂM - SCAN
+        - Sao kê KPBT
+      - BC 6 THÁNG ĐẦU 010125- 300625
+        - BC 6 THÁNG - SCAN
+    - 2026
+  - BIÊN NHẬN TIỀN
+    - 2024
+      - 2024.tháng 10
+        - 0210
+        - 0510
+        - 0710
+        - 0810
+        - 1110
+        - 1510
+        - 1910
+        - 2010
+        - 2210
+        - 2310
+        - 2410
+        - 2810
+        - 2910
+        - 3010
+        - 3110
+      - 2024.tháng 11
+        - 0811
+        - 0911
+        - 1511
+        - 1611
+        - 1811
+        - 1911
+        - 2011
+        - 2111
+        - 2211
+        - 2311
+        - 2911
+        - 3011
+      - 2024.tháng 12
+        - 1512
+        - 212
+        - 2312
+        - 3012
+        - 312
+        - 712
+      - 2024.tháng 3
+        - 2024.03.01
+        - 2024.03.02
+        - 2024.03.06
+        - 2024.03.07
+        - 2024.03.08
+        - 2024.03.12
+        - 2024.03.13
+        - 2024.03.15
+        - 2024.03.16
+        - 2024.03.17
+        - 2024.03.18
+        - 2024.03.19
+        - 2024.03.20
+        - 2024.03.21
+        - 2024.03.22
+        - 2024.03.23
+        - 2024.03.25
+        - 2024.03.26
+        - 2024.03.27
+        - 2024.03.28
+        - 2024.03.29
+        - 2024.03.30
+      - 2024.tháng 4
+        - 2024.04.01
+        - 2024.04.02
+        - 2024.04.03
+        - 2024.04.04
+        - 2024.04.05
+        - 2024.04.06
+        - 2024.04.07
+        - 2024.04.08
+        - 2024.04.11
+        - 2024.04.12
+        - 2024.04.13
+        - 2024.04.15
+        - 2024.04.16
+        - 2024.04.19
+        - 2024.04.20
+        - 2024.04.22
+        - 2024.04.23
+        - 2024.04.24
+        - 2024.04.26
+        - 2024.04.27
+      - 2024.tháng 5
+        - 2024.05.02
+        - 2024.05.03
+        - 2024.05.04
+        - 2024.05.06
+        - 2024.05.07
+        - 2024.05.09
+        - 2024.05.10
+        - 2024.05.11
+        - 2024.05.13
+        - 2024.05.14
+        - 2024.05.15
+        - 2024.05.17
+        - 2024.05.18
+        - 2024.05.20
+        - 2024.05.22
+        - 2024.05.23
+        - 2024.05.24
+        - 2024.05.25
+        - 2024.05.27
+        - 2024.05.28
+      - 2024.tháng 6
+        - 2024.06.03
+        - 2024.06.05
+        - 2024.06.06
+        - 2024.06.07
+        - 2024.06.08
+        - 2024.06.10
+        - 2024.06.13
+        - 2024.06.18
+        - 2024.06.19
+        - 2024.06.20
+        - 2024.06.22
+        - 2024.06.24
+        - 2024.06.25
+        - 2024.06.27
+        - 2024.06.29
+      - 2024.tháng 7
+        - 2024.07.01
+        - 2024.07.04
+        - 2024.07.05
+        - 2024.07.06
+        - 2024.07.09
+        - 2024.07.10
+        - 2024.07.11
+        - 2024.07.12
+        - 2024.07.15
+        - 2024.07.18
+        - 2024.07.20
+        - 2024.07.22
+        - 2024.07.23
+        - 2024.07.25
+        - 2024.07.31
+      - 2024.tháng 8
+        - 12.8.24
+        - 22.8.24
+        - 23.08
+        - 24.8.24
+        - 26.8.24
+        - 29.08.24
+        - 3.8.24
+        - 30.08
+        - 8.8.24
+        - 9.8.24
+      - 2024.tháng 9
+        - 14 09
+        - 19 09
+        - 21 09
+        - 23 09
+        - 24 09
+        - 26 09
+        - 28 09
+        - 30 09
+    - 2025
+      - T1
+        - 1101
+        - 1201
+        - 1501
+        - 1601
+        - 1701
+        - 2201
+        - 2301
+        - 2401
+        - 2501
+        - 2901
+      - T10
+        - 0210
+        - 0910
+        - 1510
+        - 1710
+        - 1810
+        - 2110
+        - 2310
+        - 2910
+      - T11
+        - 1311
+        - 1511
+        - 1711
+        - 1811
+        - 1911
+        - 2011
+        - 2111
+        - 2411
+        - 2711
+        - 2911
+      - T12
+        - 1112
+        - 1812
+        - 2212
+        - 2512
+        - 2612
+        - 2912
+        - 3112
+      - T2
+        - 0602
+        - 1002
+        - 1202
+        - 1702
+        - 2202
+        - 2702
+      - T3
+        - 1003
+        - 1203
+        - 1603
+        - 2003
+        - 2103
+        - 2203
+        - 2303
+        - 2403
+        - 2603
+        - 2803
+      - T4
+        - 0404
+        - 0804
+        - 0904
+        - 1004
+        - 1504
+        - 1904
+        - 2004
+        - 2104
+      - T5
+        - 0805
+        - 0905
+        - 1205
+        - 1305
+        - 1505
+        - 1805
+        - 1905
+        - 2005
+        - 2105
+        - 2205
+        - 2305
+        - 2605
+        - 2705
+        - 2905
+        - 3105
+      - T6
+        - 0106
+        - 0306
+        - 0706
+        - 1206
+        - 1306
+        - 3006
+      - T7
+        - 0107
+        - 0207
+        - 1507
+        - 1607
+        - 1907
+        - 2107
+        - 2607
+        - 3007
+        - 3107
+      - T8
+        - 0808
+        - 1008
+        - 1308
+        - 1508
+        - 1708
+        - 1808
+        - 1908
+        - 2008
+        - 2208
+        - 2508
+        - 2608
+        - 2708
+        - 2808
+      - T9
+        - 0109
+        - 1409
+        - 1609
+        - 2409
+        - 2709
+      - ký quỹ lắp biển
+    - 2026
+      - T1
+        - 0101
+        - 0401
+        - 0701
+        - 1201
+        - 1501
+        - 1601
+        - 2001
+        - 2101
+        - 2201
+        - 2301
+        - 2401
+        - 2701
+        - 2801
+        - 3101
+      - T2
+        - 10.2
+        - 26.2
+        - 27.2
+        - 28.2
+        - 3.2
+        - 4.2
+        - 7.2
+        - 8.2
+        - 9.2
+      - T3
+        - 0203
+        - 0703
+        - 0903
+        - 1103
+        - 1203
+        - 1303
+        - 1803
+        - 1903
+        - 2203
+        - 2303
+        - 2403
+        - 2503
+        - 2603
+      - T4
+        - 0104
+        - 0304
+        - 0604
+        - 0704
+        - 0904
+        - 1104
+  - CÔNG NỢ AN ĐIỀN
+  - DANH SÁCH
+    - 2024
+  - SAO KÊ NGÂN HÀNG
+    - 2024
+      - Excel
+      - NH
+    - 2025
+    - 2026
+      - 116002961023
+      - 122000122746
+  - THU PHÍ HÀNG THÁNG
+    - 2024
+    - 2025
+    - 2026
+      - New folder
+- 10. BẢO HIỂM CHÁY NỔ
+  - GCN
+  - Hồ sơ thanh tra
+  - T10 24
+  - T8
+    - L1.116
+    - L1.402
+    - L1.520
+    - L2.114
+    - L2.115 L2.117
+    - L2.122
+    - L2.308
+    - L2.424
+    - L2.501
+    - L3.111B
+    - L4A.209
+    - L4A.228
+    - L4A.316
+    - L4A.327
+    - L4A.405
+    - L4B.110
+    - L4B.226
+    - L4B.231
+    - L4B.306B
+    - L4B.320
+    - L4B.327
+    - L4C.120
+    - L4C.125
+    - L4C.224
+    - L4C.226
+    - L4C.310
+    - L4C.420
+    - New folder
+- 2. CHI
+  - 2024
+    - T10.2024
+      - 1001 Ủng hộ bão
+      - 1002 + 1003 ĐNTT Cán cờ + cờ 2 9
+      - 1004 CP phát sinh khác tại BQT
+      - 1005 VPP
+      - 1006 ĐNHT Hoàn chi phí ck nhầm
+        - ĐN HOÀN TIỀN MS LY
+        - ĐN HOÀN TIỀN MS PHƯƠNG
+      - 1007 CP Lắp đặt đồng hồ đo điện
+      - 1008 Kinh phí dọn dẹp vệ sinh sau bão - Trực đường số 6
+      - 1009 Điện Nước T10
+      - 1010 Bảo vệ
+      - 1011 Vệ sinh
+      - 1012 Cây xanh + côn trùng
+      - 1013 Lương BQL
+      - 1014 Lương BQT
+      - 1015 DNTT Thay bình ác quy
+      - 1016 ĐNTT mạng đt T10
+    - T11.2024
+      - 1. (1101) Đóng góp hội nghị đoàn kết toàn dân tộc
+      - 10.(1110) Mua bóng đèn chiếu sáng hành lang
+        - Báo giá
+      - 11. (1111) CP phát sinh ko thường xuyên
+        - Hình ảnh
+          - Sửa chữa gạch cập kênh đầu L4A
+          - Sửa chữa khắc phục đá vỉa hè cập kênh L4B!
+        - Hoá đơn
+      - 12. (1112) Hotline T11
+      - 2. (1102) ĐNTT sửa chữa trần thạch cao bị hư hỏng do bão số 3
+      - 3. (1103) ĐNTT mạng wifi
+      - 4. (1104) ĐNTT Lương BQT
+      - 5. (1105) Lương BQL
+      - 6. (1106) Cây xanh + côn trùng
+      - 7. (1107) An ninh T11
+      - 8. (1108) Vệ sinh T11
+      - 9. (1109) Điện Nước T11
+    - T12.2024
+      - 1. (1201) ĐNTT Lương BQT
+      - 10.(1210) VPP
+      - 11. (1211) Treo cờ dự án - hưởng ứng chào xuân
+      - 2. (1202) Lương BQL
+      - 3. (1203) Điện Nước T12
+        - Điện - Nước T12
+      - 4. (1204) An ninh T12
+        - An ninh T12
+      - 5. (1205) Vệ sinh T12
+        - Vệ sinh T12
+      - 6. (1206) Cây xanh + côn trùng
+      - 7. (1207) ĐNTT mạng wifi
+        - Hotline T12
+      - 8. (1208) CP phát sinh ko thường xuyên
+      - 9.(1209) CP PCCC cơ sở
+    - T3.2024
+      - 1. Đề nghị thanh toán
+        - (03 01-DNTT) ĐNTT tiền internet & SIM tổng đài (2024.03.04)
+          - báo giá & hóa đơn
+        - (03 02-DNTT) ĐNTT tiền lương cho BQT và các đại diện chủ sở hữu căn hộ (2024.03.28)
+        - (03 03-DNTT) ĐNTT tiền lương cho BQLVH dự án
+        - (03 04-DNTT) ĐNTT tiền điện
+        - (03 05-DNTT) ĐNTT phí An Ninh - Bảo vệ
+        - (03 06-DNTT) ĐNTT phí vệ sinh
+        - (03 07-DNTT) ĐNTT các chi phí khác phát sinh tại BQT
+          - Mua nước đóng chai
+        - (03 08-DNTT) ĐNTT tiền điện thoại
+        - (03 09-DNTT) ĐNTT tiền nước
+        - (03 10-DNTT) ĐNTU tiền phí chăm sóc cây xanh định kỳ tháng 3, 4
+    - T4.2024
+      - (04 01-DNTT) ĐNTT tiền mua điện thoại & SIM tổng đài (2024.04.03)
+        - báo giá & hóa đơn
+      - (04 02-DNTT) ĐNTT tiền lương cho BQT và các đại diện chủ sở hữu căn hộ (2024.04.26)
+      - (04 03-DNTT) ĐNTT tiền lương cho BQLVH dự án
+      - (04 04-DNTT) ĐNTT tiền điện
+      - (04 05-DNTT) ĐNTT phí An Ninh - Bảo vệ
+      - (04 06-DNTT) ĐNTT phí vệ sinh
+      - (04 07-DNTT) ĐNTT các khoản phí khác phát sinh không thường xuyên
+      - (04 09-DNTT) ĐNTT tiền nước
+      - (04 10-DNTT) ĐNTT tiền điện thoại
+    - T5.2024
+      - (05 01-DNTU) ĐNTT tạm ứng mua điều hòa
+      - (05 02-DNTT) ĐNTT mua mới camera tại văn phòng BQT và phòng điều hành BP AN
+      - (05 03-DNTT) ĐNTT mua mới số lượng lớn thùng đựng rác
+      - (05 04-DNTT) ĐNTT tiền vpp
+      - (05 05-DNTT) ĐNTU tiền phí chăm sóc cây xanh, phun côn trùng định kỳ tháng 4, tháng 5
+      - (05 06-DNTT) ĐNTT tiền lương cho BQT và các đại diện chủ sở hữu căn hộ
+      - (05 07-DNTT) ĐNTT tiền nước
+      - (05 08-DNTT) ĐNTT tiền điện
+      - (05 09-DNTT) ĐNTT bù trừ công nợ An Điền
+      - (05 10-DNTT) ĐNTT tiền mua sắm & lắp điều hòa
+      - (05 11-DNTT) ĐNTT tiền lương cho BQLVH dự án
+      - (05 12-DNTT) ĐNTT tiền điện thoại
+      - (05 13-DNTT) thanh toán các khoản chi phí mua sắm, phát sinh không thường xuyên
+      - (05 14-DNTT) thanh toán phí dịch vụ an ninh
+      - (05 15-DNTT) thanh toán phí dịch vụ vệ sinh
+    - T6.2024
+      - (06 01) ĐNTT tiền lắp đặt vách kính
+      - (06 02-DNTT) ĐNTT tiền lương cho BQT và các đại diện chủ sở hữu căn hộ
+      - (06 03-DNTT) thanh toán các khoản chi phí mua sắm, phát sinh không thường xuyên
+      - (06 04-DNTT) ĐNTT tiền phí chăm sóc cây xanh
+      - (06 05-DNTT) ĐNTT tiền lương cho BQLVH dự án
+      - (06 06-DNTT) thanh toán tiền điện tháng 6
+      - (06 07-DNTT) thanh toán tiền nước tháng 6
+      - (06 08-DNTT) ĐNTT tiền điện thoại
+      - (06 09-DNTT) thanh toán phí dịch vụ an ninh
+      - (06 10-DNTT) thanh toán phí dịch vụ vệ sinh
+    - T7.2024
+      - (07 01-ĐNTT) mua biển, sơn kẻ vạch
+      - (07 02)-ĐNTT lắp rèm cửa
+      - (07 03)-ĐNTT mua sắm máy vi tính
+      - (07 04-ĐNTT) mua nước uống pv hội họp
+      - (07 05-ĐNTT) thanh toán học phí đào tạo cán bộ
+      - (07 06 - ĐNTT) CP PCCC cơ sở
+      - (07 07 - DNTT ) VPP
+      - (07 08 - ĐNTT) TIỀN LƯƠNG T7 CHO BQT & TRƯỞNG LÔ
+      - (07 09 -ĐNTT) TIỀN LƯƠNG T7 CHO BQL
+      - (07 10 - ĐNTT) ĐIỆN + NƯỚC T7
+      - (07 11 - ĐNTT) CP VỆ SINH
+      - (07 12 - ĐNTT) đồ dùng thiết bị cho việc quản lý
+      - (07 13 DNTT) CP BẢO VỆ
+      - (07 16 ĐNTT) CP Hotline, VNPT
+    - T8.2024
+      - (0801) ĐNTT) Chi phí phát sinh ko thường xuyên
+      - (0802 ĐNTT) CP sửa máy tính + thay ổ
+      - (0803 ĐNTT) CP thay cây xanh
+      - (0804 ĐNTT) Lương BQL
+      - (0805 ĐNTT) Lương BQT
+      - (0806 DNTT) Điện + nước T8
+      - (0807 ĐNTT) CP mua tive thay phòng cam
+      - 0808 ĐNTT Vệ sinh
+      - 0809 ĐNTT Bảo vệ
+      - 0810 ĐNTT Cây xanh và phun côn trùng
+      - 0811 ĐNTT Mạng , điện thoại
+    - T9.2024
+      - 0901 ĐNTT CP ĐÀO TẠO
+      - 0902 ĐNTT Lương BQT
+      - 0903 DNTT Lương BQL
+        - (0903 ĐNTT) Lương BQL
+      - 0904 DNTT Vệ sinh
+      - 0905 ĐNTT Bảo vệ
+      - 0906 DNTT các khoản chi phí phát sinh không thường xuyên
+      - 0907 Điện Nước
+      - 0908 ĐNTT Cây xanh và phun côn trùng
+      - 0909 ĐNTT Mạng , điện thoại
+  - 2025
+    - T1
+      - 0101 Mua Hotline CSKH
+        - Mua hotline
+      - 0102 ĐNTT Lương BQT
+      - 0103 Lương BQL
+      - 0104 An ninh
+        - An ninh
+      - 0105 Vệ sinh
+        - Vệ sinh
+      - 0106 Cây xanh + côn trùng
+      - 0107 ĐNTT mạng wifi
+      - 0108  Điện Nước
+        - Điện - Nước
+    - T10
+      - 1001 Lương BQL
+        - LƯƠNG NSVH
+      - 1002 BHXH T9
+        - BHXH
+      - 1003 ĐNTT Lương BQT
+      - 1004 Vệ sinh  nạo vét hố ga nước mưa
+        - ĐNTT vệ sinh hố thoát nước mưa
+          - Hình ảnh
+      - 1005 Thanh toán chi phí giám sát vệ sinh hố ga nước mưa dự án
+      - 1006 Điện nước
+        - ĐNTT Điện nước
+      - 1007 Bảo vệ
+        - ĐNTT Bảo vệ
+      - 1008 Vệ sinh
+        - ĐNTT Vệ sinh
+      - 1009 Hotline
+        - ĐNTT HOTLINE
+      - 1010 Chăm sóc Cây xanh
+      - 1011 Mua hộ BHCN cho cư dân
+        - ĐNTT BHCN cho cư dân LẦN 2
+          - GBC
+          - Giấy chứng nhận + Hoá Đơn
+            - L1.401
+            - L2.115
+            - L2.117
+            - L2.414
+            - L4B.221
+            - L4C.124
+            - L4C.209
+            - L4C.314
+            - L4C.334
+            - L4C.434
+    - T11
+      - 1. 1101 Đóng góp hội nghị đoàn kết toàn dân tộc
+      - 10. 1110 ĐNTT mạng wifi
+      - 11. 1111 Chi phí phát sinh phao đài phun nước
+        - ĐNTT lắp đặt phao đài phun nước
+      - 2. 1102 Lương BQL
+        - LƯƠNG NSVH
+      - 3. 1103 BHXH
+        - BHXH
+      - 4. 1104 Thù lao BKS & trưởng lô
+      - 5. 1105  Điện nước
+        - ĐNTT Điện nước
+      - 6. 1106  Bảo vệ
+        - BẢO VỆ
+      - 7. 1107  Vệ sinh
+        - ĐNTT Vệ sinh
+      - 8. 1108  Hotline
+        - ĐNTT HOTLINE
+      - 9. 1109  Chăm sóc Cây xanh
+    - T12
+      - 1201 Thù lao BKS & trưởng lô
+      - 1202  Lương BQL
+        - LƯƠNG NSVH
+      - 1203 BHXH
+        - BHXH
+      - 1204  Điện nước
+        - ĐNTT Điện nước
+      - 1205 Vệ sinh
+        - ĐNTT Vệ sinh
+      - 1206 Chăm sóc Cây xanh
+      - 1207 Bảo vệ
+        - BẢO VỆ
+      - 1208  Hotline
+        - ĐNTT HOTLINE
+      - 1209 Mua bóng đèn chiếu sáng hành lang
+        - ĐNTT mua bóng đèn led vuông 18W dự trữ
+      - 1210 VPP Quý 4 2025
+        - VPP
+      - 1211 Chi phí phát sinh mua sim đt, in biển L4C, di chuyển bốt bảo vệ
+        - ĐNTT chi phí phát sinh T12
+    - T2
+      - 0201 Thay Cây xanh
+      - 0202 Lương BQT
+      - 0203 Lương BQL
+      - 0204  Điện Nước
+        - Điện - Nước
+      - 0205 Cây xanh + côn trùng
+      - 0206 An ninh
+        - An ninh
+      - 0207 Vệ sinh
+        - Vệ sinh
+      - 0208 ĐNTT mạng wifi
+        - Hotline T2
+    - T3
+      - 0301 ĐNTT Lương BQT
+      - 0302 Lương BQL
+      - 0303 Cây xanh + côn trùng
+      - 0304 Vệ sinh
+      - 0305 An ninh
+        - An ninh
+      - 0306 Điện Nước
+        - Điện - Nước
+      - 0307 ĐNTT mạng wifi
+        - Hotline
+      - 0308 CP phát sinh ko thường xuyên
+        - Chốt bảo vệ
+        - Lát vỉa hè
+      - 0309 VPP
+    - T4
+      - 0401 ĐNTT Lương BQT
+      - 0402 Lương BQL
+      - 0403 Cây xanh + côn trùng
+      - 0404 Vệ sinh
+      - 0405 An ninh
+        - An ninh
+      - 0406 Điện Nước
+        - Điện - Nước
+      - 0407 ĐNTT mạng wifi
+        - Hotline
+    - T5
+      - 0501 CP phát sinh ko thường xuyên
+      - 0502 ĐNTT Lương BQT
+        - 0501 CP phát sinh ko thường xuyên
+      - 0503 Lương BQL
+      - 0504 Cây xanh + côn trùng
+      - 0505 Vệ sinh
+      - 0506 Bảo vệ
+      - 0507 Điện nước
+      - 0508 Hotline
+      - 0509 ĐNHT Ms Giang
+      - 0510 App hẹn giờ L4A
+    - T6
+      - 0601 Tiếp PCCC
+      - 0602 ĐNTT Lương BQT
+      - 0603 Lương BQL
+      - 0604 Cây xanh + côn trùng
+      - 0605 Vệ sinh
+      - 0606 Bảo vệ
+      - 0607 Điện nước
+      - 0608 Hotline
+      - 0609 VPP
+      - 0610 CP phát sinh ko thường xuyên
+    - T7
+      - 0701 Ủng hộ bão Wipha
+      - 0702 Tham gia bảo hiểm khung nhà chung của dự án
+      - 0703 Ủng hộ thương binh liệt sĩ
+      - 0704 ĐNTT Lương BQT
+      - 0705 Lương BQL
+      - 0706 Cây xanh + côn trùng
+      - 0707 Vệ sinh
+      - 0708 Bảo vệ
+      - 0709 Điện nước
+      - 0710 Hotline
+      - 0711 Lắp đặt bảng tin đầu lô
+      - CK nhầm tk lãi
+    - T8
+      - 0801 CP phát sinh ko thường xuyên
+      - 0802 CP thăm hỏi
+      - 0803 Lương BQL
+      - 0804 ĐNTT Lương BQT
+      - 0805 Vệ sinh
+        - ĐNTT Vệ sinh
+      - 0806 Bảo vệ
+        - ĐNTT Bảo vệ T8
+      - 0807 Điện nước
+      - 0808 Hotline
+        - ĐNTT HOTLINE
+      - 0809 Mua hộ BHCN cho cư dân
+        - GBC
+        - ĐNTT BHCN cho cư dân LẦN 1
+          - GBC
+          - Giấy chứng nhận + Hoá Đơn
+            - L1.509
+            - L4B.317
+            - L4B.419
+            - L4C.516
+          - Tin nhắn lưu vết
+      - 0810 Treo cờ dự án - hưởng ứng CHÀO MỪNG 80 NĂM cách mạng tháng tám và kỉ niệm 2 9
+      - 0811 Mua chữ kí số
+        - ĐNTT mua chữ kí số
+    - T9
+      - 0901 Lương BQL
+        - LƯƠNG NSVH
+      - 0902 BHXH T9
+        - BHXH
+      - 0903 ĐNTT Lương BQT
+      - 0904 ĐNTT bù trừ công nợ an điền
+        - Bù trừ công nợ An Điền
+      - 0905 Vệ sinh
+        - ĐNTT Vệ sinh
+      - 0906 Bảo vệ
+        - ĐNTT Bảo vệ
+      - 0907 Điện nước
+        - ĐNTT Điện nước
+      - 0908 Hotline
+        - ĐNTT HOTLINE
+      - 0909 VPP
+      - 0910 CP phát sinh ko thường xuyên
+      - 0911 Chăm sóc Cây xanh
+      - 0912 Ủng hộ trung thu
+  - 2026
+    - T1
+      - 0101 Thù lao BKS & trưởng lô
+      - 0102  Lương BQL
+        - LƯƠNG NSVH
+      - 0103 BHXH
+        - BHXH
+      - 0104  Điện nước
+        - ĐNTT Điện nước
+      - 0105 Thay hộp mực máy in
+      - 0106 Chăm sóc Cây xanh
+      - 0107 Bảo vệ
+        - BẢO VỆ
+      - 0108  Hotline
+        - Hotline
+        - ĐNTT HOTLINE
+      - 0109 Vệ sinh
+        - ĐNTT Vệ sinh
+      - 0110 Sửa vòi phun đài phun nước
+      - ĐNHT CK NHẦM
+    - T2
+      - 0201 Mua cờ treo trang trí Tết Nguyên Đán
+      - 0202 ĐNTT chi phí tiếp đoàn công an dọn dẹp trật tự vỉa hè
+      - 0203 ĐNTT sửa chữa lắp đặt hệ thống camera an ninh
+      - 0204 Thù lao BKS & trưởng lô
+      - 0205 Lương BQL
+        - LƯƠNG NSVH
+      - 0206 BHXH
+        - BHXH
+      - 0207 Điện nước
+        - ĐNTT Điện nước
+      - 0208 Vệ sinh
+        - ĐNTT Vệ sinh
+      - 0209 Bảo vệ
+        - BẢO VỆ
+      - 0210 Chăm sóc Cây xanh
+      - 0211  Hotline
+        - Hotline
+          - New folder
+      - 0212 Tủ lạnh
+      - 0213 Vệ sinh công nghiệp
+        - ĐNTT Vệ sinh công nghiệp
+          - Hình Ảnh
+          - Uỷ nghiệm chi ủng hộ
+    - T3
+      - 0301 Thù lao BKS & trưởng lô
+      - 0302 Lương BQL
+        - LƯƠNG NSVH
+      - 0303 BHXH
+        - BHXH
+      - 0304 Điện nước
+        - ĐNTT Điện nước
+      - 0305 Vệ sinh
+        - ĐNTT Vệ sinh
+      - 0306 Bảo vệ
+        - BẢO VỆ
+        - BảoVệ
+      - 0307 Chăm sóc Cây xanh
+      - 0308 Hotline
+        - Hotline
+      - 0309 CP phát sinh (sửa máy tính , đổ mực, chạy lại win, , gửi hồ sơ,...)
+      - 0310 Thay cây chết tại dự án
+    - T4
+      - 0401 VPP Quý 1 2026
+      - 0402 Thù lao BKS & trưởng lô
+      - 0403 Lương BQL
+        - LƯƠNG NSVH
+      - 0404 BHXH
+        - BHXH
+      - 0405 Điện nước
+        - ĐNTT Điện nước
+      - 0406 Vệ sinh
+        - ĐNTT Vệ sinh
+      - 0407 Cây xanh
+      - 0408 Bảo vệ
+        - BẢO VỆ
+        - BảoVệ
+      - 0409 Hotline
+        - Hotline
+- 3. THÔNG BÁO
+  - 2024
+    - Nội qui, thông báo dán bản tin
+    - PHÁT LOA
+      - (1211) QĐ nuôi chó mèo trong DA
+      - (2024.03.05) Ban quản trị tiếp nhận quản lý khu NOXH
+      - (2024.03.26) thông báo các cư dân hành lang thu hồi cây cảnh & chuyển đi nơi khác
+      - 311224 Phân loại rác thải
+      - An toàn giao thông, Trật tự đô thị,
+      - Mời thầu cây xanh
+      - Phòng chống bão
+        - 0509
+        - 2009
+        - 2207
+      - Phun côn trùng
+      - Treo cờ 2.9
+      - thực tập PCCC cơ sở định kỳ T12.2024 NOXH An Đồng
+      - Đốt vàng mã ngày rằm
+    - TB T10
+      - (1006) TB CẮT ĐIỆN T10
+      - Scan
+    - TB T11
+      - Scan
+      - TB CẮT ĐIỆN T11
+    - TB T12
+      - TB CẮT ĐIỆN T12
+    - TB T5
+    - TB T7
+    - TB T8
+      - TB CẮT ĐIỆN CHẬM NỘP PHÍ TỪ T3
+      - TB CẮT ĐIỆN T4
+    - TB T9
+    - TB VI PHẠM
+    - THÔNG BÁO NỘP PHÍ
+      - T3
+      - T4
+      - T5
+      - T6
+      - T7
+      - T8
+      - thông báo riêng cho căn hộ (cụ thể có mã căn)
+    - Thông báo cư dân vi phạm
+      - hồ sơ vi phạm
+        - L1.114
+        - L4C.114
+    - VI PHẠM
+    - ĐƠN
+  - 2025
+    - CÔNG VĂN
+    - T1
+    - T10
+      - TB CẮT ĐIỆN
+        - TB cắt điện lần 1
+          - TB CẮT ĐIỆN CHUNG CƯ
+        - TB cắt điện lần 2
+    - T11
+      - TB CẮT ĐIỆN
+        - TB cắt điện lần 2
+    - T12
+      - TB CẮT ĐIỆN
+        - TB cắt điện
+    - T2
+    - T3
+      - TB CẮT ĐIỆN
+        - TB cắt điện các căn hộ chậm nộp T11-T3
+        - TB cắt điện các căn hộ chậm nộp T12-T3
+    - T4
+      - 0401 TB thu phí CC
+      - 0402 TB thu phí LK
+      - TB CẮT ĐIỆN
+        - TB cắt điện các căn hộ chậm nộp
+    - T5
+      - 0501 TB thu phí CC
+      - 0502 TB thu phí LK
+      - 0503 TB kế hoạch phun diệt côn trùng
+      - 0504 TB kế hoạch phun diệt côn trùng
+      - TB CẮT ĐIỆN
+        - TB CẮT ĐIỆN CHUNG CƯ
+    - T6
+      - 0601 0602
+      - TB CẮT ĐIỆN
+        - TB CẮT ĐIỆN CHUNG CƯ
+    - T7
+      - TB CẮT ĐIỆN
+        - TB CẮT ĐIỆN CHUNG CƯ
+    - T8
+      - TB CẮT ĐIỆN
+        - TB CẮT ĐIỆN CHUNG CƯ
+    - T9
+      - TB CẮT ĐIỆN
+        - TB CẮT ĐIỆN CHUNG CƯ
+    - TB BẢO VỆ
+    - TB PHÁT LOA
+      - 0306 Phun côn trùng
+      - 0401 Tổng vệ sinh
+      - 1305 phun diệt côn trùng T5
+      - 1802 Phun côn trùng
+      - 1903 Phân loại rác
+    - TB VI PHẠM
+    - TỜ TRÌNH
+      - 2025
+        - 011225
+      - T10
+      - T11
+      - T12
+      - T4
+      - T5
+      - T6
+      - T7
+      - T8
+      - T9
+  - 2026
+    - T1
+      - TB CẮT ĐIỆN
+        - TB cắt điện
+    - T2
+      - New folder
+    - T3
+      - TB CẮT ĐIỆN
+        - Cắt điện đợt 1 (Nợ từ T112025)
+        - Cắt điện đợt 2 (Nợ từ T122025)
+    - T4
+  - HOÀN TIỀN CHO KHÁCH
+    - 2024
+      - (05 01-DNHT) ĐNTT hoàn lại tiền phí do khách chuyển khoản nhầm
+      - (05 02-DNHT) ĐNTT hoàn lại tiền phí do khách chuyển khoản nhầm
+      - (06 01-DNHT) ĐNTT hoàn lại tiền do khách chuyển khoản nhầm
+    - 2025
+      - 2805
+  - LỊCH PHÁT TB HÀNG THÁNG
+- 4. HỢP ĐỒNG
+  - BIÊN BẢN BÀN GIAO CĂN HỘ
+  - HỢP ĐỒNG MUA BÁN
+  - HĐ BV
+    - ST
+    - ĐAP
+  - HĐLĐ
+    - HDDV - BTH
+    - HDDV - Nam
+    - HĐLĐ - BMS
+    - HĐLĐ - LTNQ
+    - HĐLĐ - NLU
+    - HĐLĐ - VQT
+    - HĐLĐ - ĐXT
+- 5. BIỂU MẪU
+  - Bầu trưởng lô
+  - Giấy mời họp
+- 6. TÀI LIỆU NỘI BỘ
+  - 1. BIÊN BẢN CUỘC HỌP
+    - 2024
+    - 2025
+  - 2. HỢP ĐỒNG
+    - BIÊN BẢN BÀN GIAO CĂN HỘ
+    - HĐ BV
+      - ST
+      - ĐAP
+  - 3. NQ - VB PHÁP LÝ
+  - 4. CHỨNG TỪ LƯU VẾT
+    - L1.120
+    - L1.122
+    - L2.122
+      - Sửa chữa
+    - L4C.101
+      - HĐ uỷ quyền
+    - L4C.102
+      - Lắp mái che
+    - L4C.114
+    - L4C.117
+  - 5. ĐÁNH GIÁ, KHẢO SÁT
+  - CHỨNG TỪ HOÀN TIỀN
+  - CHỮ KÝ SỐ
+  - HỒ SƠ ĐKY BHXH
+    - BHXH
+      - NV
+      - Scan
+    - Hà Diệp
+  - KINH PHÍ BẢO TRÌ
+    - BIÊN BẢN XỬ LÝ NƯỚC THẢI - KPBT
+      - 08012026
+      - Lần 2
+    - Lần 1 082025 Nạo vét hố ga
+      - 082025 NẠO VÉT HỐ GA
+        - Bản word
+        - HÌNH ẢNH NẠO VÉT TOÀ L1 & L3
+        - HỢP ĐỒNG
+        - Hình ảnh nạo vét L2
+        - LẦN 1 TẠM ỨNG
+          - Tạm ứng
+        - LẦN 2 THANH TOÁN NẠO VÉT HỐ GA ĐỢT 1
+          - Thanh toán Đợt 1
+            - BB nghiệm thu bảo trì nạo vét vs hố ga
+        - LẦN 3 THANH TOÁN NẠO VÉT HỐ GA ĐỢT 2
+          - Thanh toán Đợt 2
+        - Lần 4 THANH TOÁN 5% BẢO HÀNH
+    - Lần 2 060426 Nạo vét hố ga
+- 7. CHECK LIST
+- 9. BIÊN BẢN
+  - BIÊN BẢN BÀN GIAO
+  - BIÊN BẢN HỌP
+    - 2024
+    - 2025
+  - BIÊN BẢN KIỂM KÊ
+  - BIÊN BẢN LÀM VIỆC
+  - BIÊN BẢN LÀM VIỆC, BBVP
+    - 2024
+    - 2025
+    - 2026
+  - BIÊN BẢN NGHIỆM THU
+    - T7
+  - BIÊN BẢN VI PHẠM - CƯ DÂN
+    - L4A.101
+      - 160326
+  - BIÊN BẢN XÁC NHẬN TIÊU HUỶ
+  - BIÊN BẢN ĐÀO TẠO
+  - Thịnh
+    - Tháng 3.2024
+      - (2024.03.01) bàn giao chìa khóa nước - An Phú
+      - (2024.03.04) nhận bàn giao bóng đèn chiếu sáng - CĐT
+      - (2024.03.06) bàn giao điện thoại di động dự phòng - Tổ bảo vệ
+    - Tháng 4.2024
+      - (2024.4.19) biên bản bàn giao bóng đèn mới thay thế bóng đèn cũ
+    - Tháng 5.2024
+      - (2024.05.04) biên bản bàn giao bóng đèn mới thay thế bóng đèn cũ
+      - (2024.05.20) bàn giao thùng đựng rác - bộ phận bảo vệ
+    - Tháng 6.2024
+      - (2024.06.03) bàn giao thùng đựng rác - bộ phận bảo vệ
+      - (2024.06.21) biên bản bàn giao bóng đèn mới thay thế bóng đèn cũ
+- LT
+- Sign
+- System Volume Information
+- abc
+  - 1. THU
+    - BÁO CÁO
+      - 2024
+        - BC 6 THÁNG ĐẦU 010324 - 310824
+          - BC 6 THÁNG - PDF
+        - BC CUỐI NĂM 25122024
+        - BC thu phí hàng tháng
+      - 2025
+        - BC 6 THÁNG 010725-311225
+          - BC 6 THÁNG CUỐI NĂM - SCAN
+        - BC 6 THÁNG ĐẦU 010125- 300625
+          - BC 6 THÁNG - SCAN
+      - 2026
+    - BIÊN NHẬN TIỀN
+      - 2024
+        - 2024.tháng 10
+          - 0210
+          - 0510
+          - 0710
+          - 0810
+          - 1110
+          - 1510
+          - 1910
+          - 2010
+          - 2210
+          - 2310
+          - 2410
+          - 2810
+          - 2910
+          - 3010
+          - 3110
+        - 2024.tháng 11
+          - 0811
+          - 0911
+          - 1511
+          - 1611
+          - 1811
+          - 1911
+          - 2011
+          - 2111
+          - 2211
+          - 2311
+          - 2911
+          - 3011
+        - 2024.tháng 12
+          - 1512
+          - 212
+          - 2312
+          - 3012
+          - 312
+          - 712
+        - 2024.tháng 3
+          - 2024.03.01
+          - 2024.03.02
+          - 2024.03.06
+          - 2024.03.07
+          - 2024.03.08
+          - 2024.03.12
+          - 2024.03.13
+          - 2024.03.15
+          - 2024.03.16
+          - 2024.03.17
+          - 2024.03.18
+          - 2024.03.19
+          - 2024.03.20
+          - 2024.03.21
+          - 2024.03.22
+          - 2024.03.23
+          - 2024.03.25
+          - 2024.03.26
+          - 2024.03.27
+          - 2024.03.28
+          - 2024.03.29
+          - 2024.03.30
+        - 2024.tháng 4
+          - 2024.04.01
+          - 2024.04.02
+          - 2024.04.03
+          - 2024.04.04
+          - 2024.04.05
+          - 2024.04.06
+          - 2024.04.07
+          - 2024.04.08
+          - 2024.04.11
+          - 2024.04.12
+          - 2024.04.13
+          - 2024.04.15
+          - 2024.04.16
+          - 2024.04.19
+          - 2024.04.20
+          - 2024.04.22
+          - 2024.04.23
+          - 2024.04.24
+          - 2024.04.26
+          - 2024.04.27
+        - 2024.tháng 5
+          - 2024.05.02
+          - 2024.05.03
+          - 2024.05.04
+          - 2024.05.06
+          - 2024.05.07
+          - 2024.05.09
+          - 2024.05.10
+          - 2024.05.11
+          - 2024.05.13
+          - 2024.05.14
+          - 2024.05.15
+          - 2024.05.17
+          - 2024.05.18
+          - 2024.05.20
+          - 2024.05.22
+          - 2024.05.23
+          - 2024.05.24
+          - 2024.05.25
+          - 2024.05.27
+          - 2024.05.28
+        - 2024.tháng 6
+          - 2024.06.03
+          - 2024.06.05
+          - 2024.06.06
+          - 2024.06.07
+          - 2024.06.08
+          - 2024.06.10
+          - 2024.06.13
+          - 2024.06.18
+          - 2024.06.19
+          - 2024.06.20
+          - 2024.06.22
+          - 2024.06.24
+          - 2024.06.25
+          - 2024.06.27
+          - 2024.06.29
+        - 2024.tháng 7
+          - 2024.07.01
+          - 2024.07.04
+          - 2024.07.05
+          - 2024.07.06
+          - 2024.07.09
+          - 2024.07.10
+          - 2024.07.11
+          - 2024.07.12
+          - 2024.07.15
+          - 2024.07.18
+          - 2024.07.20
+          - 2024.07.22
+          - 2024.07.23
+          - 2024.07.25
+          - 2024.07.31
+        - 2024.tháng 8
+          - 12.8.24
+          - 22.8.24
+          - 23.08
+          - 24.8.24
+          - 26.8.24
+          - 29.08.24
+          - 3.8.24
+          - 30.08
+          - 8.8.24
+          - 9.8.24
+        - 2024.tháng 9
+          - 14 09
+          - 19 09
+          - 21 09
+          - 23 09
+          - 24 09
+          - 26 09
+          - 28 09
+          - 30 09
+      - 2025
+        - T1
+          - 1101
+          - 1201
+          - 1501
+          - 1601
+          - 1701
+          - 2201
+          - 2301
+          - 2401
+          - 2501
+          - 2901
+        - T10
+          - 0210
+          - 0910
+          - 1510
+          - 1710
+          - 1810
+          - 2110
+          - 2310
+          - 2910
+        - T11
+          - 1311
+          - 1511
+          - 1711
+          - 1811
+          - 1911
+          - 2011
+          - 2111
+          - 2411
+          - 2711
+          - 2911
+        - T12
+          - 1112
+          - 1812
+          - 2212
+          - 2512
+          - 2612
+          - 2912
+          - 3112
+        - T2
+          - 0602
+          - 1002
+          - 1202
+          - 1702
+          - 2202
+          - 2702
+        - T3
+          - 1003
+          - 1203
+          - 1603
+          - 2003
+          - 2103
+          - 2203
+          - 2303
+          - 2403
+          - 2603
+          - 2803
+        - T4
+          - 0404
+          - 0804
+          - 0904
+          - 1004
+          - 1504
+          - 1904
+          - 2004
+          - 2104
+        - T5
+          - 0805
+          - 0905
+          - 1205
+          - 1305
+          - 1505
+          - 1805
+          - 1905
+          - 2005
+          - 2105
+          - 2205
+          - 2305
+          - 2605
+          - 2705
+          - 2905
+          - 3105
+        - T6
+          - 0106
+          - 0306
+          - 0706
+          - 1206
+          - 1306
+          - 3006
+        - T7
+          - 0107
+          - 0207
+          - 1507
+          - 1607
+          - 1907
+          - 2107
+          - 2607
+          - 3007
+          - 3107
+        - T8
+          - 0808
+          - 1008
+          - 1308
+          - 1508
+          - 1708
+          - 1808
+          - 1908
+          - 2008
+          - 2208
+          - 2508
+          - 2608
+          - 2708
+          - 2808
+        - T9
+          - 0109
+          - 1409
+          - 1609
+          - 2409
+          - 2709
+        - ký quỹ lắp biển
+      - 2026
+        - T1
+          - 0101
+          - 0401
+          - 0701
+          - 1201
+          - 1501
+          - 1601
+          - 2001
+          - 2101
+          - 2201
+          - 2301
+          - 2401
+          - 2701
+          - 2801
+          - 3101
+        - T2
+          - 10.2
+          - 26.2
+          - 27.2
+          - 28.2
+          - 3.2
+          - 4.2
+          - 7.2
+          - 8.2
+          - 9.2
+        - T3
+          - 0203
+          - 0703
+          - 0903
+          - 1103
+          - 1203
+          - 1303
+          - 1803
+          - 1903
+          - 2203
+          - 2303
+          - 2403
+          - 2503
+          - 2603
+        - T4
+          - 0104
+          - 0304
+          - 0604
+          - 0704
+          - 0904
+    - CÔNG NỢ AN ĐIỀN
+    - DANH SÁCH
+      - 2024
+    - SAO KÊ NGÂN HÀNG
+      - 2024
+        - Excel
+        - NH
+      - 2025
+      - 2026
+        - 116002961023
+        - 122000122746
+    - THU PHÍ HÀNG THÁNG
+      - 2024
+      - 2025
+      - 2026
+```

@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 import { ReviewRow } from "@/lib/types";
 import { getCategoryLabel, getRowCategory, getStatusLabel } from "@/lib/review/presentation";
+import { buildTransactionAllocations } from "@/lib/review/allocations";
 import { summarizeRows } from "@/lib/review/summary";
 
 function reviewedSheetRows(rows: ReviewRow[]) {
@@ -79,8 +80,28 @@ function originalTransactionRows(rows: ReviewRow[]) {
   }));
 }
 
+function allocationRows(rows: ReviewRow[]) {
+  return buildTransactionAllocations(rows).map((item, index) => ({
+    STT: index + 1,
+    "Ngày tháng": item.transactionDate || "",
+    "Nội dung chuyển khoản": item.rawDescription,
+    "Tên căn": item.apartmentCode,
+    "Số tiền": item.amount,
+    "Ghi chú": item.allocationNote,
+    "Loại phân bổ":
+      item.allocationKind === "SINGLE"
+        ? "Một căn"
+        : item.allocationKind === "MULTI_EXACT"
+          ? "Nhiều căn, khớp phí chuẩn"
+          : "Nhiều căn, phân bổ theo tỷ trọng",
+    "Mã dòng nguồn": item.sourceRowId
+  }));
+}
+
 function summaryRows(rows: ReviewRow[]) {
   const summary = summarizeRows(rows);
+  const allocations = buildTransactionAllocations(rows);
+  const allocatedAmount = allocations.reduce((sum, item) => sum + item.amount, 0);
   return [
     { Metric: "Tổng số giao dịch", Value: summary.totalTransactions },
     { Metric: "Tổng số tiền", Value: summary.totalAmount },
@@ -97,7 +118,9 @@ function summaryRows(rows: ReviewRow[]) {
     { Metric: `${getCategoryLabel("IGNORED")} - số đơn`, Value: summary.ignoredCount },
     { Metric: `${getCategoryLabel("IGNORED")} - số tiền`, Value: summary.ignoredAmount },
     { Metric: "Số dòng đã duyệt", Value: summary.approvedCount },
-    { Metric: "Tổng số tiền chưa xác nhận", Value: summary.pendingAmount }
+    { Metric: "Tổng số tiền chưa xác nhận", Value: summary.pendingAmount },
+    { Metric: "Số dòng phân bổ giao dịch", Value: allocations.length },
+    { Metric: "Tổng tiền đã phân bổ", Value: allocatedAmount }
   ];
 }
 
@@ -111,6 +134,7 @@ export function exportReviewWorkbook(rows: ReviewRow[]): Buffer {
   );
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(needReviewRows(rows)), "Need_review");
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(ignoredRows(rows)), "Ignored_internal");
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(allocationRows(rows)), "Phan_bo_giao_dich");
   XLSX.utils.book_append_sheet(
     workbook,
     XLSX.utils.json_to_sheet(originalTransactionRows(rows)),

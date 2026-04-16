@@ -2,6 +2,7 @@
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { AnalyzeResponse, ReviewRow } from "@/lib/types";
+import { buildSuggestedAllocationDrafts, hasValidAllocationDrafts } from "@/lib/review/allocations";
 import {
   getCategoryLabel,
   getRowCategory,
@@ -17,7 +18,8 @@ type FilterMode = ReviewCategory;
 const ELIGIBLE_APPROVAL_STATUSES = new Set<ReviewRow["matchStatus"]>([
   "EXACT_MATCH",
   "NORMALIZED_MATCH",
-  "MANUAL_FIXED"
+  "MANUAL_FIXED",
+  "MULTI_MATCH"
 ]);
 
 function currency(value: number): string {
@@ -185,7 +187,16 @@ export function ReviewDashboard() {
         throw new Error(payload.error);
       }
 
-      setRows(payload.rows);
+      setRows(
+        payload.rows.map((row) =>
+          row.matchStatus === "MULTI_MATCH"
+            ? {
+                ...row,
+                allocationDrafts: buildSuggestedAllocationDrafts(row)
+              }
+            : row
+        )
+      );
       setValidCodes(payload.validApartmentCodes);
       setCustomerOptions(payload.customerOptions);
       setSheetNames(payload.workbookInfo.sheetNames);
@@ -251,6 +262,7 @@ export function ReviewDashboard() {
     setRows((currentRows) =>
       currentRows.map((row) =>
         ELIGIBLE_APPROVAL_STATUSES.has(row.matchStatus)
+        && (row.matchStatus !== "MULTI_MATCH" || hasValidAllocationDrafts(row))
           ? {
               ...row,
               approved: checked,
@@ -259,6 +271,32 @@ export function ReviewDashboard() {
           : row
       )
     );
+  }
+
+  function handleApplySuggestedAllocations(id: string) {
+    updateRow(id, (row) => ({
+      ...row,
+      allocationDrafts: buildSuggestedAllocationDrafts(row),
+      approved: false,
+      matchStatus: deriveStatus({ ...row, approved: false }, false)
+    }));
+  }
+
+  function handleAllocationAmountChange(id: string, apartmentCode: string, value: string) {
+    const numericValue = Number(value.replace(/[^\d]/g, ""));
+    updateRow(id, (row) => ({
+      ...row,
+      approved: false,
+      allocationDrafts: (row.allocationDrafts ?? []).map((item) =>
+        item.apartmentCode === apartmentCode
+          ? {
+              ...item,
+              amount: Number.isFinite(numericValue) ? numericValue : 0
+            }
+          : item
+      ),
+      matchStatus: deriveStatus({ ...row, approved: false }, false)
+    }));
   }
 
   function handleNoteChange(id: string, event: ChangeEvent<HTMLInputElement>) {
@@ -462,6 +500,8 @@ export function ReviewDashboard() {
             <tbody>
               {paginatedRows.map((row) => {
                 const currentCode = row.manualApartmentCode || row.matchedApartmentCode || "";
+                const canApprove = Boolean(currentCode) || hasValidAllocationDrafts(row);
+                const allocationSum = (row.allocationDrafts ?? []).reduce((sum, item) => sum + item.amount, 0);
 
                 return (
                   <tr key={row.id}>
@@ -469,7 +509,7 @@ export function ReviewDashboard() {
                       <input
                         type="checkbox"
                         checked={row.approved}
-                        disabled={!currentCode}
+                        disabled={!canApprove}
                         onChange={(event) => handleApproval(row.id, event.target.checked)}
                       />
                     </td>
@@ -490,18 +530,42 @@ export function ReviewDashboard() {
                     </td>
                     <td>{row.ownerName || "-"}</td>
                     <td>
-                      <input
-                        list={`codes-${row.id}`}
-                        className="select-input"
-                        value={currentCode}
-                        onChange={(event) => handleManualCodeChange(row.id, event.target.value)}
-                        placeholder="Chọn mã căn"
-                      />
-                      <datalist id={`codes-${row.id}`}>
-                        {validCodes.map((code) => (
-                          <option value={code} key={code} />
-                        ))}
-                      </datalist>
+                      {row.matchStatus === "MULTI_MATCH" ? (
+                        <div className="allocation-editor">
+                          <button className="secondary-button compact-button" type="button" onClick={() => handleApplySuggestedAllocations(row.id)}>
+                            Áp dụng phí chuẩn
+                          </button>
+                          {(row.allocationDrafts ?? []).map((item) => (
+                            <label key={item.apartmentCode} className="allocation-row">
+                              <span>{item.apartmentCode}</span>
+                              <input
+                                className="note-input"
+                                inputMode="numeric"
+                                value={item.amount}
+                                onChange={(event) => handleAllocationAmountChange(row.id, item.apartmentCode, event.target.value)}
+                              />
+                            </label>
+                          ))}
+                          <span className={`allocation-total ${allocationSum === row.amount ? "allocation-ok" : "allocation-warn"}`}>
+                            Tổng phân bổ: {currency(allocationSum)} / {currency(row.amount)}
+                          </span>
+                        </div>
+                      ) : (
+                        <>
+                          <input
+                            list={`codes-${row.id}`}
+                            className="select-input"
+                            value={currentCode}
+                            onChange={(event) => handleManualCodeChange(row.id, event.target.value)}
+                            placeholder="Chọn mã căn"
+                          />
+                          <datalist id={`codes-${row.id}`}>
+                            {validCodes.map((code) => (
+                              <option value={code} key={code} />
+                            ))}
+                          </datalist>
+                        </>
+                      )}
                     </td>
                     <td>
                       <input

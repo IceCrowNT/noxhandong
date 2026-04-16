@@ -74,4 +74,17 @@ describe("parseApartmentCode", () => {
     expect(parseApartmentCode("can 421 l2 dong 6 thang phi").candidates.map((candidate) => candidate.code)).toEqual(["L2.421"]);
     expect(parseApartmentCode("Bich Ngoc ck phi chung cu 209 L3 tu t12-t5").candidates.map((candidate) => candidate.code)).toEqual(["L3.209"]);
   });
+
+  it("does not over-generate cross-linked candidates in multi-apartment lists", () => {
+    const result = parseApartmentCode("Dong phi chung cu T03.2026 04 can ho L4C.305; L4A.401; L4A.325; L1.423");
+
+    expect(result.candidates.map((candidate) => candidate.code)).toEqual(["L4C.305", "L4A.401", "L4A.325", "L1.423"]);
+  });
+
+  it("parses apartment code when valid block-room is followed by long numeric tail before payment keywords", () => {
+    const result = parseApartmentCode("CT DEN 164T2640MXHUKY0K L23070912435236 nop phi QLVH tu 032023 den thang 082026");
+
+    expect(result.candidates.map((candidate) => candidate.code)).toEqual(["L2.307"]);
+    expect(result.parsedApartmentCode).toBe("L2.307");
+  });
 });

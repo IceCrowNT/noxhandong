@@ -298,6 +298,43 @@ select {
   font-weight: 600;
 }
 
+.allocation-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.allocation-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 8px;
+  align-items: center;
+}
+
+.allocation-row span {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.allocation-total {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.allocation-ok {
+  color: #065f46;
+}
+
+.allocation-warn {
+  color: #9a3412;
+}
+
+.compact-button {
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
 .reconcile-table-wrap {
   margin-top: 18px;
   border: 1px solid var(--line);
