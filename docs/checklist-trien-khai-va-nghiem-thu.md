@@ -192,6 +192,44 @@ Kết quả cần có:
 
 # Task list chi tiết
 
+## Task 0. Chuẩn hóa cấu trúc folder trước khi vào SQL
+
+### Mục tiêu
+
+- giảm nguy cơ project phình to sai hướng
+- có chỗ đặt code mới theo module
+- giữ app cũ chạy được trong lúc tách dần
+
+### Đã làm
+
+- tạo cấu trúc mới dưới `src/modules/`
+- tách các phần đã có thành các module:
+  - `shared`
+  - `imports`
+  - `transactions`
+- thêm khung `database`
+- thêm các module sẵn chỗ để phát triển tiếp:
+  - `apartments`
+  - `residents`
+  - `billing`
+  - `exceptions`
+  - `documents`
+- giữ `lib/` và `components/` làm lớp tương thích mỏng để không phá app hiện tại
+- thêm file hướng dẫn:
+  - `docs/module-map.md`
+
+### Cách kiểm tra
+
+- `src/modules/` đã là nơi đặt code mới
+- app cũ vẫn chạy
+- test và build vẫn pass
+
+### Trạng thái
+
+- [x] Hoàn thành
+
+---
+
 ## Task 1. Chốt schema v1
 
 ### Đã làm gì
@@ -280,22 +318,35 @@ Phải trả lời được:
 - đưa Prisma vào project
 - kết nối schema với database thật
 
-### Chưa làm
+### Đã làm một phần
 
-- cài package:
+- đã cài package:
   - `prisma`
   - `@prisma/client`
-- tạo `.env`
-- generate Prisma client
+  - `pg`
+  - `@prisma/adapter-pg`
+- đã tạo:
+  - `prisma.config.ts`
+  - `.env.example`
+- đã tạo `.env` local cho môi trường phát triển
+- đã generate Prisma client
+- đã validate schema thành công
+
+### Chưa làm
+
+- nối Prisma với PostgreSQL thật
+- chạy query thật qua DB
 
 ### Cách kiểm tra
 
 - chạy được `prisma validate`
 - chạy được `prisma generate`
+- có thể import `prisma` từ `src/modules/database/prisma.ts`
 
 ### Trạng thái
 
-- [ ] Chưa làm
+- [ ] Chưa hoàn thành
+- Ghi chú: đã làm xong phần cài package + generate, còn thiếu DB thật
 
 ---
 
@@ -674,4 +725,3 @@ Thứ tự làm tiếp tôi khuyên là:
 4. Task 5. Import file Excel quản lý vào bảng raw
 
 Chưa nên nhảy sang viết UI mới trước khi xong các bước này.
-
