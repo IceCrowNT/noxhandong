@@ -307,7 +307,7 @@ Phải trả lời được:
 
 ### Trạng thái
 
-- [ ] Chưa làm
+- [x] Hoàn thành
 
 ---
 
@@ -345,8 +345,7 @@ Phải trả lời được:
 
 ### Trạng thái
 
-- [ ] Chưa hoàn thành
-- Ghi chú: đã làm xong phần cài package + generate, còn thiếu DB thật
+- [x] Hoàn thành
 
 ---
 
@@ -371,7 +370,7 @@ Phải trả lời được:
 
 ### Trạng thái
 
-- [ ] Chưa làm
+- [x] Hoàn thành
 
 ---
 
