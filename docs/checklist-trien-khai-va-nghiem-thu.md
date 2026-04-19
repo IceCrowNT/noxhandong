@@ -381,11 +381,78 @@ Phải trả lời được:
 - không nhập thẳng vào bảng business
 - lưu staging trước
 
-### Chưa làm
+### File mẫu đang dùng để phát triển
 
-- import sheet `Danh sách khách hàng`
-- import sheet `Lịch sử đóng phí`
-- lưu từng dòng vào `raw_management_rows`
+- `docs/Theo dõi thu phí T4.xlsx`
+
+### Ghi chú
+
+- Tôi có thể dùng luôn file trong `docs/`, không cần anh post lại ở bước này.
+- Nếu muốn đổi sang file khác, anh chỉ cần:
+  - đặt file vào `docs/`, hoặc
+  - đưa cho tôi path cụ thể.
+
+### Đã làm
+
+- tạo script import:
+  - `scripts/import-management-raw.cjs`
+- import file mẫu:
+  - `docs/Theo dõi thu phí T4.xlsx`
+- tạo `ImportBatch` thật trong DB
+- lưu từng dòng vào `RawManagementRow`
+
+### Kết quả import thực tế
+
+- `batchId`: `cmo3svv9t00006tz6edwpu0g4`
+- tổng số dòng raw: `1944`
+- số dòng theo sheet:
+  - `Danh sách khách hàng`: `939`
+  - `Lịch sử đóng phí`: `938`
+  - `Sheet1`: `46`
+  - `Khách ck nhầm vào tk An Điền`: `16`
+  - `Khách nộp bổ sung nợ vàoAn Điền`: `5`
+
+### Rà soát chênh lệch trước khi transform sang Apartment
+
+Kết quả kiểm tra sheet `Danh sách khách hàng`:
+
+- tổng số dòng trong sheet: `939`
+- trừ `1` dòng header
+- còn `938` dòng dữ liệu
+- trong đó có `4` dòng cuối không có mã căn
+- số dòng có mã căn thực sự: `934`
+- số mã căn duy nhất nếu tính cả `LKV.*`: `934`
+
+Các dòng bất thường cần ghi nhớ:
+
+- `LKV.45`
+- `LKV.47`
+- `LKV.58`
+
+Kết luận hiện tại đã chốt:
+
+- Hệ thống hiện tại chấp nhận ba nhóm mã:
+  - `L...`
+  - `LK...`
+  - `LKV.*`
+- `LKV.*` vẫn giữ nguyên mã căn khi lưu vào hệ thống
+- nhưng được xếp nhóm tính phí như `LIEN_KE`
+- Vì vậy khi transform sang `Apartment`, số lượng chuẩn phải là:
+  - `934` căn hợp lệ
+
+Chi tiết loại bỏ:
+
+- `4` dòng rỗng cuối sheet
+
+Khuyến nghị khi sang Task 6:
+
+- transform `934` căn hợp lệ vào `Apartment`
+- gán `LKV.*` vào nhóm phí `LIEN_KE`
+- vẫn giữ nguyên `code` là:
+  - `LKV.45`
+  - `LKV.47`
+  - `LKV.58`
+- ghi log hoặc lưu danh sách `4` dòng rỗng bị loại để có thể audit lại sau
 
 ### Cách kiểm tra
 
@@ -393,9 +460,19 @@ Phải trả lời được:
 - số dòng raw import đúng với file thật
 - lưu được `sheet_name`, `row_index`, `payload`
 
+Lệnh kiểm tra:
+
+```bash
+$HOME/Applications/Postgres.app/Contents/Versions/17/bin/psql \
+  -h localhost -p 5432 -U postgres -d apartment_fee_reviewer \
+  -c 'select count(*) from "ImportBatch";' \
+  -c 'select count(*) from "RawManagementRow";' \
+  -c 'select "sheetName", count(*) from "RawManagementRow" group by "sheetName" order by "sheetName";'
+```
+
 ### Trạng thái
 
-- [ ] Chưa làm
+- [x] Hoàn thành
 
 ---
 
@@ -405,12 +482,50 @@ Phải trả lời được:
 
 - sinh dữ liệu chuẩn từ file quản lý
 
-### Chưa làm
+### Đã làm
 
-- tạo / update:
-  - `apartments`
-  - `residents`
-  - `occupancies`
+- tạo file rule phí định kỳ:
+  - `config/periodic-fee-rules.json`
+- tạo script transform:
+  - `scripts/sync-management-master.cjs`
+- transform từ `RawManagementRow` sang:
+  - `Apartment`
+  - `Resident`
+  - `Occupancy`
+
+### Rule đã chốt cho bước này
+
+- chấp nhận mã căn:
+  - `L...`
+  - `LK...`
+  - `LKV.*`
+- `LKV.*` vẫn giữ nguyên `code`
+- nhưng được xếp vào nhóm `LIEN_KE`
+- phí định kỳ:
+  - `CHUNG_CU`: `250.000 / tháng`
+  - `LIEN_KE`: `200.000 / tháng`
+
+### Kết quả transform thực tế
+
+- `Apartment`: `934`
+- `Resident`: `918`
+- `Occupancy`: `934`
+
+Phân bố loại căn:
+
+- `CHUNG_CU`: `884`
+- `LIEN_KE`: `50`
+  - trong đó có `3` căn:
+    - `LKV.45`
+    - `LKV.47`
+    - `LKV.58`
+
+Ghi chú:
+
+- `Resident` thấp hơn `Apartment` vì script đang dedupe theo tổ hợp:
+  - `fullName`
+  - `phoneNumber`
+- Đây là hành vi chấp nhận được cho import nền ban đầu.
 
 ### Cách kiểm tra
 
@@ -419,9 +534,20 @@ Phải trả lời được:
 - loại căn `CHUNG_CU` / `LIEN_KE` có đúng không
 - cư dân có liên kết đúng với căn không
 
+Lệnh kiểm tra:
+
+```bash
+$HOME/Applications/Postgres.app/Contents/Versions/17/bin/psql \
+  -h localhost -p 5432 -U postgres -d apartment_fee_reviewer \
+  -c 'select count(*) from "Apartment";' \
+  -c 'select count(*) from "Resident";' \
+  -c 'select count(*) from "Occupancy";' \
+  -c 'select "apartmentType", count(*) from "Apartment" group by "apartmentType" order by "apartmentType";'
+```
+
 ### Trạng thái
 
-- [ ] Chưa làm
+- [x] Hoàn thành
 
 ---
 
@@ -430,6 +556,17 @@ Phải trả lời được:
 ### Mục tiêu
 
 - lưu toàn bộ giao dịch từ Excel/PDF vào DB
+
+### File mẫu đang dùng để phát triển
+
+- `docs/lich-su-giao-dich(15-04-2026 09_33_29).xls`
+
+### Ghi chú
+
+- Tôi có thể dùng luôn file trong `docs/`, không cần anh post lại ở bước này.
+- Nếu muốn kiểm thử bằng sao kê khác, anh có thể:
+  - đặt file vào `docs/`, hoặc
+  - gửi path cụ thể cho tôi.
 
 ### Chưa làm
 
@@ -718,9 +855,14 @@ Khi hoàn thành Task 15:
 
 Thứ tự làm tiếp tôi khuyên là:
 
-1. Task 2. Cài PostgreSQL
-2. Task 3. Cài Prisma
-3. Task 4. Chạy migration đầu tiên
-4. Task 5. Import file Excel quản lý vào bảng raw
+1. Task 5. Import file Excel quản lý vào bảng raw
+2. Task 6. Transform từ raw management sang master data
+3. Task 7. Import sao kê vào DB
+4. Task 8. Parse transaction và lưu candidate
+
+Ghi chú:
+
+- Task 2, Task 3, Task 4 đã hoàn thành.
+- Hai file Excel mẫu hiện đã có sẵn trong `docs/`, nên có thể bắt đầu import ngay.
 
 Chưa nên nhảy sang viết UI mới trước khi xong các bước này.

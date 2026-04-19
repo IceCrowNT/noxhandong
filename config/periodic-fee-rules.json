@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "description": "Rule phí định kỳ dùng cho bước xác định kỳ hạn đã nộp phí từ sao kê.",
+  "effectiveFrom": "2026-01-01",
+  "billingCycle": "MONTHLY",
+  "feeCode": "QLVH_MONTHLY",
+  "apartmentGroups": [
+    {
+      "group": "CHUNG_CU",
+      "prefixes": ["L"],
+      "monthlyFee": 250000,
+      "note": "Tất cả căn dạng L... áp dụng 250.000 đồng/tháng."
+    },
+    {
+      "group": "LIEN_KE",
+      "prefixes": ["LK", "LKV"],
+      "monthlyFee": 200000,
+      "note": "Tất cả căn dạng LK... hoặc LKV... áp dụng 200.000 đồng/tháng."
+    }
+  ],
+  "businessAssumptions": [
+    "Tất cả căn nộp định kỳ mỗi tháng 1 lần.",
+    "Một giao dịch bằng đúng mức phí chuẩn được hiểu là gia hạn 1 tháng phí.",
+    "Nếu số tiền lệch chuẩn thì phải gắn cờ để rà soát hoặc phân bổ theo quyết định review."
+  ]
+}
