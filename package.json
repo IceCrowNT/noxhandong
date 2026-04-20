@@ -15,7 +15,9 @@
     "prisma:migrate:dev": "prisma migrate dev",
     "import:management:raw": "node scripts/import-management-raw.cjs",
     "sync:management:master": "node scripts/sync-management-master.cjs",
-    "report:resident:duplicates": "node scripts/report-resident-duplicates.cjs"
+    "report:resident:duplicates": "node scripts/report-resident-duplicates.cjs",
+    "db:backup:repo": "bash scripts/setup/backup-db-to-repo.sh",
+    "db:restore:repo": "bash scripts/setup/restore-db-from-repo.sh"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.7.0",

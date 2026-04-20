@@ -10,6 +10,53 @@ Phần mềm hiện tại cần tối thiểu:
 - PostgreSQL
 - Prisma Client
 
+## Có nên đồng bộ luôn database qua Git không?
+
+Có thể, nếu:
+
+- tất cả máy đều là máy cá nhân của anh
+- repo đang để private
+- dữ liệu hiện tại chỉ là dữ liệu dev / thử nghiệm
+
+Nhưng không nên commit cả thư mục `postgres-data`.
+
+### Cách nên dùng
+
+Dùng **logical snapshot** của database và commit snapshot đó vào repo.
+
+Project đã có sẵn cơ chế này:
+
+- thư mục snapshot: `db-sync/`
+- script backup:
+  - `scripts/setup/backup-db-to-repo.sh`
+- script restore:
+  - `scripts/setup/restore-db-from-repo.sh`
+
+### Vì sao cách này tốt hơn commit `postgres-data`
+
+- nhẹ hơn nhiều
+- dễ pull / restore trên máy khác
+- ít rủi ro hỏng repo
+- không phụ thuộc đường dẫn nội bộ của PostgreSQL
+- ít gây lỗi push hơn so với commit data directory
+
+### Khi nào nên dùng snapshot DB
+
+- muốn đồng bộ môi trường dev giữa các máy cá nhân
+- muốn giữ nguyên dataset thử nghiệm đã import
+- muốn máy khác mở lên là có đúng dữ liệu đang test
+
+### Khi nào không nên dùng snapshot DB
+
+- dữ liệu production
+- dữ liệu nhạy cảm
+- database quá lớn
+
+Trong các trường hợp đó nên:
+
+- chỉ commit schema + migrations
+- rồi import lại từ file nguồn
+
 ## Có cần cài đầy đủ trên máy mới không?
 
 Có.
@@ -57,6 +104,8 @@ Các script nằm ở:
 - `scripts/setup/start-postgres-local.sh`
 - `scripts/setup/stop-postgres-local.sh`
 - `scripts/setup/create-dev-db.sh`
+- `scripts/setup/backup-db-to-repo.sh`
+- `scripts/setup/restore-db-from-repo.sh`
 
 Các script này:
 
@@ -133,6 +182,49 @@ npm run prisma:generate
 npx prisma migrate dev --name init
 ```
 
+## Đồng bộ database giữa các máy qua Git
+
+### Backup DB hiện tại vào repo
+
+```bash
+npm run db:backup:repo
+```
+
+Sau đó commit:
+
+```bash
+git add db-sync
+git commit -m "Cap nhat snapshot database dev"
+git push
+```
+
+### Restore DB từ repo trên máy khác
+
+Sau khi pull code mới nhất:
+
+```bash
+npm run db:restore:repo
+```
+
+### File snapshot hiện tại
+
+Thư mục:
+
+- `db-sync/`
+
+File chính:
+
+- `apartment_fee_reviewer.latest.sql`
+- `apartment_fee_reviewer.latest.meta.json`
+
+### Lưu ý
+
+- chỉ nên giữ **1 snapshot mới nhất**
+- không commit `.env`
+- không commit `postgres-data`
+- nếu snapshot quá lớn, quay lại phương án:
+  - migrations + import lại từ file mẫu
+
 ## Các lệnh kiểm tra nhanh
 
 ### Kiểm tra postgres đang chạy chưa
@@ -179,3 +271,10 @@ Nhưng không cần tạo tool import riêng hoặc nhập tay dữ liệu maste
 - review trên app
 
 Toàn bộ bước này sẽ nằm trong chính phần mềm.
+
+Nếu muốn nhiều máy cá nhân cùng phát triển trên cùng dataset dev, phương án hiện tại được khuyến nghị là:
+
+- commit `schema + migrations + scripts`
+- và khi thật sự cần thì commit thêm `db-sync/apartment_fee_reviewer.latest.sql`
+
+Không dùng Git để sync trực tiếp thư mục data của PostgreSQL.
