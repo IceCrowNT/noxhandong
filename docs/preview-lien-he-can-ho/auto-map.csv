@@ -1,0 +1,640 @@
+dong_excel,ma_can,ten_chu_ho_goc,thong_tin_cu_dan_goc,thu_tu,ten_hien_thi_parse,so_dien_thoai_parse,la_lien_he_chinh_du_doan,flags,ghi_chu_nghiep_vu,de_xuat_xu_ly
+2,L2.528,Bùi Thị Hằng,Bùi Thị Hằng/Trần Quốc Hoàng(0906.021.387.0906.054.186),1,Bùi Thị Hằng,0906021387,true,,,AUTO_MAP
+2,L2.528,Bùi Thị Hằng,Bùi Thị Hằng/Trần Quốc Hoàng(0906.021.387.0906.054.186),2,Trần Quốc Hoàng,0906054186,false,,,AUTO_MAP
+3,L4A.511A,Lê Thị Thu Huyền,"Lê Thị Thu Huyền/(0904,019,299.)",1,Lê Thị Thu Huyền,0904019299,true,,,AUTO_MAP
+4,L4C.312,Phạm Thị Ngọc Thủy,Phạm Thị Ngọc Thủy/Đỗ Văn Quang(0914.271.155.0826.966.268),1,Phạm Thị Ngọc Thủy,0914271155,true,,,AUTO_MAP
+4,L4C.312,Phạm Thị Ngọc Thủy,Phạm Thị Ngọc Thủy/Đỗ Văn Quang(0914.271.155.0826.966.268),2,Đỗ Văn Quang,0826966268,false,,,AUTO_MAP
+9,L2.212,Trần Thị Hồng Nhung,Trần Thị Hồng Nhung,1,Trần Thị Hồng Nhung,,true,,,AUTO_MAP
+22,L4C.305,Trần Thị Hiền,Trần Thị Hiền/(0936.882.856.),1,Trần Thị Hiền,0936882856,true,,,AUTO_MAP
+25,L2.326,Bùi Trọng Song,Bùi Trọng Song/Thạch Bích Vân  (0936.858.234 / 0931.130.188) ko phải chủ nhà,1,Bùi Trọng Song,0936858234,true,,,AUTO_MAP
+25,L2.326,Bùi Trọng Song,Bùi Trọng Song/Thạch Bích Vân  (0936.858.234 / 0931.130.188) ko phải chủ nhà,2,Thạch Bích Vân ko phải chủ nhà,0931130188,false,,,AUTO_MAP
+29,L1.102,Nguyễn Thị Lệ Thủy,Nguyễn Thị Lệ Thủy/ 0912.392.805,1,Nguyễn Thị Lệ Thủy,0912392805,true,,,AUTO_MAP
+31,L1.105,Nguyễn Quốc Hưng,Nguyễn Quốc Hưng/ 0973.280.386 Thủy 0943242668,1,Nguyễn Quốc Hưng,0973280386,true,,,AUTO_MAP
+31,L1.105,Nguyễn Quốc Hưng,Nguyễn Quốc Hưng/ 0973.280.386 Thủy 0943242668,2,Thủy,0943242668,false,,,AUTO_MAP
+32,L1.106A,Lưu Thành Trung,Lưu Thành Trung/ 0919.065.229,1,Lưu Thành Trung,0919065229,true,,,AUTO_MAP
+33,L1.106B,Trần Việt Quang,Chú Minh 0976118222,1,Trần Việt Quang,0976118222,true,,,AUTO_MAP
+33,L1.106B,Trần Việt Quang,Chú Minh 0976118222,2,Chú Minh,0976118222,false,,,AUTO_MAP
+34,L1.107,Vũ Đức Sang,"Vũ Đức Sang/ 0762142668, Thủy 0943242668",1,Vũ Đức Sang,0762142668,true,,,AUTO_MAP
+34,L1.107,Vũ Đức Sang,"Vũ Đức Sang/ 0762142668, Thủy 0943242668",2,Thủy,0943242668,false,,,AUTO_MAP
+35,L1.108,Lê Anh Thư,Lê Anh Thư/ 0964264176,1,Lê Anh Thư,0964264176,true,,,AUTO_MAP
+41,L1.114,Đỗ Danh Quân,Đỗ Danh Quân/ 0376619619,1,Đỗ Danh Quân,0376619619,true,,,AUTO_MAP
+54,L1.203,Bùi Thị Tuyết Thu,Bùi Thị Tuyết Thu/ (0914.028.598),1,Bùi Thị Tuyết Thu,0914028598,true,,,AUTO_MAP
+55,L1.205,Nguyễn Thu Hường,Nguyễn Thu Hường/ 0833170891,1,Nguyễn Thu Hường,0833170891,true,,,AUTO_MAP
+56,L1.206A,Bùi Thúy Nga,Bùi Thúy Nga/ 0904164879,1,Bùi Thúy Nga,0904164879,true,,,AUTO_MAP
+57,L1.206B,Lưu Văn Tăng,Lưu Văn Tăng/ 0977062268,1,Lưu Văn Tăng,0977062268,true,,,AUTO_MAP
+59,L1.208,Nguyễn Duyên Linh,Nguyễn Duyên Linh/0915520274,1,Nguyễn Duyên Linh,0915520274,true,,,AUTO_MAP
+60,L1.209,Đỗ Xuân Hồng,Đỗ Xuân Hồng/ 0986799917,1,Đỗ Xuân Hồng,0986799917,true,,,AUTO_MAP
+61,L1.210,Vũ Hải Nam,Vũ Hải Nam/ 0977611988,1,Vũ Hải Nam,0977611988,true,,,AUTO_MAP
+65,L1.214,Phan Khánh Ngọc,Phan Khánh Ngọc/ 0936323665,1,Phan Khánh Ngọc,0936323665,true,,,AUTO_MAP
+67,L1.216,Bùi Duy Công,Bùi Duy Công (0962571289),1,Bùi Duy Công,0962571289,true,,,AUTO_MAP
+68,L1.217,Đàm Ánh Linh,Đàm Ánh Linh/0936936836,1,Đàm Ánh Linh,0936936836,true,,,AUTO_MAP
+69,L1.218,Phạm Thị Linh,Phạm Thị Linh/ 0795244807,1,Phạm Thị Linh,0795244807,true,,,AUTO_MAP
+72,L1.221,Nguyễn Nhật Minh,Nguyễn Nhật Minh/ 0936676731,1,Nguyễn Nhật Minh,0936676731,true,,,AUTO_MAP
+75,L1.224,Nguyễn Thị Phượng,Nguyễn Thị Phượng/ 0904.342.478,1,Nguyễn Thị Phượng,0904342478,true,,,AUTO_MAP
+78,L1.303,Đỗ Gia Phú,Đỗ Gia Phú/ 0912.771.168,1,Đỗ Gia Phú,0912771168,true,,,AUTO_MAP
+85,L1.310,Nguyễn Thị Lan Phương,Nguyễn Thị Lan Phương/ 0906075690,1,Nguyễn Thị Lan Phương,0906075690,true,,,AUTO_MAP
+86,L1.311A,Hồ Thị Huệ,Hồ Thị Huệ/ 0988623204,1,Hồ Thị Huệ,0988623204,true,,,AUTO_MAP
+89,L1.314,Nguyễn Văn Thiện,Nguyễn Văn Thiện/0383.420.393,1,Nguyễn Văn Thiện,0383420393,true,,,AUTO_MAP
+90,L1.315,Đỗ Ngọc Anh,Đỗ Ngọc Anh/(0819.852.223 / 0985.954.883 (Bố Toàn).),1,Đỗ Ngọc Anh,0819852223,true,,,AUTO_MAP
+90,L1.315,Đỗ Ngọc Anh,Đỗ Ngọc Anh/(0819.852.223 / 0985.954.883 (Bố Toàn).),2,.,0985954883,false,,,AUTO_MAP
+93,L1.318,Phạm Đức Long,"Phạm Đức Long/ 0985.852.592, mẹ Lê 0367586154",1,Phạm Đức Long,0985852592,true,,,AUTO_MAP
+93,L1.318,Phạm Đức Long,"Phạm Đức Long/ 0985.852.592, mẹ Lê 0367586154",2,mẹ Lê,0367586154,false,,,AUTO_MAP
+94,L1.319,Đặng Thế Anh,Đặng Thế Anh/ 0982888522,1,Đặng Thế Anh,0982888522,true,,,AUTO_MAP
+96,L1.321,Phạm Xuân Lộc,Phạm Xuân Lộc/ 0765252222,1,Phạm Xuân Lộc,0765252222,true,,,AUTO_MAP
+97,L1.322,Chu Hồng Hà,Chu Hồng Hà/ 0968.112.959,1,Chu Hồng Hà,0968112959,true,,,AUTO_MAP
+101,L1.402,Hoàng Việt Thanh,Hoàng Việt Thanh/ 0968.819.988 / Cô Hà đang ở 0912 616 446,1,Hoàng Việt Thanh,0968819988,true,,,AUTO_MAP
+101,L1.402,Hoàng Việt Thanh,Hoàng Việt Thanh/ 0968.819.988 / Cô Hà đang ở 0912 616 446,2,Cô Hà đang ở,0912616446,false,,,AUTO_MAP
+102,L1.403,Dương Quang Kiên,Dương Quang Kiên/ 0974.554.938,1,Dương Quang Kiên,0974554938,true,,,AUTO_MAP
+106,L1.407,Nguyễn Hoàng Tuấn,Nguyễn Hoàng Tuấn/0913310886,1,Nguyễn Hoàng Tuấn,0913310886,true,,,AUTO_MAP
+107,L1.408,Nguyễn Thị Nga,Nguyễn Thị Nga/0346.321.846,1,Nguyễn Thị Nga,0346321846,true,,,AUTO_MAP
+108,L1.409,Trần Thị Nền,Trần Thị Nền/ 0973255882,1,Trần Thị Nền,0973255882,true,,,AUTO_MAP
+111,L1.411B,Đinh Quang Hiếu,Đinh Quang Hiếu/ 0916786786,1,Đinh Quang Hiếu,0916786786,true,,,AUTO_MAP
+112,L1.412,Trần Hà Bắc,Trần Hà Bắc/0367748234,1,Trần Hà Bắc,0367748234,true,,,AUTO_MAP
+113,L1.414,Nguyễn Mạnh Tuyên,Nguyễn Mạnh Tuyên/ 0904.455.568,1,Nguyễn Mạnh Tuyên,0904455568,true,,,AUTO_MAP
+114,L1.415,Phạm Thị Như Anh,Phạm Thị Như Anh/Nguyễn Văn Hải(0969058483) '0904142915,1,Phạm Thị Như Anh,0969058483,true,,,AUTO_MAP
+114,L1.415,Phạm Thị Như Anh,Phạm Thị Như Anh/Nguyễn Văn Hải(0969058483) '0904142915,2,Nguyễn Văn Hải,0904142915,false,,,AUTO_MAP
+116,L1.417,Nguyễn Hồng Quang,Nguyễn Hồng Quang/ 0779342601,1,Nguyễn Hồng Quang,0779342601,true,,,AUTO_MAP
+117,L1.418,Lê Thị Diệp,Lại Thị Diệp/ 0963.218.678,1,Lê Thị Diệp,0963218678,true,,,AUTO_MAP
+117,L1.418,Lê Thị Diệp,Lại Thị Diệp/ 0963.218.678,2,Lại Thị Diệp,0963218678,false,,,AUTO_MAP
+118,L1.419,Trần Hoàng Yến,Trần Hoàng Yến/ 0904089048,1,Trần Hoàng Yến,0904089048,true,,,AUTO_MAP
+121,L1.422,Hoàng Thu Thảo,Hoàng Thu Thảo/ 0966349596,1,Hoàng Thu Thảo,0966349596,true,,,AUTO_MAP
+123,L1.424,Nguyễn Văn Tuyến,Nguyễn Văn Tuyến/ 0975440329 'Yến 0936676891,1,Nguyễn Văn Tuyến,0975440329,true,,,AUTO_MAP
+123,L1.424,Nguyễn Văn Tuyến,Nguyễn Văn Tuyến/ 0975440329 'Yến 0936676891,2,Yến,0936676891,false,,,AUTO_MAP
+124,L1.501,Nguyễn Lê Thùy Dương,Nguyễn Lê Thùy Dương/(081 5045888.),1,Nguyễn Lê Thùy Dương,0815045888,true,,,AUTO_MAP
+125,L1.502,Trịnh Hiếu Đông,Trịnh Hiếu Đông/ 0989.093.081,1,Trịnh Hiếu Đông,0989093081,true,,,AUTO_MAP
+126,L1.503,Đoàn Thị Sử,Đoàn Thị Sử/ 0934204.909,1,Đoàn Thị Sử,0934204909,true,,,AUTO_MAP
+127,L1.506A,Đỗ Như Quỳnh,Đỗ Như Quỳnh/ 0344239925,1,Đỗ Như Quỳnh,0344239925,true,,,AUTO_MAP
+130,L1.508,Đàm Thảo My,Đàm Thảo My/ 0902078036,1,Đàm Thảo My,0902078036,true,,,AUTO_MAP
+132,L1.510,Mai Thị Hằng,Mai Thị Hằng/ 0835778993,1,Mai Thị Hằng,0835778993,true,,,AUTO_MAP
+134,L1.511B,Nguyễn Văn Thành,Nguyễn Văn Thành/ 0353.976.481,1,Nguyễn Văn Thành,0353976481,true,,,AUTO_MAP
+135,L1.512,Nguyễn Văn An,Nguyễn Văn An/ 0912362678 'Hằng 0397199579,1,Nguyễn Văn An,0912362678,true,,,AUTO_MAP
+135,L1.512,Nguyễn Văn An,Nguyễn Văn An/ 0912362678 'Hằng 0397199579,2,Hằng,0397199579,false,,,AUTO_MAP
+136,L1.514,Chu Khánh Linh,Chu Khánh Linh/ 0904207468,1,Chu Khánh Linh,0904207468,true,,,AUTO_MAP
+137,L1.515,Phạm Ánh Lâm,Phạm Ánh Lâm/(0985.052.466.) Long 0358422718,1,Phạm Ánh Lâm,0985052466,true,,,AUTO_MAP
+137,L1.515,Phạm Ánh Lâm,Phạm Ánh Lâm/(0985.052.466.) Long 0358422718,2,Long,0358422718,false,,,AUTO_MAP
+140,L1.519,Phạm Thị Hường,C Hường: 0836.962.575,1,Phạm Thị Hường,0836962575,true,,,AUTO_MAP
+140,L1.519,Phạm Thị Hường,C Hường: 0836.962.575,2,C Hường,0836962575,false,,,AUTO_MAP
+142,L1.521,Nguyễn Thị Nhi,Nguyễn Thị Nhi/ 0938.675.183,1,Nguyễn Thị Nhi,0938675183,true,,,AUTO_MAP
+143,L1.522,Đào Anh Thảo,Đào Anh Thảo/ 0387271171,1,Đào Anh Thảo,0387271171,true,,,AUTO_MAP
+144,L1.523,Lê Thị Én,Lê Thị Én/ 0934326626,1,Lê Thị Én,0934326626,true,,,AUTO_MAP
+152,L2.108,Phạm Quang Nam,Phạm Quang Nam/ 0934220458 Loan 0934215728,1,Phạm Quang Nam,0934220458,true,,,AUTO_MAP
+152,L2.108,Phạm Quang Nam,Phạm Quang Nam/ 0934220458 Loan 0934215728,2,Loan,0934215728,false,,,AUTO_MAP
+155,L2.111A,Nguyễn Bùi Cường,Nguyễn Bùi Cường/0979656222,1,Nguyễn Bùi Cường,0979656222,true,,,AUTO_MAP
+157,L2.112,Nguyễn Thị Hiền Phương,Nguyễn Thị Hiền Phương/ (Trần Tuyết Nhung 0904201271),1,Nguyễn Thị Hiền Phương,0904201271,true,,,AUTO_MAP
+158,L2.114,Phạm Thị Thu Phương,Phạm Thị Thu Phương/ 0906086684,1,Phạm Thị Thu Phương,0906086684,true,,,AUTO_MAP
+160,L2.116,Nguyễn Bùi Đức,Nguyễn Bùi Đức/ 0344750251 Hoàng Xuân Cường 0769288999,1,Nguyễn Bùi Đức,0344750251,true,,,AUTO_MAP
+160,L2.116,Nguyễn Bùi Đức,Nguyễn Bùi Đức/ 0344750251 Hoàng Xuân Cường 0769288999,2,Hoàng Xuân Cường,0769288999,false,,,AUTO_MAP
+164,L2.120,Trần Tấn Sơn,Trần Tấn Sơn/Nguyễn Thị Trang (0964.582.559/ 0934.252.226.0347.450.975),1,Trần Tấn Sơn,0964582559,true,,,AUTO_MAP
+164,L2.120,Trần Tấn Sơn,Trần Tấn Sơn/Nguyễn Thị Trang (0964.582.559/ 0934.252.226.0347.450.975),2,Nguyễn Thị Trang,0934252226,false,,,AUTO_MAP
+165,L2.121,Nguyễn Đức Sơn,Nguyễn Đức Sơn/Hoàng Thị Minh Hiền(0934.380.999 / 0904.002.545),1,Nguyễn Đức Sơn,0934380999,true,,,AUTO_MAP
+165,L2.121,Nguyễn Đức Sơn,Nguyễn Đức Sơn/Hoàng Thị Minh Hiền(0934.380.999 / 0904.002.545),2,Hoàng Thị Minh Hiền,0904002545,false,,,AUTO_MAP
+176,L2.132,Bùi Văn Tranh,Bùi Văn Tranh/Hoàng Kim Thoa(0977.610.719.0392117394),1,Bùi Văn Tranh,0977610719,true,,,AUTO_MAP
+176,L2.132,Bùi Văn Tranh,Bùi Văn Tranh/Hoàng Kim Thoa(0977.610.719.0392117394),2,Hoàng Kim Thoa,0392117394,false,,,AUTO_MAP
+177,L2.202,Ngô Thị Hồi,Ngô Văn Thắng 0962866155,1,Ngô Thị Hồi,0962866155,true,,,AUTO_MAP
+177,L2.202,Ngô Thị Hồi,Ngô Văn Thắng 0962866155,2,Ngô Văn Thắng,0962866155,false,,,AUTO_MAP
+183,L2.209,Nguyễn Quang Hưng,0936 052 988,1,Nguyễn Quang Hưng,0936052988,true,,,AUTO_MAP
+185,L2.211A,Vũ Trọng Tùng,Vũ Trọng Tùng 0904369880,1,Vũ Trọng Tùng,0904369880,true,,,AUTO_MAP
+195,L2.223,Trần Minh Công,Trần Minh Công/(0936.149.351.),1,Trần Minh Công,0936149351,true,,,AUTO_MAP
+199,L2.227,Vũ Thị Huyền,Vũ Thị Huyền/Vũ Đức Hậu (0972.887.927 / 0985.622.299),1,Vũ Thị Huyền,0972887927,true,,,AUTO_MAP
+199,L2.227,Vũ Thị Huyền,Vũ Thị Huyền/Vũ Đức Hậu (0972.887.927 / 0985.622.299),2,Vũ Đức Hậu,0985622299,false,,,AUTO_MAP
+202,L2.232,Nguyễn Thị Kiều Trang,Nguyễn Thị Kiều Trang/Bùi Đức Việt (0962.064.504 / 0976.120.485),1,Nguyễn Thị Kiều Trang,0962064504,true,,,AUTO_MAP
+202,L2.232,Nguyễn Thị Kiều Trang,Nguyễn Thị Kiều Trang/Bùi Đức Việt (0962.064.504 / 0976.120.485),2,Bùi Đức Việt,0976120485,false,,,AUTO_MAP
+206,L2.305,Lê Đức Ninh,Lê Đức Ninh/ 0904589.806,1,Lê Đức Ninh,0904589806,true,,,AUTO_MAP
+207,L2.306A,Ninh Tất Phát,Ninh Tấn Phát/ 0936.458.595,1,Ninh Tất Phát,0936458595,true,,,AUTO_MAP
+207,L2.306A,Ninh Tất Phát,Ninh Tấn Phát/ 0936.458.595,2,Ninh Tấn Phát,0936458595,false,,,AUTO_MAP
+208,L2.306B,Phạm Hùng Dũng,Phạm Hùng Dũng/ 0934.868.363,1,Phạm Hùng Dũng,0934868363,true,,,AUTO_MAP
+209,L2.307,Phạm Văn Hiền,Phạm Văn Hiền/(0912.435.236),1,Phạm Văn Hiền,0912435236,true,,,AUTO_MAP
+210,L2.308,Phạm Thị Thúy Ngọc,Phạm Thị Thúy Ngọc/ 0378127237,1,Phạm Thị Thúy Ngọc,0378127237,true,,,AUTO_MAP
+211,L2.309,Phạm Thanh hải,Phạm Thanh Hải/ 0931.585.885,1,Phạm Thanh hải,0931585885,true,,,AUTO_MAP
+211,L2.309,Phạm Thanh hải,Phạm Thanh Hải/ 0931.585.885,2,Phạm Thanh Hải,0931585885,false,,,AUTO_MAP
+212,L2.310,Đoàn Quang Hải,Đoàn Quang Hải/ 0936621721,1,Đoàn Quang Hải,0936621721,true,,,AUTO_MAP
+213,L2.311A,Nguyễn Thu Phương,Nguyễn Thu Phương/ 0838.024.333,1,Nguyễn Thu Phương,0838024333,true,,,AUTO_MAP
+214,L2.311B,Võ Thu Hương,Võ Thu Hương/ 0396.401.710,1,Võ Thu Hương,0396401710,true,,,AUTO_MAP
+215,L2.312,Hàn Ngọc Tùng,Hàn Ngọc Tùng/ 0966776656,1,Hàn Ngọc Tùng,0966776656,true,,,AUTO_MAP
+216,L2.314,Phan Đức Minh,Phan Đức Minh/ 0912115834,1,Phan Đức Minh,0912115834,true,,,AUTO_MAP
+217,L2.315,Phạm Thị Nhài,Phạm Thị Nhài/ 0356224525,1,Phạm Thị Nhài,0356224525,true,,,AUTO_MAP
+222,L2.320,Đỗ Quỳnh Hương,Đỗ Quỳnh Hương /(0708.250.296.),1,Đỗ Quỳnh Hương,0708250296,true,,,AUTO_MAP
+224,L2.322,Trần Ngọc Diên,Trần Ngọc Diên/(0337.039.299.),1,Trần Ngọc Diên,0337039299,true,,,AUTO_MAP
+225,L2.323,Nguyễn Trọng Tiến,Nguyễn Trọng Tiến/(0911.260.011.),1,Nguyễn Trọng Tiến,0911260011,true,,,AUTO_MAP
+226,L2.324,Trần Đức Khôi,Trần Đức Khôi/(0839.661.799.),1,Trần Đức Khôi,0839661799,true,,,AUTO_MAP
+229,L2.328,Nguyễn Văn Quảng,Nguyễn Văn Quảng/(0966.428.438.) đã sang nhượng cho Nga 0934336841,1,Nguyễn Văn Quảng,0966428438,true,,,AUTO_MAP
+229,L2.328,Nguyễn Văn Quảng,Nguyễn Văn Quảng/(0966.428.438.) đã sang nhượng cho Nga 0934336841,2,đã sang nhượng cho Nga,0934336841,false,,,AUTO_MAP
+236,L2.403,Vũ Thị Kiều Hạnh,Vũ Thị Kiều Hạnh/ 0936939471,1,Vũ Thị Kiều Hạnh,0936939471,true,,,AUTO_MAP
+238,L2.406A,Đinh Thị Mỹ Linh,Đinh Thị Mỹ Linh/ 0936986779,1,Đinh Thị Mỹ Linh,0936986779,true,,,AUTO_MAP
+241,L2.408,Nguyễn Thị Huyền,Nguyễn Thị Huyền/ 0972688700; 0985293639,1,Nguyễn Thị Huyền,0972688700,true,,,AUTO_MAP
+242,L2.409,Trần Thị Linh,Trần Thị Linh 0931508494,1,Trần Thị Linh,0931508494,true,,,AUTO_MAP
+244,L2.411A,Hoàng Việt Anh,Hoàng Việt Anh/ 0988596747,1,Hoàng Việt Anh,0988596747,true,,,AUTO_MAP
+245,L2.411B,Vũ Thị Anh,Vũ Thị Anh/ 0931580598,1,Vũ Thị Anh,0931580598,true,,,AUTO_MAP
+248,L2.415,Nguyễn Thị Minh Phương,Nguyễn Thị Minh Phương/0775256465 mẹ cô Huê 0945395289,1,Nguyễn Thị Minh Phương,0775256465,true,,,AUTO_MAP
+248,L2.415,Nguyễn Thị Minh Phương,Nguyễn Thị Minh Phương/0775256465 mẹ cô Huê 0945395289,2,mẹ cô Huê,0945395289,false,,,AUTO_MAP
+251,L2.418,Nguyễn Thị Thu Liên,Nguyễn Thị Thu Liên/(0934.968.698.),1,Nguyễn Thị Thu Liên,0934968698,true,,,AUTO_MAP
+253,L2.420,Nguyễn Thị Yến,Nguyễn Thị Yến/(0393.135.968.),1,Nguyễn Thị Yến,0393135968,true,,,AUTO_MAP
+255,L2.422,Hà Thị Phương,Hà Thị Phương/(0936.676.543.),1,Hà Thị Phương,0936676543,true,,,AUTO_MAP
+256,L2.424,Lương Minh Thương,Lương Minh Thương/Trần Thị Nguyệt (0906.112.765.0342.041.059),1,Lương Minh Thương,0906112765,true,,,AUTO_MAP
+256,L2.424,Lương Minh Thương,Lương Minh Thương/Trần Thị Nguyệt (0906.112.765.0342.041.059),2,Trần Thị Nguyệt,0342041059,false,,,AUTO_MAP
+257,L2.425,Phạm Thị Phương Thảo (CKTSR),Phạm Thị Phương Thảo (CKTSR)/(0898.982.689.),1,Phạm Thị Phương Thảo (CKTSR),0898982689,true,,,AUTO_MAP
+257,L2.425,Phạm Thị Phương Thảo (CKTSR),Phạm Thị Phương Thảo (CKTSR)/(0898.982.689.),2,Phạm Thị Phương Thảo,0898982689,false,,,AUTO_MAP
+262,L2.430,Trần Công Phương,Anh Trần Công Phương 0983159760,1,Trần Công Phương,0983159760,true,,,AUTO_MAP
+262,L2.430,Trần Công Phương,Anh Trần Công Phương 0983159760,2,Anh Trần Công Phương,0983159760,false,,,AUTO_MAP
+263,L2.431,Đỗ Thu Hiền,Đỗ Thu Hiền/(0936.955.755.),1,Đỗ Thu Hiền,0936955755,true,,,AUTO_MAP
+266,L2.502,Phạm Ngọc Ngoan,Phạm Ngọc Ngoan/(0356.295.422) mẹ Ngô Thị Thơ,1,Phạm Ngọc Ngoan,0356295422,true,,,AUTO_MAP
+266,L2.502,Phạm Ngọc Ngoan,Phạm Ngọc Ngoan/(0356.295.422) mẹ Ngô Thị Thơ,2,mẹ Ngô Thị Thơ,0356295422,false,,,AUTO_MAP
+268,L2.505,Đặng Thị Quỳnh Hương,Đặng Thị Quỳnh Hương/(0904.273.882.),1,Đặng Thị Quỳnh Hương,0904273882,true,,,AUTO_MAP
+269,L2.506A,Hoàng Thị Bích Liên,Hoàng Thị Bích Liên/(0904.876.778.),1,Hoàng Thị Bích Liên,0904876778,true,,,AUTO_MAP
+272,L2.510,Đỗ Quang Huy,Đỗ Quang Huy/(0389.178.997.),1,Đỗ Quang Huy,0389178997,true,,,AUTO_MAP
+273,L2.511A,Nguyễn Thị Ngân,Nguyễn Thị Ngân/Vũ Minh Việt(0922.886.083.0564.323.191),1,Nguyễn Thị Ngân,0922886083,true,,,AUTO_MAP
+273,L2.511A,Nguyễn Thị Ngân,Nguyễn Thị Ngân/Vũ Minh Việt(0922.886.083.0564.323.191),2,Vũ Minh Việt,0564323191,false,,,AUTO_MAP
+274,L2.511B,Phạm Minh Thắng,Phạm Minh Thắng/Nguyễn Thị Huệ(0936.045.599 / 0904.471.274),1,Phạm Minh Thắng,0936045599,true,,,AUTO_MAP
+274,L2.511B,Phạm Minh Thắng,Phạm Minh Thắng/Nguyễn Thị Huệ(0936.045.599 / 0904.471.274),2,Nguyễn Thị Huệ,0904471274,false,,,AUTO_MAP
+275,L2.512,Phạm Thị Hương,Phạm Thị Hương/Bùi Thái Thuận(0984629345.),1,Phạm Thị Hương,0984629345,true,,,AUTO_MAP
+275,L2.512,Phạm Thị Hương,Phạm Thị Hương/Bùi Thái Thuận(0984629345.),2,Bùi Thái Thuận,0984629345,false,,,AUTO_MAP
+281,L2.519,Ngô Anh Vũ,Ngô Anh Vũ/Vũ Thị Chang(0989.654.619 / 0982.176.871),1,Ngô Anh Vũ,0989654619,true,,,AUTO_MAP
+281,L2.519,Ngô Anh Vũ,Ngô Anh Vũ/Vũ Thị Chang(0989.654.619 / 0982.176.871),2,Vũ Thị Chang,0982176871,false,,,AUTO_MAP
+282,L2.520,Lê Phúc Dũng,Lê Phúc Dũng/(0934.504.272/ 0818.268.298 .),1,Lê Phúc Dũng,0934504272,true,,,AUTO_MAP
+283,L2.521,Nguyễn Thị Hạnh,Nguyễn Thị Hạnh/(0793.211.890.),1,Nguyễn Thị Hạnh,0793211890,true,,,AUTO_MAP
+286,L2.526,Vũ Thị Phương,Vũ Thị Phương/(0398.299.020.),1,Vũ Thị Phương,0398299020,true,,,AUTO_MAP
+287,L2.527,Phạm Thị Lệ,Phạm Thị Lệ/Hoàng Mạnh Cường(0979.013.792 / 0972.498.803),1,Phạm Thị Lệ,0979013792,true,,,AUTO_MAP
+287,L2.527,Phạm Thị Lệ,Phạm Thị Lệ/Hoàng Mạnh Cường(0979.013.792 / 0972.498.803),2,Hoàng Mạnh Cường,0972498803,false,,,AUTO_MAP
+289,L2.531,Phạm Huy Khóa,Phạm Huy Khóa/Đào Thị Phương Anh (0961.829.391 / 0973.125.983),1,Phạm Huy Khóa,0961829391,true,,,AUTO_MAP
+289,L2.531,Phạm Huy Khóa,Phạm Huy Khóa/Đào Thị Phương Anh (0961.829.391 / 0973.125.983),2,Đào Thị Phương Anh,0973125983,false,,,AUTO_MAP
+290,L2.532,Đặng Thị Thương,Đặng Thị Thương/(0976.342.483.),1,Đặng Thị Thương,0976342483,true,,,AUTO_MAP
+295,L3.106A,Trần Mạnh Hà,Trần Mạnh Hà/Nguyễn Thị Hương(0936.163.104 / 0945.329.386),1,Trần Mạnh Hà,0936163104,true,,,AUTO_MAP
+295,L3.106A,Trần Mạnh Hà,Trần Mạnh Hà/Nguyễn Thị Hương(0936.163.104 / 0945.329.386),2,Nguyễn Thị Hương,0945329386,false,,,AUTO_MAP
+298,L3.108,Phạm Thị Hải Yến,Phạm Thị Hải Yến/(0852.955.688.),1,Phạm Thị Hải Yến,0852955688,true,,,AUTO_MAP
+301,L3.111A,Lưu Thị Minh Hiền,Lưu Thị Minh Hiền/(0986.262.398.),1,Lưu Thị Minh Hiền,0986262398,true,,,AUTO_MAP
+303,L3.112,Lê Huy Hùng,Lê Huy Hùng/Cao Thị Hạnh(0966.199.994 / 0971.919.888),1,Lê Huy Hùng,0966199994,true,,,AUTO_MAP
+303,L3.112,Lê Huy Hùng,Lê Huy Hùng/Cao Thị Hạnh(0966.199.994 / 0971.919.888),2,Cao Thị Hạnh,0971919888,false,,,AUTO_MAP
+315,L3.209,Vương Văn Đạt,Vương Văn Đạt/(0388.731.595.),1,Vương Văn Đạt,0388731595,true,,,AUTO_MAP
+316,L3.210,Hoàng Thị Hạnh,Hoàng Thị Hạnh/(0359.287.628.0904.026.674.),1,Hoàng Thị Hạnh,0359287628,true,,,AUTO_MAP
+317,L3.211A,Đoàn Thị Thu Hiền,Đoàn Thị Thu Hiền/(0982.586.786.),1,Đoàn Thị Thu Hiền,0982586786,true,,,AUTO_MAP
+318,L3.211B,Nguyễn Anh Tiến,Nguyễn Anh Tiến/(0982.701.368.),1,Nguyễn Anh Tiến,0982701368,true,,,AUTO_MAP
+319,L3.212,Nguyễn Văn Long,Nguyễn Văn Long/Nguyễn Thị My(0916.262.142.096.444.7935),1,Nguyễn Văn Long,0916262142,true,,,AUTO_MAP
+319,L3.212,Nguyễn Văn Long,Nguyễn Văn Long/Nguyễn Thị My(0916.262.142.096.444.7935),2,Nguyễn Thị My,0964447935,false,,,AUTO_MAP
+320,L3.214,Vũ Thị Nội,Vũ Thị Nội 0562040489,1,Vũ Thị Nội,0562040489,true,,,AUTO_MAP
+321,L3.215,Đinh Thị Họa My,Đinh Thị Họa My/(0385.595.710.),1,Đinh Thị Họa My,0385595710,true,,,AUTO_MAP
+324,L3.302,Bùi Anh Tuấn,Bùi Anh Tuấn/(0332.599.078/ 0866.523.196.),1,Bùi Anh Tuấn,0332599078,true,,,AUTO_MAP
+325,L3.303,Nguyễn Thị Ánh Mai,Nguyễn Thị Ánh Mai/(0904374031.),1,Nguyễn Thị Ánh Mai,0904374031,true,,,AUTO_MAP
+327,L3.306A,Bùi Đình Huy,Bùi Đình Huy/Hoàng Thị Hoa ( 0931.562.639 / 0789.240.619),1,Bùi Đình Huy,0931562639,true,,,AUTO_MAP
+327,L3.306A,Bùi Đình Huy,Bùi Đình Huy/Hoàng Thị Hoa ( 0931.562.639 / 0789.240.619),2,Hoàng Thị Hoa,0789240619,false,,,AUTO_MAP
+328,L3.306B,Nguyễn Ngọc Cẩn,Nguyễn Ngọc Cẩn/Nguyễn Thị Lan Anh(0936.896.575.035.735.8975),1,Nguyễn Ngọc Cẩn,0936896575,true,,,AUTO_MAP
+328,L3.306B,Nguyễn Ngọc Cẩn,Nguyễn Ngọc Cẩn/Nguyễn Thị Lan Anh(0936.896.575.035.735.8975),2,Nguyễn Thị Lan Anh,0357358975,false,,,AUTO_MAP
+329,L3.307,Nguyễn Văn Tâm,Nguyễn Văn Tâm/(077.970.9583,1,Nguyễn Văn Tâm,0779709583,true,,,AUTO_MAP
+330,L3.308,Vũ Thị Tường Vi,Vũ Thị Tường Vi/(0988.161.940.),1,Vũ Thị Tường Vi,0988161940,true,,,AUTO_MAP
+331,L3.309,Trần Thị Thanh Hằng,Trần Thị Thanh Hằng/(0337.250.898.),1,Trần Thị Thanh Hằng,0337250898,true,,,AUTO_MAP
+332,L3.310,Nguyễn Viết Hoàng Anh,Nguyễn Viết Hoàng Anh/Chu Thị Nhung(0985.603.436.0934.202.992),1,Nguyễn Viết Hoàng Anh,0985603436,true,,,AUTO_MAP
+332,L3.310,Nguyễn Viết Hoàng Anh,Nguyễn Viết Hoàng Anh/Chu Thị Nhung(0985.603.436.0934.202.992),2,Chu Thị Nhung,0934202992,false,,,AUTO_MAP
+333,L3.311A,Lê Thanh Hải,Lê Thanh Hải/(0932.000.239.),1,Lê Thanh Hải,0932000239,true,,,AUTO_MAP
+335,L3.312,Nguyễn Thị Thanh Lan,"Nguyễn Thị Thanh Lan/(0329,522,286.)",1,Nguyễn Thị Thanh Lan,0329522286,true,,,AUTO_MAP
+336,L3.314,Lê Công Tùng,Lê Công Tùng/Đỗ Thị Ngọc ( 0983.351.368 / 0902.67.9193),1,Lê Công Tùng,0983351368,true,,,AUTO_MAP
+336,L3.314,Lê Công Tùng,Lê Công Tùng/Đỗ Thị Ngọc ( 0983.351.368 / 0902.67.9193),2,Đỗ Thị Ngọc,0902679193,false,,,AUTO_MAP
+338,L3.316,Đỗ Hải Linh,Đỗ Hải Linh/Phạm Tuấn Anh Vũ(0376.480.277.0855.066.376),1,Đỗ Hải Linh,0376480277,true,,,AUTO_MAP
+338,L3.316,Đỗ Hải Linh,Đỗ Hải Linh/Phạm Tuấn Anh Vũ(0376.480.277.0855.066.376),2,Phạm Tuấn Anh Vũ,0855066376,false,,,AUTO_MAP
+339,L3.401,Vũ Đình Cảnh,Vũ Đình Cảnh/Vũ Thị Thu Hằng(0915.948.469.0904.166.990),1,Vũ Đình Cảnh,0915948469,true,,,AUTO_MAP
+339,L3.401,Vũ Đình Cảnh,Vũ Đình Cảnh/Vũ Thị Thu Hằng(0915.948.469.0904.166.990),2,Vũ Thị Thu Hằng,0904166990,false,,,AUTO_MAP
+340,L3.402,Vũ Phúc Long,Vũ Phúc Long/(0942.957.956 / 0979.263.666- Bố Hồng.),1,Vũ Phúc Long,0942957956,true,,,AUTO_MAP
+343,L3.406A,Đỗ Ngọc Toản,Đỗ Ngọc Toản/Đào Thị Hà(0986.805.866.0374.934.520),1,Đỗ Ngọc Toản,0986805866,true,,,AUTO_MAP
+343,L3.406A,Đỗ Ngọc Toản,Đỗ Ngọc Toản/Đào Thị Hà(0986.805.866.0374.934.520),2,Đào Thị Hà,0374934520,false,,,AUTO_MAP
+344,L3.406B,Trần Duy Toản,Trần Duy Toả n/(0934.223.002.),1,Trần Duy Toản,0934223002,true,,,AUTO_MAP
+344,L3.406B,Trần Duy Toản,Trần Duy Toả n/(0934.223.002.),2,Trần Duy Toả n,0934223002,false,,,AUTO_MAP
+348,L3.410,Phùng Thị Phượng,Phùng Thị Phượng/(0837.826.934.),1,Phùng Thị Phượng,0837826934,true,,,AUTO_MAP
+350,L3.411B,Phạm Quang Phúc,Phạm Quang Phúc/Nguyễn Hải Yến ( 0943.080.938/0902.017.548  ),1,Phạm Quang Phúc,0943080938,true,,,AUTO_MAP
+350,L3.411B,Phạm Quang Phúc,Phạm Quang Phúc/Nguyễn Hải Yến ( 0943.080.938/0902.017.548  ),2,Nguyễn Hải Yến,0902017548,false,,,AUTO_MAP
+351,L3.412,Nguyễn Việt Anh,Nguyễn Việt Anh/Hoàng Thị Mỹ Giang(0904.436.424 / 0936.815.927),1,Nguyễn Việt Anh,0904436424,true,,,AUTO_MAP
+351,L3.412,Nguyễn Việt Anh,Nguyễn Việt Anh/Hoàng Thị Mỹ Giang(0904.436.424 / 0936.815.927),2,Hoàng Thị Mỹ Giang,0936815927,false,,,AUTO_MAP
+353,L3.415,Bùi Đức Chiến,Bùi Đức Chiến/(0399.179.456.),1,Bùi Đức Chiến,0399179456,true,,,AUTO_MAP
+355,L3.501,Hoàng Văn Đại,Hoàng Văn Đại/Hoàng Thị Mai(0788.388.393.),1,Hoàng Văn Đại,0788388393,true,,,AUTO_MAP
+355,L3.501,Hoàng Văn Đại,Hoàng Văn Đại/Hoàng Thị Mai(0788.388.393.),2,Hoàng Thị Mai,0788388393,false,,,AUTO_MAP
+358,L3.505,Cù Thị Thu Thủy,Cù Thị Thu Thủy/Nguyễn Ngọc Sơn(0796.371.251.0782.244.000),1,Cù Thị Thu Thủy,0796371251,true,,,AUTO_MAP
+358,L3.505,Cù Thị Thu Thủy,Cù Thị Thu Thủy/Nguyễn Ngọc Sơn(0796.371.251.0782.244.000),2,Nguyễn Ngọc Sơn,0782244000,false,,,AUTO_MAP
+359,L3.506A,Nguyễn Thế Anh,Nguyễn Thế Anh/Nguyễn Phương Anh(0702.986.939.0704.986.939),1,Nguyễn Thế Anh,0702986939,true,,,AUTO_MAP
+359,L3.506A,Nguyễn Thế Anh,Nguyễn Thế Anh/Nguyễn Phương Anh(0702.986.939.0704.986.939),2,Nguyễn Phương Anh,0704986939,false,,,AUTO_MAP
+363,L3.510,Ngô Thị Hà,Ngô Thị Hà/(0904.484.194.),1,Ngô Thị Hà,0904484194,true,,,AUTO_MAP
+365,L3.511B,Phạm Văn Mạnh,Phạm Văn Mạnh/(0936.704.981.),1,Phạm Văn Mạnh,0936704981,true,,,AUTO_MAP
+367,L3.514,Phạm Long Vũ,Phạm Long Vũ/(0936.688.856.) mẹ C Hường 0903152365,1,Phạm Long Vũ,0936688856,true,,,AUTO_MAP
+367,L3.514,Phạm Long Vũ,Phạm Long Vũ/(0936.688.856.) mẹ C Hường 0903152365,2,mẹ C Hường,0903152365,false,,,AUTO_MAP
+368,L3.515,Nguyễn Thế Phú,Nguyễn Thế Phú/Nguyễn Kim Thoa(0938.820.555.0936.925.393),1,Nguyễn Thế Phú,0938820555,true,,,AUTO_MAP
+368,L3.515,Nguyễn Thế Phú,Nguyễn Thế Phú/Nguyễn Kim Thoa(0938.820.555.0936.925.393),2,Nguyễn Kim Thoa,0936925393,false,,,AUTO_MAP
+369,L3.516,Bùi Thị Nguyệt,Bùi Thị Nguyệt/(0902.169.196.) đã sang nhượng cho Bùi  Đức 0973090163,1,Bùi Thị Nguyệt,0902169196,true,,,AUTO_MAP
+369,L3.516,Bùi Thị Nguyệt,Bùi Thị Nguyệt/(0902.169.196.) đã sang nhượng cho Bùi  Đức 0973090163,2,đã sang nhượng cho Bùi Đức,0973090163,false,,,AUTO_MAP
+372,L4A.103,Phạm Thị Thúy,Phạm Thị Thúy/(0966.119.727.),1,Phạm Thị Thúy,0966119727,true,,,AUTO_MAP
+375,L4A.106B,Bùi Quang Huy,Bùi Quang Huy/(0982.158.801 ( a Hưng).),1,Bùi Quang Huy,0982158801,true,,,AUTO_MAP
+375,L4A.106B,Bùi Quang Huy,Bùi Quang Huy/(0982.158.801 ( a Hưng).),2,.,0982158801,false,,,AUTO_MAP
+377,L4A.108,Lê Văn Bình,Lê Văn Bình/(0963.461.116 / 0936.991.668- Kim Anh.),1,Lê Văn Bình,0963461116,true,,,AUTO_MAP
+378,L4A.109,Bùi Hà Gia Linh,Bùi Hà Gia Linh/(0766.388.979.),1,Bùi Hà Gia Linh,0766388979,true,,,AUTO_MAP
+379,L4A.110,Nguyễn Thị Hằng,Nguyễn Thị Hằng/(0936.991.668- Kim Anh.),1,Nguyễn Thị Hằng,0936991668,true,,,AUTO_MAP
+380,L4A.111A,Đặng Quang Anh,Đặng Quang Anh/(0906.076.571/0986.939.926.),1,Đặng Quang Anh,0906076571,true,,,AUTO_MAP
+381,L4A.111B,Nguyễn Mai Khánh An,"Nguyễn Mai Khánh An/(0912,594,777.)",1,Nguyễn Mai Khánh An,0912594777,true,,,AUTO_MAP
+383,L4A.114,Nguyễn Văn Phúc,Nguyễn Văn Phúc/Phạm Thị Mùi(0389.759.039-Hoàng Anh.)/ Ủy quyền Nguyễn Hoàng Anh: 0389759039/0947051089,1,Nguyễn Văn Phúc,0389759039,true,,,AUTO_MAP
+384,L4A.115,Nguyễn Văn Doan,Nguyễn Văn Doan/Phạm Thanh Hương(02253.711.882 / 036.3131.471),1,Nguyễn Văn Doan,0225371188,true,,,AUTO_MAP
+384,L4A.115,Nguyễn Văn Doan,Nguyễn Văn Doan/Phạm Thanh Hương(02253.711.882 / 036.3131.471),2,Phạm Thanh Hương,0363131471,false,,,AUTO_MAP
+386,L4A.117,Đỗ Thị Kim Xuyến,Đỗ Thị Kim Xuyến/(0912.303.038.),1,Đỗ Thị Kim Xuyến,0912303038,true,,,AUTO_MAP
+388,L4A.119,Trần Thị Vui,Trần Thị Vui /(0916.599.119 (Anh Trang).) ủy quyền Dung: 0983.255.417,1,Trần Thị Vui,0916599119,true,,,AUTO_MAP
+388,L4A.119,Trần Thị Vui,Trần Thị Vui /(0916.599.119 (Anh Trang).) ủy quyền Dung: 0983.255.417,2,. ủy quyền Dung,0983255417,false,,,AUTO_MAP
+389,L4A.120,Tô Văn Giang (CKTSR),Tô Văn Giang (CKTSR)/(0989.060.703 - Trọng.0988.779.364- A Giang.),1,Tô Văn Giang (CKTSR),0989060703,true,,,AUTO_MAP
+389,L4A.120,Tô Văn Giang (CKTSR),Tô Văn Giang (CKTSR)/(0989.060.703 - Trọng.0988.779.364- A Giang.),2,Tô Văn Giang,0988779364,false,,,AUTO_MAP
+390,L4A.121,Phạm Văn Thiềng,"Phạm Văn Thiềng/(0904.197.186.), chú Thành 0904197186",1,Phạm Văn Thiềng,0904197186,true,,,AUTO_MAP
+390,L4A.121,Phạm Văn Thiềng,"Phạm Văn Thiềng/(0904.197.186.), chú Thành 0904197186",2,chú Thành,0904197186,false,,,AUTO_MAP
+391,L4A.122,Hoàng Hữu Cường (CKTSR),Hoàng Hữu Cường (CKTSR)/(0915.211.581.0989.060.703- A. Trọng.),1,Hoàng Hữu Cường (CKTSR),0915211581,true,,,AUTO_MAP
+391,L4A.122,Hoàng Hữu Cường (CKTSR),Hoàng Hữu Cường (CKTSR)/(0915.211.581.0989.060.703- A. Trọng.),2,Hoàng Hữu Cường,0989060703,false,,,AUTO_MAP
+392,L4A.123,Nguyễn Thị Nguyệt,Nguyễn Thị Nguyệt/(0906.093.865.),1,Nguyễn Thị Nguyệt,0906093865,true,,,AUTO_MAP
+395,L4A.126,Đỗ Quang Dũng,Đỗ Quang Dũng/Vũ Thị Vân(0763.146.641.0705676927) chủ hộ Tuấn 0934256464,1,Đỗ Quang Dũng,0763146641,true,,,AUTO_MAP
+395,L4A.126,Đỗ Quang Dũng,Đỗ Quang Dũng/Vũ Thị Vân(0763.146.641.0705676927) chủ hộ Tuấn 0934256464,2,Vũ Thị Vân chủ hộ Tuấn,0705676927,false,,,AUTO_MAP
+404,L4A.135,Đặng Thị Liên,Đặng Thị Liên/Phạm Vũ Anh(0988.735.050.0987.781.552),1,Đặng Thị Liên,0988735050,true,,,AUTO_MAP
+404,L4A.135,Đặng Thị Liên,Đặng Thị Liên/Phạm Vũ Anh(0988.735.050.0987.781.552),2,Phạm Vũ Anh,0987781552,false,,,AUTO_MAP
+406,L4A.201,Trần Trọng Tiến,"Trần Trọng Tiến /(0357942767.), UQ cho Nguyễn Thị Kim Khánh",1,Trần Trọng Tiến,0357942767,true,,,AUTO_MAP
+406,L4A.201,Trần Trọng Tiến,"Trần Trọng Tiến /(0357942767.), UQ cho Nguyễn Thị Kim Khánh",2,UQ cho Nguyễn Thị Kim Khánh,0357942767,false,,,AUTO_MAP
+407,L4A.202,Vũ Đức Trung,Vũ Đức Trung/(0835.254.788.'0898.552.538.),1,Vũ Đức Trung,0835254788,true,,,AUTO_MAP
+410,L4A.206A,Nguyễn Huy Hoàng,Nguyễn Huy Hoàng/(0356.583.158.),1,Nguyễn Huy Hoàng,0356583158,true,,,AUTO_MAP
+413,L4A.208,Vũ Thanh Thúy,Vũ Thanh Thúy/(0936.850.163.) Ủy quyền Lê Thị Phượng  0354170295,1,Vũ Thanh Thúy,0936850163,true,,,AUTO_MAP
+413,L4A.208,Vũ Thanh Thúy,Vũ Thanh Thúy/(0936.850.163.) Ủy quyền Lê Thị Phượng  0354170295,2,Ủy quyền Lê Thị Phượng,0354170295,false,,,AUTO_MAP
+423,L4A.218,Nguyễn Thị Thu Trang,Nguyễn Thị Thu Trang/(0983.528.442.),1,Nguyễn Thị Thu Trang,0983528442,true,,,AUTO_MAP
+424,L4A.219,Đỗ Thị Bích Phương,Đỗ Thị Bích Phương/Hoàng Nam Chung(0793317537 / 0906184840),1,Đỗ Thị Bích Phương,0793317537,true,,,AUTO_MAP
+424,L4A.219,Đỗ Thị Bích Phương,Đỗ Thị Bích Phương/Hoàng Nam Chung(0793317537 / 0906184840),2,Hoàng Nam Chung,0906184840,false,,,AUTO_MAP
+425,L4A.220,Bùi Mạnh Hiệp,"Bùi Mạnh Hiệp/(0705,563,088.)",1,Bùi Mạnh Hiệp,0705563088,true,,,AUTO_MAP
+427,L4A.222,Trịnh Khắc Quân,Trịnh Khắc Quân/Phạm Thị Kim Thoa(0973.069.699.0974.239.997),1,Trịnh Khắc Quân,0973069699,true,,,AUTO_MAP
+427,L4A.222,Trịnh Khắc Quân,Trịnh Khắc Quân/Phạm Thị Kim Thoa(0973.069.699.0974.239.997),2,Phạm Thị Kim Thoa,0974239997,false,,,AUTO_MAP
+428,L4A.223,Phạm Diệu Xuân,Phạm Diệu Xuân/(0385.132.933.),1,Phạm Diệu Xuân,0385132933,true,,,AUTO_MAP
+430,L4A.225,Đào Văn Hùng,Đào Văn Hùng/(0969.983.963.),1,Đào Văn Hùng,0969983963,true,,,AUTO_MAP
+432,L4A.227,Trương Văn Lợi,Trương Văn Lợi/(0972.389.736.),1,Trương Văn Lợi,0972389736,true,,,AUTO_MAP
+434,L4A.229,Bùi Thị Thu Huyền,Bùi Thị Thu Huyền/Lê Minh Thành(0906.078.379- sai số / 0383.139.418),1,Bùi Thị Thu Huyền,0906078379,true,,,AUTO_MAP
+434,L4A.229,Bùi Thị Thu Huyền,Bùi Thị Thu Huyền/Lê Minh Thành(0906.078.379- sai số / 0383.139.418),2,Lê Minh Thành,0383139418,false,,,AUTO_MAP
+435,L4A.230,Lê Thái Dương,Lê Thái Dương/(0858.646.111.),1,Lê Thái Dương,0858646111,true,,,AUTO_MAP
+438,L4A.233,Vũ Ngọc Tuấn,Vũ Ngọc Tuấn/(0912.980.959.),1,Vũ Ngọc Tuấn,0912980959,true,,,AUTO_MAP
+439,L4A.234,Nguyễn Kim Phượng,Nguyễn Kim Phượng 0903433829,1,Nguyễn Kim Phượng,0903433829,true,,,AUTO_MAP
+440,L4A.235,Đỗ Ngọc Hà,Đỗ Ngọc Hà/(0585.396.666.) đã UQ cho cô Hà T Kim Chi 0868252400,1,Đỗ Ngọc Hà,0585396666,true,,,AUTO_MAP
+440,L4A.235,Đỗ Ngọc Hà,Đỗ Ngọc Hà/(0585.396.666.) đã UQ cho cô Hà T Kim Chi 0868252400,2,đã UQ cho cô Hà T Kim Chi,0868252400,false,,,AUTO_MAP
+441,L4A.236,Đỗ Mạnh Cường,Đỗ Mạnh Cường/(0865.564.292.0941.478.399 (C Vân Anh).),1,Đỗ Mạnh Cường,0865564292,true,,,AUTO_MAP
+441,L4A.236,Đỗ Mạnh Cường,Đỗ Mạnh Cường/(0865.564.292.0941.478.399 (C Vân Anh).),2,.,0941478399,false,,,AUTO_MAP
+442,L4A.301,Nguyễn Thị Thanh Mai,Nguyễn Thị Thanh Mai/Đào Hoài Nam(0936.559.958.),1,Nguyễn Thị Thanh Mai,0936559958,true,,,AUTO_MAP
+442,L4A.301,Nguyễn Thị Thanh Mai,Nguyễn Thị Thanh Mai/Đào Hoài Nam(0936.559.958.),2,Đào Hoài Nam,0936559958,false,,,AUTO_MAP
+445,L4A.305,Lâm Nguyên Bình,Lâm Nguyên Bình/(0982.272.128-Con gái Hương.),1,Lâm Nguyên Bình,0982272128,true,,,AUTO_MAP
+447,L4A.306B,Tăng Thị Kiều Oanh,Tăng Thị Kiều Oanh/(0983.780.297-A. Nguyên.),1,Tăng Thị Kiều Oanh,0983780297,true,,,AUTO_MAP
+450,L4A.309,Vũ Thị Hương Giang,Vũ Thị Hương Giang/(0904.041.481.),1,Vũ Thị Hương Giang,0904041481,true,,,AUTO_MAP
+451,L4A.310,Lê Quang Hòa,Lê Quang Hòa/(0904.633.113.),1,Lê Quang Hòa,0904633113,true,,,AUTO_MAP
+452,L4A.311A,Phạm Thị Hằng,Phạm Thị Hằng/(0373.445.805. 0366.010.826.),1,Phạm Thị Hằng,0373445805,true,,,AUTO_MAP
+453,L4A.311B,Phạm Văn Hòa,Phạm Văn Hòa/Vũ Thị Xinh(0986.334.010.0812.026.993),1,Phạm Văn Hòa,0986334010,true,,,AUTO_MAP
+453,L4A.311B,Phạm Văn Hòa,Phạm Văn Hòa/Vũ Thị Xinh(0986.334.010.0812.026.993),2,Vũ Thị Xinh,0812026993,false,,,AUTO_MAP
+456,L4A.315,Lương Phương Anh,Lương Phương Anh/Cao Hồng Nhung(0904.117.288.0352.530.893),1,Lương Phương Anh,0904117288,true,,,AUTO_MAP
+456,L4A.315,Lương Phương Anh,Lương Phương Anh/Cao Hồng Nhung(0904.117.288.0352.530.893),2,Cao Hồng Nhung,0352530893,false,,,AUTO_MAP
+460,L4A.319,Đặng Thị Minh Thu,Đặng Thị Minh Thu/(0967.436.389/0979.467.579 (C Phương).),1,Đặng Thị Minh Thu,0967436389,true,,,AUTO_MAP
+460,L4A.319,Đặng Thị Minh Thu,Đặng Thị Minh Thu/(0967.436.389/0979.467.579 (C Phương).),2,.,0979467579,false,,,AUTO_MAP
+461,L4A.320,Đỗ Tiến Thành,Đỗ Tiến Thành/Nguyễn Thị My(0967.619.971.0988.886.409),1,Đỗ Tiến Thành,0967619971,true,,,AUTO_MAP
+461,L4A.320,Đỗ Tiến Thành,Đỗ Tiến Thành/Nguyễn Thị My(0967.619.971.0988.886.409),2,Nguyễn Thị My,0988886409,false,,,AUTO_MAP
+463,L4A.322,Đinh Thị Linh Nhâm,Đinh Thị Linh Nhâm/Phạm Minh Khanh(0763.357.800.0966.798.484),1,Đinh Thị Linh Nhâm,0763357800,true,,,AUTO_MAP
+463,L4A.322,Đinh Thị Linh Nhâm,Đinh Thị Linh Nhâm/Phạm Minh Khanh(0763.357.800.0966.798.484),2,Phạm Minh Khanh,0966798484,false,,,AUTO_MAP
+464,L4A.323,Trần Minh Tâm,0778.989.996,1,Trần Minh Tâm,0778989996,true,,,AUTO_MAP
+466,L4A.325,Phạm Duy Hùng,Phạm Duy Hùng/Vũ Thị Hồng(0982.075.290.0982.075.280),1,Phạm Duy Hùng,0982075290,true,,,AUTO_MAP
+466,L4A.325,Phạm Duy Hùng,Phạm Duy Hùng/Vũ Thị Hồng(0982.075.290.0982.075.280),2,Vũ Thị Hồng,0982075280,false,,,AUTO_MAP
+467,L4A.326,Nguyễn Thùy Dương,Nguyễn Thùy Dương/(079.337.1362.0936.866.768 (mẹ Tám).),1,Nguyễn Thùy Dương,0793371362,true,,,AUTO_MAP
+467,L4A.326,Nguyễn Thùy Dương,Nguyễn Thùy Dương/(079.337.1362.0936.866.768 (mẹ Tám).),2,.,0936866768,false,,,AUTO_MAP
+469,L4A.328,Nguyễn Thị Hoài Thu,Nguyễn Thị Hoài Thu/(0934.258.799.),1,Nguyễn Thị Hoài Thu,0934258799,true,,,AUTO_MAP
+470,L4A.329,Lại Quản Hương Linh,Lại Quản Hương Linh/(090.445.6839-098.974.6118-A.Dũng.),1,Lại Quản Hương Linh,0904456839,true,,,AUTO_MAP
+475,L4A.335,Trần Quang Thiết,Trần Quang Thiết/Phạm Thị Thoa ( 0934.422.255 / 0767.757.346),1,Trần Quang Thiết,0934422255,true,,,AUTO_MAP
+475,L4A.335,Trần Quang Thiết,Trần Quang Thiết/Phạm Thị Thoa ( 0934.422.255 / 0767.757.346),2,Phạm Thị Thoa,0767757346,false,,,AUTO_MAP
+477,L4A.401,Đặng Thị Hạnh,Đặng Thị Hạnh/(0779.385.533.),1,Đặng Thị Hạnh,0779385533,true,,,AUTO_MAP
+479,L4A.405,Nguyễn Thanh Hoàng,Nguyễn Thanh Hoàng/Phạm Thị Thi(0374610816.0973.060.341),1,Nguyễn Thanh Hoàng,0374610816,true,,,AUTO_MAP
+479,L4A.405,Nguyễn Thanh Hoàng,Nguyễn Thanh Hoàng/Phạm Thị Thi(0374610816.0973.060.341),2,Phạm Thị Thi,0973060341,false,,,AUTO_MAP
+480,L4A.406A,Nguyễn Quốc Toản,Nguyễn Quốc Toản/(0937.891.107 / 0936.384.098.),1,Nguyễn Quốc Toản,0937891107,true,,,AUTO_MAP
+481,L4A.406B,Nguyễn Hữu Trung,Nguyễn Hữu Trung/Nguyễn Thị My (0353053428.0963.180.545),1,Nguyễn Hữu Trung,0353053428,true,,,AUTO_MAP
+481,L4A.406B,Nguyễn Hữu Trung,Nguyễn Hữu Trung/Nguyễn Thị My (0353053428.0963.180.545),2,Nguyễn Thị My,0963180545,false,,,AUTO_MAP
+482,L4A.407,Lê Thị Thúy Hằng,Lê Thị Thúy Hằng 0966794268 / 0912677457,1,Lê Thị Thúy Hằng,0966794268,true,,,AUTO_MAP
+483,L4A.408,Bùi Văn Trường,Bùi Văn Trường/Vũ Thị Thúy(0325.981.726.0989.073.482),1,Bùi Văn Trường,0325981726,true,,,AUTO_MAP
+483,L4A.408,Bùi Văn Trường,Bùi Văn Trường/Vũ Thị Thúy(0325.981.726.0989.073.482),2,Vũ Thị Thúy,0989073482,false,,,AUTO_MAP
+484,L4A.409,Mai Xuân Ninh,Mai Xuân Ninh/Nguyễn Thị Nguyện(0986.153.619.0865.978.368),1,Mai Xuân Ninh,0986153619,true,,,AUTO_MAP
+484,L4A.409,Mai Xuân Ninh,Mai Xuân Ninh/Nguyễn Thị Nguyện(0986.153.619.0865.978.368),2,Nguyễn Thị Nguyện,0865978368,false,,,AUTO_MAP
+486,L4A.411A,Nguyễn Thị Hân,Nguyễn Thị Hân/Tô Bảo Trung(0904.326.393 / 0889.522.246),1,Nguyễn Thị Hân,0904326393,true,,,AUTO_MAP
+486,L4A.411A,Nguyễn Thị Hân,Nguyễn Thị Hân/Tô Bảo Trung(0904.326.393 / 0889.522.246),2,Tô Bảo Trung,0889522246,false,,,AUTO_MAP
+487,L4A.411B,Nguyễn Đức Giang,Nguyễn Đức Giang/(0975.974.279-bố Bích/0988.747.615.),1,Nguyễn Đức Giang,0975974279,true,,,AUTO_MAP
+488,L4A.412,Trịnh Thái Sơn,Trịnh Thái Sơn/Đỗ Thùy Linh(0934.264.242. 0904.226.652.),1,Trịnh Thái Sơn,0934264242,true,,,AUTO_MAP
+488,L4A.412,Trịnh Thái Sơn,Trịnh Thái Sơn/Đỗ Thùy Linh(0934.264.242. 0904.226.652.),2,Đỗ Thùy Linh,0904226652,false,,,AUTO_MAP
+491,L4A.416,Nguyễn Mạnh Cường,Nguyễn Mạnh Cường/(0978.717.521.),1,Nguyễn Mạnh Cường,0978717521,true,,,AUTO_MAP
+493,L4A.418,Đinh Thị Thanh Thủy,Đinh Thị Thanh Thủy/Nguyễn Quý Phong(0917.433.579.0912193579),1,Đinh Thị Thanh Thủy,0917433579,true,,,AUTO_MAP
+493,L4A.418,Đinh Thị Thanh Thủy,Đinh Thị Thanh Thủy/Nguyễn Quý Phong(0917.433.579.0912193579),2,Nguyễn Quý Phong,0912193579,false,,,AUTO_MAP
+494,L4A.419,Vũ Thị Mến,Vũ Thị Mến/(0385.691.590.),1,Vũ Thị Mến,0385691590,true,,,AUTO_MAP
+495,L4A.420,Lê Thị Lụa,Lê Thị Lụa/Nguyễn Huy Toàn(0967.033.318.0901.562.388),1,Lê Thị Lụa,0967033318,true,,,AUTO_MAP
+495,L4A.420,Lê Thị Lụa,Lê Thị Lụa/Nguyễn Huy Toàn(0967.033.318.0901.562.388),2,Nguyễn Huy Toàn,0901562388,false,,,AUTO_MAP
+496,L4A.421,Nguyễn Trọng Nghĩa,Nguyễn Trọng Nghĩa/Đồng Thị Nhung(0979.832.889.0978.777.581),1,Nguyễn Trọng Nghĩa,0979832889,true,,,AUTO_MAP
+496,L4A.421,Nguyễn Trọng Nghĩa,Nguyễn Trọng Nghĩa/Đồng Thị Nhung(0979.832.889.0978.777.581),2,Đồng Thị Nhung,0978777581,false,,,AUTO_MAP
+497,L4A.422,Vũ Văn Tiên,Vũ Văn Tiên/Nguyễn Thị Ngọc Hải (0773286318.0904.611.988),1,Vũ Văn Tiên,0773286318,true,,,AUTO_MAP
+497,L4A.422,Vũ Văn Tiên,Vũ Văn Tiên/Nguyễn Thị Ngọc Hải (0773286318.0904.611.988),2,Nguyễn Thị Ngọc Hải,0904611988,false,,,AUTO_MAP
+498,L4A.423,Nguyễn Bá Phúc,Nguyễn Bá Phúc/Lê Thị Hằng(0833.333.998.0348.746.886),1,Nguyễn Bá Phúc,0833333998,true,,,AUTO_MAP
+498,L4A.423,Nguyễn Bá Phúc,Nguyễn Bá Phúc/Lê Thị Hằng(0833.333.998.0348.746.886),2,Lê Thị Hằng,0348746886,false,,,AUTO_MAP
+501,L4A.426,Phạm Quang Long,Phạm Quang Long/Nguyễn Thị Hằng(0966.964.375.0356712426),1,Phạm Quang Long,0966964375,true,,,AUTO_MAP
+501,L4A.426,Phạm Quang Long,Phạm Quang Long/Nguyễn Thị Hằng(0966.964.375.0356712426),2,Nguyễn Thị Hằng,0356712426,false,,,AUTO_MAP
+502,L4A.427,Bùi Việt Đức (CKTSR),Bùi Việt Đức (CKTSR)/(0973.090.163.),1,Bùi Việt Đức (CKTSR),0973090163,true,,,AUTO_MAP
+502,L4A.427,Bùi Việt Đức (CKTSR),Bùi Việt Đức (CKTSR)/(0973.090.163.),2,Bùi Việt Đức,0973090163,false,,,AUTO_MAP
+503,L4A.428,Nguyễn Hoàng Hội,Nguyễn Hoàng Hội/(094.2826.289.),1,Nguyễn Hoàng Hội,0942826289,true,,,AUTO_MAP
+504,L4A.429,Nguyễn Văn Trung,Nguyễn Văn Trung/(0775.346.869.),1,Nguyễn Văn Trung,0775346869,true,,,AUTO_MAP
+508,L4A.433,Hoàng Thị Hợp,Hoàng Thị Hợp/(0912.734.681.),1,Hoàng Thị Hợp,0912734681,true,,,AUTO_MAP
+511,L4A.436,Trịnh Văn Bình,"Trịnh Văn Bình/Hà Thị Phương Liên(0886,196,966.0984.963.088)",1,Trịnh Văn Bình,0886196966,true,,,AUTO_MAP
+511,L4A.436,Trịnh Văn Bình,"Trịnh Văn Bình/Hà Thị Phương Liên(0886,196,966.0984.963.088)",2,Hà Thị Phương Liên,0984963088,false,,,AUTO_MAP
+512,L4A.501,Nguyễn Thị Bích Thuận,Nguyễn Thị Bích Thuận/Đặng Văn Tuấn(0934.421.329 (con gái).0385.315.046 (con trai)),1,Nguyễn Thị Bích Thuận,0934421329,true,,,AUTO_MAP
+512,L4A.501,Nguyễn Thị Bích Thuận,Nguyễn Thị Bích Thuận/Đặng Văn Tuấn(0934.421.329 (con gái).0385.315.046 (con trai)),2,Đặng Văn Tuấn .,0385315046,false,,,AUTO_MAP
+513,L4A.502,Trần Thị Thuỳ,Trần Thị Thuỳ/Lưu Trường Giang(088.6789.885.0886.586.899),1,Trần Thị Thuỳ,0886789885,true,,,AUTO_MAP
+513,L4A.502,Trần Thị Thuỳ,Trần Thị Thuỳ/Lưu Trường Giang(088.6789.885.0886.586.899),2,Lưu Trường Giang,0886586899,false,,,AUTO_MAP
+514,L4A.503,Nguyễn Tuấn Tú,Nguyễn Tuấn Tú/(0936.599.792.0972.399.370 - Chị Oanh.),1,Nguyễn Tuấn Tú,0936599792,true,,,AUTO_MAP
+515,L4A.505,Đỗ Thị Hồng Hạnh,Đỗ Thị Hồng Hạnh/(0934.240.369.),1,Đỗ Thị Hồng Hạnh,0934240369,true,,,AUTO_MAP
+516,L4A.506A,Vũ Thùy Vân,Vũ Thùy Vân/(0902.420.835.),1,Vũ Thùy Vân,0902420835,true,,,AUTO_MAP
+517,L4A.506B,Trần Duy Long,Trần Duy Long (0936.500.182),1,Trần Duy Long,0936500182,true,,,AUTO_MAP
+518,L4A.507,Trần Anh Tài,Trần Anh Tài/Hoàng Thị Thu Huyền(0964.172.992.0345.865.469),1,Trần Anh Tài,0964172992,true,,,AUTO_MAP
+518,L4A.507,Trần Anh Tài,Trần Anh Tài/Hoàng Thị Thu Huyền(0964.172.992.0345.865.469),2,Hoàng Thị Thu Huyền,0345865469,false,,,AUTO_MAP
+519,L4A.509,Nguyễn Anh Tuấn,"Nguyễn Anh Tuấn/(0936,830,507.)",1,Nguyễn Anh Tuấn,0936830507,true,,,AUTO_MAP
+521,L4A.511B,Lê Mạnh Cường,Lê Mạnh Cường/Nguyễn Thị Hồng Nhung (0936.886.790 / 0356.722.330),1,Lê Mạnh Cường,0936886790,true,,,AUTO_MAP
+521,L4A.511B,Lê Mạnh Cường,Lê Mạnh Cường/Nguyễn Thị Hồng Nhung (0936.886.790 / 0356.722.330),2,Nguyễn Thị Hồng Nhung,0356722330,false,,,AUTO_MAP
+523,L4A.514,Trần Văn Hướng,Trần Văn Hướng/Nguyễn Thị Thuý(0989.686.087.0986.126.124),1,Trần Văn Hướng,0989686087,true,,,AUTO_MAP
+523,L4A.514,Trần Văn Hướng,Trần Văn Hướng/Nguyễn Thị Thuý(0989.686.087.0986.126.124),2,Nguyễn Thị Thuý,0986126124,false,,,AUTO_MAP
+524,L4A.515,Vũ Thị Thu Thủy,Vũ Thị Thu Thủy/Đào Vũ Hoàng(0936.562.086.0904.297.563),1,Vũ Thị Thu Thủy,0936562086,true,,,AUTO_MAP
+524,L4A.515,Vũ Thị Thu Thủy,Vũ Thị Thu Thủy/Đào Vũ Hoàng(0936.562.086.0904.297.563),2,Đào Vũ Hoàng,0904297563,false,,,AUTO_MAP
+528,L4A.519,Nguyễn Hải Hà,Nguyễn Hải Hà/(0866.967.516.),1,Nguyễn Hải Hà,0866967516,true,,,AUTO_MAP
+529,L4A.520,Trần Hoài Nam,Trần Hoài Nam/(0762.411.308- Cô Hường. 0963.816.798- Quang Anh.),1,Trần Hoài Nam,0762411308,true,,,AUTO_MAP
+531,L4A.522,Lê Thị Tuyến,Lê Thị Tuyến/(0912.050.597.),1,Lê Thị Tuyến,0912050597,true,,,AUTO_MAP
+533,L4A.524,Lê Hồng Dương,Lê Hồng Dương/Vũ Hữu Sơn(0961.345.686.0904.806.408),1,Lê Hồng Dương,0961345686,true,,,AUTO_MAP
+533,L4A.524,Lê Hồng Dương,Lê Hồng Dương/Vũ Hữu Sơn(0961.345.686.0904.806.408),2,Vũ Hữu Sơn,0904806408,false,,,AUTO_MAP
+534,L4A.525,Trịnh Duy Ninh,Trịnh Duy Ninh/(0349.356.199.),1,Trịnh Duy Ninh,0349356199,true,,,AUTO_MAP
+535,L4A.527,Cao Bá Thiên,Cao Bá Thiên/(0337.554.747,1,Cao Bá Thiên,0337554747,true,,,AUTO_MAP
+536,L4A.529,Đoàn Thị Liêm,Đoàn Thị Liêm/(0896.128.799.),1,Đoàn Thị Liêm,0896128799,true,,,AUTO_MAP
+537,L4A.530,Lê Thị Liên,Lê Thị Liên/Nguyễn Quốc Khánh(0904.670.698.0982.107.023),1,Lê Thị Liên,0904670698,true,,,AUTO_MAP
+537,L4A.530,Lê Thị Liên,Lê Thị Liên/Nguyễn Quốc Khánh(0904.670.698.0982.107.023),2,Nguyễn Quốc Khánh,0982107023,false,,,AUTO_MAP
+538,L4A.531,Vũ Đình Tính,Vũ Đình Tính/(0328.312.296.0988.640.394 (A Mạnh).),1,Vũ Đình Tính,0328312296,true,,,AUTO_MAP
+538,L4A.531,Vũ Đình Tính,Vũ Đình Tính/(0328.312.296.0988.640.394 (A Mạnh).),2,.,0988640394,false,,,AUTO_MAP
+541,L4A.535,Tống Phú Hoàng,Tống Phú Hoàng/(0772.211.119.),1,Tống Phú Hoàng,0772211119,true,,,AUTO_MAP
+543,L4B.101,Trần Thị Huyên,Chị Huyên 0904.165.079,1,Trần Thị Huyên,0904165079,true,,,AUTO_MAP
+543,L4B.101,Trần Thị Huyên,Chị Huyên 0904.165.079,2,Chị Huyên,0904165079,false,,,AUTO_MAP
+546,L4B.105,Phạm Quang Triệu,Phạm Quang Triệu/Đỗ Thu Thương(0961.812.817/0912.665.014 (Q.Thành Sở TN)/0988.927.598 (C Thuỷ).0349.725.040),1,Phạm Quang Triệu,0961812817,true,,,AUTO_MAP
+549,L4B.107,Tống Thị Phượng,"Tống Thị Phượng/(0936,868,258.)",1,Tống Thị Phượng,0936868258,true,,,AUTO_MAP
+551,L4B.109,Nguyễn Thế Duy,Nguyễn Thế Duy/ (0912.929.015.) Mẹ Thơm 0354746195,1,Nguyễn Thế Duy,0912929015,true,,,AUTO_MAP
+551,L4B.109,Nguyễn Thế Duy,Nguyễn Thế Duy/ (0912.929.015.) Mẹ Thơm 0354746195,2,Mẹ Thơm,0354746195,false,,,AUTO_MAP
+561,L4B.119,Nguyễn Thị Thanh Giang,Nguyễn Thị Thanh Giang/(0936.533.091.) đã UQ cho Nguyễn Thị Kim Thu 0773200086,1,Nguyễn Thị Thanh Giang,0936533091,true,,,AUTO_MAP
+561,L4B.119,Nguyễn Thị Thanh Giang,Nguyễn Thị Thanh Giang/(0936.533.091.) đã UQ cho Nguyễn Thị Kim Thu 0773200086,2,đã UQ cho Nguyễn Thị Kim Thu,0773200086,false,,,AUTO_MAP
+562,L4B.120,Phạm Trung Hiếu,Phạm Trung Hiếu/Trần Huyền Dung(906041292.0936.912.993-Dung/),1,Phạm Trung Hiếu,0604129209,true,,,AUTO_MAP
+562,L4B.120,Phạm Trung Hiếu,Phạm Trung Hiếu/Trần Huyền Dung(906041292.0936.912.993-Dung/),2,Trần Huyền Dung,0604129209,false,,,AUTO_MAP
+565,L4B.123,Trần Ngọc Long.Đỗ Thị Hạ,Trần Ngọc Long.Đỗ Thị Hạ/ (0904.389.382.0378.473.759),1,Trần Ngọc Long.Đỗ Thị Hạ,0904389382,true,,,AUTO_MAP
+570,L4B.128,Phạm Thị Trọng,Phạm Thị Trọng/(0904.314.336 (A.Quý).),1,Phạm Thị Trọng,0904314336,true,,,AUTO_MAP
+570,L4B.128,Phạm Thị Trọng,Phạm Thị Trọng/(0904.314.336 (A.Quý).),2,.,0904314336,false,,,AUTO_MAP
+577,L4B.135,Cao Thị Tố Uyên,Cao Thị Tố Uyên/(0945.537.392.),1,Cao Thị Tố Uyên,0945537392,true,,,AUTO_MAP
+579,L4B.201,Phạm Thị Nga,Phạm Thị Nga/(0979.111.096.),1,Phạm Thị Nga,0979111096,true,,,AUTO_MAP
+582,L4B.205,Đinh Quang Tuấn,Đinh Quang Tuấn/(0985.018.119.),1,Đinh Quang Tuấn,0985018119,true,,,AUTO_MAP
+586,L4B.209,Nguyễn Thu Hà,Nguyễn Thu Hà/(Quốc Anh 0944.408.899.),1,Nguyễn Thu Hà,0944408899,true,,,AUTO_MAP
+587,L4B.210,Chu Thanh Tú,Chu Thanh Tú/Nguyễn Thị Thúy Hà(0963.112.255.0963.112.255),1,Chu Thanh Tú,0963112255,true,,,AUTO_MAP
+587,L4B.210,Chu Thanh Tú,Chu Thanh Tú/Nguyễn Thị Thúy Hà(0963.112.255.0963.112.255),2,Nguyễn Thị Thúy Hà,0963112255,false,,,AUTO_MAP
+589,L4B.211B,Đào Nguyên Khải,Đào Nguyên Khải/Dương Thị Hường(0934.363.262.0934.382.598),1,Đào Nguyên Khải,0934363262,true,,,AUTO_MAP
+589,L4B.211B,Đào Nguyên Khải,Đào Nguyên Khải/Dương Thị Hường(0934.363.262.0934.382.598),2,Dương Thị Hường,0934382598,false,,,AUTO_MAP
+590,L4B.212,Trịnh Xuân Huân,Trịnh Xuân Huân/Lê Minh Thúy(0972.063.095.0961.510.694),1,Trịnh Xuân Huân,0972063095,true,,,AUTO_MAP
+590,L4B.212,Trịnh Xuân Huân,Trịnh Xuân Huân/Lê Minh Thúy(0972.063.095.0961.510.694),2,Lê Minh Thúy,0961510694,false,,,AUTO_MAP
+591,L4B.214,NGUYỄN THỊ THU HẰNG,NGUYỄN THỊ THU HẰNG/(0908.504.630. Chú Văn 0912.024.473.),1,NGUYỄN THỊ THU HẰNG,0908504630,true,,,AUTO_MAP
+595,L4B.218,Trịnh Thị Nga,Trịnh Thị Nga 0766335638,1,Trịnh Thị Nga,0766335638,true,,,AUTO_MAP
+596,L4B.219,Đỗ Ngọc Minh,"Đỗ Ngọc Minh/Nguyễn Thu Hằng(0934,210,108.0763.363.968)",1,Đỗ Ngọc Minh,0934210108,true,,,AUTO_MAP
+596,L4B.219,Đỗ Ngọc Minh,"Đỗ Ngọc Minh/Nguyễn Thu Hằng(0934,210,108.0763.363.968)",2,Nguyễn Thu Hằng,0763363968,false,,,AUTO_MAP
+597,L4B.220,Đào Thị Thơm,Đào Thị Thơm/(0982.526.706 ( Em Huệ).),1,Đào Thị Thơm,0982526706,true,,,AUTO_MAP
+597,L4B.220,Đào Thị Thơm,Đào Thị Thơm/(0982.526.706 ( Em Huệ).),2,.,0982526706,false,,,AUTO_MAP
+598,L4B.221,Phạm Thị Nhã Phương,Phạm Thị Nhã Phương/(0359.041.600.0974.184.145 - Mẹ.),1,Phạm Thị Nhã Phương,0359041600,true,,,AUTO_MAP
+599,L4B.222,Nguyễn Tuấn Hùng,Nguyễn Tuấn Hùng/Phạm Thị Hoài Thanh(0904.371.636 - Chị Hiền.0987.676.638.),1,Nguyễn Tuấn Hùng,0904371636,true,,,AUTO_MAP
+599,L4B.222,Nguyễn Tuấn Hùng,Nguyễn Tuấn Hùng/Phạm Thị Hoài Thanh(0904.371.636 - Chị Hiền.0987.676.638.),2,Phạm Thị Hoài Thanh,0987676638,false,,,AUTO_MAP
+600,L4B.223,Nguyễn Thị Xinh,Nguyễn Thị Xinh/(0367.818.899.),1,Nguyễn Thị Xinh,0367818899,true,,,AUTO_MAP
+601,L4B.224,Bùi Xuân Cừ,Bùi Xuân Cừ/(0346.139.820.),1,Bùi Xuân Cừ,0346139820,true,,,AUTO_MAP
+604,L4B.227,Đinh Khắc Tuyến,Đinh Khắc Tuyến/Nguyễn Thị Cúc(0936.822.644.0702.234.418),1,Đinh Khắc Tuyến,0936822644,true,,,AUTO_MAP
+604,L4B.227,Đinh Khắc Tuyến,Đinh Khắc Tuyến/Nguyễn Thị Cúc(0936.822.644.0702.234.418),2,Nguyễn Thị Cúc,0702234418,false,,,AUTO_MAP
+605,L4B.228,Hoàng Xuân Nam,Hoàng Xuân Nam/Tạ Thị Thu Hà(0934.223.535 - Anh Minh.),1,Hoàng Xuân Nam,0934223535,true,,,AUTO_MAP
+605,L4B.228,Hoàng Xuân Nam,Hoàng Xuân Nam/Tạ Thị Thu Hà(0934.223.535 - Anh Minh.),2,Tạ Thị Thu Hà,0934223535,false,,,AUTO_MAP
+607,L4B.230,Nguyễn Văn Nhuần,Nguyễn Văn Nhuần/Trịnh Thị Tành(0378.809.762.),1,Nguyễn Văn Nhuần,0378809762,true,,,AUTO_MAP
+607,L4B.230,Nguyễn Văn Nhuần,Nguyễn Văn Nhuần/Trịnh Thị Tành(0378.809.762.),2,Trịnh Thị Tành,0378809762,false,,,AUTO_MAP
+608,L4B.231,Vũ Đình Dực,Vũ Đình Dực/Bùi Thị Lân(0913.265.014.),1,Vũ Đình Dực,0913265014,true,,,AUTO_MAP
+608,L4B.231,Vũ Đình Dực,Vũ Đình Dực/Bùi Thị Lân(0913.265.014.),2,Bùi Thị Lân,0913265014,false,,,AUTO_MAP
+609,L4B.232,Huỳnh Đức Hà,Huỳnh Đức Hà/Trần Kim Dung(0931.521.979 / 0906.122.193),1,Huỳnh Đức Hà,0931521979,true,,,AUTO_MAP
+609,L4B.232,Huỳnh Đức Hà,Huỳnh Đức Hà/Trần Kim Dung(0931.521.979 / 0906.122.193),2,Trần Kim Dung,0906122193,false,,,AUTO_MAP
+613,L4B.236,Mai Xuân Lực,Mai Xuân Lực/(0983.685.458.),1,Mai Xuân Lực,0983685458,true,,,AUTO_MAP
+615,L4B.302,Lương Thị Hạnh,"Lương Thị Hạnh/(0911,964,416.)",1,Lương Thị Hạnh,0911964416,true,,,AUTO_MAP
+616,L4B.303,Trần Viết Nam,Trần Viết Nam/(0973.609.092.),1,Trần Viết Nam,0973609092,true,,,AUTO_MAP
+618,L4B.306A,Phạm Linh Chi,"Phạm Linh Chi/Phạm Văn Thuyến(0866.167.059 / 0936,716,222)",1,Phạm Linh Chi,0866167059,true,,,AUTO_MAP
+618,L4B.306A,Phạm Linh Chi,"Phạm Linh Chi/Phạm Văn Thuyến(0866.167.059 / 0936,716,222)",2,Phạm Văn Thuyến,0936716222,false,,,AUTO_MAP
+620,L4B.307,Nguyễn Quỳnh Trang (CKTSR),Nguyễn Quỳnh Trang (CKTSR)/(0795.216.585.) đã UQ cho Sơn 0962940466,1,Nguyễn Quỳnh Trang (CKTSR),0795216585,true,,,AUTO_MAP
+621,L4B.309,Lê Văn Tùng,Lê Văn Tùng/(0972.526.888.) Bùi Thị Minh Nhã 0347288095,1,Lê Văn Tùng,0972526888,true,,,AUTO_MAP
+621,L4B.309,Lê Văn Tùng,Lê Văn Tùng/(0972.526.888.) Bùi Thị Minh Nhã 0347288095,2,Bùi Thị Minh Nhã,0347288095,false,,,AUTO_MAP
+622,L4B.310,Nguyễn Thị Vân,Nguyễn Thị Vân/(0358.312.382.),1,Nguyễn Thị Vân,0358312382,true,,,AUTO_MAP
+626,L4B.314,Nguyễn Thị Ngọc Mai (CKTSR),Nguyễn Thị Ngọc Mai (CKTSR)/(0339.812.838.),1,Nguyễn Thị Ngọc Mai (CKTSR),0339812838,true,,,AUTO_MAP
+626,L4B.314,Nguyễn Thị Ngọc Mai (CKTSR),Nguyễn Thị Ngọc Mai (CKTSR)/(0339.812.838.),2,Nguyễn Thị Ngọc Mai,0339812838,false,,,AUTO_MAP
+628,L4B.316,Nguyễn Vân Nam,Nguyễn Vân Nam/(0914.056.586.),1,Nguyễn Vân Nam,0914056586,true,,,AUTO_MAP
+629,L4B.317,Lê Song Nga,Lê Song Nga/(0983.737.079.) Phương Nguyễn 0886292205,1,Lê Song Nga,0983737079,true,,,AUTO_MAP
+629,L4B.317,Lê Song Nga,Lê Song Nga/(0983.737.079.) Phương Nguyễn 0886292205,2,Phương Nguyễn,0886292205,false,,,AUTO_MAP
+631,L4B.319,Lã Xuân Mạnh,Lã Xuân Mạnh/Đoàn Thị Phương Anh(0903.286.972.0984.425.622),1,Lã Xuân Mạnh,0903286972,true,,,AUTO_MAP
+631,L4B.319,Lã Xuân Mạnh,Lã Xuân Mạnh/Đoàn Thị Phương Anh(0903.286.972.0984.425.622),2,Đoàn Thị Phương Anh,0984425622,false,,,AUTO_MAP
+632,L4B.320,Nguyễn Thị Bích Hằng,Nguyễn Thị Bích Hằng/Vũ Mạnh Cường(0981.632.315/0904.956.550 (C Ngân).0986.016.145),1,Nguyễn Thị Bích Hằng,0981632315,true,,,AUTO_MAP
+632,L4B.320,Nguyễn Thị Bích Hằng,Nguyễn Thị Bích Hằng/Vũ Mạnh Cường(0981.632.315/0904.956.550 (C Ngân).0986.016.145),2,Vũ Mạnh Cường .,0904956550,false,,,AUTO_MAP
+633,L4B.321,Vũ Xuân Tuyên,Vũ Xuân Tuyên/Nguyễn Thị Phương(0982.109.307.0375.548.730),1,Vũ Xuân Tuyên,0982109307,true,,,AUTO_MAP
+633,L4B.321,Vũ Xuân Tuyên,Vũ Xuân Tuyên/Nguyễn Thị Phương(0982.109.307.0375.548.730),2,Nguyễn Thị Phương,0375548730,false,,,AUTO_MAP
+640,L4B.328,Nguyễn Hải Như,Nguyễn Hải Như/(0936.331.702.),1,Nguyễn Hải Như,0936331702,true,,,AUTO_MAP
+644,L4B.332,Lê Thị Yến,Lê Thị Yến/(0963.190.184.),1,Lê Thị Yến,0963190184,true,,,AUTO_MAP
+647,L4B.335,Đỗ Văn Toản,Đỗ Văn Toản/Đỗ Thị Phương Thảo(0394.952.488.0382.515.236),1,Đỗ Văn Toản,0394952488,true,,,AUTO_MAP
+647,L4B.335,Đỗ Văn Toản,Đỗ Văn Toản/Đỗ Thị Phương Thảo(0394.952.488.0382.515.236),2,Đỗ Thị Phương Thảo,0382515236,false,,,AUTO_MAP
+648,L4B.336,Hoàng Quốc Khánh,Hoàng Quốc Khánh/(0961.322.730 / 0982.961.279.),1,Hoàng Quốc Khánh,0961322730,true,,,AUTO_MAP
+649,L4B.401,Vũ Văn Việt,Vũ Văn Việt/Lê Thị Ái Linh(0359.086.085 / 0372.490.950),1,Vũ Văn Việt,0359086085,true,,,AUTO_MAP
+649,L4B.401,Vũ Văn Việt,Vũ Văn Việt/Lê Thị Ái Linh(0359.086.085 / 0372.490.950),2,Lê Thị Ái Linh,0372490950,false,,,AUTO_MAP
+651,L4B.403,Hoàng Văn Nam,"Hoàng Văn Nam/Trần Thị Thủy(0397.314.460, 0364.122.076 số điện thoại không đúng)",1,Hoàng Văn Nam,0397314460,true,,,AUTO_MAP
+651,L4B.403,Hoàng Văn Nam,"Hoàng Văn Nam/Trần Thị Thủy(0397.314.460, 0364.122.076 số điện thoại không đúng)",2,Trần Thị Thủy,0364122076,false,,,AUTO_MAP
+653,L4B.406A,Đỗ Thị Thoa,Đỗ Thị Thoa/(0969.522.631/ 0963.819.576 (bố Luật).),1,Đỗ Thị Thoa,0969522631,true,,,AUTO_MAP
+653,L4B.406A,Đỗ Thị Thoa,Đỗ Thị Thoa/(0969.522.631/ 0963.819.576 (bố Luật).),2,.,0963819576,false,,,AUTO_MAP
+655,L4B.407,Nguyễn Sĩ Chiến,Nguyễn Sĩ Chiến/Nguyễn Thị Thu Hương(0898.550.586.0961.808.458),1,Nguyễn Sĩ Chiến,0898550586,true,,,AUTO_MAP
+655,L4B.407,Nguyễn Sĩ Chiến,Nguyễn Sĩ Chiến/Nguyễn Thị Thu Hương(0898.550.586.0961.808.458),2,Nguyễn Thị Thu Hương,0961808458,false,,,AUTO_MAP
+658,L4B.410,Phạm Việt Hưng,Phạm Việt Hưng/(0976.556.178.),1,Phạm Việt Hưng,0976556178,true,,,AUTO_MAP
+659,L4B.411A,Lê Thanh Thiên,Lê Thanh Thiên/Nguyễn Thị Hương(0346.187.210.0965.525.878),1,Lê Thanh Thiên,0346187210,true,,,AUTO_MAP
+659,L4B.411A,Lê Thanh Thiên,Lê Thanh Thiên/Nguyễn Thị Hương(0346.187.210.0965.525.878),2,Nguyễn Thị Hương,0965525878,false,,,AUTO_MAP
+660,L4B.411B,Nguyễn Đăng Khoa,Nguyễn Đăng Khoa/Nguyễn Hương Giang(0936.821.944.0935.689.191),1,Nguyễn Đăng Khoa,0936821944,true,,,AUTO_MAP
+660,L4B.411B,Nguyễn Đăng Khoa,Nguyễn Đăng Khoa/Nguyễn Hương Giang(0936.821.944.0935.689.191),2,Nguyễn Hương Giang,0935689191,false,,,AUTO_MAP
+663,L4B.415,Nguyễn Quang Ngọc,Nguyễn Quang Ngọc/(0938.451.993.),1,Nguyễn Quang Ngọc,0938451993,true,,,AUTO_MAP
+666,L4B.418,Nguyễn Thị Nga,Nguyễn Thị Nga/(0988.660.350.),1,Nguyễn Thị Nga,0988660350,true,,,AUTO_MAP
+668,L4B.420,Nguyễn Quyết Tiến,Nguyễn Quyết Tiến/Nguyễn Thị Ngọc(0924.095.095.0982.794.098),1,Nguyễn Quyết Tiến,0924095095,true,,,AUTO_MAP
+668,L4B.420,Nguyễn Quyết Tiến,Nguyễn Quyết Tiến/Nguyễn Thị Ngọc(0924.095.095.0982.794.098),2,Nguyễn Thị Ngọc,0982794098,false,,,AUTO_MAP
+669,L4B.422,Hoàng Văn Thắng,Hoàng Văn Thắng/Nguyễn Thị Nhàn(0904.274.565 / 0899.259.168),1,Hoàng Văn Thắng,0904274565,true,,,AUTO_MAP
+669,L4B.422,Hoàng Văn Thắng,Hoàng Văn Thắng/Nguyễn Thị Nhàn(0904.274.565 / 0899.259.168),2,Nguyễn Thị Nhàn,0899259168,false,,,AUTO_MAP
+671,L4B.424,Nguyễn Thị Ngân,Nguyễn Thị Ngân/Nguyễn Văn Xanh(0767.127.387.0966.145.569),1,Nguyễn Thị Ngân,0767127387,true,,,AUTO_MAP
+671,L4B.424,Nguyễn Thị Ngân,Nguyễn Thị Ngân/Nguyễn Văn Xanh(0767.127.387.0966.145.569),2,Nguyễn Văn Xanh,0966145569,false,,,AUTO_MAP
+673,L4B.426,Bùi Thị Hòa,Bùi Thị Hòa/Đỗ Tiến Ngọc(0969.356.918 / 0936.232.411),1,Bùi Thị Hòa,0969356918,true,,,AUTO_MAP
+673,L4B.426,Bùi Thị Hòa,Bùi Thị Hòa/Đỗ Tiến Ngọc(0969.356.918 / 0936.232.411),2,Đỗ Tiến Ngọc,0936232411,false,,,AUTO_MAP
+678,L4B.431,Đặng Thị Tuyết,Đặng Thị Tuyết/(0936.944.139.),1,Đặng Thị Tuyết,0936944139,true,,,AUTO_MAP
+680,L4B.433,Lê Ngọc Anh,"Lê Ngọc Anh/(0794,174,699.)",1,Lê Ngọc Anh,0794174699,true,,,AUTO_MAP
+681,L4B.434,Phạm Văn Ngọc,"Phạm Văn Ngọc/(0936,593,686.)",1,Phạm Văn Ngọc,0936593686,true,,,AUTO_MAP
+682,L4B.435,Phạm Thị Ngọc Thu,Phạm Thị Ngọc Thu/Lê Văn Đức(0944.717.115.0912.054.597),1,Phạm Thị Ngọc Thu,0944717115,true,,,AUTO_MAP
+682,L4B.435,Phạm Thị Ngọc Thu,Phạm Thị Ngọc Thu/Lê Văn Đức(0944.717.115.0912.054.597),2,Lê Văn Đức,0912054597,false,,,AUTO_MAP
+684,L4B.501,Lê Quang Minh,Lê Quang Minh/Vũ Thị Chuyên(0936.606.579.),1,Lê Quang Minh,0936606579,true,,,AUTO_MAP
+684,L4B.501,Lê Quang Minh,Lê Quang Minh/Vũ Thị Chuyên(0936.606.579.),2,Vũ Thị Chuyên,0936606579,false,,,AUTO_MAP
+685,L4B.502,Lê Hưng Thịnh,Lê Hưng Thịnh/(0832.297.955.),1,Lê Hưng Thịnh,0832297955,true,,,AUTO_MAP
+686,L4B.503,Trần Đức Dương,Trần Đức Dương/Nguyễn Thị Thu Hương(0934.222.966.0943.223.966)/ủy quyền: bùi phương huyền: 0936869679,1,Trần Đức Dương,0934222966,true,,,AUTO_MAP
+686,L4B.503,Trần Đức Dương,Trần Đức Dương/Nguyễn Thị Thu Hương(0934.222.966.0943.223.966)/ủy quyền: bùi phương huyền: 0936869679,2,Nguyễn Thị Thu Hương,0943223966,false,,,AUTO_MAP
+686,L4B.503,Trần Đức Dương,Trần Đức Dương/Nguyễn Thị Thu Hương(0934.222.966.0943.223.966)/ủy quyền: bùi phương huyền: 0936869679,3,ủy quyền bùi phương huyền,0936869679,false,,,AUTO_MAP
+687,L4B.505,Trần Thị Nhung,Trần Thị Nhung/Đặng Hoàng Phú(0373.629.950.0942.597.679),1,Trần Thị Nhung,0373629950,true,,,AUTO_MAP
+687,L4B.505,Trần Thị Nhung,Trần Thị Nhung/Đặng Hoàng Phú(0373.629.950.0942.597.679),2,Đặng Hoàng Phú,0942597679,false,,,AUTO_MAP
+689,L4B.506B,Vũ Thị Thành,Vũ Thị Thành/Trần Trung Dũng(0936.539.682.0934.430.640),1,Vũ Thị Thành,0936539682,true,,,AUTO_MAP
+689,L4B.506B,Vũ Thị Thành,Vũ Thị Thành/Trần Trung Dũng(0936.539.682.0934.430.640),2,Trần Trung Dũng,0934430640,false,,,AUTO_MAP
+690,L4B.507,Vũ Đăng Thủy,Vũ Đăng Thủy/(0359.041.030.),1,Vũ Đăng Thủy,0359041030,true,,,AUTO_MAP
+691,L4B.509,Đàm Thị Ngọc Anh,Đàm Thị Ngọc Anh/Lương Mạnh Hà(0763.490.993.0914.330.254),1,Đàm Thị Ngọc Anh,0763490993,true,,,AUTO_MAP
+691,L4B.509,Đàm Thị Ngọc Anh,Đàm Thị Ngọc Anh/Lương Mạnh Hà(0763.490.993.0914.330.254),2,Lương Mạnh Hà,0914330254,false,,,AUTO_MAP
+692,L4B.510,Phạm Bá Long,Phạm Bá Long/Đào Thị Thúy(0834.198.866.0981.863.615),1,Phạm Bá Long,0834198866,true,,,AUTO_MAP
+692,L4B.510,Phạm Bá Long,Phạm Bá Long/Đào Thị Thúy(0834.198.866.0981.863.615),2,Đào Thị Thúy,0981863615,false,,,AUTO_MAP
+693,L4B.511A,Phan Trần Kim,Phan Trần Kim/Nguyễn Thị Minh Châu(0778.257.192.0868.198.425),1,Phan Trần Kim,0778257192,true,,,AUTO_MAP
+693,L4B.511A,Phan Trần Kim,Phan Trần Kim/Nguyễn Thị Minh Châu(0778.257.192.0868.198.425),2,Nguyễn Thị Minh Châu,0868198425,false,,,AUTO_MAP
+696,L4B.514,Nguyễn Thị Hương Giang,Nguyễn Thị Hương Giang/Phan Anh Tuấn(0795.420.034.0796.336.909),1,Nguyễn Thị Hương Giang,0795420034,true,,,AUTO_MAP
+696,L4B.514,Nguyễn Thị Hương Giang,Nguyễn Thị Hương Giang/Phan Anh Tuấn(0795.420.034.0796.336.909),2,Phan Anh Tuấn,0796336909,false,,,AUTO_MAP
+699,L4B.517,Phạm Khánh Nhung,Phạm Khánh Nhung/(0981.983.269.),1,Phạm Khánh Nhung,0981983269,true,,,AUTO_MAP
+702,L4B.520,Nguyễn Thu Trang,Nguyễn Thu Trang/(0901.534.268.),1,Nguyễn Thu Trang,0901534268,true,,,AUTO_MAP
+703,L4B.521,Trần Thị Tuyết Mai,Trần Thị Tuyết Mai/(0904.084.488.0902.092.486.),1,Trần Thị Tuyết Mai,0904084488,true,,,AUTO_MAP
+710,L4B.530,Đồng Xuân Hoàn,Đồng Xuân Hoàn/(0705.850.866.) ủy quyền cho Nguyễn Sơn Hải 0948893869,1,Đồng Xuân Hoàn,0705850866,true,,,AUTO_MAP
+710,L4B.530,Đồng Xuân Hoàn,Đồng Xuân Hoàn/(0705.850.866.) ủy quyền cho Nguyễn Sơn Hải 0948893869,2,ủy quyền cho Nguyễn Sơn Hải,0948893869,false,,,AUTO_MAP
+712,L4B.532,Phạm Văn Kha,Phạm Văn Kha/Nguyễn Thảo Ly(0941.110.129.0941.110.129),1,Phạm Văn Kha,0941110129,true,,,AUTO_MAP
+712,L4B.532,Phạm Văn Kha,Phạm Văn Kha/Nguyễn Thảo Ly(0941.110.129.0941.110.129),2,Nguyễn Thảo Ly,0941110129,false,,,AUTO_MAP
+713,L4B.533,Nguyễn Thị Thanh Hồng,0946.255.552,1,Nguyễn Thị Thanh Hồng,0946255552,true,,,AUTO_MAP
+714,L4B.534,Nguyễn Thị Phương Hoa,Nguyễn Thị Phương Hoa/Phạm Thanh Tùng(0989.060.993.),1,Nguyễn Thị Phương Hoa,0989060993,true,,,AUTO_MAP
+714,L4B.534,Nguyễn Thị Phương Hoa,Nguyễn Thị Phương Hoa/Phạm Thanh Tùng(0989.060.993.),2,Phạm Thanh Tùng,0989060993,false,,,AUTO_MAP
+715,L4B.535,Nguyễn Thị Xuân,Nguyễn Thị Xuân/(0366.518.298.),1,Nguyễn Thị Xuân,0366518298,true,,,AUTO_MAP
+716,L4B.536,Đoàn Thị Kim Chung,Đoàn Thị Kim Chung/(0913.065.186.),1,Đoàn Thị Kim Chung,0913065186,true,,,AUTO_MAP
+719,L4C.103,Ngô Minh Việt,Ngô Minh Việt/(0946.273.979.) Hiền 0945273979,1,Ngô Minh Việt,0946273979,true,,,AUTO_MAP
+719,L4C.103,Ngô Minh Việt,Ngô Minh Việt/(0946.273.979.) Hiền 0945273979,2,Hiền,0945273979,false,,,AUTO_MAP
+726,L4C.110,Vũ Thị Nhung,Vũ Thị Nhung/(0975.482.377 / 0901.588.988.),1,Vũ Thị Nhung,0975482377,true,,,AUTO_MAP
+728,L4C.111B,Lê Hồng Sơn.Phạm Thái Hà,Lê Hồng Sơn.Phạm Thái Hà/Phạm Thái Hà(Anh Sơn 0936.665.915.),1,Lê Hồng Sơn.Phạm Thái Hà,0936665915,true,,,AUTO_MAP
+728,L4C.111B,Lê Hồng Sơn.Phạm Thái Hà,Lê Hồng Sơn.Phạm Thái Hà/Phạm Thái Hà(Anh Sơn 0936.665.915.),2,Phạm Thái Hà,0936665915,false,,,AUTO_MAP
+731,L4C.115,Nguyễn Sơn Dương,Nguyễn Sơn Dương/Nguyễn Thị Huế(0975.642.666.0352.636.465),1,Nguyễn Sơn Dương,0975642666,true,,,AUTO_MAP
+731,L4C.115,Nguyễn Sơn Dương,Nguyễn Sơn Dương/Nguyễn Thị Huế(0975.642.666.0352.636.465),2,Nguyễn Thị Huế,0352636465,false,,,AUTO_MAP
+732,L4C.116,Phạm Thị Phượng,Phạm Thị Phượng/(0934.355.629.),1,Phạm Thị Phượng,0934355629,true,,,AUTO_MAP
+734,L4C.118,Bùi Đức Huy,Bùi Đức Huy/(0386.476.155.) Chủ hộ Huệ 0386476155,1,Bùi Đức Huy,0386476155,true,,,AUTO_MAP
+734,L4C.118,Bùi Đức Huy,Bùi Đức Huy/(0386.476.155.) Chủ hộ Huệ 0386476155,2,Chủ hộ Huệ,0386476155,false,,,AUTO_MAP
+735,L4C.119,Nguyễn Thị Đan Phượng,Nguyễn Thị Đan Phượng/Nguyễn Đức Chỉnh(0906.099.879.0982.966.981),1,Nguyễn Thị Đan Phượng,0906099879,true,,,AUTO_MAP
+735,L4C.119,Nguyễn Thị Đan Phượng,Nguyễn Thị Đan Phượng/Nguyễn Đức Chỉnh(0906.099.879.0982.966.981),2,Nguyễn Đức Chỉnh,0982966981,false,,,AUTO_MAP
+744,L4C.128,Đỗ Văn Bình,Đỗ Văn Bình/(0946.070.521.) đã sang nhượng cho Trang 0965962237,1,Đỗ Văn Bình,0946070521,true,,,AUTO_MAP
+744,L4C.128,Đỗ Văn Bình,Đỗ Văn Bình/(0946.070.521.) đã sang nhượng cho Trang 0965962237,2,đã sang nhượng cho Trang,0965962237,false,,,AUTO_MAP
+746,L4C.130,Đinh Văn Chuyên,Đinh Văn Chuyên/Lại Thúy Nga(0982.784.986.0988.566.078),1,Đinh Văn Chuyên,0982784986,true,,,AUTO_MAP
+746,L4C.130,Đinh Văn Chuyên,Đinh Văn Chuyên/Lại Thúy Nga(0982.784.986.0988.566.078),2,Lại Thúy Nga,0988566078,false,,,AUTO_MAP
+747,L4C.131,Lê Thị Thùy Ly,Lê Thị Thùy Ly/(0368.934.598.),1,Lê Thị Thùy Ly,0368934598,true,,,AUTO_MAP
+748,L4C.132,Phan Thanh Hùng,Phan Thanh Hùng/Hoàng Thị Nga(0834.04.1993.0393.155.789),1,Phan Thanh Hùng,0834041993,true,,,AUTO_MAP
+748,L4C.132,Phan Thanh Hùng,Phan Thanh Hùng/Hoàng Thị Nga(0834.04.1993.0393.155.789),2,Hoàng Thị Nga,0393155789,false,,,AUTO_MAP
+749,L4C.133,An Minh Thiên,An Minh Thiên/(0988.555.630.),1,An Minh Thiên,0988555630,true,,,AUTO_MAP
+754,L4C.202,Trần Ngọc Hà,Trần Ngọc Hà/(0355.719.024.),1,Trần Ngọc Hà,0355719024,true,,,AUTO_MAP
+755,L4C.203,Lương Thị Thảo,Lương Thị Thảo/(0346.732.486.),1,Lương Thị Thảo,0346732486,true,,,AUTO_MAP
+756,L4C.205,Lê Hà Phương Linh,Lê Hà Phương Linh/(0986.623.680.),1,Lê Hà Phương Linh,0986623680,true,,,AUTO_MAP
+758,L4C.206B,Nguyễn Thị Ngọc Lê,Nguyễn Thị Ngọc Lê/Chu Duy Hoài(0916.123.990/0912.393.495 (Mẹ).0985.883.886),1,Nguyễn Thị Ngọc Lê,0916123990,true,,,AUTO_MAP
+758,L4C.206B,Nguyễn Thị Ngọc Lê,Nguyễn Thị Ngọc Lê/Chu Duy Hoài(0916.123.990/0912.393.495 (Mẹ).0985.883.886),2,Chu Duy Hoài .,0912393495,false,,,AUTO_MAP
+759,L4C.208,Nguyễn Thu Hương,Nguyễn Thu Hương/(0775.317.921.),1,Nguyễn Thu Hương,0775317921,true,,,AUTO_MAP
+763,L4C.211B,Hoàng Thái Duy,Hoàng Thái Duy/(0775.322.485.),1,Hoàng Thái Duy,0775322485,true,,,AUTO_MAP
+765,L4C.214,Phạm Bích Liên,Phạm Bích Liên/(0984.200.457(C. Đào).086.880.2250.),1,Phạm Bích Liên,0984200457,true,,,AUTO_MAP
+765,L4C.214,Phạm Bích Liên,Phạm Bích Liên/(0984.200.457(C. Đào).086.880.2250.),2,. .,0868802250,false,,,AUTO_MAP
+766,L4C.215,Nguyễn Thị Bẩy,Nguyễn Thị Bẩy/Lê Thành Ba(0968.173.678.),1,Nguyễn Thị Bẩy,0968173678,true,,,AUTO_MAP
+766,L4C.215,Nguyễn Thị Bẩy,Nguyễn Thị Bẩy/Lê Thành Ba(0968.173.678.),2,Lê Thành Ba,0968173678,false,,,AUTO_MAP
+770,L4C.219,Phạm Thị Oanh,Phạm Thị Oanh/(0772.309.276.),1,Phạm Thị Oanh,0772309276,true,,,AUTO_MAP
+771,L4C.220,Lê Cảnh An,Lê Cảnh An/Bùi Phương Anh(0962.869.696.0378.804.903),1,Lê Cảnh An,0962869696,true,,,AUTO_MAP
+771,L4C.220,Lê Cảnh An,Lê Cảnh An/Bùi Phương Anh(0962.869.696.0378.804.903),2,Bùi Phương Anh,0378804903,false,,,AUTO_MAP
+772,L4C.221,Tăng Thị Hạnh,Tăng Thị Hạnh/(0906143638.),1,Tăng Thị Hạnh,0906143638,true,,,AUTO_MAP
+773,L4C.222,Nguyễn Thị Hải,Nguyễn Thị Hải/(0982.361.579 - con Hoàng.),1,Nguyễn Thị Hải,0982361579,true,,,AUTO_MAP
+776,L4C.225,Lại Thị Bích,Lại Thị Bích/(0766.429.319.),1,Lại Thị Bích,0766429319,true,,,AUTO_MAP
+778,L4C.227,Nguyễn Đăng Khoa,Nguyễn Đăng Khoa/Nguyễn Bích Ngọc(0916.552.636.0943.643.651),1,Nguyễn Đăng Khoa,0916552636,true,,,AUTO_MAP
+778,L4C.227,Nguyễn Đăng Khoa,Nguyễn Đăng Khoa/Nguyễn Bích Ngọc(0916.552.636.0943.643.651),2,Nguyễn Bích Ngọc,0943643651,false,,,AUTO_MAP
+781,L4C.230,Nguyễn Đỗ Diệu Hà,Nguyễn Đỗ Diệu Hà/(0382.606.727.),1,Nguyễn Đỗ Diệu Hà,0382606727,true,,,AUTO_MAP
+783,L4C.232,Phan Lương Nhật,Phan Lương Nhật/Vũ Thị Thu Thảo(0962.733.923 / 0974.110.344),1,Phan Lương Nhật,0962733923,true,,,AUTO_MAP
+783,L4C.232,Phan Lương Nhật,Phan Lương Nhật/Vũ Thị Thu Thảo(0962.733.923 / 0974.110.344),2,Vũ Thị Thu Thảo,0974110344,false,,,AUTO_MAP
+785,L4C.234,Trần Đức Thanh,Trần Đức Thanh/Lê Thị Hương Giang ( 0936.962.466/ 0934.305.366),1,Trần Đức Thanh,0936962466,true,,,AUTO_MAP
+785,L4C.234,Trần Đức Thanh,Trần Đức Thanh/Lê Thị Hương Giang ( 0936.962.466/ 0934.305.366),2,Lê Thị Hương Giang,0934305366,false,,,AUTO_MAP
+790,L4C.303,Lê Quý Doanh,Lê Quý Doanh/Nguyễn Thị Anh(0942.979.458. ),1,Lê Quý Doanh,0942979458,true,,,AUTO_MAP
+790,L4C.303,Lê Quý Doanh,Lê Quý Doanh/Nguyễn Thị Anh(0942.979.458. ),2,Nguyễn Thị Anh,0942979458,false,,,AUTO_MAP
+791,L4C.306A,Nguyễn Trung Hiếu,Nguyễn Trung Hiếu/(0904.442.121),1,Nguyễn Trung Hiếu,0904442121,true,,,AUTO_MAP
+792,L4C.306B,Hoàng Văn Nam,Hoàng Văn Nam/(0973.100.869.),1,Hoàng Văn Nam,0973100869,true,,,AUTO_MAP
+795,L4C.309,Trần Mạnh Chiến,Trần Mạnh Chiến/(0906.025.750.)/ 0327.289.868,1,Trần Mạnh Chiến,0906025750,true,,,AUTO_MAP
+797,L4C.311A,Nguyễn Văn Song,Nguyễn Văn Song/Vũ Thị Vần (0333.587.785 0977.868.569),1,Nguyễn Văn Song,0333587785,true,,,AUTO_MAP
+797,L4C.311A,Nguyễn Văn Song,Nguyễn Văn Song/Vũ Thị Vần (0333.587.785 0977.868.569),2,Vũ Thị Vần,0977868569,false,,,AUTO_MAP
+800,L4C.315,Bùi Thị Hòa,Bùi Thị Hòa/(0359.706.558.),1,Bùi Thị Hòa,0359706558,true,,,AUTO_MAP
+802,L4C.317,Hoàng Mạnh Hưng,Hoàng Mạnh Hưng/(0983.966.912/0936.803.292.),1,Hoàng Mạnh Hưng,0983966912,true,,,AUTO_MAP
+803,L4C.318,Vũ Trọng Duy,Vũ Trọng Duy/(0919.094.489-A.Vỹ.),1,Vũ Trọng Duy,0919094489,true,,,AUTO_MAP
+804,L4C.319,Vũ Văn Sênh,Vũ Văn Sênh/Lâm Thị Huyền Trang(0816.157.689.0842.133.143),1,Vũ Văn Sênh,0816157689,true,,,AUTO_MAP
+804,L4C.319,Vũ Văn Sênh,Vũ Văn Sênh/Lâm Thị Huyền Trang(0816.157.689.0842.133.143),2,Lâm Thị Huyền Trang,0842133143,false,,,AUTO_MAP
+806,L4C.321,Nguyễn Thị Hiền,Nguyễn Thị Hiền/Lê Đình Hưng(0936.528.569.0934.672.266),1,Nguyễn Thị Hiền,0936528569,true,,,AUTO_MAP
+806,L4C.321,Nguyễn Thị Hiền,Nguyễn Thị Hiền/Lê Đình Hưng(0936.528.569.0934.672.266),2,Lê Đình Hưng,0934672266,false,,,AUTO_MAP
+808,L4C.323,Nguyễn Thị Thu Huệ,Nguyễn Thị Thu Huệ/Nguyễn Văn Hiệp(0976.300.920.0986.383.567),1,Nguyễn Thị Thu Huệ,0976300920,true,,,AUTO_MAP
+808,L4C.323,Nguyễn Thị Thu Huệ,Nguyễn Thị Thu Huệ/Nguyễn Văn Hiệp(0976.300.920.0986.383.567),2,Nguyễn Văn Hiệp,0986383567,false,,,AUTO_MAP
+810,L4C.325,Nguyễn Thu Thủy,Nguyễn Thu Thủy/Nguyễn Xuân Thanh(0768.312.445 / 0912.758.611),1,Nguyễn Thu Thủy,0768312445,true,,,AUTO_MAP
+810,L4C.325,Nguyễn Thu Thủy,Nguyễn Thu Thủy/Nguyễn Xuân Thanh(0768.312.445 / 0912.758.611),2,Nguyễn Xuân Thanh,0912758611,false,,,AUTO_MAP
+811,L4C.326,Lương Quốc Vương,Lương Quốc Vương/(0866.630.645.),1,Lương Quốc Vương,0866630645,true,,,AUTO_MAP
+815,L4C.331,Nguyễn Thúy Quỳnh,Nguyễn Thúy Quỳnh/(0987.465.890.),1,Nguyễn Thúy Quỳnh,0987465890,true,,,AUTO_MAP
+816,L4C.332,Trần Thị Thu Hương,Trần Thị Thu Hương/(0919.234.688.),1,Trần Thị Thu Hương,0919234688,true,,,AUTO_MAP
+821,L4C.401,Lưu Thị Anh,Lưu Thị Anh/(0946.282.335.),1,Lưu Thị Anh,0946282335,true,,,AUTO_MAP
+823,L4C.403,Hoàng Văn Hải,Hoàng Văn Hải/(0988.362.881.),1,Hoàng Văn Hải,0988362881,true,,,AUTO_MAP
+824,L4C.405,Phạm Ngọc Cương,Phạm Ngọc Cương/Dương Thị Thuý Nga(0934.293.112 / 077.5355.504),1,Phạm Ngọc Cương,0934293112,true,,,AUTO_MAP
+824,L4C.405,Phạm Ngọc Cương,Phạm Ngọc Cương/Dương Thị Thuý Nga(0934.293.112 / 077.5355.504),2,Dương Thị Thuý Nga,0775355504,false,,,AUTO_MAP
+828,L4C.408,Nguyễn Thị Minh Anh,Nguyễn Thị Minh Anh/(0911.422.192.),1,Nguyễn Thị Minh Anh,0911422192,true,,,AUTO_MAP
+829,L4C.409,Lê Thảo Vy,Lê Thảo Vy// 0836999296 / (0934.482.473.),1,Lê Thảo Vy,0836999296,true,,,AUTO_MAP
+830,L4C.410,Nguyễn Thị Lý,Nguyễn Thị Lý/Vũ Đình Hưng(078.207.6818.0975.276.684),1,Nguyễn Thị Lý,0782076818,true,,,AUTO_MAP
+830,L4C.410,Nguyễn Thị Lý,Nguyễn Thị Lý/Vũ Đình Hưng(078.207.6818.0975.276.684),2,Vũ Đình Hưng,0975276684,false,,,AUTO_MAP
+832,L4C.411B,Vũ Thế Phúc,Vũ Thế Phúc/(0981.836.183.),1,Vũ Thế Phúc,0981836183,true,,,AUTO_MAP
+833,L4C.412,Vũ Thị Quỳnh,Vũ Thị Quỳnh/Nguyễn Minh Đức(0799.24.86.88 - 0988.681.903),1,Vũ Thị Quỳnh,0799248688,true,,,AUTO_MAP
+833,L4C.412,Vũ Thị Quỳnh,Vũ Thị Quỳnh/Nguyễn Minh Đức(0799.24.86.88 - 0988.681.903),2,Nguyễn Minh Đức,0988681903,false,,,AUTO_MAP
+834,L4C.414,Quách Huy Dũng,Quách Huy Dũng/(0382.430.698.),1,Quách Huy Dũng,0382430698,true,,,AUTO_MAP
+836,L4C.416,Trần Hồng Nga,Trần Hồng Nga/(0984.915.594 / 0949.112.258.) 0912. 693.188,1,Trần Hồng Nga,0984915594,true,,,AUTO_MAP
+838,L4C.418,Bùi Thị Thương,Bùi Thị Thương/(0987001794.),1,Bùi Thị Thương,0987001794,true,,,AUTO_MAP
+839,L4C.419,Nguyễn Đăng Quý,Nguyễn Đăng Quý/(0846.422.999.),1,Nguyễn Đăng Quý,0846422999,true,,,AUTO_MAP
+845,L4C.428,Đặng Thị Biên,"Đặng Thị Biên/(0775.355.709, 0325019036)",1,Đặng Thị Biên,0775355709,true,,,AUTO_MAP
+846,L4C.429,Nguyễn Thị Phương,Nguyễn Thị Phương/Nguyễn Đức Duy(0814.975.929.0906.926.296),1,Nguyễn Thị Phương,0814975929,true,,,AUTO_MAP
+846,L4C.429,Nguyễn Thị Phương,Nguyễn Thị Phương/Nguyễn Đức Duy(0814.975.929.0906.926.296),2,Nguyễn Đức Duy,0906926296,false,,,AUTO_MAP
+850,L4C.433,Trần Văn An,Trần Văn An/Hoàng Thị Giang(0971.901.149 / 0347.556.273),1,Trần Văn An,0971901149,true,,,AUTO_MAP
+850,L4C.433,Trần Văn An,Trần Văn An/Hoàng Thị Giang(0971.901.149 / 0347.556.273),2,Hoàng Thị Giang,0347556273,false,,,AUTO_MAP
+856,L4C.503,Trần Thị Quyên,Trần Thị Quyên/(0829.377.600.),1,Trần Thị Quyên,0829377600,true,,,AUTO_MAP
+858,L4C.506A,Phạm Văn Trung,Phạm Văn Trung/Lê Thị Ngân Hiền(0376.357.187.0906.179.375),1,Phạm Văn Trung,0376357187,true,,,AUTO_MAP
+858,L4C.506A,Phạm Văn Trung,Phạm Văn Trung/Lê Thị Ngân Hiền(0376.357.187.0906.179.375),2,Lê Thị Ngân Hiền,0906179375,false,,,AUTO_MAP
+861,L4C.509,Nguyễn Thị Vân Anh,Nguyễn Thị Vân Anh/(0906.259.966.),1,Nguyễn Thị Vân Anh,0906259966,true,,,AUTO_MAP
+863,L4C.511A,Phạm Thị Thu (CKTSR),Phạm Thị Thu (CKTSR)/(0936.702.119.),1,Phạm Thị Thu (CKTSR),0936702119,true,,,AUTO_MAP
+863,L4C.511A,Phạm Thị Thu (CKTSR),Phạm Thị Thu (CKTSR)/(0936.702.119.),2,Phạm Thị Thu,0936702119,false,,,AUTO_MAP
+864,L4C.511B,Nguyễn Thị Huệ,Nguyễn Thị Huệ/Hoàng Bảo Hưng(0986.156.416.0904.100.433)/ UQ cho Bùi Thị Nga 0912289352,1,Nguyễn Thị Huệ,0986156416,true,,,AUTO_MAP
+864,L4C.511B,Nguyễn Thị Huệ,Nguyễn Thị Huệ/Hoàng Bảo Hưng(0986.156.416.0904.100.433)/ UQ cho Bùi Thị Nga 0912289352,2,Hoàng Bảo Hưng,0904100433,false,,,AUTO_MAP
+864,L4C.511B,Nguyễn Thị Huệ,Nguyễn Thị Huệ/Hoàng Bảo Hưng(0986.156.416.0904.100.433)/ UQ cho Bùi Thị Nga 0912289352,3,UQ cho Bùi Thị Nga,0912289352,false,,,AUTO_MAP
+865,L4C.512,Đỗ Viết Thảo,Đỗ Viết Thảo/Hà Phương Bảo Anh(0909.486.366.0906.190.155),1,Đỗ Viết Thảo,0909486366,true,,,AUTO_MAP
+865,L4C.512,Đỗ Viết Thảo,Đỗ Viết Thảo/Hà Phương Bảo Anh(0909.486.366.0906.190.155),2,Hà Phương Bảo Anh,0906190155,false,,,AUTO_MAP
+867,L4C.515,Đào Văn Ten,Đào Văn Ten/(0912.645.358.),1,Đào Văn Ten,0912645358,true,,,AUTO_MAP
+871,L4C.519,Nguyễn Trinh,Nguyễn Trinh/ Nguyễn Thị Hạnh (0902.031.057 / 0763.411.878.),1,Nguyễn Trinh,0902031057,true,,,AUTO_MAP
+871,L4C.519,Nguyễn Trinh,Nguyễn Trinh/ Nguyễn Thị Hạnh (0902.031.057 / 0763.411.878.),2,Nguyễn Thị Hạnh,0763411878,false,,,AUTO_MAP
+872,L4C.520,Nguyễn Thị Loan,Nguyễn Thị Loan/(0987.398.518.),1,Nguyễn Thị Loan,0987398518,true,,,AUTO_MAP
+873,L4C.521,Lê Đình Trung,Lê Đình Trung/(0934.504.272 (cô Huế). 0898.379.364.),1,Lê Đình Trung,0934504272,true,,,AUTO_MAP
+873,L4C.521,Lê Đình Trung,Lê Đình Trung/(0934.504.272 (cô Huế). 0898.379.364.),2,. .,0898379364,false,,,AUTO_MAP
+874,L4C.522,Nguyễn Quý Nam,Nguyễn Quý Nam/(0915.622.780.),1,Nguyễn Quý Nam,0915622780,true,,,AUTO_MAP
+876,L4C.524,Phạm Văn Hoà,Phạm Văn Hoà/Nguyễn Thị Bé(0782.203.896.0934.367.064),1,Phạm Văn Hoà,0782203896,true,,,AUTO_MAP
+876,L4C.524,Phạm Văn Hoà,Phạm Văn Hoà/Nguyễn Thị Bé(0782.203.896.0934.367.064),2,Nguyễn Thị Bé,0934367064,false,,,AUTO_MAP
+877,L4C.525,Đoàn Thị Châu Loan,Đoàn Thị Châu Loan/Đào Văn Mạnh(0904.138.608 / 0904.145.788),1,Đoàn Thị Châu Loan,0904138608,true,,,AUTO_MAP
+877,L4C.525,Đoàn Thị Châu Loan,Đoàn Thị Châu Loan/Đào Văn Mạnh(0904.138.608 / 0904.145.788),2,Đào Văn Mạnh,0904145788,false,,,AUTO_MAP
+878,L4C.527,Đoàn Sơn Tùng,Đoàn Sơn Tùng/Đỗ Như Quỳnh Mai(0936.983.789.0936.711.994),1,Đoàn Sơn Tùng,0936983789,true,,,AUTO_MAP
+878,L4C.527,Đoàn Sơn Tùng,Đoàn Sơn Tùng/Đỗ Như Quỳnh Mai(0936.983.789.0936.711.994),2,Đỗ Như Quỳnh Mai,0936711994,false,,,AUTO_MAP
+879,L4C.529,Vũ Thị Nhàn,Vũ Thị Nhàn/(0966.816.404.),1,Vũ Thị Nhàn,0966816404,true,,,AUTO_MAP
+880,L4C.530,Nguyễn Thị Lành,Nguyễn Thị Lành/(0904.160.512/0904.391.754),1,Nguyễn Thị Lành,0904160512,true,,,AUTO_MAP
+881,L4C.531,Tạ Thị Giang,Tạ Thị Giang/Lê Xuân Thảo(0989.603.914.0976.366.646),1,Tạ Thị Giang,0989603914,true,,,AUTO_MAP
+881,L4C.531,Tạ Thị Giang,Tạ Thị Giang/Lê Xuân Thảo(0989.603.914.0976.366.646),2,Lê Xuân Thảo,0976366646,false,,,AUTO_MAP
+887,LK1.27,Đỗ Thị Oanh,Anh Huy 0936.586.096,1,Đỗ Thị Oanh,0936586096,true,,,AUTO_MAP
+887,LK1.27,Đỗ Thị Oanh,Anh Huy 0936.586.096,2,Anh Huy,0936586096,false,,,AUTO_MAP
+889,LK1.31,Đinh Văn Tuấn / Nguyễn Thị Hải Vân,0904.977.393/ 0936.597.792,1,Đinh Văn Tuấn,0904977393,true,,,AUTO_MAP
+889,LK1.31,Đinh Văn Tuấn / Nguyễn Thị Hải Vân,0904.977.393/ 0936.597.792,2,Nguyễn Thị Hải Vân,0936597792,false,,,AUTO_MAP
+890,LK1.32,Lã Thị Bảo Ngọc/ Phạm Văn Long,0795.244.091.0983.390.312,1,Lã Thị Bảo Ngọc,0795244091,true,,,AUTO_MAP
+890,LK1.32,Lã Thị Bảo Ngọc/ Phạm Văn Long,0795.244.091.0983.390.312,2,Phạm Văn Long,0983390312,false,,,AUTO_MAP
+891,LK1.33,Ngô Mai Duy/ Bùi Thị Hoàn,0904.98.5557,1,Ngô Mai Duy/ Bùi Thị Hoàn,0904985557,true,,,AUTO_MAP
+892,LK1.34,Phạm Quốc Toàn/ Ngô Thị Thùy,0962.282.585/ 0941.781.682,1,Phạm Quốc Toàn,0962282585,true,,,AUTO_MAP
+892,LK1.34,Phạm Quốc Toàn/ Ngô Thị Thùy,0962.282.585/ 0941.781.682,2,Ngô Thị Thùy,0941781682,false,,,AUTO_MAP
+893,LK1.35,Nguyễn Minh Trường/ Nguyễn Thị Thanh Nga,0936.516.839/ 0936.816.789,1,Nguyễn Minh Trường,0936516839,true,,,AUTO_MAP
+893,LK1.35,Nguyễn Minh Trường/ Nguyễn Thị Thanh Nga,0936.516.839/ 0936.816.789,2,Nguyễn Thị Thanh Nga,0936816789,false,,,AUTO_MAP
+894,LK1.36,Hà Tiến Mạnh/Nguyễn Thị Hậu,0912.281.174/ 0932.212.628,1,Hà Tiến Mạnh,0912281174,true,,,AUTO_MAP
+894,LK1.36,Hà Tiến Mạnh/Nguyễn Thị Hậu,0912.281.174/ 0932.212.628,2,Nguyễn Thị Hậu,0932212628,false,,,AUTO_MAP
+897,LK1.39,Vũ Thị Hiền Linh,0904.445.883,1,Vũ Thị Hiền Linh,0904445883,true,,,AUTO_MAP
+898,LK1.41,Trần Văn Vượng/ Mạc Thị Tuyết Lan,0912.262.085/ 0989.187.928,1,Trần Văn Vượng,0912262085,true,,,AUTO_MAP
+898,LK1.41,Trần Văn Vượng/ Mạc Thị Tuyết Lan,0912.262.085/ 0989.187.928,2,Mạc Thị Tuyết Lan,0989187928,false,,,AUTO_MAP
+900,LK1.43,Phùng Thị Nhật,0946.821.357,1,Phùng Thị Nhật,0946821357,true,,,AUTO_MAP
+901,LK1.46,Vũ Thị Linh/Nguyễn Vĩnh Tỉnh,0963.161.864,1,Vũ Thị Linh/Nguyễn Vĩnh Tỉnh,0963161864,true,,,AUTO_MAP
+902,LK1.48,Nguyễn Quốc Hưng/ Cù Thị Phương Thảo,0948.886.166,1,Nguyễn Quốc Hưng/ Cù Thị Phương Thảo,0948886166,true,,,AUTO_MAP
+903,LK1.50,Lê Văn Toàn/ Dương Thị Thúy Anh,0904.341.916/0936.546.326,1,Lê Văn Toàn,0904341916,true,,,AUTO_MAP
+903,LK1.50,Lê Văn Toàn/ Dương Thị Thúy Anh,0904.341.916/0936.546.326,2,Dương Thị Thúy Anh,0936546326,false,,,AUTO_MAP
+905,LK1.54,Nguyễn Thị Hải / Vũ Mạnh Hùng,0944.420.180. 0904.201.699,1,Nguyễn Thị Hải,0944420180,true,,,AUTO_MAP
+905,LK1.54,Nguyễn Thị Hải / Vũ Mạnh Hùng,0944.420.180. 0904.201.699,2,Vũ Mạnh Hùng,0904201699,false,,,AUTO_MAP
+907,LK2.1,Phạm Anh Dũng/ Vương Thị Nga,0989.402.248,1,Phạm Anh Dũng/ Vương Thị Nga,0989402248,true,,,AUTO_MAP
+912,LK2.15,Lê Thị Phương,0931.872.999,1,Lê Thị Phương,0931872999,true,,,AUTO_MAP
+915,LK2.18,Lê Thanh Toàn,0919.465.689,1,Lê Thanh Toàn,0919465689,true,,,AUTO_MAP
+916,LK2.19,Nguyễn Thế Huy,0973.830.999,1,Nguyễn Thế Huy,0973830999,true,,,AUTO_MAP
+917,LK2.2,Mai Văn Phong/ Phạm Thị Hương,0374.777.832.0964.836.350,1,Mai Văn Phong,0374777832,true,,,AUTO_MAP
+917,LK2.2,Mai Văn Phong/ Phạm Thị Hương,0374.777.832.0964.836.350,2,Phạm Thị Hương,0964836350,false,,,AUTO_MAP
+918,LK2.20,Đinh Anh Bình / Nguyễn Thị Hiền,0966.282.819/0928.719.389,1,Đinh Anh Bình,0966282819,true,,,AUTO_MAP
+918,LK2.20,Đinh Anh Bình / Nguyễn Thị Hiền,0966.282.819/0928.719.389,2,Nguyễn Thị Hiền,0928719389,false,,,AUTO_MAP
+919,LK2.21,Phạm Mạnh Trường/ Nguyễn Thị Lan Anh,0913.246.772,1,Phạm Mạnh Trường/ Nguyễn Thị Lan Anh,0913246772,true,,,AUTO_MAP
+920,LK2.22,Bùi Thị Thanh Luyện,0912471263,1,Bùi Thị Thanh Luyện,0912471263,true,,,AUTO_MAP
+923,LK2.25,Đào Dương Hùng,0989.392.345,1,Đào Dương Hùng,0989392345,true,,,AUTO_MAP
+927,LK2.30,Nguyễn Mỹ Hạnh/Nguyễn Việt Hùng,0912356692,1,Nguyễn Mỹ Hạnh/Nguyễn Việt Hùng,0912356692,true,,,AUTO_MAP
+931,LK2.8,Hà Tiến Mạnh/Nguyễn Thị Hậu,0912.281.174/ 0932.212.628,1,Hà Tiến Mạnh,0912281174,true,,,AUTO_MAP
+931,LK2.8,Hà Tiến Mạnh/Nguyễn Thị Hậu,0912.281.174/ 0932.212.628,2,Nguyễn Thị Hậu,0932212628,false,,,AUTO_MAP
+933,LKV.45,Phùng Thị Nhật,0946.821.357,1,Phùng Thị Nhật,0946821357,true,,,AUTO_MAP
+935,LKV.58,Phùng Thị Nhật,0946.821.357,1,Phùng Thị Nhật,0946821357,true,,,AUTO_MAP

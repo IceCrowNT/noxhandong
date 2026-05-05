@@ -551,6 +551,97 @@ $HOME/Applications/Postgres.app/Contents/Versions/17/bin/psql \
 
 ---
 
+## Task 6B. Thiết kế lại schema cư dân/import theo V2
+
+### Mục tiêu
+
+- sửa điểm yếu của V1 ở phần dữ liệu cư dân
+- cho phép 1 căn có nhiều người liên quan
+- tách số điện thoại ra khỏi bảng cư dân
+- dùng tên bảng/cột tiếng Việt không dấu
+- đổi `id` sang số tự tăng để dễ review DB
+
+### Đã làm
+
+- tạo tài liệu rule parse cư dân:
+  - `docs/resident-import-rules.vi.md`
+- tạo tài liệu thiết kế:
+  - `docs/database-v2.md`
+- tạo draft schema:
+  - `prisma/schema-v2.prisma`
+- chuyển hướng thiết kế sang mô hình contact-centric theo căn hộ
+- thêm script audit dữ liệu cư dân:
+  - `scripts/audit-resident-contact-notes.cjs`
+- chạy audit thật từ file Excel quản lý và sinh báo cáo:
+  - `docs/bao-cao-audit-lien-he-can-ho.md`
+
+### Kết quả audit thực tế
+
+- tổng ô `THÔNG TIN CƯ DÂN` cần rà soát: `896`
+- có nhiều dòng: `432`
+- có nhiều số điện thoại: `553`
+- có cờ trạng thái: `262`
+
+Các nhóm dữ liệu bẩn nổi bật:
+
+- nhiều người dùng chung một số
+- nhiều số điện thoại nhưng không rõ thứ tự map
+- có ghi chú nghiệp vụ như `Thanh toán theo tháng`
+- có cờ trạng thái như:
+  - `đã bán`
+  - `chủ mới`
+  - `khách thuê`
+  - `cần xin sđt`
+  - `sđt sai`
+  - `xác minh`
+
+### Cách kiểm tra
+
+Kiểm tra xem V2 đã trả lời được các câu hỏi này chưa:
+
+- 1 note có nhiều người thì lưu ở đâu?
+- 1 người có nhiều số điện thoại thì lưu ở đâu?
+- 1 căn có nhiều người liên quan thì lưu ở đâu?
+- dữ liệu parse cư dân trước khi vào master lưu ở đâu?
+- tên bảng/cột có dễ review hơn không?
+- `id` đã chuyển từ chuỗi khó đọc sang số tự tăng chưa?
+- báo cáo audit có chỉ ra được các ô bẩn và nhóm pattern chính không?
+
+### Kết luận
+
+- hướng `can_ho -> lien_he_can_ho` phù hợp hơn `Resident/Occupancy` ở giai đoạn này
+- chưa nên migrate/reset DB cho đến khi chốt rule lọc bẩn cuối cùng
+- bước kế tiếp nên là chốt rule staging contact theo căn, rồi mới reset DB v2
+
+### Preview parse đã sinh
+
+Đã tạo bộ file preview để review trước khi đổ vào DB V2:
+
+- `docs/preview-lien-he-can-ho/preview-tong-hop.csv`
+- `docs/preview-lien-he-can-ho/auto-map.csv`
+- `docs/preview-lien-he-can-ho/auto-map-group.csv`
+- `docs/preview-lien-he-can-ho/can-ra-soat.csv`
+- `docs/preview-lien-he-can-ho/chi-luu-co-trang-thai.csv`
+- `docs/preview-lien-he-can-ho/README.md`
+
+Số lượng hiện tại:
+
+- `AUTO_MAP`: `440` căn nguồn / `639` dòng contact preview
+- `AUTO_MAP_GROUP`: `0`
+- `CAN_RA_SOAT`: `491` căn nguồn / `1264` dòng contact preview
+- `CHI_LUU_CO_TRANG_THAI`: `3` căn nguồn / `3` dòng preview
+
+Ghi chú:
+
+- bước này dùng để anh review rule bằng mắt
+- chưa phải dữ liệu master cuối cùng
+
+### Trạng thái
+
+- [x] Hoàn thành
+
+---
+
 ## Task 7. Import sao kê vào DB
 
 ### Mục tiêu
@@ -864,5 +955,10 @@ Ghi chú:
 
 - Task 2, Task 3, Task 4 đã hoàn thành.
 - Hai file Excel mẫu hiện đã có sẵn trong `docs/`, nên có thể bắt đầu import ngay.
+- File `docs/Danh_Sach_Can_Ho_Master.xlsx` đã được đối chiếu:
+  - khớp `934/934` mã căn với dữ liệu hiện có
+  - báo cáo: `docs/danh-gia-danh-sach-can-ho-master.md`
+  - có thể dùng làm nguồn master cho `can_ho`
+  - phần contact vẫn phải đi qua staging/review
 
 Chưa nên nhảy sang viết UI mới trước khi xong các bước này.

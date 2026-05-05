@@ -11,7 +11,7 @@ File này dùng để:
 
 ## Ngày cập nhật
 
-- 2026-04-19
+- 2026-04-21
 
 ## Trạng thái hiện tại
 
@@ -23,10 +23,14 @@ Dự án đã đi qua các bước nền tảng:
 - chạy migration đầu tiên
 - import raw workbook quản lý vào DB
 - transform master data từ workbook quản lý
+- thiết kế `database v2` cho phần cư dân/import
+- chuyển `v2` sang mô hình contact-centric theo căn hộ
+- chạy audit thật trên cột `THÔNG TIN CƯ DÂN` từ file Excel quản lý
 
 Hiện tại chưa làm xong:
 
 - cải thiện cấu trúc `raw payload` để dễ đối chiếu với Excel
+- migrate/reset DB dev sang V2
 - import sao kê vào DB
 - parse transaction vào DB
 - review/allocation trên DB thật
@@ -101,7 +105,48 @@ Hướng sửa đã chốt:
 
 Đây là việc nên làm trước khi đi sâu hơn vào import sao kê.
 
-### 2. Sao kê chưa nhập vào DB
+### 2. Schema V1 chưa phù hợp hoàn toàn cho dữ liệu cư dân
+
+Đã tạo phương án V2:
+
+- `docs/resident-import-rules.vi.md`
+- `docs/database-v2.md`
+- `prisma/schema-v2.prisma`
+
+Điểm mới:
+
+- tên bảng/cột tiếng Việt không dấu
+- `id` dùng số tự tăng
+- chuyển sang quản lý `lien_he_can_ho`
+- thêm staging `ung_vien_lien_he_can_ho`
+- thêm audit script để rà dữ liệu bẩn trong cột `THÔNG TIN CƯ DÂN`
+
+Kết quả audit mới nhất:
+
+- tổng ô cần rà soát: `896`
+- nhiều dòng: `432`
+- nhiều số điện thoại: `553`
+- có cờ trạng thái: `262`
+
+Report:
+
+- `docs/bao-cao-audit-lien-he-can-ho.md`
+- `docs/kiem-tra-ket-qua-parse-lien-he-can-ho.md`
+
+Preview parse mới nhất:
+
+- `docs/preview-lien-he-can-ho/README.md`
+- `docs/preview-lien-he-can-ho/preview-tong-hop.csv`
+- `docs/preview-lien-he-can-ho/can-ra-soat.csv`
+
+Số lượng:
+
+- `AUTO_MAP`: `440` căn nguồn
+- `AUTO_MAP_GROUP`: `0`
+- `CAN_RA_SOAT`: `491` căn nguồn
+- `CHI_LUU_CO_TRANG_THAI`: `3` căn nguồn
+
+### 3. Sao kê chưa nhập vào DB
 
 Phần sao kê hiện mới xử lý ở app cũ / memory flow, chưa đưa vào DB pipeline mới.
 
@@ -112,22 +157,29 @@ Máy khác khi vào dự án nên đọc theo thứ tự này:
 1. `docs/handoff.md`
 2. `docs/checklist-trien-khai-va-nghiem-thu.md`
 3. `docs/database-v1.md`
-4. `docs/filter-rules.vi.md`
-5. `docs/module-map.md`
+4. `docs/database-v2.md`
+5. `docs/resident-import-rules.vi.md`
+6. `docs/filter-rules.vi.md`
+7. `docs/module-map.md`
 
 Nếu làm phần DB/setup:
 
-6. `docs/setup-may-moi-va-database.md`
+8. `docs/setup-may-moi-va-database.md`
 
 Nếu kiểm chất lượng dữ liệu master:
 
-7. `docs/bao-cao-cu-dan-bi-double.md`
+9. `docs/bao-cao-cu-dan-bi-double.md`
+10. `docs/bao-cao-audit-lien-he-can-ho.md`
+11. `docs/kiem-tra-ket-qua-parse-lien-he-can-ho.md`
+12. `docs/preview-lien-he-can-ho/README.md`
+13. `docs/preview-lien-he-can-ho/can-ra-soat.csv`
 
 ## Các file và thư mục cần biết
 
 ### Schema và migration
 
 - `prisma/schema.prisma`
+- `prisma/schema-v2.prisma`
 - `prisma/migrations/`
 - `prisma.config.ts`
 
@@ -146,6 +198,7 @@ Nếu kiểm chất lượng dữ liệu master:
 - `scripts/import-management-raw.cjs`
 - `scripts/sync-management-master.cjs`
 - `scripts/report-resident-duplicates.cjs`
+- `scripts/audit-resident-contact-notes.cjs`
 
 ### Cấu trúc code
 
@@ -219,7 +272,38 @@ npm run dev
 
 ## Việc cần làm tiếp theo
 
+### File master mới đã được thẩm định
+
+- File: `docs/Danh_Sach_Can_Ho_Master.xlsx`
+- Báo cáo: `docs/danh-gia-danh-sach-can-ho-master.md`
+- Kết luận:
+  - tập mã căn khớp hoàn toàn với dữ liệu hiện có: `934/934`
+  - nên dùng làm nguồn master chính cho `can_ho`
+  - chưa nên dùng thẳng cho contact master, vì các cột `Người sử dụng 1..5` vẫn còn dữ liệu bẩn
+
 ### Bước 1
+
+Review file preview và chốt rule lọc bẩn cuối cùng cho `THÔNG TIN CƯ DÂN`:
+
+- `docs/preview-lien-he-can-ho/preview-tong-hop.csv`
+- `docs/preview-lien-he-can-ho/can-ra-soat.csv`
+
+Chốt:
+
+- auto-map được những case nào
+- case nào chỉ sinh `ung_vien_lien_he_can_ho`
+- case nào phải gắn `co_can_ra_soat = true`
+
+### Bước 2
+
+Sau khi chốt rule:
+
+- migrate sang `schema-v2.prisma`
+- reset DB dev
+- import lại workbook quản lý theo pipeline mới
+- sinh `ung_vien_lien_he_can_ho`
+
+### Bước 3
 
 Sửa raw importer để payload dễ kiểm tra hơn:
 
@@ -227,7 +311,7 @@ Sửa raw importer để payload dễ kiểm tra hơn:
 - thêm `mappedRow`
 - import lại workbook quản lý
 
-### Bước 2
+### Bước 3
 
 Bắt đầu `Task 7`:
 
@@ -235,7 +319,7 @@ Bắt đầu `Task 7`:
   - `ImportBatch`
   - `RawBankStatementRow`
 
-### Bước 3
+### Bước 4
 
 Làm `Task 8`:
 
