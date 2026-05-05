@@ -960,5 +960,17 @@ Ghi chú:
   - báo cáo: `docs/danh-gia-danh-sach-can-ho-master.md`
   - có thể dùng làm nguồn master cho `can_ho`
   - phần contact vẫn phải đi qua staging/review
+- Script sync mới cho phần `can_ho`:
+  - `npm run sync:apartment:master`
+  - nguồn mặc định: `docs/Danh_Sach_Can_Ho_Master.xlsx`
+- Preview riêng cho contact từ file master mới:
+  - `npm run preview:master:contacts`
+  - `docs/preview-master-lien-he-can-ho/README.md`
+  - `docs/preview-master-lien-he-can-ho/nhap-thang.csv`
+  - `docs/preview-master-lien-he-can-ho/can-ra-soat.csv`
+  - số lượng hiện tại:
+    - `NHAP_THANG`: `402` căn
+    - `CAN_RA_SOAT`: `532` căn
+    - `1977` dòng contact preview
 
 Chưa nên nhảy sang viết UI mới trước khi xong các bước này.

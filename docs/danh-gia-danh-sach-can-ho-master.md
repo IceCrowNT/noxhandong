@@ -201,3 +201,32 @@ File `Danh_Sach_Can_Ho_Master.xlsx`:
 Nói ngắn:
 - phần `căn hộ`: **đã ổn**
 - phần `liên hệ`: **tốt hơn trước nhưng vẫn phải staging + review**
+
+## Trả lời trực tiếp câu hỏi "độ chính xác có đạt 100% không?"
+
+### Nếu xét riêng phần `can_ho`
+
+Có thể coi là **đạt mức 100% đủ dùng để cập nhật pipeline** vì:
+- `934/934` mã căn khớp hoàn toàn
+- không có mã trùng
+- không có mã rỗng
+
+### Nếu xét toàn bộ file, bao gồm contact
+
+**Không đạt 100%** vì vẫn còn các nhóm dữ liệu mà parser không nên tự động tin tuyệt đối:
+
+- `366` dòng mà `Chủ Hộ (Tên)` khác `Người sử dụng 1`
+- `174` dòng có cột tên lẫn số hoặc ghi chú
+- `127` ô có số điện thoại nhưng không có tên tương ứng
+- `285` dòng có biến động sử dụng:
+  - `Đã Bán / Chủ Mới`
+  - `Khách Thuê`
+
+### Quyết định kỹ thuật khuyến nghị
+
+- **Đồng ý cập nhật pipeline mới cho phần `can_ho`**
+- **Chưa đồng ý import thẳng contact vào bảng master**
+- Contact vẫn phải:
+  1. vào staging
+  2. review
+  3. rồi mới sync sang bảng contact chuẩn

@@ -1,0 +1,658 @@
+dong_excel,ma_can,trang_thai_su_dung,ten_chu_ho_goc,nguoi_su_dung_1_goc,sdt_1_goc,nguoi_su_dung_2_goc,sdt_2_goc,nguoi_su_dung_3_goc,sdt_3_goc,nguoi_su_dung_4_goc,sdt_4_goc,nguoi_su_dung_5_goc,sdt_5_goc,thong_tin_phu_goc,ghi_chu_goc,thu_tu,ten_hien_thi_parse,so_dien_thoai_parse,la_lien_he_chinh_du_doan,de_xuat_xu_ly,ly_do_ra_soat
+2,L1.101,Chủ Hộ,Dương Mạnh Đức,Dương Mạnh Đức,0826698886,,,,,,,,,"Dương Mạnh Đức/(0826.698.886.) 
+-> Nhung 0826698886",,1,Dương Mạnh Đức,0826698886,true,NHAP_THANG,
+3,L1.102,Chủ Hộ,Nguyễn Thị Lệ Thủy,Nguyễn Thị Lệ Thủy,0912392805,,,,,,,,,Nguyễn Thị Lệ Thủy/ 0912.392.805,,1,Nguyễn Thị Lệ Thủy,0912392805,true,NHAP_THANG,
+4,L1.103,Chủ Hộ,Lê Chí Quân,Lê Chí Quân,0704160318,Đào Thị Bích,0384001018,,,,,,,"Lê Chí Quân ( 0704.160.318) 
+Đào Thị Bích (0384.001.018)",,1,Lê Chí Quân,0704160318,true,NHAP_THANG,
+4,L1.103,Chủ Hộ,Lê Chí Quân,Lê Chí Quân,0704160318,Đào Thị Bích,0384001018,,,,,,,"Lê Chí Quân ( 0704.160.318) 
+Đào Thị Bích (0384.001.018)",,2,Đào Thị Bích,0384001018,false,NHAP_THANG,
+6,L1.106A,Chủ Hộ,Lưu Thành Trung,Lưu Thành Trung,0919065229,,,,,,,,,Lưu Thành Trung/ 0919.065.229,,1,Lưu Thành Trung,0919065229,true,NHAP_THANG,
+7,L1.107,Chủ Hộ,Vũ Đức Sang,Vũ Đức Sang,0762142668,Thủy,0943242668,,,,,,,"Vũ Đức Sang/ 0762142668, Thủy 0943242668",,1,Vũ Đức Sang,0762142668,true,NHAP_THANG,
+7,L1.107,Chủ Hộ,Vũ Đức Sang,Vũ Đức Sang,0762142668,Thủy,0943242668,,,,,,,"Vũ Đức Sang/ 0762142668, Thủy 0943242668",,2,Thủy,0943242668,false,NHAP_THANG,
+8,L1.108,Chủ Hộ,Lê Anh Thư,Lê Anh Thư,0964264176,,,,,,,,,Lê Anh Thư/ 0964264176,,1,Lê Anh Thư,0964264176,true,NHAP_THANG,
+12,L1.112,Chủ Hộ,Nguyễn Đình Bắc,Nguyễn Đình Bắc,0989146408,Nguyễn Mạnh Toàn,0334408084,,,,,,,"Nguyễn Đình Bắc/ 0989146408
+Nguyễn Mạnh Toàn 0334408084",,1,Nguyễn Đình Bắc,0989146408,true,NHAP_THANG,
+12,L1.112,Chủ Hộ,Nguyễn Đình Bắc,Nguyễn Đình Bắc,0989146408,Nguyễn Mạnh Toàn,0334408084,,,,,,,"Nguyễn Đình Bắc/ 0989146408
+Nguyễn Mạnh Toàn 0334408084",,2,Nguyễn Mạnh Toàn,0334408084,false,NHAP_THANG,
+14,L1.202,Chủ Hộ,Đặng Anh Thơ,Đặng Anh Thơ,0934357347,,,,,,,,,"Đặng Anh Thơ/ 0934357347
+Trần Thị Hà 0934 357 347",,1,Đặng Anh Thơ,0934357347,true,NHAP_THANG,
+15,L1.203,Chủ Hộ,Bùi Thị Tuyết Thu,Bùi Thị Tuyết Thu,0914028598,,,,,,,,,Bùi Thị Tuyết Thu/ (0914.028.598),,1,Bùi Thị Tuyết Thu,0914028598,true,NHAP_THANG,
+16,L1.205,Chủ Hộ,Nguyễn Thu Hường,Nguyễn Thu Hường,0833170891,,,,,,,,,Nguyễn Thu Hường/ 0833170891,,1,Nguyễn Thu Hường,0833170891,true,NHAP_THANG,
+17,L1.206A,Chủ Hộ,Bùi Thúy Nga,Bùi Thúy Nga,0904164879,,,,,,,,,Bùi Thúy Nga/ 0904164879,,1,Bùi Thúy Nga,0904164879,true,NHAP_THANG,
+18,L1.206B,Chủ Hộ,Lưu Văn Tăng,Lưu Văn Tăng,0977062268,,,,,,,,,Lưu Văn Tăng/ 0977062268,,1,Lưu Văn Tăng,0977062268,true,NHAP_THANG,
+20,L1.208,Chủ Hộ,Nguyễn Duyên Linh,Nguyễn Duyên Linh,0915520274,,,,,,,,,Nguyễn Duyên Linh/0915520274,,1,Nguyễn Duyên Linh,0915520274,true,NHAP_THANG,
+21,L1.209,Chủ Hộ,Đỗ Xuân Hồng,Đỗ Xuân Hồng,0986799917,,,,,,,,,Đỗ Xuân Hồng/ 0986799917,,1,Đỗ Xuân Hồng,0986799917,true,NHAP_THANG,
+22,L1.210,Chủ Hộ,Vũ Hải Nam,Vũ Hải Nam,0977611988,,,,,,,,,Vũ Hải Nam/ 0977611988,,1,Vũ Hải Nam,0977611988,true,NHAP_THANG,
+25,L1.302,Chủ Hộ,Phạm Nguyễn Ngọc Mai,Phạm Nguyễn Ngọc Mai,0989416158,'hoặc,0941478399,cty đóng hộ: Ms. Hải Ninh,0985793816,,,,,"0989.416.158
+'0941478399 hoặc 
+cty đóng hộ: Ms. Hải Ninh 0985793816",,1,Phạm Nguyễn Ngọc Mai,0989416158,true,NHAP_THANG,
+25,L1.302,Chủ Hộ,Phạm Nguyễn Ngọc Mai,Phạm Nguyễn Ngọc Mai,0989416158,'hoặc,0941478399,cty đóng hộ: Ms. Hải Ninh,0985793816,,,,,"0989.416.158
+'0941478399 hoặc 
+cty đóng hộ: Ms. Hải Ninh 0985793816",,2,'hoặc,0941478399,false,NHAP_THANG,
+25,L1.302,Chủ Hộ,Phạm Nguyễn Ngọc Mai,Phạm Nguyễn Ngọc Mai,0989416158,'hoặc,0941478399,cty đóng hộ: Ms. Hải Ninh,0985793816,,,,,"0989.416.158
+'0941478399 hoặc 
+cty đóng hộ: Ms. Hải Ninh 0985793816",,3,cty đóng hộ: Ms. Hải Ninh,0985793816,false,NHAP_THANG,
+26,L1.303,Chủ Hộ,Đỗ Gia Phú,Đỗ Gia Phú,0912771168,,,,,,,,,Đỗ Gia Phú/ 0912.771.168,,1,Đỗ Gia Phú,0912771168,true,NHAP_THANG,
+28,L1.306A,Chủ Hộ,Nguyễn Thị Hồng Nhung,Nguyễn Thị Hồng Nhung,0374564076,',0912961995,,,,,,,"Nguyễn Thị Hồng Nhung/ 0374564076
+'0912961995",,1,Nguyễn Thị Hồng Nhung,0374564076,true,NHAP_THANG,
+28,L1.306A,Chủ Hộ,Nguyễn Thị Hồng Nhung,Nguyễn Thị Hồng Nhung,0374564076,',0912961995,,,,,,,"Nguyễn Thị Hồng Nhung/ 0374564076
+'0912961995",,2,',0912961995,false,NHAP_THANG,
+29,L1.306B,Chủ Hộ,Nguyễn Minh Chai,Nguyễn Minh Chai,0982140496,Nguyễn Văn Thành,0969073473,,,,,,,"Nguyễn Minh Chai/ 0982140496
+Nguyễn Văn Thành 0969073473",,1,Nguyễn Minh Chai,0982140496,true,NHAP_THANG,
+29,L1.306B,Chủ Hộ,Nguyễn Minh Chai,Nguyễn Minh Chai,0982140496,Nguyễn Văn Thành,0969073473,,,,,,,"Nguyễn Minh Chai/ 0982140496
+Nguyễn Văn Thành 0969073473",,2,Nguyễn Văn Thành,0969073473,false,NHAP_THANG,
+32,L1.309,Chủ Hộ,Đào Thị Minh Huyền,Đào Thị Minh Huyền,0965019501,cô Nhung,0989563750,,,,,,,"Đào Thị Minh Huyền/ 0965019501
+cô Nhung 0989563750",,1,Đào Thị Minh Huyền,0965019501,true,NHAP_THANG,
+32,L1.309,Chủ Hộ,Đào Thị Minh Huyền,Đào Thị Minh Huyền,0965019501,cô Nhung,0989563750,,,,,,,"Đào Thị Minh Huyền/ 0965019501
+cô Nhung 0989563750",,2,cô Nhung,0989563750,false,NHAP_THANG,
+33,L1.310,Chủ Hộ,Nguyễn Thị Lan Phương,Nguyễn Thị Lan Phương,0906075690,,,,,,,,,Nguyễn Thị Lan Phương/ 0906075690,,1,Nguyễn Thị Lan Phương,0906075690,true,NHAP_THANG,
+34,L1.311A,Chủ Hộ,Hồ Thị Huệ,Hồ Thị Huệ,0988623204,,,,,,,,,Hồ Thị Huệ/ 0988623204,,1,Hồ Thị Huệ,0988623204,true,NHAP_THANG,
+35,L1.312,Chủ Hộ,Hà Anh Minh,Hà Anh Minh,0835205589,Liên hệ O,0856629989,,,,,,,"Hà Anh Minh/ 0835.205.589
+Liên hệ Oanh 0856629989",,1,Hà Anh Minh,0835205589,true,NHAP_THANG,
+35,L1.312,Chủ Hộ,Hà Anh Minh,Hà Anh Minh,0835205589,Liên hệ O,0856629989,,,,,,,"Hà Anh Minh/ 0835.205.589
+Liên hệ Oanh 0856629989",,2,Liên hệ O,0856629989,false,NHAP_THANG,
+36,L1.401,Chủ Hộ,Nguyễn Thành Minh,Nguyễn Thành Minh,0902059216,Mai,0901535312,Ủy quyền Nguyễn Thị Thu Phương,0836959147,Trần Thị Ngọc Hà,0869231026,,,"Nguyễn Thành Minh/(0902.059.216/ 0901.535.312 (Mai).)/
+ Ủy quyền Nguyễn Thị Thu Phương: 0836.959.147
+Trần Thị Ngọc Hà: 0869231026",,1,Nguyễn Thành Minh,0902059216,true,NHAP_THANG,
+36,L1.401,Chủ Hộ,Nguyễn Thành Minh,Nguyễn Thành Minh,0902059216,Mai,0901535312,Ủy quyền Nguyễn Thị Thu Phương,0836959147,Trần Thị Ngọc Hà,0869231026,,,"Nguyễn Thành Minh/(0902.059.216/ 0901.535.312 (Mai).)/
+ Ủy quyền Nguyễn Thị Thu Phương: 0836.959.147
+Trần Thị Ngọc Hà: 0869231026",,2,Mai,0901535312,false,NHAP_THANG,
+36,L1.401,Chủ Hộ,Nguyễn Thành Minh,Nguyễn Thành Minh,0902059216,Mai,0901535312,Ủy quyền Nguyễn Thị Thu Phương,0836959147,Trần Thị Ngọc Hà,0869231026,,,"Nguyễn Thành Minh/(0902.059.216/ 0901.535.312 (Mai).)/
+ Ủy quyền Nguyễn Thị Thu Phương: 0836.959.147
+Trần Thị Ngọc Hà: 0869231026",,3,Ủy quyền Nguyễn Thị Thu Phương,0836959147,false,NHAP_THANG,
+36,L1.401,Chủ Hộ,Nguyễn Thành Minh,Nguyễn Thành Minh,0902059216,Mai,0901535312,Ủy quyền Nguyễn Thị Thu Phương,0836959147,Trần Thị Ngọc Hà,0869231026,,,"Nguyễn Thành Minh/(0902.059.216/ 0901.535.312 (Mai).)/
+ Ủy quyền Nguyễn Thị Thu Phương: 0836.959.147
+Trần Thị Ngọc Hà: 0869231026",,4,Trần Thị Ngọc Hà,0869231026,false,NHAP_THANG,
+37,L1.402,Chủ Hộ,Hoàng Việt Thanh,Hoàng Việt Thanh,0968819988,Cô Hà đang ở,0912616446,,,,,,,Hoàng Việt Thanh/ 0968.819.988 / Cô Hà đang ở 0912 616 446,,1,Hoàng Việt Thanh,0968819988,true,NHAP_THANG,
+37,L1.402,Chủ Hộ,Hoàng Việt Thanh,Hoàng Việt Thanh,0968819988,Cô Hà đang ở,0912616446,,,,,,,Hoàng Việt Thanh/ 0968.819.988 / Cô Hà đang ở 0912 616 446,,2,Cô Hà đang ở,0912616446,false,NHAP_THANG,
+38,L1.403,Chủ Hộ,Dương Quang Kiên,Dương Quang Kiên,0974554938,,,,,,,,,Dương Quang Kiên/ 0974.554.938,,1,Dương Quang Kiên,0974554938,true,NHAP_THANG,
+40,L1.406A,Chủ Hộ,Trần Thị Phương Hoa,Trần Thị Phương Hoa,0906127357,,,,,,,,,"Trần Thị Phương Hoa/ 0906.127.357
+Cùng đóng phí cho L4C.420",,1,Trần Thị Phương Hoa,0906127357,true,NHAP_THANG,
+41,L1.407,Chủ Hộ,Nguyễn Hoàng Tuấn,Nguyễn Hoàng Tuấn,0913310886,,,,,,,,,Nguyễn Hoàng Tuấn/0913310886,,1,Nguyễn Hoàng Tuấn,0913310886,true,NHAP_THANG,
+42,L1.408,Chủ Hộ,Nguyễn Thị Nga,Nguyễn Thị Nga,0346321846,,,,,,,,,Nguyễn Thị Nga/0346.321.846,,1,Nguyễn Thị Nga,0346321846,true,NHAP_THANG,
+43,L1.409,Chủ Hộ,Trần Thị Nền,Trần Thị Nền,0973255882,,,,,,,,,Trần Thị Nền/ 0973255882,,1,Trần Thị Nền,0973255882,true,NHAP_THANG,
+45,L1.501,Chủ Hộ,Nguyễn Lê Thùy Dương,Nguyễn Lê Thùy Dương,0815045888,,,,,,,,,Nguyễn Lê Thùy Dương/(081 5045888.),,1,Nguyễn Lê Thùy Dương,0815045888,true,NHAP_THANG,
+46,L1.502,Chủ Hộ,Trịnh Hiếu Đông,Trịnh Hiếu Đông,0989093081,,,,,,,,,Trịnh Hiếu Đông/ 0989.093.081,,1,Trịnh Hiếu Đông,0989093081,true,NHAP_THANG,
+47,L1.503,Chủ Hộ,Đoàn Thị Sử,Đoàn Thị Sử,0934204909,,,,,,,,,Đoàn Thị Sử/ 0934204.909,,1,Đoàn Thị Sử,0934204909,true,NHAP_THANG,
+48,L1.506A,Chủ Hộ,Đỗ Như Quỳnh,Đỗ Như Quỳnh,0344239925,,,,,,,,,Đỗ Như Quỳnh/ 0344239925,,1,Đỗ Như Quỳnh,0344239925,true,NHAP_THANG,
+51,L1.508,Chủ Hộ,Đàm Thảo My,Đàm Thảo My,0902078036,,,,,,,,,Đàm Thảo My/ 0902078036,,1,Đàm Thảo My,0902078036,true,NHAP_THANG,
+53,L1.510,Chủ Hộ,Mai Thị Hằng,Mai Thị Hằng,0835778993,,,,,,,,,Mai Thị Hằng/ 0835778993,,1,Mai Thị Hằng,0835778993,true,NHAP_THANG,
+58,L1.406B,Chủ Hộ,Hà Trung Thuyên,Hà Trung Thuyên,0385032686,Vợ Quỳnh Trang  Nhân viên Hoàng Huy,0782096969,,,,,,,"0385.032.686 
+Vợ Quỳnh Trang 0782096969 ( Nhân viên Hoàng Huy)",,1,Hà Trung Thuyên,0385032686,true,NHAP_THANG,
+58,L1.406B,Chủ Hộ,Hà Trung Thuyên,Hà Trung Thuyên,0385032686,Vợ Quỳnh Trang  Nhân viên Hoàng Huy,0782096969,,,,,,,"0385.032.686 
+Vợ Quỳnh Trang 0782096969 ( Nhân viên Hoàng Huy)",,2,Vợ Quỳnh Trang  Nhân viên Hoàng Huy,0782096969,false,NHAP_THANG,
+60,L1.111B,Chủ Hộ,Lê Nguyên Duy,Lê Nguyên Duy,0823263669,Minh,0967328985,,,,,,,"Lê Nguyên Duy/ 0823263669
+Anh Minh 0967328985, cùng đóng phí cho L1.115",,1,Lê Nguyên Duy,0823263669,true,NHAP_THANG,
+60,L1.111B,Chủ Hộ,Lê Nguyên Duy,Lê Nguyên Duy,0823263669,Minh,0967328985,,,,,,,"Lê Nguyên Duy/ 0823263669
+Anh Minh 0967328985, cùng đóng phí cho L1.115",,2,Minh,0967328985,false,NHAP_THANG,
+61,L1.114,Chủ Hộ,Đỗ Danh Quân,Đỗ Danh Quân,0376619619,,,,,,,,,Đỗ Danh Quân/ 0376619619,,1,Đỗ Danh Quân,0376619619,true,NHAP_THANG,
+64,L1.117,Chủ Hộ,Nguyễn Đức Anh,Nguyễn Đức Anh,0934544662,Đỗ Hải Ngân,0772942009,,,,,,,"Nguyễn Đức Anh/ (0934544662)
+Đỗ Hải Ngân(0772.942.009/0772.942.009)",,1,Nguyễn Đức Anh,0934544662,true,NHAP_THANG,
+64,L1.117,Chủ Hộ,Nguyễn Đức Anh,Nguyễn Đức Anh,0934544662,Đỗ Hải Ngân,0772942009,,,,,,,"Nguyễn Đức Anh/ (0934544662)
+Đỗ Hải Ngân(0772.942.009/0772.942.009)",,2,Đỗ Hải Ngân,0772942009,false,NHAP_THANG,
+67,L1.120,Chủ Hộ,Đào Nhật Linh,Đào Nhật Linh,0982839445,C Biên,0973705691,,,,,,,"0982.839.445
+C Biên 0973705691",,1,Đào Nhật Linh,0982839445,true,NHAP_THANG,
+67,L1.120,Chủ Hộ,Đào Nhật Linh,Đào Nhật Linh,0982839445,C Biên,0973705691,,,,,,,"0982.839.445
+C Biên 0973705691",,2,C Biên,0973705691,false,NHAP_THANG,
+69,L1.122,Chủ Hộ,Hoàng Minh Cường,Hoàng Minh Cường,0865120201,Chủ hộ Nguyễn Thị Hương,0989601965,,,,,,,"Hoàng Minh Cường/ 0865120201
+Chủ hộ Nguyễn Thị Hương 0989601965",,1,Hoàng Minh Cường,0865120201,true,NHAP_THANG,
+69,L1.122,Chủ Hộ,Hoàng Minh Cường,Hoàng Minh Cường,0865120201,Chủ hộ Nguyễn Thị Hương,0989601965,,,,,,,"Hoàng Minh Cường/ 0865120201
+Chủ hộ Nguyễn Thị Hương 0989601965",,2,Chủ hộ Nguyễn Thị Hương,0989601965,false,NHAP_THANG,
+71,L1.124,Chủ Hộ,Vũ Huy Khánh,Vũ Huy Khánh,0936812679,,,,,,,,,"Vũ Huy Khánh/ 0936.812.679
+Vũ Văn Hiệp 0936812679",,1,Vũ Huy Khánh,0936812679,true,NHAP_THANG,
+73,L1.214,Chủ Hộ,Phan Khánh Ngọc,Phan Khánh Ngọc,0936323665,,,,,,,,,Phan Khánh Ngọc/ 0936323665,,1,Phan Khánh Ngọc,0936323665,true,NHAP_THANG,
+75,L1.216,Chủ Hộ,Bùi Duy Công,Bùi Duy Công,0962571289,,,,,,,,,Bùi Duy Công (0962571289),,1,Bùi Duy Công,0962571289,true,NHAP_THANG,
+76,L1.217,Chủ Hộ,Đàm Ánh Linh,Đàm Ánh Linh,0936936836,,,,,,,,,Đàm Ánh Linh/0936936836,,1,Đàm Ánh Linh,0936936836,true,NHAP_THANG,
+77,L1.218,Chủ Hộ,Phạm Thị Linh,Phạm Thị Linh,0795244807,,,,,,,,,Phạm Thị Linh/ 0795244807,,1,Phạm Thị Linh,0795244807,true,NHAP_THANG,
+80,L1.221,Chủ Hộ,Nguyễn Nhật Minh,Nguyễn Nhật Minh,0936676731,,,,,,,,,Nguyễn Nhật Minh/ 0936676731,,1,Nguyễn Nhật Minh,0936676731,true,NHAP_THANG,
+83,L1.224,Chủ Hộ,Nguyễn Thị Phượng,Nguyễn Thị Phượng,0904342478,,,,,,,,,Nguyễn Thị Phượng/ 0904.342.478,,1,Nguyễn Thị Phượng,0904342478,true,NHAP_THANG,
+84,L1.311B,Chủ Hộ,Mai Thành Quang,Mai Thành Quang,0915327679,Bùi T Thu Huyền,0373225652,,,,,,,"Mai Thành Quang/ 0915327679 
+Bùi T Thu Huyền 0373225652",,1,Mai Thành Quang,0915327679,true,NHAP_THANG,
+84,L1.311B,Chủ Hộ,Mai Thành Quang,Mai Thành Quang,0915327679,Bùi T Thu Huyền,0373225652,,,,,,,"Mai Thành Quang/ 0915327679 
+Bùi T Thu Huyền 0373225652",,2,Bùi T Thu Huyền,0373225652,false,NHAP_THANG,
+85,L1.314,Chủ Hộ,Nguyễn Văn Thiện,Nguyễn Văn Thiện,0383420393,,,,,,,,,Nguyễn Văn Thiện/0383.420.393,,1,Nguyễn Văn Thiện,0383420393,true,NHAP_THANG,
+86,L1.315,Chủ Hộ,Đỗ Ngọc Anh,Đỗ Ngọc Anh,0819852223,Bố Toàn,0985954883,,,,,,,Đỗ Ngọc Anh/(0819.852.223 / 0985.954.883 (Bố Toàn).),,1,Đỗ Ngọc Anh,0819852223,true,NHAP_THANG,
+86,L1.315,Chủ Hộ,Đỗ Ngọc Anh,Đỗ Ngọc Anh,0819852223,Bố Toàn,0985954883,,,,,,,Đỗ Ngọc Anh/(0819.852.223 / 0985.954.883 (Bố Toàn).),,2,Bố Toàn,0985954883,false,NHAP_THANG,
+87,L1.317,Chủ Hộ,Bùi Trung Hiếu,Bùi Trung Hiếu,0972316419,Nguyễn Thị Phương Huyền,0827040797,,,,,,,"Bùi Trung Hiếu/ 0972.316.419
+Nguyễn Thị Phương Huyền 0827040797",,1,Bùi Trung Hiếu,0972316419,true,NHAP_THANG,
+87,L1.317,Chủ Hộ,Bùi Trung Hiếu,Bùi Trung Hiếu,0972316419,Nguyễn Thị Phương Huyền,0827040797,,,,,,,"Bùi Trung Hiếu/ 0972.316.419
+Nguyễn Thị Phương Huyền 0827040797",,2,Nguyễn Thị Phương Huyền,0827040797,false,NHAP_THANG,
+88,L1.318,Chủ Hộ,Phạm Đức Long,Phạm Đức Long,0985852592,mẹ Lê,0367586154,,,,,,,"Phạm Đức Long/ 0985.852.592, mẹ Lê 0367586154",,1,Phạm Đức Long,0985852592,true,NHAP_THANG,
+88,L1.318,Chủ Hộ,Phạm Đức Long,Phạm Đức Long,0985852592,mẹ Lê,0367586154,,,,,,,"Phạm Đức Long/ 0985.852.592, mẹ Lê 0367586154",,2,mẹ Lê,0367586154,false,NHAP_THANG,
+89,L1.319,Chủ Hộ,Đặng Thế Anh,Đặng Thế Anh,0982888522,,,,,,,,,Đặng Thế Anh/ 0982888522,,1,Đặng Thế Anh,0982888522,true,NHAP_THANG,
+91,L1.321,Chủ Hộ,Phạm Xuân Lộc,Phạm Xuân Lộc,0765252222,,,,,,,,,Phạm Xuân Lộc/ 0765252222,,1,Phạm Xuân Lộc,0765252222,true,NHAP_THANG,
+92,L1.322,Chủ Hộ,Chu Hồng Hà,Chu Hồng Hà,0968112959,,,,,,,,,Chu Hồng Hà/ 0968.112.959,,1,Chu Hồng Hà,0968112959,true,NHAP_THANG,
+95,L1.411B,Chủ Hộ,Đinh Quang Hiếu,Đinh Quang Hiếu,0916786786,,,,,,,,,Đinh Quang Hiếu/ 0916786786,,1,Đinh Quang Hiếu,0916786786,true,NHAP_THANG,
+96,L1.412,Chủ Hộ,Trần Hà Bắc,Trần Hà Bắc,0367748234,,,,,,,,,Trần Hà Bắc/0367748234,,1,Trần Hà Bắc,0367748234,true,NHAP_THANG,
+97,L1.414,Chủ Hộ,Nguyễn Mạnh Tuyên,Nguyễn Mạnh Tuyên,0904455568,,,,,,,,,Nguyễn Mạnh Tuyên/ 0904.455.568,,1,Nguyễn Mạnh Tuyên,0904455568,true,NHAP_THANG,
+99,L1.417,Chủ Hộ,Nguyễn Hồng Quang,Nguyễn Hồng Quang,0779342601,,,,,,,,,Nguyễn Hồng Quang/ 0779342601,,1,Nguyễn Hồng Quang,0779342601,true,NHAP_THANG,
+100,L1.418,Chủ Hộ,Lê Thị Diệp,Lê Thị Diệp,0963218678,,,,,,,,,Lại Thị Diệp/ 0963.218.678,,1,Lê Thị Diệp,0963218678,true,NHAP_THANG,
+101,L1.419,Chủ Hộ,Trần Hoàng Yến,Trần Hoàng Yến,0904089048,,,,,,,,,Trần Hoàng Yến/ 0904089048,,1,Trần Hoàng Yến,0904089048,true,NHAP_THANG,
+102,L1.420,Chủ Hộ,Nguyễn Trần Tân Vũ,Nguyễn Trần Tân Vũ,0839200510,,,,,,,,,"Nguyễn Trần Tân Vũ/0839200510 
+Sơn 0839200510 chủ hộ L4B.408",,1,Nguyễn Trần Tân Vũ,0839200510,true,NHAP_THANG,
+104,L1.422,Chủ Hộ,Hoàng Thu Thảo,Hoàng Thu Thảo,0966349596,,,,,,,,,Hoàng Thu Thảo/ 0966349596,,1,Hoàng Thu Thảo,0966349596,true,NHAP_THANG,
+106,L1.511B,Chủ Hộ,Nguyễn Văn Thành,Nguyễn Văn Thành,0353976481,,,,,,,,,Nguyễn Văn Thành/ 0353.976.481,,1,Nguyễn Văn Thành,0353976481,true,NHAP_THANG,
+107,L1.514,Chủ Hộ,Chu Khánh Linh,Chu Khánh Linh,0904207468,,,,,,,,,Chu Khánh Linh/ 0904207468,,1,Chu Khánh Linh,0904207468,true,NHAP_THANG,
+110,L1.518,Chủ Hộ,Phạm Thị Thảo,Phạm Thị Thảo,0965833776,Chồng  Biên,0978569758,,,,,,,"Phạm Thị Thảo/ 0965.833.776
+Chồng Anh Biên 0978.569.758",,1,Phạm Thị Thảo,0965833776,true,NHAP_THANG,
+110,L1.518,Chủ Hộ,Phạm Thị Thảo,Phạm Thị Thảo,0965833776,Chồng  Biên,0978569758,,,,,,,"Phạm Thị Thảo/ 0965.833.776
+Chồng Anh Biên 0978.569.758",,2,Chồng  Biên,0978569758,false,NHAP_THANG,
+112,L1.521,Chủ Hộ,Nguyễn Thị Nhi,Nguyễn Thị Nhi,0938675183,,,,,,,,,Nguyễn Thị Nhi/ 0938.675.183,,1,Nguyễn Thị Nhi,0938675183,true,NHAP_THANG,
+113,L1.522,Chủ Hộ,Đào Anh Thảo,Đào Anh Thảo,0387271171,,,,,,,,,Đào Anh Thảo/ 0387271171,,1,Đào Anh Thảo,0387271171,true,NHAP_THANG,
+114,L1.523,Chủ Hộ,Lê Thị Én,Lê Thị Én,0934326626,,,,,,,,,Lê Thị Én/ 0934326626,,1,Lê Thị Én,0934326626,true,NHAP_THANG,
+117,L1.416,Chủ Hộ,Nguyễn Thị Hòa,Nguyễn Thị Hòa,0982252966,người thân Đức,0903406908,Quỳnh,0369886779,,,,,"Nguyễn Thị Hòa/ 0982252966, người thân Đức 0903406908, 
+Quỳnh Anh 0369886779",,1,Nguyễn Thị Hòa,0982252966,true,NHAP_THANG,
+117,L1.416,Chủ Hộ,Nguyễn Thị Hòa,Nguyễn Thị Hòa,0982252966,người thân Đức,0903406908,Quỳnh,0369886779,,,,,"Nguyễn Thị Hòa/ 0982252966, người thân Đức 0903406908, 
+Quỳnh Anh 0369886779",,2,người thân Đức,0903406908,false,NHAP_THANG,
+117,L1.416,Chủ Hộ,Nguyễn Thị Hòa,Nguyễn Thị Hòa,0982252966,người thân Đức,0903406908,Quỳnh,0369886779,,,,,"Nguyễn Thị Hòa/ 0982252966, người thân Đức 0903406908, 
+Quỳnh Anh 0369886779",,3,Quỳnh,0369886779,false,NHAP_THANG,
+123,L2.105,Chủ Hộ,Đỗ Thị Hằng,Đỗ Thị Hằng,0344519639,,,,,,,,,"Đỗ Thị Hằng/ 0344519639
+3 căn L2.105 L2.106B L2.217","nhà đóng 1 tháng 1 lần, khó khăn trong việc chuyển khoản do đã quen nộp tiền mặt",1,Đỗ Thị Hằng,0344519639,true,NHAP_THANG,
+126,L2.107,Chủ Hộ,Trịnh Thị Nga Ngân,Trịnh Thị Nga Ngân,0906178585,,,,,,,,,"Trịnh Thị Nga Ngân/0906.178.585
+Đặng Mai Thương 0906178585",,1,Trịnh Thị Nga Ngân,0906178585,true,NHAP_THANG,
+130,L2.111A,Chủ Hộ,Nguyễn Bùi Cường,Nguyễn Bùi Cường,0979656222,,,,,,,,,Nguyễn Bùi Cường/0979656222,,1,Nguyễn Bùi Cường,0979656222,true,NHAP_THANG,
+133,L2.114,Chủ Hộ,Phạm Thị Thu Phương,Phạm Thị Thu Phương,0906086684,,,,,,,,,Phạm Thị Thu Phương/ 0906086684,,1,Phạm Thị Thu Phương,0906086684,true,NHAP_THANG,
+143,L2.303,Chủ Hộ,Nguyễn Đức Anh,Nguyễn Đức Anh,0904011676,Mẹ,0912556437,,,,,,,"Con Nguyễn Đức Anh/ 0904011676
+Mẹ  0912556437",,1,Nguyễn Đức Anh,0904011676,true,NHAP_THANG,
+143,L2.303,Chủ Hộ,Nguyễn Đức Anh,Nguyễn Đức Anh,0904011676,Mẹ,0912556437,,,,,,,"Con Nguyễn Đức Anh/ 0904011676
+Mẹ  0912556437",,2,Mẹ,0912556437,false,NHAP_THANG,
+144,L2.305,Chủ Hộ,Lê Đức Ninh,Lê Đức Ninh,0904589806,,,,,,,,,Lê Đức Ninh/ 0904589.806,,1,Lê Đức Ninh,0904589806,true,NHAP_THANG,
+145,L2.306A,Chủ Hộ,Ninh Tất Phát,Ninh Tất Phát,0936458595,,,,,,,,,Ninh Tấn Phát/ 0936.458.595,,1,Ninh Tất Phát,0936458595,true,NHAP_THANG,
+146,L2.306B,Chủ Hộ,Phạm Hùng Dũng,Phạm Hùng Dũng,0934868363,,,,,,,,,Phạm Hùng Dũng/ 0934.868.363,,1,Phạm Hùng Dũng,0934868363,true,NHAP_THANG,
+147,L2.307,Chủ Hộ,Phạm Văn Hiền,Phạm Văn Hiền,0912435236,,,,,,,,,Phạm Văn Hiền/(0912.435.236),,1,Phạm Văn Hiền,0912435236,true,NHAP_THANG,
+148,L2.308,Chủ Hộ,Phạm Thị Thúy Ngọc,Phạm Thị Thúy Ngọc,0378127237,,,,,,,,,Phạm Thị Thúy Ngọc/ 0378127237,,1,Phạm Thị Thúy Ngọc,0378127237,true,NHAP_THANG,
+149,L2.309,Chủ Hộ,Phạm Thanh hải,Phạm Thanh hải,0931585885,,,,,,,,,Phạm Thanh Hải/ 0931.585.885,,1,Phạm Thanh hải,0931585885,true,NHAP_THANG,
+150,L2.310,Chủ Hộ,Đoàn Quang Hải,Đoàn Quang Hải,0936621721,,,,,,,,,Đoàn Quang Hải/ 0936621721,,1,Đoàn Quang Hải,0936621721,true,NHAP_THANG,
+151,L2.311A,Chủ Hộ,Nguyễn Thu Phương,Nguyễn Thu Phương,0838024333,,,,,,,,,Nguyễn Thu Phương/ 0838.024.333,ngày 16/04/2024 Phạm Thị Yến 0359271998 nhận tb đóng phí,1,Nguyễn Thu Phương,0838024333,true,NHAP_THANG,
+152,L2.311B,Chủ Hộ,Võ Thu Hương,Võ Thu Hương,0396401710,,,,,,,,,Võ Thu Hương/ 0396.401.710,,1,Võ Thu Hương,0396401710,true,NHAP_THANG,
+153,L2.312,Chủ Hộ,Hàn Ngọc Tùng,Hàn Ngọc Tùng,0966776656,,,,,,,,,Hàn Ngọc Tùng/ 0966776656,,1,Hàn Ngọc Tùng,0966776656,true,NHAP_THANG,
+154,L2.314,Chủ Hộ,Phan Đức Minh,Phan Đức Minh,0912115834,,,,,,,,,Phan Đức Minh/ 0912115834,,1,Phan Đức Minh,0912115834,true,NHAP_THANG,
+155,L2.315,Chủ Hộ,Phạm Thị Nhài,Phạm Thị Nhài,0356224525,,,,,,,,,Phạm Thị Nhài/ 0356224525,,1,Phạm Thị Nhài,0356224525,true,NHAP_THANG,
+157,L2.403,Chủ Hộ,Vũ Thị Kiều Hạnh,Vũ Thị Kiều Hạnh,0936939471,,,,,,,,,Vũ Thị Kiều Hạnh/ 0936939471,,1,Vũ Thị Kiều Hạnh,0936939471,true,NHAP_THANG,
+159,L2.406A,Chủ Hộ,Đinh Thị Mỹ Linh,Đinh Thị Mỹ Linh,0936986779,,,,,,,,,Đinh Thị Mỹ Linh/ 0936986779,,1,Đinh Thị Mỹ Linh,0936986779,true,NHAP_THANG,
+160,L2.406B,Chủ Hộ,Hà Quang Dũng,Hà Quang Dũng,0982367159,Mẹ Phí Thị Hương,0943893757,,,,,,,"Hà Quang Dũng/ 0982367159
+Mẹ Phí Thị Hương 0943 893 757",,1,Hà Quang Dũng,0982367159,true,NHAP_THANG,
+160,L2.406B,Chủ Hộ,Hà Quang Dũng,Hà Quang Dũng,0982367159,Mẹ Phí Thị Hương,0943893757,,,,,,,"Hà Quang Dũng/ 0982367159
+Mẹ Phí Thị Hương 0943 893 757",,2,Mẹ Phí Thị Hương,0943893757,false,NHAP_THANG,
+164,L2.411A,Chủ Hộ,Hoàng Việt Anh,Hoàng Việt Anh,0988596747,,,,,,,,,Hoàng Việt Anh/ 0988596747,,1,Hoàng Việt Anh,0988596747,true,NHAP_THANG,
+165,L2.411B,Chủ Hộ,Vũ Thị Anh,Vũ Thị Anh,0931580598,,,,,,,,,Vũ Thị Anh/ 0931580598,,1,Vũ Thị Anh,0931580598,true,NHAP_THANG,
+166,L2.412,Chủ Hộ,Lương Tuấn Vũ,Lương Tuấn Vũ,0974270330,,,,,,,,,"Lương Tuấn Vũ/ 0974.270.330
+Nguyễn Thị Thanh Tâm 0974270330",,1,Lương Tuấn Vũ,0974270330,true,NHAP_THANG,
+167,L2.414,Chủ Hộ,Phạm Thị yến,Phạm Thị yến,0387614338,,,,,,,,,"Phạm Thị Yến/0387614338
+Phạm Thị Yến (0387614338) đã từng báo sửa chữa cho L1.220",,1,Phạm Thị yến,0387614338,true,NHAP_THANG,
+172,L2.505,Chủ Hộ,Đặng Thị Quỳnh Hương,Đặng Thị Quỳnh Hương,0904273882,,,,,,,,,Đặng Thị Quỳnh Hương/(0904.273.882.),,1,Đặng Thị Quỳnh Hương,0904273882,true,NHAP_THANG,
+173,L2.506A,Chủ Hộ,Hoàng Thị Bích Liên,Hoàng Thị Bích Liên,0904876778,,,,,,,,,Hoàng Thị Bích Liên/(0904.876.778.),,1,Hoàng Thị Bích Liên,0904876778,true,NHAP_THANG,
+176,L2.510,Chủ Hộ,Đỗ Quang Huy,Đỗ Quang Huy,0389178997,,,,,,,,,Đỗ Quang Huy/(0389.178.997.),,1,Đỗ Quang Huy,0389178997,true,NHAP_THANG,
+177,L2.511A,Chủ Hộ,Nguyễn Thị Ngân,Nguyễn Thị Ngân,,,,,,,,,,Nguyễn Thị Ngân/Vũ Minh Việt(0922.886.083.0564.323.191),,1,Nguyễn Thị Ngân,,true,NHAP_THANG,
+183,L2.201,Chủ Hộ,Phạm Thị Mai Anh,Phạm Thị Mai Anh,,,,,,,,,,Phạm Thị Mai Anh cần xin sdt,,1,Phạm Thị Mai Anh,,true,NHAP_THANG,
+184,L2.207,Chủ Hộ,Nguyễn Thị Bích,Nguyễn Thị Bích,,,,,,,,,,cần xin sdt,,1,Nguyễn Thị Bích,,true,NHAP_THANG,
+185,L2.212,Chủ Hộ,Trần Thị Hồng Nhung,Trần Thị Hồng Nhung,,,,,,,,,,Trần Thị Hồng Nhung,,1,Trần Thị Hồng Nhung,,true,NHAP_THANG,
+190,L2.209,Chủ Hộ,Nguyễn Quang Hưng,Nguyễn Quang Hưng,0936052988,,,,,,,,,0936 052 988,,1,Nguyễn Quang Hưng,0936052988,true,NHAP_THANG,
+192,L2.211A,Chủ Hộ,Vũ Trọng Tùng,Vũ Trọng Tùng,0904369880,,,,,,,,,Vũ Trọng Tùng 0904369880,,1,Vũ Trọng Tùng,0904369880,true,NHAP_THANG,
+196,L2.409,Chủ Hộ,Trần Thị Linh,Trần Thị Linh,0931508494,,,,,,,,,Trần Thị Linh 0931508494,,1,Trần Thị Linh,0931508494,true,NHAP_THANG,
+205,L2.123,Chủ Hộ,Phạm Ngọc Quang,Phạm Ngọc Quang,0816088663,Ms Hoa    em với chủ hộ - đang ở,0785520999,,,,,,,"Phạm Ngọc Quang/(0816.088.663) 
+Ms Hoa  0785520999 ( chị em với chủ hộ - đang ở)
+'Ms Hoa đóng phí cho L2.123",,1,Phạm Ngọc Quang,0816088663,true,NHAP_THANG,
+205,L2.123,Chủ Hộ,Phạm Ngọc Quang,Phạm Ngọc Quang,0816088663,Ms Hoa    em với chủ hộ - đang ở,0785520999,,,,,,,"Phạm Ngọc Quang/(0816.088.663) 
+Ms Hoa  0785520999 ( chị em với chủ hộ - đang ở)
+'Ms Hoa đóng phí cho L2.123",,2,Ms Hoa    em với chủ hộ - đang ở,0785520999,false,NHAP_THANG,
+210,L2.129,Chủ Hộ,Nguyễn Mạnh Hùng,Nguyễn Mạnh Hùng,0918416469,Uỷ quyền Nguyễn Thị Bình,0936785748,,,,,,,"Nguyễn Mạnh Hùng/(0918.416.469.) 
+Uỷ quyền Nguyễn Thị Bình : 0936.785.748",Người ở tại nhà đóng phí vào ngày đầu của tháng sau,1,Nguyễn Mạnh Hùng,0918416469,true,NHAP_THANG,
+210,L2.129,Chủ Hộ,Nguyễn Mạnh Hùng,Nguyễn Mạnh Hùng,0918416469,Uỷ quyền Nguyễn Thị Bình,0936785748,,,,,,,"Nguyễn Mạnh Hùng/(0918.416.469.) 
+Uỷ quyền Nguyễn Thị Bình : 0936.785.748",Người ở tại nhà đóng phí vào ngày đầu của tháng sau,2,Uỷ quyền Nguyễn Thị Bình,0936785748,false,NHAP_THANG,
+213,L2.132,Chủ Hộ,Bùi Văn Tranh,Bùi Văn Tranh,,,,,,,,,,Bùi Văn Tranh/Hoàng Kim Thoa(0977.610.719.0392117394),,1,Bùi Văn Tranh,,true,NHAP_THANG,
+218,L2.223,Chủ Hộ,Trần Minh Công,Trần Minh Công,0936149351,,,,,,,,,Trần Minh Công/(0936.149.351.),,1,Trần Minh Công,0936149351,true,NHAP_THANG,
+226,L2.320,Chủ Hộ,Đỗ Quỳnh Hương,Đỗ Quỳnh Hương,0708250296,,,,,,,,,Đỗ Quỳnh Hương /(0708.250.296.),,1,Đỗ Quỳnh Hương,0708250296,true,NHAP_THANG,
+228,L2.322,Chủ Hộ,Trần Ngọc Diên,Trần Ngọc Diên,0337039299,,,,,,,,,Trần Ngọc Diên/(0337.039.299.),,1,Trần Ngọc Diên,0337039299,true,NHAP_THANG,
+229,L2.323,Chủ Hộ,Nguyễn Trọng Tiến,Nguyễn Trọng Tiến,0911260011,,,,,,,,,Nguyễn Trọng Tiến/(0911.260.011.),,1,Nguyễn Trọng Tiến,0911260011,true,NHAP_THANG,
+230,L2.324,Chủ Hộ,Trần Đức Khôi,Trần Đức Khôi,0839661799,,,,,,,,,Trần Đức Khôi/(0839.661.799.),,1,Trần Đức Khôi,0839661799,true,NHAP_THANG,
+239,L2.418,Chủ Hộ,Nguyễn Thị Thu Liên,Nguyễn Thị Thu Liên,0934968698,,,,,,,,,Nguyễn Thị Thu Liên/(0934.968.698.),,1,Nguyễn Thị Thu Liên,0934968698,true,NHAP_THANG,
+240,L2.419,Chủ Hộ,Trần Thị Hợi,Trần Thị Hợi,0936082387,Con Dũng,0901356916,,,,,,,"Trần Thị Hợi/(0936.082.387.)
+Con Dũng 0901 356 916",,1,Trần Thị Hợi,0936082387,true,NHAP_THANG,
+240,L2.419,Chủ Hộ,Trần Thị Hợi,Trần Thị Hợi,0936082387,Con Dũng,0901356916,,,,,,,"Trần Thị Hợi/(0936.082.387.)
+Con Dũng 0901 356 916",,2,Con Dũng,0901356916,false,NHAP_THANG,
+241,L2.420,Chủ Hộ,Nguyễn Thị Yến,Nguyễn Thị Yến,0393135968,,,,,,,,,Nguyễn Thị Yến/(0393.135.968.),,1,Nguyễn Thị Yến,0393135968,true,NHAP_THANG,
+242,L2.422,Chủ Hộ,Hà Thị Phương,Hà Thị Phương,0936676543,,,,,,,,,Hà Thị Phương/(0936.676.543.),,1,Hà Thị Phương,0936676543,true,NHAP_THANG,
+243,L2.424,Chủ Hộ,Lương Minh Thương,Lương Minh Thương,,,,,,,,,,Lương Minh Thương/Trần Thị Nguyệt (0906.112.765.0342.041.059),,1,Lương Minh Thương,,true,NHAP_THANG,
+244,L2.425,Chủ Hộ,Phạm Thị Phương Thảo (CKTSR),Phạm Thị Phương Thảo (CKTSR),0898982689,,,,,,,,,Phạm Thị Phương Thảo (CKTSR)/(0898.982.689.),,1,Phạm Thị Phương Thảo (CKTSR),0898982689,true,NHAP_THANG,
+247,L2.429,Chủ Hộ,Đặng Thị Hoài Linh,Đặng Thị Hoài Linh,0917267169,Đăng Văn Khoa,0915329732,,,,,,,"Đặng Thị Hoài Linh/(0917.267.169.)
+Đăng Văn Khoa : 0915 329 732",,1,Đặng Thị Hoài Linh,0917267169,true,NHAP_THANG,
+247,L2.429,Chủ Hộ,Đặng Thị Hoài Linh,Đặng Thị Hoài Linh,0917267169,Đăng Văn Khoa,0915329732,,,,,,,"Đặng Thị Hoài Linh/(0917.267.169.)
+Đăng Văn Khoa : 0915 329 732",,2,Đăng Văn Khoa,0915329732,false,NHAP_THANG,
+248,L2.430,Chủ Hộ,Trần Công Phương,Trần Công Phương,0983159760,,,,,,,,,Anh Trần Công Phương 0983159760,,1,Trần Công Phương,0983159760,true,NHAP_THANG,
+249,L2.431,Chủ Hộ,Đỗ Thu Hiền,Đỗ Thu Hiền,0936955755,,,,,,,,,Đỗ Thu Hiền/(0936.955.755.),,1,Đỗ Thu Hiền,0936955755,true,NHAP_THANG,
+255,L2.521,Chủ Hộ,Nguyễn Thị Hạnh,Nguyễn Thị Hạnh,0793211890,,,,,,,,,Nguyễn Thị Hạnh/(0793.211.890.),,1,Nguyễn Thị Hạnh,0793211890,true,NHAP_THANG,
+258,L2.526,Chủ Hộ,Vũ Thị Phương,Vũ Thị Phương,0398299020,,,,,,,,,Vũ Thị Phương/(0398.299.020.),,1,Vũ Thị Phương,0398299020,true,NHAP_THANG,
+262,L2.532,Chủ Hộ,Đặng Thị Thương,Đặng Thị Thương,0976342483,,,,,,,,,Đặng Thị Thương/(0976.342.483.),,1,Đặng Thị Thương,0976342483,true,NHAP_THANG,
+263,L2.528,Chủ Hộ,Bùi Thị Hằng,Bùi Thị Hằng,,,,,,,,,,Bùi Thị Hằng/Trần Quốc Hoàng(0906.021.387.0906.054.186),,1,Bùi Thị Hằng,,true,NHAP_THANG,
+283,L3.108,Chủ Hộ,Phạm Thị Hải Yến,Phạm Thị Hải Yến,0852955688,,,,,,,,,Phạm Thị Hải Yến/(0852.955.688.),,1,Phạm Thị Hải Yến,0852955688,true,NHAP_THANG,
+286,L3.111A,Chủ Hộ,Lưu Thị Minh Hiền,Lưu Thị Minh Hiền,0986262398,,,,,,,,,Lưu Thị Minh Hiền/(0986.262.398.),,1,Lưu Thị Minh Hiền,0986262398,true,NHAP_THANG,
+290,L3.115,Chủ Hộ,Lê Thị Phương,Lê Thị Phương,0983980336,Đinh Văn Đường,0904827290,,,,,,,"Lê Thị Phương/(0983.980.336.)
+Đinh Văn Đường 0904827290",,1,Lê Thị Phương,0983980336,true,NHAP_THANG,
+290,L3.115,Chủ Hộ,Lê Thị Phương,Lê Thị Phương,0983980336,Đinh Văn Đường,0904827290,,,,,,,"Lê Thị Phương/(0983.980.336.)
+Đinh Văn Đường 0904827290",,2,Đinh Văn Đường,0904827290,false,NHAP_THANG,
+300,L3.209,Chủ Hộ,Vương Văn Đạt,Vương Văn Đạt,0388731595,,,,,,,,,Vương Văn Đạt/(0388.731.595.),,1,Vương Văn Đạt,0388731595,true,NHAP_THANG,
+301,L3.210,Chủ Hộ,Hoàng Thị Hạnh,Hoàng Thị Hạnh,,,,,,,,,,Hoàng Thị Hạnh/(0359.287.628.0904.026.674.),,1,Hoàng Thị Hạnh,,true,NHAP_THANG,
+302,L3.211A,Chủ Hộ,Đoàn Thị Thu Hiền,Đoàn Thị Thu Hiền,0982586786,,,,,,,,,Đoàn Thị Thu Hiền/(0982.586.786.),,1,Đoàn Thị Thu Hiền,0982586786,true,NHAP_THANG,
+303,L3.211B,Chủ Hộ,Nguyễn Anh Tiến,Nguyễn Anh Tiến,0982701368,,,,,,,,,Nguyễn Anh Tiến/(0982.701.368.),,1,Nguyễn Anh Tiến,0982701368,true,NHAP_THANG,
+304,L3.212,Chủ Hộ,Nguyễn Văn Long,Nguyễn Văn Long,,,,,,,,,,Nguyễn Văn Long/Nguyễn Thị My(0916.262.142.096.444.7935),,1,Nguyễn Văn Long,,true,NHAP_THANG,
+305,L3.215,Chủ Hộ,Đinh Thị Họa My,Đinh Thị Họa My,0385595710,,,,,,,,,Đinh Thị Họa My/(0385.595.710.),,1,Đinh Thị Họa My,0385595710,true,NHAP_THANG,
+306,L3.216,Chủ Hộ,Trần Quang Anh,Trần Quang Anh,0904379698,,,,,,,,,"Trần Quang Anh/(0904.379.698.)
+Bùi Đức Duy 09781788623",,1,Trần Quang Anh,0904379698,true,NHAP_THANG,
+308,L3.303,Chủ Hộ,Nguyễn Thị Ánh Mai,Nguyễn Thị Ánh Mai,0904374031,,,,,,,,,Nguyễn Thị Ánh Mai/(0904374031.),,1,Nguyễn Thị Ánh Mai,0904374031,true,NHAP_THANG,
+311,L3.306B,Chủ Hộ,Nguyễn Ngọc Cẩn,Nguyễn Ngọc Cẩn,,,,,,,,,,Nguyễn Ngọc Cẩn/Nguyễn Thị Lan Anh(0936.896.575.035.735.8975),,1,Nguyễn Ngọc Cẩn,,true,NHAP_THANG,
+312,L3.307,Chủ Hộ,Nguyễn Văn Tâm,Nguyễn Văn Tâm,0779709583,,,,,,,,,Nguyễn Văn Tâm/(077.970.9583,,1,Nguyễn Văn Tâm,0779709583,true,NHAP_THANG,
+313,L3.308,Chủ Hộ,Vũ Thị Tường Vi,Vũ Thị Tường Vi,0988161940,,,,,,,,,Vũ Thị Tường Vi/(0988.161.940.),,1,Vũ Thị Tường Vi,0988161940,true,NHAP_THANG,
+314,L3.309,Chủ Hộ,Trần Thị Thanh Hằng,Trần Thị Thanh Hằng,0337250898,,,,,,,,,Trần Thị Thanh Hằng/(0337.250.898.),,1,Trần Thị Thanh Hằng,0337250898,true,NHAP_THANG,
+315,L3.310,Chủ Hộ,Nguyễn Viết Hoàng Anh,Nguyễn Viết Hoàng Anh,,,,,,,,,,Nguyễn Viết Hoàng Anh/Chu Thị Nhung(0985.603.436.0934.202.992),,1,Nguyễn Viết Hoàng Anh,,true,NHAP_THANG,
+316,L3.311A,Chủ Hộ,Lê Thanh Hải,Lê Thanh Hải,0932000239,,,,,,,,,Lê Thanh Hải/(0932.000.239.),,1,Lê Thanh Hải,0932000239,true,NHAP_THANG,
+317,L3.312,Chủ Hộ,Nguyễn Thị Thanh Lan,Nguyễn Thị Thanh Lan,,,,,,,,,,"Nguyễn Thị Thanh Lan/(0329,522,286.)",,1,Nguyễn Thị Thanh Lan,,true,NHAP_THANG,
+320,L3.316,Chủ Hộ,Đỗ Hải Linh,Đỗ Hải Linh,,,,,,,,,,Đỗ Hải Linh/Phạm Tuấn Anh Vũ(0376.480.277.0855.066.376),,1,Đỗ Hải Linh,,true,NHAP_THANG,
+321,L3.401,Chủ Hộ,Vũ Đình Cảnh,Vũ Đình Cảnh,,,,,,,,,,Vũ Đình Cảnh/Vũ Thị Thu Hằng(0915.948.469.0904.166.990),,1,Vũ Đình Cảnh,,true,NHAP_THANG,
+322,L3.402,Chủ Hộ,Vũ Phúc Long,Vũ Phúc Long,0942957956,Bố Hồng,0979263666,,,,,,,Vũ Phúc Long/(0942.957.956 / 0979.263.666- Bố Hồng.),,1,Vũ Phúc Long,0942957956,true,NHAP_THANG,
+322,L3.402,Chủ Hộ,Vũ Phúc Long,Vũ Phúc Long,0942957956,Bố Hồng,0979263666,,,,,,,Vũ Phúc Long/(0942.957.956 / 0979.263.666- Bố Hồng.),,2,Bố Hồng,0979263666,false,NHAP_THANG,
+324,L3.405,Chủ Hộ,Tạ Quang Vinh,Tạ Quang Vinh,0363766428,Trần văn tiến,0965903566,,,,,,,"Tạ Quang Vinh/(0363.766.428.)
+Trần văn tiến 0965 903 566",,1,Tạ Quang Vinh,0363766428,true,NHAP_THANG,
+324,L3.405,Chủ Hộ,Tạ Quang Vinh,Tạ Quang Vinh,0363766428,Trần văn tiến,0965903566,,,,,,,"Tạ Quang Vinh/(0363.766.428.)
+Trần văn tiến 0965 903 566",,2,Trần văn tiến,0965903566,false,NHAP_THANG,
+325,L3.406A,Chủ Hộ,Đỗ Ngọc Toản,Đỗ Ngọc Toản,,,,,,,,,,Đỗ Ngọc Toản/Đào Thị Hà(0986.805.866.0374.934.520),,1,Đỗ Ngọc Toản,,true,NHAP_THANG,
+326,L3.406B,Chủ Hộ,Trần Duy Toản,Trần Duy Toản,0934223002,,,,,,,,,Trần Duy Toả n/(0934.223.002.),,1,Trần Duy Toản,0934223002,true,NHAP_THANG,
+329,L3.409,Chủ Hộ,Nguyễn Văn An,Nguyễn Văn An,,,,,,,,,,"Nguyễn Văn An/Nguyễn Thu Hằng
+(0349.650.346.0979.225.014)",,1,Nguyễn Văn An,,true,NHAP_THANG,
+330,L3.410,Chủ Hộ,Phùng Thị Phượng,Phùng Thị Phượng,0837826934,,,,,,,,,Phùng Thị Phượng/(0837.826.934.),,1,Phùng Thị Phượng,0837826934,true,NHAP_THANG,
+331,L3.411A,Chủ Hộ,Nguyễn Như Tùng,Nguyễn Như Tùng,0886165489,Hà Thu,0973539296,Dương Thị Nhung,0904615864,,,,,"Nguyễn Như Tùng/(0886.165.489/ 097.353.9296 (Hà Thu).)
+Dương Thị Nhung 0904 615 864",,1,Nguyễn Như Tùng,0886165489,true,NHAP_THANG,
+331,L3.411A,Chủ Hộ,Nguyễn Như Tùng,Nguyễn Như Tùng,0886165489,Hà Thu,0973539296,Dương Thị Nhung,0904615864,,,,,"Nguyễn Như Tùng/(0886.165.489/ 097.353.9296 (Hà Thu).)
+Dương Thị Nhung 0904 615 864",,2,Hà Thu,0973539296,false,NHAP_THANG,
+331,L3.411A,Chủ Hộ,Nguyễn Như Tùng,Nguyễn Như Tùng,0886165489,Hà Thu,0973539296,Dương Thị Nhung,0904615864,,,,,"Nguyễn Như Tùng/(0886.165.489/ 097.353.9296 (Hà Thu).)
+Dương Thị Nhung 0904 615 864",,3,Dương Thị Nhung,0904615864,false,NHAP_THANG,
+335,L3.415,Chủ Hộ,Bùi Đức Chiến,Bùi Đức Chiến,0399179456,,,,,,,,,Bùi Đức Chiến/(0399.179.456.),,1,Bùi Đức Chiến,0399179456,true,NHAP_THANG,
+340,L3.505,Chủ Hộ,Cù Thị Thu Thủy,Cù Thị Thu Thủy,,,,,,,,,,Cù Thị Thu Thủy/Nguyễn Ngọc Sơn(0796.371.251.0782.244.000),,1,Cù Thị Thu Thủy,,true,NHAP_THANG,
+341,L3.506A,Chủ Hộ,Nguyễn Thế Anh,Nguyễn Thế Anh,,,,,,,,,,Nguyễn Thế Anh/Nguyễn Phương Anh(0702.986.939.0704.986.939),,1,Nguyễn Thế Anh,,true,NHAP_THANG,
+345,L3.510,Chủ Hộ,Ngô Thị Hà,Ngô Thị Hà,0904484194,,,,,,,,,Ngô Thị Hà/(0904.484.194.),,1,Ngô Thị Hà,0904484194,true,NHAP_THANG,
+347,L3.511B,Chủ Hộ,Phạm Văn Mạnh,Phạm Văn Mạnh,0936704981,,,,,,,,,Phạm Văn Mạnh/(0936.704.981.),,1,Phạm Văn Mạnh,0936704981,true,NHAP_THANG,
+350,L3.515,Chủ Hộ,Nguyễn Thế Phú,Nguyễn Thế Phú,,,,,,,,,,Nguyễn Thế Phú/Nguyễn Kim Thoa(0938.820.555.0936.925.393),,1,Nguyễn Thế Phú,,true,NHAP_THANG,
+352,L3.214,Chủ Hộ,Vũ Thị Nội,Vũ Thị Nội,0562040489,,,,,,,,,Vũ Thị Nội 0562040489,,1,Vũ Thị Nội,0562040489,true,NHAP_THANG,
+357,L4A.103,Chủ Hộ,Phạm Thị Thúy,Phạm Thị Thúy,0966119727,,,,,,,,,Phạm Thị Thúy/(0966.119.727.),,1,Phạm Thị Thúy,0966119727,true,NHAP_THANG,
+361,L4A.108,Chủ Hộ,Lê Văn Bình,Lê Văn Bình,0963461116,Kim,0936991668,,,,,,,Lê Văn Bình/(0963.461.116 / 0936.991.668- Kim Anh.),,1,Lê Văn Bình,0963461116,true,NHAP_THANG,
+361,L4A.108,Chủ Hộ,Lê Văn Bình,Lê Văn Bình,0963461116,Kim,0936991668,,,,,,,Lê Văn Bình/(0963.461.116 / 0936.991.668- Kim Anh.),,2,Kim,0936991668,false,NHAP_THANG,
+362,L4A.109,Chủ Hộ,Bùi Hà Gia Linh,Bùi Hà Gia Linh,0766388979,,,,,,,,,Bùi Hà Gia Linh/(0766.388.979.),,1,Bùi Hà Gia Linh,0766388979,true,NHAP_THANG,
+365,L4A.111B,Chủ Hộ,Nguyễn Mai Khánh An,Nguyễn Mai Khánh An,,,,,,,,,,"Nguyễn Mai Khánh An/(0912,594,777.)",,1,Nguyễn Mai Khánh An,,true,NHAP_THANG,
+368,L4A.115,Chủ Hộ,Nguyễn Văn Doan,Nguyễn Văn Doan,0363131471,,,,,,,,,Nguyễn Văn Doan/Phạm Thanh Hương(02253.711.882 / 036.3131.471),,1,Nguyễn Văn Doan,0363131471,true,NHAP_THANG,
+370,L4A.201,Chủ Hộ,Trần Trọng Tiến,Trần Trọng Tiến,0357942767,,,,,,,,,"Trần Trọng Tiến /(0357942767.), UQ cho Nguyễn Thị Kim Khánh",,1,Trần Trọng Tiến,0357942767,true,NHAP_THANG,
+374,L4A.206A,Chủ Hộ,Nguyễn Huy Hoàng,Nguyễn Huy Hoàng,0356583158,,,,,,,,,Nguyễn Huy Hoàng/(0356.583.158.),,1,Nguyễn Huy Hoàng,0356583158,true,NHAP_THANG,
+387,L4A.302,Chủ Hộ,Nguyễn Văn Trung,Nguyễn Văn Trung,0776785404,Nguyễn Thị Hà,0966642608,,,,,,,"Nguyễn Văn Trung/(0776.785.404.) 
+Nguyễn Thị Hà 0966 642 608",,1,Nguyễn Văn Trung,0776785404,true,NHAP_THANG,
+387,L4A.302,Chủ Hộ,Nguyễn Văn Trung,Nguyễn Văn Trung,0776785404,Nguyễn Thị Hà,0966642608,,,,,,,"Nguyễn Văn Trung/(0776.785.404.) 
+Nguyễn Thị Hà 0966 642 608",,2,Nguyễn Thị Hà,0966642608,false,NHAP_THANG,
+390,L4A.306A,Chủ Hộ,Đặng Thái Duy,Đặng Thái Duy,0903207164,Nguyễn Tiến Mạnh đóng phí,0977647667,,,,,,,"Đặng Thái Duy/(0903.207.164.) 
+Nguyễn Tiến Mạnh 0977647667 đóng phí",,1,Đặng Thái Duy,0903207164,true,NHAP_THANG,
+390,L4A.306A,Chủ Hộ,Đặng Thái Duy,Đặng Thái Duy,0903207164,Nguyễn Tiến Mạnh đóng phí,0977647667,,,,,,,"Đặng Thái Duy/(0903.207.164.) 
+Nguyễn Tiến Mạnh 0977647667 đóng phí",,2,Nguyễn Tiến Mạnh đóng phí,0977647667,false,NHAP_THANG,
+394,L4A.309,Chủ Hộ,Vũ Thị Hương Giang,Vũ Thị Hương Giang,0904041481,,,,,,,,,Vũ Thị Hương Giang/(0904.041.481.),,1,Vũ Thị Hương Giang,0904041481,true,NHAP_THANG,
+395,L4A.310,Chủ Hộ,Lê Quang Hòa,Lê Quang Hòa,0904633113,,,,,,,,,Lê Quang Hòa/(0904.633.113.),,1,Lê Quang Hòa,0904633113,true,NHAP_THANG,
+397,L4A.311B,Chủ Hộ,Phạm Văn Hòa,Phạm Văn Hòa,,,,,,,,,,Phạm Văn Hòa/Vũ Thị Xinh(0986.334.010.0812.026.993),,1,Phạm Văn Hòa,,true,NHAP_THANG,
+399,L4A.314,Chủ Hộ,Nguyễn Phúc Tùng,Nguyễn Phúc Tùng,0366460594,C xuân mẹ a tùng đóng phí,0982210492,,,,,,,"Nguyễn Phúc Tùng/(0366.460.594.) - 
+C xuân mẹ a tùng đóng phí:  0982 210 492",,1,Nguyễn Phúc Tùng,0366460594,true,NHAP_THANG,
+399,L4A.314,Chủ Hộ,Nguyễn Phúc Tùng,Nguyễn Phúc Tùng,0366460594,C xuân mẹ a tùng đóng phí,0982210492,,,,,,,"Nguyễn Phúc Tùng/(0366.460.594.) - 
+C xuân mẹ a tùng đóng phí:  0982 210 492",,2,C xuân mẹ a tùng đóng phí,0982210492,false,NHAP_THANG,
+400,L4A.315,Chủ Hộ,Lương Phương Anh,Lương Phương Anh,,,,,,,,,,Lương Phương Anh/Cao Hồng Nhung(0904.117.288.0352.530.893),,1,Lương Phương Anh,,true,NHAP_THANG,
+402,L4A.401,Chủ Hộ,Đặng Thị Hạnh,Đặng Thị Hạnh,0779385533,,,,,,,,,Đặng Thị Hạnh/(0779.385.533.),,1,Đặng Thị Hạnh,0779385533,true,NHAP_THANG,
+404,L4A.405,Chủ Hộ,Nguyễn Thanh Hoàng,Nguyễn Thanh Hoàng,,,,,,,,,,Nguyễn Thanh Hoàng/Phạm Thị Thi(0374610816.0973.060.341),,1,Nguyễn Thanh Hoàng,,true,NHAP_THANG,
+406,L4A.406B,Chủ Hộ,Nguyễn Hữu Trung,Nguyễn Hữu Trung,,,,,,,,,,Nguyễn Hữu Trung/Nguyễn Thị My (0353053428.0963.180.545),,1,Nguyễn Hữu Trung,,true,NHAP_THANG,
+408,L4A.408,Chủ Hộ,Bùi Văn Trường,Bùi Văn Trường,,,,,,,,,,Bùi Văn Trường/Vũ Thị Thúy(0325.981.726.0989.073.482),ngày 16/04/2024 Phạm Văn Dũng 0353583260 nhận tb đóng phí,1,Bùi Văn Trường,,true,NHAP_THANG,
+409,L4A.409,Chủ Hộ,Mai Xuân Ninh,Mai Xuân Ninh,,,,,,,,,,Mai Xuân Ninh/Nguyễn Thị Nguyện(0986.153.619.0865.978.368),,1,Mai Xuân Ninh,,true,NHAP_THANG,
+410,L4A.410,Chủ Hộ,Phạm Đình Minh,Phạm Đình Minh,,,,,,,,,,Phạm Đình Minh/Nguyễn Thị Tố Nga,,1,Phạm Đình Minh,,true,NHAP_THANG,
+416,L4A.416,Chủ Hộ,Nguyễn Mạnh Cường,Nguyễn Mạnh Cường,0978717521,,,,,,,,,Nguyễn Mạnh Cường/(0978.717.521.),,1,Nguyễn Mạnh Cường,0978717521,true,NHAP_THANG,
+418,L4A.502,Chủ Hộ,Trần Thị Thuỳ,Trần Thị Thuỳ,,,,,,,,,,Trần Thị Thuỳ/Lưu Trường Giang(088.6789.885.0886.586.899),,1,Trần Thị Thuỳ,,true,NHAP_THANG,
+419,L4A.503,Chủ Hộ,Nguyễn Tuấn Tú,Nguyễn Tuấn Tú,,,,,,,,,,Nguyễn Tuấn Tú/(0936.599.792.0972.399.370 - Chị Oanh.),,1,Nguyễn Tuấn Tú,,true,NHAP_THANG,
+420,L4A.505,Chủ Hộ,Đỗ Thị Hồng Hạnh,Đỗ Thị Hồng Hạnh,0934240369,,,,,,,,,Đỗ Thị Hồng Hạnh/(0934.240.369.),,1,Đỗ Thị Hồng Hạnh,0934240369,true,NHAP_THANG,
+421,L4A.506A,Chủ Hộ,Vũ Thùy Vân,Vũ Thùy Vân,0902420835,,,,,,,,,Vũ Thùy Vân/(0902.420.835.),,1,Vũ Thùy Vân,0902420835,true,NHAP_THANG,
+422,L4A.506B,Chủ Hộ,Trần Duy Long,Trần Duy Long,0936500182,,,,,,,,,Trần Duy Long (0936.500.182),,1,Trần Duy Long,0936500182,true,NHAP_THANG,
+423,L4A.507,Chủ Hộ,Trần Anh Tài,Trần Anh Tài,,,,,,,,,,Trần Anh Tài/Hoàng Thị Thu Huyền(0964.172.992.0345.865.469),ngày 16/04/2024 Trương Thị My 0963030465 nhận tb đóng phí,1,Trần Anh Tài,,true,NHAP_THANG,
+424,L4A.509,Chủ Hộ,Nguyễn Anh Tuấn,Nguyễn Anh Tuấn,,,,,,,,,,"Nguyễn Anh Tuấn/(0936,830,507.)",,1,Nguyễn Anh Tuấn,,true,NHAP_THANG,
+425,L4A.510,Chủ Hộ,Nguyễn Quốc Phong,Nguyễn Quốc Phong,0357185569,Trần Thị Ngọc,0961845244,,,,,,,"Nguyễn Quốc Phong/(0357.185.569.)
+Trần Thị Ngọc 096 184 5244",,1,Nguyễn Quốc Phong,0357185569,true,NHAP_THANG,
+425,L4A.510,Chủ Hộ,Nguyễn Quốc Phong,Nguyễn Quốc Phong,0357185569,Trần Thị Ngọc,0961845244,,,,,,,"Nguyễn Quốc Phong/(0357.185.569.)
+Trần Thị Ngọc 096 184 5244",,2,Trần Thị Ngọc,0961845244,false,NHAP_THANG,
+428,L4A.514,Chủ Hộ,Trần Văn Hướng,Trần Văn Hướng,,,,,,,,,,Trần Văn Hướng/Nguyễn Thị Thuý(0989.686.087.0986.126.124),,1,Trần Văn Hướng,,true,NHAP_THANG,
+429,L4A.515,Chủ Hộ,Vũ Thị Thu Thủy,Vũ Thị Thu Thủy,,,,,,,,,,Vũ Thị Thu Thủy/Đào Vũ Hoàng(0936.562.086.0904.297.563),,1,Vũ Thị Thu Thủy,,true,NHAP_THANG,
+430,L4A.516,Chủ Hộ,Bùi Duy Hưng,Bùi Duy Hưng,0856880555,Mẹ Đoàn Th Thuỷ,0979361861,,,,,,,"Bùi Duy Hưng/(0856.880.555.)
+Mẹ Đoàn Thanh Thuỷ 0979 361 861",,1,Bùi Duy Hưng,0856880555,true,NHAP_THANG,
+430,L4A.516,Chủ Hộ,Bùi Duy Hưng,Bùi Duy Hưng,0856880555,Mẹ Đoàn Th Thuỷ,0979361861,,,,,,,"Bùi Duy Hưng/(0856.880.555.)
+Mẹ Đoàn Thanh Thuỷ 0979 361 861",,2,Mẹ Đoàn Th Thuỷ,0979361861,false,NHAP_THANG,
+431,L4A.511A,Chủ Hộ,Lê Thị Thu Huyền,Lê Thị Thu Huyền,,,,,,,,,,"Lê Thị Thu Huyền/(0904,019,299.)",khách đóng 1 tháng 1 lần cùng với tiền điện nước,1,Lê Thị Thu Huyền,,true,NHAP_THANG,
+434,L4A.117,Chủ Hộ,Đỗ Thị Kim Xuyến,Đỗ Thị Kim Xuyến,0912303038,,,,,,,,,Đỗ Thị Kim Xuyến/(0912.303.038.),,1,Đỗ Thị Kim Xuyến,0912303038,true,NHAP_THANG,
+438,L4A.121,Chủ Hộ,Phạm Văn Thiềng,Phạm Văn Thiềng,0904197186,,,,,,,,,"Phạm Văn Thiềng/(0904.197.186.), chú Thành 0904197186",,1,Phạm Văn Thiềng,0904197186,true,NHAP_THANG,
+439,L4A.122,Chủ Hộ,Hoàng Hữu Cường (CKTSR),Hoàng Hữu Cường (CKTSR),,,,,,,,,,Hoàng Hữu Cường (CKTSR)/(0915.211.581.0989.060.703- A. Trọng.),,1,Hoàng Hữu Cường (CKTSR),,true,NHAP_THANG,
+440,L4A.123,Chủ Hộ,Nguyễn Thị Nguyệt,Nguyễn Thị Nguyệt,0906093865,,,,,,,,,Nguyễn Thị Nguyệt/(0906.093.865.),,1,Nguyễn Thị Nguyệt,0906093865,true,NHAP_THANG,
+441,L4A.124,Chủ Hộ,Đào Minh Hải,Đào Minh Hải,0912188368,,,,,,,,,"Đào Minh Hải/(0912.188.368.)/ 
+Ủy quyền Trương Văn Sáu: 0912.188.368",,1,Đào Minh Hải,0912188368,true,NHAP_THANG,
+451,L4A.135,Chủ Hộ,Đặng Thị Liên,Đặng Thị Liên,,,,,,,,,,Đặng Thị Liên/Phạm Vũ Anh(0988.735.050.0987.781.552),,1,Đặng Thị Liên,,true,NHAP_THANG,
+454,L4A.218,Chủ Hộ,Nguyễn Thị Thu Trang,Nguyễn Thị Thu Trang,0983528442,,,,,,,,,Nguyễn Thị Thu Trang/(0983.528.442.),,1,Nguyễn Thị Thu Trang,0983528442,true,NHAP_THANG,
+456,L4A.220,Chủ Hộ,Bùi Mạnh Hiệp,Bùi Mạnh Hiệp,,,,,,,,,,"Bùi Mạnh Hiệp/(0705,563,088.)",,1,Bùi Mạnh Hiệp,,true,NHAP_THANG,
+458,L4A.222,Chủ Hộ,Trịnh Khắc Quân,Trịnh Khắc Quân,,,,,,,,,,Trịnh Khắc Quân/Phạm Thị Kim Thoa(0973.069.699.0974.239.997),,1,Trịnh Khắc Quân,,true,NHAP_THANG,
+459,L4A.223,Chủ Hộ,Phạm Diệu Xuân,Phạm Diệu Xuân,0385132933,,,,,,,,,Phạm Diệu Xuân/(0385.132.933.),,1,Phạm Diệu Xuân,0385132933,true,NHAP_THANG,
+461,L4A.225,Chủ Hộ,Đào Văn Hùng,Đào Văn Hùng,0969983963,,,,,,,,,Đào Văn Hùng/(0969.983.963.),,1,Đào Văn Hùng,0969983963,true,NHAP_THANG,
+462,L4A.226,Chủ Hộ,Trương Hồng Sơn,Trương Hồng Sơn,,,,,,,,,,"Trương Hồng Sơn/Trần Thị Thùy Hương
+(0986.016.194.0985.906.764)",,1,Trương Hồng Sơn,,true,NHAP_THANG,
+463,L4A.227,Chủ Hộ,Trương Văn Lợi,Trương Văn Lợi,0972389736,,,,,,,,,Trương Văn Lợi/(0972.389.736.),,1,Trương Văn Lợi,0972389736,true,NHAP_THANG,
+466,L4A.230,Chủ Hộ,Lê Thái Dương,Lê Thái Dương,0858646111,,,,,,,,,Lê Thái Dương/(0858.646.111.),,1,Lê Thái Dương,0858646111,true,NHAP_THANG,
+469,L4A.233,Chủ Hộ,Vũ Ngọc Tuấn,Vũ Ngọc Tuấn,0912980959,,,,,,,,,Vũ Ngọc Tuấn/(0912.980.959.),,1,Vũ Ngọc Tuấn,0912980959,true,NHAP_THANG,
+470,L4A.234,Chủ Hộ,Nguyễn Kim Phượng,Nguyễn Kim Phượng,0903433829,,,,,,,,,Nguyễn Kim Phượng 0903433829,,1,Nguyễn Kim Phượng,0903433829,true,NHAP_THANG,
+472,L4A.236,Chủ Hộ,Đỗ Mạnh Cường,Đỗ Mạnh Cường,,,,,,,,,,Đỗ Mạnh Cường/(0865.564.292.0941.478.399 (C Vân Anh).),,1,Đỗ Mạnh Cường,,true,NHAP_THANG,
+475,L4A.319,Chủ Hộ,Đặng Thị Minh Thu,Đặng Thị Minh Thu,0967436389,C Phương,0979467579,,,,,,,Đặng Thị Minh Thu/(0967.436.389/0979.467.579 (C Phương).),,1,Đặng Thị Minh Thu,0967436389,true,NHAP_THANG,
+475,L4A.319,Chủ Hộ,Đặng Thị Minh Thu,Đặng Thị Minh Thu,0967436389,C Phương,0979467579,,,,,,,Đặng Thị Minh Thu/(0967.436.389/0979.467.579 (C Phương).),,2,C Phương,0979467579,false,NHAP_THANG,
+476,L4A.320,Chủ Hộ,Đỗ Tiến Thành,Đỗ Tiến Thành,,,,,,,,,,Đỗ Tiến Thành/Nguyễn Thị My(0967.619.971.0988.886.409),,1,Đỗ Tiến Thành,,true,NHAP_THANG,
+478,L4A.322,Chủ Hộ,Đinh Thị Linh Nhâm,Đinh Thị Linh Nhâm,,,,,,,,,,Đinh Thị Linh Nhâm/Phạm Minh Khanh(0763.357.800.0966.798.484),,1,Đinh Thị Linh Nhâm,,true,NHAP_THANG,
+479,L4A.323,Chủ Hộ,Trần Minh Tâm,Trần Minh Tâm,0778989996,,,,,,,,,0778.989.996,,1,Trần Minh Tâm,0778989996,true,NHAP_THANG,
+480,L4A.324,Chủ Hộ,Trần Khánh Huyền,Trần Khánh Huyền,0904370518,Mẹ,0936184367,Liên hệ Phan Văn Sáng bố của Huyền,0911476657,,,,,"Trần Khánh Huyền/(0904.370.518/ 0936.184.367- Mẹ.)
+Liên hệ Phan Văn Sáng 0911476657 bố của Huyền",,1,Trần Khánh Huyền,0904370518,true,NHAP_THANG,
+480,L4A.324,Chủ Hộ,Trần Khánh Huyền,Trần Khánh Huyền,0904370518,Mẹ,0936184367,Liên hệ Phan Văn Sáng bố của Huyền,0911476657,,,,,"Trần Khánh Huyền/(0904.370.518/ 0936.184.367- Mẹ.)
+Liên hệ Phan Văn Sáng 0911476657 bố của Huyền",,2,Mẹ,0936184367,false,NHAP_THANG,
+480,L4A.324,Chủ Hộ,Trần Khánh Huyền,Trần Khánh Huyền,0904370518,Mẹ,0936184367,Liên hệ Phan Văn Sáng bố của Huyền,0911476657,,,,,"Trần Khánh Huyền/(0904.370.518/ 0936.184.367- Mẹ.)
+Liên hệ Phan Văn Sáng 0911476657 bố của Huyền",,3,Liên hệ Phan Văn Sáng bố của Huyền,0911476657,false,NHAP_THANG,
+481,L4A.325,Chủ Hộ,Phạm Duy Hùng,Phạm Duy Hùng,,,,,,,,,,Phạm Duy Hùng/Vũ Thị Hồng(0982.075.290.0982.075.280),,1,Phạm Duy Hùng,,true,NHAP_THANG,
+482,L4A.326,Chủ Hộ,Nguyễn Thùy Dương,Nguyễn Thùy Dương,,,,,,,,,,Nguyễn Thùy Dương/(079.337.1362.0936.866.768 (mẹ Tám).),"Khách đóng tháng một, thời điểm là đầu tháng sau",1,Nguyễn Thùy Dương,,true,NHAP_THANG,
+484,L4A.328,Chủ Hộ,Nguyễn Thị Hoài Thu,Nguyễn Thị Hoài Thu,0934258799,,,,,,,,,Nguyễn Thị Hoài Thu/(0934.258.799.),,1,Nguyễn Thị Hoài Thu,0934258799,true,NHAP_THANG,
+485,L4A.329,Chủ Hộ,Lại Quản Hương Linh,Lại Quản Hương Linh,,,,,,,,,,Lại Quản Hương Linh/(090.445.6839-098.974.6118-A.Dũng.),,1,Lại Quản Hương Linh,,true,NHAP_THANG,
+487,L4A.331,Chủ Hộ,Nguyễn Thị Thanh Huyền,Nguyễn Thị Thanh Huyền,0906429891,Trần Văn Quang,0965455848,,,,,,,"Nguyễn Thị Thanh Huyền/(0906429891.)
+Trần Văn Quang 0965455848",,1,Nguyễn Thị Thanh Huyền,0906429891,true,NHAP_THANG,
+487,L4A.331,Chủ Hộ,Nguyễn Thị Thanh Huyền,Nguyễn Thị Thanh Huyền,0906429891,Trần Văn Quang,0965455848,,,,,,,"Nguyễn Thị Thanh Huyền/(0906429891.)
+Trần Văn Quang 0965455848",,2,Trần Văn Quang,0965455848,false,NHAP_THANG,
+489,L4A.334,Chủ Hộ,Nguyễn Tuấn Minh,Nguyễn Tuấn Minh,0967460269,mẹ Hương,0942392889,Thuận,0912160004,,,,,"Nguyễn Tuấn Minh/(0967.460.269/0942.392.889 (mẹ Hương).)
+Anh Thuận 0912160004",,1,Nguyễn Tuấn Minh,0967460269,true,NHAP_THANG,
+489,L4A.334,Chủ Hộ,Nguyễn Tuấn Minh,Nguyễn Tuấn Minh,0967460269,mẹ Hương,0942392889,Thuận,0912160004,,,,,"Nguyễn Tuấn Minh/(0967.460.269/0942.392.889 (mẹ Hương).)
+Anh Thuận 0912160004",,2,mẹ Hương,0942392889,false,NHAP_THANG,
+489,L4A.334,Chủ Hộ,Nguyễn Tuấn Minh,Nguyễn Tuấn Minh,0967460269,mẹ Hương,0942392889,Thuận,0912160004,,,,,"Nguyễn Tuấn Minh/(0967.460.269/0942.392.889 (mẹ Hương).)
+Anh Thuận 0912160004",,3,Thuận,0912160004,false,NHAP_THANG,
+493,L4A.418,Chủ Hộ,Đinh Thị Thanh Thủy,Đinh Thị Thanh Thủy,,,,,,,,,,Đinh Thị Thanh Thủy/Nguyễn Quý Phong(0917.433.579.0912193579),,1,Đinh Thị Thanh Thủy,,true,NHAP_THANG,
+494,L4A.419,Chủ Hộ,Vũ Thị Mến,Vũ Thị Mến,0385691590,,,,,,,,,Vũ Thị Mến/(0385.691.590.),,1,Vũ Thị Mến,0385691590,true,NHAP_THANG,
+495,L4A.420,Chủ Hộ,Lê Thị Lụa,Lê Thị Lụa,,,,,,,,,,Lê Thị Lụa/Nguyễn Huy Toàn(0967.033.318.0901.562.388),,1,Lê Thị Lụa,,true,NHAP_THANG,
+496,L4A.421,Chủ Hộ,Nguyễn Trọng Nghĩa,Nguyễn Trọng Nghĩa,,,,,,,,,,Nguyễn Trọng Nghĩa/Đồng Thị Nhung(0979.832.889.0978.777.581),,1,Nguyễn Trọng Nghĩa,,true,NHAP_THANG,
+497,L4A.422,Chủ Hộ,Vũ Văn Tiên,Vũ Văn Tiên,,,,,,,,,,Vũ Văn Tiên/Nguyễn Thị Ngọc Hải (0773286318.0904.611.988),,1,Vũ Văn Tiên,,true,NHAP_THANG,
+498,L4A.423,Chủ Hộ,Nguyễn Bá Phúc,Nguyễn Bá Phúc,,,,,,,,,,Nguyễn Bá Phúc/Lê Thị Hằng(0833.333.998.0348.746.886),,1,Nguyễn Bá Phúc,,true,NHAP_THANG,
+500,L4A.425,Chủ Hộ,Nguyễn Thu Hòa,Nguyễn Thu Hòa,0857575188,Đỗ Tiến Duy,0356554892,,,,,,,"Nguyễn Thu Hòa/(0857.575.188.) 
+Đỗ Tiến Duy 0356 554 892",,1,Nguyễn Thu Hòa,0857575188,true,NHAP_THANG,
+500,L4A.425,Chủ Hộ,Nguyễn Thu Hòa,Nguyễn Thu Hòa,0857575188,Đỗ Tiến Duy,0356554892,,,,,,,"Nguyễn Thu Hòa/(0857.575.188.) 
+Đỗ Tiến Duy 0356 554 892",,2,Đỗ Tiến Duy,0356554892,false,NHAP_THANG,
+501,L4A.426,Chủ Hộ,Phạm Quang Long,Phạm Quang Long,,,,,,,,,,Phạm Quang Long/Nguyễn Thị Hằng(0966.964.375.0356712426),,1,Phạm Quang Long,,true,NHAP_THANG,
+502,L4A.427,Chủ Hộ,Bùi Việt Đức (CKTSR),Bùi Việt Đức (CKTSR),0973090163,,,,,,,,,Bùi Việt Đức (CKTSR)/(0973.090.163.),,1,Bùi Việt Đức (CKTSR),0973090163,true,NHAP_THANG,
+503,L4A.428,Chủ Hộ,Nguyễn Hoàng Hội,Nguyễn Hoàng Hội,0942826289,,,,,,,,,Nguyễn Hoàng Hội/(094.2826.289.),,1,Nguyễn Hoàng Hội,0942826289,true,NHAP_THANG,
+504,L4A.429,Chủ Hộ,Nguyễn Văn Trung,Nguyễn Văn Trung,0775346869,,,,,,,,,Nguyễn Văn Trung/(0775.346.869.),,1,Nguyễn Văn Trung,0775346869,true,NHAP_THANG,
+508,L4A.433,Chủ Hộ,Hoàng Thị Hợp,Hoàng Thị Hợp,0912734681,,,,,,,,,Hoàng Thị Hợp/(0912.734.681.),,1,Hoàng Thị Hợp,0912734681,true,NHAP_THANG,
+510,L4A.435,Chủ Hộ,Nguyễn Diễm Quỳnh Chi,Nguyễn Diễm Quỳnh Chi,0782077448,A Ngọc,0901517102,Vũ Văn Đông,0987231188,,,,,"Nguyễn Diễm Quỳnh Chi/(078.2077.448/0901.517.102 (A Ngọc).)
+Vũ Văn Đông 0987231188",,1,Nguyễn Diễm Quỳnh Chi,0782077448,true,NHAP_THANG,
+510,L4A.435,Chủ Hộ,Nguyễn Diễm Quỳnh Chi,Nguyễn Diễm Quỳnh Chi,0782077448,A Ngọc,0901517102,Vũ Văn Đông,0987231188,,,,,"Nguyễn Diễm Quỳnh Chi/(078.2077.448/0901.517.102 (A Ngọc).)
+Vũ Văn Đông 0987231188",,2,A Ngọc,0901517102,false,NHAP_THANG,
+510,L4A.435,Chủ Hộ,Nguyễn Diễm Quỳnh Chi,Nguyễn Diễm Quỳnh Chi,0782077448,A Ngọc,0901517102,Vũ Văn Đông,0987231188,,,,,"Nguyễn Diễm Quỳnh Chi/(078.2077.448/0901.517.102 (A Ngọc).)
+Vũ Văn Đông 0987231188",,3,Vũ Văn Đông,0987231188,false,NHAP_THANG,
+514,L4A.519,Chủ Hộ,Nguyễn Hải Hà,Nguyễn Hải Hà,0866967516,,,,,,,,,Nguyễn Hải Hà/(0866.967.516.),,1,Nguyễn Hải Hà,0866967516,true,NHAP_THANG,
+517,L4A.522,Chủ Hộ,Lê Thị Tuyến,Lê Thị Tuyến,0912050597,,,,,,,,,Lê Thị Tuyến/(0912.050.597.),,1,Lê Thị Tuyến,0912050597,true,NHAP_THANG,
+518,L4A.523,Chủ Hộ,Phạm Thị Diệp Hồng,Phạm Thị Diệp Hồng,0981894485,Nam,0378297904,,,,,,,"Phạm Thị Diệp Hồng/(0981.894.485.)
+Nam 0378297904",,1,Phạm Thị Diệp Hồng,0981894485,true,NHAP_THANG,
+518,L4A.523,Chủ Hộ,Phạm Thị Diệp Hồng,Phạm Thị Diệp Hồng,0981894485,Nam,0378297904,,,,,,,"Phạm Thị Diệp Hồng/(0981.894.485.)
+Nam 0378297904",,2,Nam,0378297904,false,NHAP_THANG,
+519,L4A.524,Chủ Hộ,Lê Hồng Dương,Lê Hồng Dương,,,,,,,,,,Lê Hồng Dương/Vũ Hữu Sơn(0961.345.686.0904.806.408),,1,Lê Hồng Dương,,true,NHAP_THANG,
+520,L4A.525,Chủ Hộ,Trịnh Duy Ninh,Trịnh Duy Ninh,0349356199,,,,,,,,,Trịnh Duy Ninh/(0349.356.199.),,1,Trịnh Duy Ninh,0349356199,true,NHAP_THANG,
+521,L4A.527,Chủ Hộ,Cao Bá Thiên,Cao Bá Thiên,0337554747,,,,,,,,,Cao Bá Thiên/(0337.554.747,,1,Cao Bá Thiên,0337554747,true,NHAP_THANG,
+522,L4A.529,Chủ Hộ,Đoàn Thị Liêm,Đoàn Thị Liêm,0896128799,,,,,,,,,Đoàn Thị Liêm/(0896.128.799.),,1,Đoàn Thị Liêm,0896128799,true,NHAP_THANG,
+523,L4A.530,Chủ Hộ,Lê Thị Liên,Lê Thị Liên,,,,,,,,,,Lê Thị Liên/Nguyễn Quốc Khánh(0904.670.698.0982.107.023),,1,Lê Thị Liên,,true,NHAP_THANG,
+524,L4A.531,Chủ Hộ,Vũ Đình Tính,Vũ Đình Tính,,,,,,,,,,Vũ Đình Tính/(0328.312.296.0988.640.394 (A Mạnh).),,1,Vũ Đình Tính,,true,NHAP_THANG,
+527,L4A.535,Chủ Hộ,Tống Phú Hoàng,Tống Phú Hoàng,0772211119,,,,,,,,,Tống Phú Hoàng/(0772.211.119.),,1,Tống Phú Hoàng,0772211119,true,NHAP_THANG,
+530,L4A.533,Chủ Hộ,Phạm Đức Thuận,Phạm Đức Thuận,,,,,,,,,,Phạm Đức Thuận/Nguyễn Thị Mận sdt sai,,1,Phạm Đức Thuận,,true,NHAP_THANG,
+534,L4B.103,Chủ Hộ,Nguyễn Đình Hiển (CKTSR),Nguyễn Đình Hiển (CKTSR),0916507656,,,,,,,,,"Nguyễn Đình Hiển (CKTSR)/(0916.507.656.)
+0916507656",,1,Nguyễn Đình Hiển (CKTSR),0916507656,true,NHAP_THANG,
+538,L4B.107,Chủ Hộ,Tống Thị Phượng,Tống Thị Phượng,,,,,,,,,,"Tống Thị Phượng/(0936,868,258.)",,1,Tống Thị Phượng,,true,NHAP_THANG,
+545,L4B.114,Chủ Hộ,Nguyễn Thị Thu Thảo,Nguyễn Thị Thu Thảo,0789347789,Linh,0904486379,Nguyễn Phương Nhung,0326124724,,,,,"Nguyễn Thị Thu Thảo.0789.347.789/
+(-Linh.0904.486.379)
+Nguyễn Phương Nhung 0326 124 724",,1,Nguyễn Thị Thu Thảo,0789347789,true,NHAP_THANG,
+545,L4B.114,Chủ Hộ,Nguyễn Thị Thu Thảo,Nguyễn Thị Thu Thảo,0789347789,Linh,0904486379,Nguyễn Phương Nhung,0326124724,,,,,"Nguyễn Thị Thu Thảo.0789.347.789/
+(-Linh.0904.486.379)
+Nguyễn Phương Nhung 0326 124 724",,2,Linh,0904486379,false,NHAP_THANG,
+545,L4B.114,Chủ Hộ,Nguyễn Thị Thu Thảo,Nguyễn Thị Thu Thảo,0789347789,Linh,0904486379,Nguyễn Phương Nhung,0326124724,,,,,"Nguyễn Thị Thu Thảo.0789.347.789/
+(-Linh.0904.486.379)
+Nguyễn Phương Nhung 0326 124 724",,3,Nguyễn Phương Nhung,0326124724,false,NHAP_THANG,
+548,L4B.201,Chủ Hộ,Phạm Thị Nga,Phạm Thị Nga,0979111096,,,,,,,,,Phạm Thị Nga/(0979.111.096.),,1,Phạm Thị Nga,0979111096,true,NHAP_THANG,
+550,L4B.205,Chủ Hộ,Đinh Quang Tuấn,Đinh Quang Tuấn,0985018119,,,,,,,,,Đinh Quang Tuấn/(0985.018.119.),,1,Đinh Quang Tuấn,0985018119,true,NHAP_THANG,
+555,L4B.210,Chủ Hộ,Chu Thanh Tú,Chu Thanh Tú,,,,,,,,,,Chu Thanh Tú/Nguyễn Thị Thúy Hà(0963.112.255.0963.112.255),,1,Chu Thanh Tú,,true,NHAP_THANG,
+557,L4B.211B,Chủ Hộ,Đào Nguyên Khải,Đào Nguyên Khải,,,,,,,,,,Đào Nguyên Khải/Dương Thị Hường(0934.363.262.0934.382.598),,1,Đào Nguyên Khải,,true,NHAP_THANG,
+558,L4B.212,Chủ Hộ,Trịnh Xuân Huân,Trịnh Xuân Huân,,,,,,,,,,Trịnh Xuân Huân/Lê Minh Thúy(0972.063.095.0961.510.694),,1,Trịnh Xuân Huân,,true,NHAP_THANG,
+561,L4B.216,Chủ Hộ,Đặng Thị Mai Anh,Đặng Thị Mai Anh,0969022196,Nguyễn Thị Kim O,0904123992,,,,,,,"Đặng Thị Mai Anh/(0969.022.196.) 
+Nguyễn Thị Kim Oanh 0904123992",,1,Đặng Thị Mai Anh,0969022196,true,NHAP_THANG,
+561,L4B.216,Chủ Hộ,Đặng Thị Mai Anh,Đặng Thị Mai Anh,0969022196,Nguyễn Thị Kim O,0904123992,,,,,,,"Đặng Thị Mai Anh/(0969.022.196.) 
+Nguyễn Thị Kim Oanh 0904123992",,2,Nguyễn Thị Kim O,0904123992,false,NHAP_THANG,
+562,L4B.301,Chủ Hộ,Nguyễn Thị Thu Thủy,Nguyễn Thị Thu Thủy,0913686400,Nam,0945170078,,,,,,,"Nguyễn Thị Thu Thủy/(0913.686.400/ 
+0945.17.00.78 - Nam.)",,1,Nguyễn Thị Thu Thủy,0913686400,true,NHAP_THANG,
+562,L4B.301,Chủ Hộ,Nguyễn Thị Thu Thủy,Nguyễn Thị Thu Thủy,0913686400,Nam,0945170078,,,,,,,"Nguyễn Thị Thu Thủy/(0913.686.400/ 
+0945.17.00.78 - Nam.)",,2,Nam,0945170078,false,NHAP_THANG,
+563,L4B.302,Chủ Hộ,Lương Thị Hạnh,Lương Thị Hạnh,,,,,,,,,,"Lương Thị Hạnh/(0911,964,416.)",,1,Lương Thị Hạnh,,true,NHAP_THANG,
+564,L4B.303,Chủ Hộ,Trần Viết Nam,Trần Viết Nam,0973609092,,,,,,,,,Trần Viết Nam/(0973.609.092.),,1,Trần Viết Nam,0973609092,true,NHAP_THANG,
+565,L4B.305,Chủ Hộ,Đỗ Thị Hồng,Đỗ Thị Hồng,0969241090,Lê Văn Bình,0904098466,,,,,,,"Đỗ Thị Hồng/(0969.241.090.)
+Lê Văn Bình 0904 098 466",,1,Đỗ Thị Hồng,0969241090,true,NHAP_THANG,
+565,L4B.305,Chủ Hộ,Đỗ Thị Hồng,Đỗ Thị Hồng,0969241090,Lê Văn Bình,0904098466,,,,,,,"Đỗ Thị Hồng/(0969.241.090.)
+Lê Văn Bình 0904 098 466",,2,Lê Văn Bình,0904098466,false,NHAP_THANG,
+570,L4B.310,Chủ Hộ,Nguyễn Thị Vân,Nguyễn Thị Vân,0358312382,,,,,,,,,Nguyễn Thị Vân/(0358.312.382.),,1,Nguyễn Thị Vân,0358312382,true,NHAP_THANG,
+572,L4B.312,Chủ Hộ,Nguyễn Thị Hà My,Nguyễn Thị Hà My,0813503887,,,,,,,,,"Nguyễn Thị Hà My/(0813.503.887.)
+phạm t hoa 0912160809 0947 503 279",,1,Nguyễn Thị Hà My,0813503887,true,NHAP_THANG,
+573,L4B.314,Chủ Hộ,Nguyễn Thị Ngọc Mai (CKTSR),Nguyễn Thị Ngọc Mai (CKTSR),0339812838,,,,,,,,,Nguyễn Thị Ngọc Mai (CKTSR)/(0339.812.838.),,1,Nguyễn Thị Ngọc Mai (CKTSR),0339812838,true,NHAP_THANG,
+575,L4B.316,Chủ Hộ,Nguyễn Vân Nam,Nguyễn Vân Nam,0914056586,,,,,,,,,Nguyễn Vân Nam/(0914.056.586.),,1,Nguyễn Vân Nam,0914056586,true,NHAP_THANG,
+580,L4B.406A,Chủ Hộ,Đỗ Thị Thoa,Đỗ Thị Thoa,0969522631,bố Luật,0963819576,,,,,,,Đỗ Thị Thoa/(0969.522.631/ 0963.819.576 (bố Luật).),,1,Đỗ Thị Thoa,0969522631,true,NHAP_THANG,
+580,L4B.406A,Chủ Hộ,Đỗ Thị Thoa,Đỗ Thị Thoa,0969522631,bố Luật,0963819576,,,,,,,Đỗ Thị Thoa/(0969.522.631/ 0963.819.576 (bố Luật).),,2,bố Luật,0963819576,false,NHAP_THANG,
+581,L4B.407,Chủ Hộ,Nguyễn Sĩ Chiến,Nguyễn Sĩ Chiến,,,,,,,,,,Nguyễn Sĩ Chiến/Nguyễn Thị Thu Hương(0898.550.586.0961.808.458),,1,Nguyễn Sĩ Chiến,,true,NHAP_THANG,
+583,L4B.409,Chủ Hộ,Đào Văn Trường,Đào Văn Trường,0915806369,Phạm Văn Hiệp,0386801329,,,,,,,"Đào Văn Trường/(0915.806.369.)
+Phạm Văn Hiệp 0386801329",,1,Đào Văn Trường,0915806369,true,NHAP_THANG,
+583,L4B.409,Chủ Hộ,Đào Văn Trường,Đào Văn Trường,0915806369,Phạm Văn Hiệp,0386801329,,,,,,,"Đào Văn Trường/(0915.806.369.)
+Phạm Văn Hiệp 0386801329",,2,Phạm Văn Hiệp,0386801329,false,NHAP_THANG,
+584,L4B.410,Chủ Hộ,Phạm Việt Hưng,Phạm Việt Hưng,0976556178,,,,,,,,,Phạm Việt Hưng/(0976.556.178.),,1,Phạm Việt Hưng,0976556178,true,NHAP_THANG,
+585,L4B.411A,Chủ Hộ,Lê Thanh Thiên,Lê Thanh Thiên,,,,,,,,,,Lê Thanh Thiên/Nguyễn Thị Hương(0346.187.210.0965.525.878),,1,Lê Thanh Thiên,,true,NHAP_THANG,
+586,L4B.411B,Chủ Hộ,Nguyễn Đăng Khoa,Nguyễn Đăng Khoa,,,,,,,,,,Nguyễn Đăng Khoa/Nguyễn Hương Giang(0936.821.944.0935.689.191),,1,Nguyễn Đăng Khoa,,true,NHAP_THANG,
+588,L4B.415,Chủ Hộ,Nguyễn Quang Ngọc,Nguyễn Quang Ngọc,0938451993,,,,,,,,,Nguyễn Quang Ngọc/(0938.451.993.),,1,Nguyễn Quang Ngọc,0938451993,true,NHAP_THANG,
+589,L4B.416,Chủ Hộ,Đào Nguyên Tiến,Đào Nguyên Tiến,0906009126,Lê Kim Toàn,0376730412,,,,,,,"Đào Nguyên Tiến/(0906.009.126.)
+Lê Kim Toàn 0376730412",,1,Đào Nguyên Tiến,0906009126,true,NHAP_THANG,
+589,L4B.416,Chủ Hộ,Đào Nguyên Tiến,Đào Nguyên Tiến,0906009126,Lê Kim Toàn,0376730412,,,,,,,"Đào Nguyên Tiến/(0906.009.126.)
+Lê Kim Toàn 0376730412",,2,Lê Kim Toàn,0376730412,false,NHAP_THANG,
+591,L4B.502,Chủ Hộ,Lê Hưng Thịnh,Lê Hưng Thịnh,0832297955,,,,,,,,,Lê Hưng Thịnh/(0832.297.955.),,1,Lê Hưng Thịnh,0832297955,true,NHAP_THANG,
+593,L4B.505,Chủ Hộ,Trần Thị Nhung,Trần Thị Nhung,,,,,,,,,,Trần Thị Nhung/Đặng Hoàng Phú(0373.629.950.0942.597.679),,1,Trần Thị Nhung,,true,NHAP_THANG,
+595,L4B.506B,Chủ Hộ,Vũ Thị Thành,Vũ Thị Thành,,,,,,,,,,Vũ Thị Thành/Trần Trung Dũng(0936.539.682.0934.430.640),,1,Vũ Thị Thành,,true,NHAP_THANG,
+596,L4B.507,Chủ Hộ,Vũ Đăng Thủy,Vũ Đăng Thủy,0359041030,,,,,,,,,Vũ Đăng Thủy/(0359.041.030.),,1,Vũ Đăng Thủy,0359041030,true,NHAP_THANG,
+597,L4B.509,Chủ Hộ,Đàm Thị Ngọc Anh,Đàm Thị Ngọc Anh,,,,,,,,,,Đàm Thị Ngọc Anh/Lương Mạnh Hà(0763.490.993.0914.330.254),,1,Đàm Thị Ngọc Anh,,true,NHAP_THANG,
+598,L4B.510,Chủ Hộ,Phạm Bá Long,Phạm Bá Long,,,,,,,,,,Phạm Bá Long/Đào Thị Thúy(0834.198.866.0981.863.615),,1,Phạm Bá Long,,true,NHAP_THANG,
+599,L4B.511A,Chủ Hộ,Phan Trần Kim,Phan Trần Kim,,,,,,,,,,Phan Trần Kim/Nguyễn Thị Minh Châu(0778.257.192.0868.198.425),,1,Phan Trần Kim,,true,NHAP_THANG,
+602,L4B.514,Chủ Hộ,Nguyễn Thị Hương Giang,Nguyễn Thị Hương Giang,,,,,,,,,,Nguyễn Thị Hương Giang/Phan Anh Tuấn(0795.420.034.0796.336.909),,1,Nguyễn Thị Hương Giang,,true,NHAP_THANG,
+613,L4B.120,Chủ Hộ,Phạm Trung Hiếu,Phạm Trung Hiếu,,,,,,,,,,Phạm Trung Hiếu/Trần Huyền Dung(906041292.0936.912.993-Dung/),,1,Phạm Trung Hiếu,,true,NHAP_THANG,
+616,L4B.123,Chủ Hộ,Trần Ngọc Long.Đỗ Thị Hạ,Trần Ngọc Long.Đỗ Thị Hạ,,,,,,,,,,Trần Ngọc Long.Đỗ Thị Hạ/ (0904.389.382.0378.473.759),,1,Trần Ngọc Long.Đỗ Thị Hạ,,true,NHAP_THANG,
+617,L4B.124,Chủ Hộ,Trần Thảo Vân,Trần Thảo Vân,0837733222,Quỳnh,0779229888,,,,,,,"Trần Thảo Vân/(0837.733.222.)
+Quỳnh 0779229888",,1,Trần Thảo Vân,0837733222,true,NHAP_THANG,
+617,L4B.124,Chủ Hộ,Trần Thảo Vân,Trần Thảo Vân,0837733222,Quỳnh,0779229888,,,,,,,"Trần Thảo Vân/(0837.733.222.)
+Quỳnh 0779229888",,2,Quỳnh,0779229888,false,NHAP_THANG,
+628,L4B.135,Chủ Hộ,Cao Thị Tố Uyên,Cao Thị Tố Uyên,0945537392,,,,,,,,,Cao Thị Tố Uyên/(0945.537.392.),,1,Cao Thị Tố Uyên,0945537392,true,NHAP_THANG,
+630,L4B.218,Chủ Hộ,Trịnh Thị Nga,Trịnh Thị Nga,0766335638,,,,,,,,,Trịnh Thị Nga 0766335638,,1,Trịnh Thị Nga,0766335638,true,NHAP_THANG,
+631,L4B.219,Chủ Hộ,Đỗ Ngọc Minh,Đỗ Ngọc Minh,,,,,,,,,,"Đỗ Ngọc Minh/Nguyễn Thu Hằng(0934,210,108.0763.363.968)",,1,Đỗ Ngọc Minh,,true,NHAP_THANG,
+633,L4B.221,Chủ Hộ,Phạm Thị Nhã Phương,Phạm Thị Nhã Phương,,,,,,,,,,Phạm Thị Nhã Phương/(0359.041.600.0974.184.145 - Mẹ.),,1,Phạm Thị Nhã Phương,,true,NHAP_THANG,
+635,L4B.223,Chủ Hộ,Nguyễn Thị Xinh,Nguyễn Thị Xinh,0367818899,,,,,,,,,Nguyễn Thị Xinh/(0367.818.899.),,1,Nguyễn Thị Xinh,0367818899,true,NHAP_THANG,
+636,L4B.224,Chủ Hộ,Bùi Xuân Cừ,Bùi Xuân Cừ,0346139820,,,,,,,,,Bùi Xuân Cừ/(0346.139.820.),,1,Bùi Xuân Cừ,0346139820,true,NHAP_THANG,
+639,L4B.227,Chủ Hộ,Đinh Khắc Tuyến,Đinh Khắc Tuyến,,,,,,,,,,Đinh Khắc Tuyến/Nguyễn Thị Cúc(0936.822.644.0702.234.418),,1,Đinh Khắc Tuyến,,true,NHAP_THANG,
+645,L4B.233,Chủ Hộ,Chu Thế Mạnh,Chu Thế Mạnh,0333420498,Nguyễn Thị Bình,0986110566,,,,,,,"Chu Thế Mạnh/(0333.420.498.)
+Nguyễn Thị Bình  0986110566",,1,Chu Thế Mạnh,0333420498,true,NHAP_THANG,
+645,L4B.233,Chủ Hộ,Chu Thế Mạnh,Chu Thế Mạnh,0333420498,Nguyễn Thị Bình,0986110566,,,,,,,"Chu Thế Mạnh/(0333.420.498.)
+Nguyễn Thị Bình  0986110566",,2,Nguyễn Thị Bình,0986110566,false,NHAP_THANG,
+648,L4B.236,Chủ Hộ,Mai Xuân Lực,Mai Xuân Lực,0983685458,,,,,,,,,Mai Xuân Lực/(0983.685.458.),,1,Mai Xuân Lực,0983685458,true,NHAP_THANG,
+651,L4B.319,Chủ Hộ,Lã Xuân Mạnh,Lã Xuân Mạnh,,,,,,,,,,Lã Xuân Mạnh/Đoàn Thị Phương Anh(0903.286.972.0984.425.622),,1,Lã Xuân Mạnh,,true,NHAP_THANG,
+653,L4B.321,Chủ Hộ,Vũ Xuân Tuyên,Vũ Xuân Tuyên,,,,,,,,,,Vũ Xuân Tuyên/Nguyễn Thị Phương(0982.109.307.0375.548.730),,1,Vũ Xuân Tuyên,,true,NHAP_THANG,
+658,L4B.326,Chủ Hộ,Trần Văn Toản,Trần Văn Toản,0971350628,,,,,,,,,"Trần Văn Toản/Vũ Thị Huyền Trang (0779.202.990.0336.484.252)
+0971350628",,1,Trần Văn Toản,0971350628,true,NHAP_THANG,
+660,L4B.328,Chủ Hộ,Nguyễn Hải Như,Nguyễn Hải Như,0936331702,,,,,,,,,Nguyễn Hải Như/(0936.331.702.),,1,Nguyễn Hải Như,0936331702,true,NHAP_THANG,
+662,L4B.330,Chủ Hộ,Bùi Ngọc Hưởng,Bùi Ngọc Hưởng,0906099193,Ủy quyền :  Hà Thị Hiển,0934372229,,,,,,,"Bùi Ngọc Hưởng/(0906.099.193.)
+Ủy quyền : Chị Hà Thị Hiển 0934372229",,1,Bùi Ngọc Hưởng,0906099193,true,NHAP_THANG,
+662,L4B.330,Chủ Hộ,Bùi Ngọc Hưởng,Bùi Ngọc Hưởng,0906099193,Ủy quyền :  Hà Thị Hiển,0934372229,,,,,,,"Bùi Ngọc Hưởng/(0906.099.193.)
+Ủy quyền : Chị Hà Thị Hiển 0934372229",,2,Ủy quyền :  Hà Thị Hiển,0934372229,false,NHAP_THANG,
+663,L4B.331,Chủ Hộ,Nguyễn Thị Khánh Linh,Nguyễn Thị Khánh Linh,0934341298,Chồng: Đoàn Phú Hà,0789297239,,,,,,,"Nguyễn Thị Khánh Linh/(0934.341.298.)
+Chồng: Đoàn Phú Hà 078.929.7239",,1,Nguyễn Thị Khánh Linh,0934341298,true,NHAP_THANG,
+663,L4B.331,Chủ Hộ,Nguyễn Thị Khánh Linh,Nguyễn Thị Khánh Linh,0934341298,Chồng: Đoàn Phú Hà,0789297239,,,,,,,"Nguyễn Thị Khánh Linh/(0934.341.298.)
+Chồng: Đoàn Phú Hà 078.929.7239",,2,Chồng: Đoàn Phú Hà,0789297239,false,NHAP_THANG,
+664,L4B.332,Chủ Hộ,Lê Thị Yến,Lê Thị Yến,0963190184,,,,,,,,,Lê Thị Yến/(0963.190.184.),,1,Lê Thị Yến,0963190184,true,NHAP_THANG,
+667,L4B.335,Chủ Hộ,Đỗ Văn Toản,Đỗ Văn Toản,,,,,,,,,,Đỗ Văn Toản/Đỗ Thị Phương Thảo(0394.952.488.0382.515.236),,1,Đỗ Văn Toản,,true,NHAP_THANG,
+669,L4B.417,Chủ Hộ,Dương Thị Hoài Hà,Dương Thị Hoài Hà,0936680329,Em vợ đang ở Đinh Trọng Nghĩa,0984735996,,,,,,,"Dương Thị Hoài Hà/(0936.680.329.)
+Em vợ đang ở Đinh Trọng Nghĩa 0984 735 996",,1,Dương Thị Hoài Hà,0936680329,true,NHAP_THANG,
+669,L4B.417,Chủ Hộ,Dương Thị Hoài Hà,Dương Thị Hoài Hà,0936680329,Em vợ đang ở Đinh Trọng Nghĩa,0984735996,,,,,,,"Dương Thị Hoài Hà/(0936.680.329.)
+Em vợ đang ở Đinh Trọng Nghĩa 0984 735 996",,2,Em vợ đang ở Đinh Trọng Nghĩa,0984735996,false,NHAP_THANG,
+670,L4B.418,Chủ Hộ,Nguyễn Thị Nga,Nguyễn Thị Nga,0988660350,,,,,,,,,Nguyễn Thị Nga/(0988.660.350.),,1,Nguyễn Thị Nga,0988660350,true,NHAP_THANG,
+672,L4B.420,Chủ Hộ,Nguyễn Quyết Tiến,Nguyễn Quyết Tiến,,,,,,,,,,Nguyễn Quyết Tiến/Nguyễn Thị Ngọc(0924.095.095.0982.794.098),,1,Nguyễn Quyết Tiến,,true,NHAP_THANG,
+675,L4B.424,Chủ Hộ,Nguyễn Thị Ngân,Nguyễn Thị Ngân,,,,,,,,,,Nguyễn Thị Ngân/Nguyễn Văn Xanh(0767.127.387.0966.145.569),,1,Nguyễn Thị Ngân,,true,NHAP_THANG,
+680,L4B.431,Chủ Hộ,Đặng Thị Tuyết,Đặng Thị Tuyết,0936944139,,,,,,,,,Đặng Thị Tuyết/(0936.944.139.),,1,Đặng Thị Tuyết,0936944139,true,NHAP_THANG,
+681,L4B.433,Chủ Hộ,Lê Ngọc Anh,Lê Ngọc Anh,,,,,,,,,,"Lê Ngọc Anh/(0794,174,699.)",,1,Lê Ngọc Anh,,true,NHAP_THANG,
+682,L4B.434,Chủ Hộ,Phạm Văn Ngọc,Phạm Văn Ngọc,,,,,,,,,,"Phạm Văn Ngọc/(0936,593,686.)",,1,Phạm Văn Ngọc,,true,NHAP_THANG,
+683,L4B.435,Chủ Hộ,Phạm Thị Ngọc Thu,Phạm Thị Ngọc Thu,,,,,,,,,,Phạm Thị Ngọc Thu/Lê Văn Đức(0944.717.115.0912.054.597),,1,Phạm Thị Ngọc Thu,,true,NHAP_THANG,
+685,L4B.517,Chủ Hộ,Phạm Khánh Nhung,Phạm Khánh Nhung,0981983269,,,,,,,,,Phạm Khánh Nhung/(0981.983.269.),,1,Phạm Khánh Nhung,0981983269,true,NHAP_THANG,
+688,L4B.520,Chủ Hộ,Nguyễn Thu Trang,Nguyễn Thu Trang,0901534268,,,,,,,,,Nguyễn Thu Trang/(0901.534.268.),,1,Nguyễn Thu Trang,0901534268,true,NHAP_THANG,
+689,L4B.521,Chủ Hộ,Trần Thị Tuyết Mai,Trần Thị Tuyết Mai,,,,,,,,,,Trần Thị Tuyết Mai/(0904.084.488.0902.092.486.),,1,Trần Thị Tuyết Mai,,true,NHAP_THANG,
+691,L4B.523,Chủ Hộ,Nguyễn Mạnh Quân,Nguyễn Mạnh Quân,0855587475,Nhung,0366100389,,,,,,,"Nguyễn Mạnh Quân/(0855.587.475.)
+Chị Nhung 0366100389",,1,Nguyễn Mạnh Quân,0855587475,true,NHAP_THANG,
+691,L4B.523,Chủ Hộ,Nguyễn Mạnh Quân,Nguyễn Mạnh Quân,0855587475,Nhung,0366100389,,,,,,,"Nguyễn Mạnh Quân/(0855.587.475.)
+Chị Nhung 0366100389",,2,Nhung,0366100389,false,NHAP_THANG,
+697,L4B.532,Chủ Hộ,Phạm Văn Kha,Phạm Văn Kha,,,,,,,,,,Phạm Văn Kha/Nguyễn Thảo Ly(0941.110.129.0941.110.129),,1,Phạm Văn Kha,,true,NHAP_THANG,
+698,L4B.533,Chủ Hộ,Nguyễn Thị Thanh Hồng,Nguyễn Thị Thanh Hồng,0946255552,,,,,,,,,0946.255.552,,1,Nguyễn Thị Thanh Hồng,0946255552,true,NHAP_THANG,
+700,L4B.535,Chủ Hộ,Nguyễn Thị Xuân,Nguyễn Thị Xuân,0366518298,,,,,,,,,Nguyễn Thị Xuân/(0366.518.298.),,1,Nguyễn Thị Xuân,0366518298,true,NHAP_THANG,
+701,L4B.536,Chủ Hộ,Đoàn Thị Kim Chung,Đoàn Thị Kim Chung,0913065186,,,,,,,,,Đoàn Thị Kim Chung/(0913.065.186.),,1,Đoàn Thị Kim Chung,0913065186,true,NHAP_THANG,
+719,L4C.111A,Chủ Hộ,Phạm Thị Thủy,Phạm Thị Thủy,0912050761,Con gái đang ở Thảo,0898253535,,,,,,,"Phạm Thị Thủy/(0912.050.761.)
+Con gái đang ở Thảo 0898253535",,1,Phạm Thị Thủy,0912050761,true,NHAP_THANG,
+719,L4C.111A,Chủ Hộ,Phạm Thị Thủy,Phạm Thị Thủy,0912050761,Con gái đang ở Thảo,0898253535,,,,,,,"Phạm Thị Thủy/(0912.050.761.)
+Con gái đang ở Thảo 0898253535",,2,Con gái đang ở Thảo,0898253535,false,NHAP_THANG,
+721,L4C.112,Chủ Hộ,Mr Bảo,Mr Bảo,0936883833,Vân,0936802134,,,,,,,"Mr Bảo 0936883833
+Vân 0936 802 134",,1,Mr Bảo,0936883833,true,NHAP_THANG,
+721,L4C.112,Chủ Hộ,Mr Bảo,Mr Bảo,0936883833,Vân,0936802134,,,,,,,"Mr Bảo 0936883833
+Vân 0936 802 134",,2,Vân,0936802134,false,NHAP_THANG,
+723,L4C.115,Chủ Hộ,Nguyễn Sơn Dương,Nguyễn Sơn Dương,,,,,,,,,,Nguyễn Sơn Dương/Nguyễn Thị Huế(0975.642.666.0352.636.465),,1,Nguyễn Sơn Dương,,true,NHAP_THANG,
+724,L4C.116,Chủ Hộ,Phạm Thị Phượng,Phạm Thị Phượng,0934355629,,,,,,,,,Phạm Thị Phượng/(0934.355.629.),,1,Phạm Thị Phượng,0934355629,true,NHAP_THANG,
+726,L4C.202,Chủ Hộ,Trần Ngọc Hà,Trần Ngọc Hà,0355719024,,,,,,,,,Trần Ngọc Hà/(0355.719.024.),,1,Trần Ngọc Hà,0355719024,true,NHAP_THANG,
+727,L4C.203,Chủ Hộ,Lương Thị Thảo,Lương Thị Thảo,0346732486,,,,,,,,,Lương Thị Thảo/(0346.732.486.),,1,Lương Thị Thảo,0346732486,true,NHAP_THANG,
+728,L4C.205,Chủ Hộ,Lê Hà Phương Linh,Lê Hà Phương Linh,0986623680,,,,,,,,,Lê Hà Phương Linh/(0986.623.680.),,1,Lê Hà Phương Linh,0986623680,true,NHAP_THANG,
+730,L4C.208,Chủ Hộ,Nguyễn Thu Hương,Nguyễn Thu Hương,0775317921,,,,,,,,,Nguyễn Thu Hương/(0775.317.921.),,1,Nguyễn Thu Hương,0775317921,true,NHAP_THANG,
+734,L4C.211B,Chủ Hộ,Hoàng Thái Duy,Hoàng Thái Duy,0775322485,,,,,,,,,Hoàng Thái Duy/(0775.322.485.),,1,Hoàng Thái Duy,0775322485,true,NHAP_THANG,
+742,L4C.306A,Chủ Hộ,Nguyễn Trung Hiếu,Nguyễn Trung Hiếu,0904442121,,,,,,,,,Nguyễn Trung Hiếu/(0904.442.121),,1,Nguyễn Trung Hiếu,0904442121,true,NHAP_THANG,
+743,L4C.306B,Chủ Hộ,Hoàng Văn Nam,Hoàng Văn Nam,0973100869,,,,,,,,,Hoàng Văn Nam/(0973.100.869.),,1,Hoàng Văn Nam,0973100869,true,NHAP_THANG,
+747,L4C.310,Chủ Hộ,Phạm Thành Dương,Phạm Thành Dương,,,,,,,,,,"Phạm Thành Dương/Nguyễn Thị Minh Trang(0778.350.865.0396.119.199)
+Chủ hộ căn L4C.501",,1,Phạm Thành Dương,,true,NHAP_THANG,
+748,L4C.311A,Chủ Hộ,Nguyễn Văn Song,Nguyễn Văn Song,,,,,,,,,,Nguyễn Văn Song/Vũ Thị Vần (0333.587.785 0977.868.569),,1,Nguyễn Văn Song,,true,NHAP_THANG,
+750,L4C.315,Chủ Hộ,Bùi Thị Hòa,Bùi Thị Hòa,0359706558,,,,,,,,,Bùi Thị Hòa/(0359.706.558.),,1,Bùi Thị Hòa,0359706558,true,NHAP_THANG,
+752,L4C.401,Chủ Hộ,Lưu Thị Anh,Lưu Thị Anh,0946282335,,,,,,,,,Lưu Thị Anh/(0946.282.335.),ngày 16/04/2024 Mai Thị Duyên 0901588556 nhận tb đóng phí,1,Lưu Thị Anh,0946282335,true,NHAP_THANG,
+754,L4C.403,Chủ Hộ,Hoàng Văn Hải,Hoàng Văn Hải,0988362881,,,,,,,,,Hoàng Văn Hải/(0988.362.881.),,1,Hoàng Văn Hải,0988362881,true,NHAP_THANG,
+756,L4C.406A,Chủ Hộ,Đồng Hạ Long,Đồng Hạ Long,,,,,,,,,,"Đồng Hạ Long/Đỗ Thị Xuân
+(0976.191.748.0934.366.098)",,1,Đồng Hạ Long,,true,NHAP_THANG,
+759,L4C.408,Chủ Hộ,Nguyễn Thị Minh Anh,Nguyễn Thị Minh Anh,0911422192,,,,,,,,,Nguyễn Thị Minh Anh/(0911.422.192.),,1,Nguyễn Thị Minh Anh,0911422192,true,NHAP_THANG,
+761,L4C.410,Chủ Hộ,Nguyễn Thị Lý,Nguyễn Thị Lý,,,,,,,,,,Nguyễn Thị Lý/Vũ Đình Hưng(078.207.6818.0975.276.684),,1,Nguyễn Thị Lý,,true,NHAP_THANG,
+763,L4C.411B,Chủ Hộ,Vũ Thế Phúc,Vũ Thế Phúc,0981836183,,,,,,,,,Vũ Thế Phúc/(0981.836.183.),,1,Vũ Thế Phúc,0981836183,true,NHAP_THANG,
+765,L4C.414,Chủ Hộ,Quách Huy Dũng,Quách Huy Dũng,0382430698,,,,,,,,,Quách Huy Dũng/(0382.430.698.),,1,Quách Huy Dũng,0382430698,true,NHAP_THANG,
+768,L4C.501,Chủ Hộ,Nguyễn Văn Dũng,Nguyễn Văn Dũng,0977712446,,,,,,,,,"Chủ cũ Nguyễn Văn Dũng/(0977.712.446.)
+Phạm Thành Dương/Nguyễn Thị Minh Trang(0778.350.865.0396.119.199)",,1,Nguyễn Văn Dũng,0977712446,true,NHAP_THANG,
+770,L4C.503,Chủ Hộ,Trần Thị Quyên,Trần Thị Quyên,0829377600,,,,,,,,,Trần Thị Quyên/(0829.377.600.),,1,Trần Thị Quyên,0829377600,true,NHAP_THANG,
+772,L4C.506A,Chủ Hộ,Phạm Văn Trung,Phạm Văn Trung,,,,,,,,,,Phạm Văn Trung/Lê Thị Ngân Hiền(0376.357.187.0906.179.375),,1,Phạm Văn Trung,,true,NHAP_THANG,
+775,L4C.509,Chủ Hộ,Nguyễn Thị Vân Anh,Nguyễn Thị Vân Anh,0906259966,,,,,,,,,Nguyễn Thị Vân Anh/(0906.259.966.),,1,Nguyễn Thị Vân Anh,0906259966,true,NHAP_THANG,
+777,L4C.511A,Chủ Hộ,Phạm Thị Thu (CKTSR),Phạm Thị Thu (CKTSR),0936702119,,,,,,,,,Phạm Thị Thu (CKTSR)/(0936.702.119.),,1,Phạm Thị Thu (CKTSR),0936702119,true,NHAP_THANG,
+779,L4C.512,Chủ Hộ,Đỗ Viết Thảo,Đỗ Viết Thảo,,,,,,,,,,Đỗ Viết Thảo/Hà Phương Bảo Anh(0909.486.366.0906.190.155),,1,Đỗ Viết Thảo,,true,NHAP_THANG,
+781,L4C.515,Chủ Hộ,Đào Văn Ten,Đào Văn Ten,0912645358,,,,,,,,,Đào Văn Ten/(0912.645.358.),,1,Đào Văn Ten,0912645358,true,NHAP_THANG,
+783,L4C.312,Chủ Hộ,Phạm Thị Ngọc Thủy,Phạm Thị Ngọc Thủy,,,,,,,,,,Phạm Thị Ngọc Thủy/Đỗ Văn Quang(0914.271.155.0826.966.268),Liên hệ chú Mật,1,Phạm Thị Ngọc Thủy,,true,NHAP_THANG,
+785,L4C.305,Chủ Hộ,Trần Thị Hiền,Trần Thị Hiền,0936882856,,,,,,,,,Trần Thị Hiền/(0936.882.856.),,1,Trần Thị Hiền,0936882856,true,NHAP_THANG,
+790,L4C.119,Chủ Hộ,Nguyễn Thị Đan Phượng,Nguyễn Thị Đan Phượng,,,,,,,,,,Nguyễn Thị Đan Phượng/Nguyễn Đức Chỉnh(0906.099.879.0982.966.981),,1,Nguyễn Thị Đan Phượng,,true,NHAP_THANG,
+798,L4C.127,Chủ Hộ,Phạm Văn Sinh,Phạm Văn Sinh,0916146842,Vợ Hoàng Thị Thúy,0969753099,,,,,,,"Phạm Văn Sinh:  0916.146.842 / Vợ Hoàng Thị Thúy 0969753099 
+Con gái : L2.108",,1,Phạm Văn Sinh,0916146842,true,NHAP_THANG,
+798,L4C.127,Chủ Hộ,Phạm Văn Sinh,Phạm Văn Sinh,0916146842,Vợ Hoàng Thị Thúy,0969753099,,,,,,,"Phạm Văn Sinh:  0916.146.842 / Vợ Hoàng Thị Thúy 0969753099 
+Con gái : L2.108",,2,Vợ Hoàng Thị Thúy,0969753099,false,NHAP_THANG,
+801,L4C.130,Chủ Hộ,Đinh Văn Chuyên,Đinh Văn Chuyên,,,,,,,,,,Đinh Văn Chuyên/Lại Thúy Nga(0982.784.986.0988.566.078),,1,Đinh Văn Chuyên,,true,NHAP_THANG,
+802,L4C.131,Chủ Hộ,Lê Thị Thùy Ly,Lê Thị Thùy Ly,0368934598,,,,,,,,,Lê Thị Thùy Ly/(0368.934.598.),,1,Lê Thị Thùy Ly,0368934598,true,NHAP_THANG,
+803,L4C.132,Chủ Hộ,Phan Thanh Hùng,Phan Thanh Hùng,,,,,,,,,,Phan Thanh Hùng/Hoàng Thị Nga(0834.04.1993.0393.155.789),,1,Phan Thanh Hùng,,true,NHAP_THANG,
+804,L4C.133,Chủ Hộ,An Minh Thiên,An Minh Thiên,0988555630,,,,,,,,,An Minh Thiên/(0988.555.630.),,1,An Minh Thiên,0988555630,true,NHAP_THANG,
+805,L4C.134,Chủ Hộ,Vũ Thị Oanh,Vũ Thị Oanh,0981967680,Phạm Nguyên Hương,0933333820,,,,,,,"Vũ Thị Oanh/(0981.967.680.)
+Phạm Nguyên Hương 0933333820",,1,Vũ Thị Oanh,0981967680,true,NHAP_THANG,
+805,L4C.134,Chủ Hộ,Vũ Thị Oanh,Vũ Thị Oanh,0981967680,Phạm Nguyên Hương,0933333820,,,,,,,"Vũ Thị Oanh/(0981.967.680.)
+Phạm Nguyên Hương 0933333820",,2,Phạm Nguyên Hương,0933333820,false,NHAP_THANG,
+807,L4C.136,Chủ Hộ,Bùi Văn Bình,Bùi Văn Bình,0768311686,gái đag ở: Bùi Thị Nguyệt,0981246698,,,,,,,"Bùi Văn Bình/(076.8311.686)
+Chị gái đag ở: Bùi Thị Nguyệt 0981246698",,1,Bùi Văn Bình,0768311686,true,NHAP_THANG,
+807,L4C.136,Chủ Hộ,Bùi Văn Bình,Bùi Văn Bình,0768311686,gái đag ở: Bùi Thị Nguyệt,0981246698,,,,,,,"Bùi Văn Bình/(076.8311.686)
+Chị gái đag ở: Bùi Thị Nguyệt 0981246698",,2,gái đag ở: Bùi Thị Nguyệt,0981246698,false,NHAP_THANG,
+810,L4C.219,Chủ Hộ,Phạm Thị Oanh,Phạm Thị Oanh,0772309276,,,,,,,,,Phạm Thị Oanh/(0772.309.276.),,1,Phạm Thị Oanh,0772309276,true,NHAP_THANG,
+811,L4C.220,Chủ Hộ,Lê Cảnh An,Lê Cảnh An,,,,,,,,,,Lê Cảnh An/Bùi Phương Anh(0962.869.696.0378.804.903),,1,Lê Cảnh An,,true,NHAP_THANG,
+812,L4C.221,Chủ Hộ,Tăng Thị Hạnh,Tăng Thị Hạnh,0906143638,,,,,,,,,Tăng Thị Hạnh/(0906143638.),,1,Tăng Thị Hạnh,0906143638,true,NHAP_THANG,
+814,L4C.223,Chủ Hộ,Nguyễn Thị Ngọc Hiếu,Nguyễn Thị Ngọc Hiếu,0773283523,A Được chủ hộ hiện tại,0385586399,,,,,,,"Nguyễn Thị Ngọc Hiếu 0773.283.523 /
+ (A Được 038.558.6399 chủ hộ hiện tại)",,1,Nguyễn Thị Ngọc Hiếu,0773283523,true,NHAP_THANG,
+814,L4C.223,Chủ Hộ,Nguyễn Thị Ngọc Hiếu,Nguyễn Thị Ngọc Hiếu,0773283523,A Được chủ hộ hiện tại,0385586399,,,,,,,"Nguyễn Thị Ngọc Hiếu 0773.283.523 /
+ (A Được 038.558.6399 chủ hộ hiện tại)",,2,A Được chủ hộ hiện tại,0385586399,false,NHAP_THANG,
+816,L4C.225,Chủ Hộ,Lại Thị Bích,Lại Thị Bích,0766429319,,,,,,,,,Lại Thị Bích/(0766.429.319.),,1,Lại Thị Bích,0766429319,true,NHAP_THANG,
+818,L4C.227,Chủ Hộ,Nguyễn Đăng Khoa,Nguyễn Đăng Khoa,,,,,,,,,,Nguyễn Đăng Khoa/Nguyễn Bích Ngọc(0916.552.636.0943.643.651),,1,Nguyễn Đăng Khoa,,true,NHAP_THANG,
+819,L4C.228,Chủ Hộ,Đỗ Đức Duy,Đỗ Đức Duy,0931840834,Vũ Tiến Th,0326383365,,,,,,,"Đỗ Đức Duy/(0931.840.834.)
+Vũ Tiến Thanh 0326 383 365",,1,Đỗ Đức Duy,0931840834,true,NHAP_THANG,
+819,L4C.228,Chủ Hộ,Đỗ Đức Duy,Đỗ Đức Duy,0931840834,Vũ Tiến Th,0326383365,,,,,,,"Đỗ Đức Duy/(0931.840.834.)
+Vũ Tiến Thanh 0326 383 365",,2,Vũ Tiến Th,0326383365,false,NHAP_THANG,
+821,L4C.230,Chủ Hộ,Nguyễn Đỗ Diệu Hà,Nguyễn Đỗ Diệu Hà,0382606727,,,,,,,,,Nguyễn Đỗ Diệu Hà/(0382.606.727.),,1,Nguyễn Đỗ Diệu Hà,0382606727,true,NHAP_THANG,
+829,L4C.319,Chủ Hộ,Vũ Văn Sênh,Vũ Văn Sênh,,,,,,,,,,Vũ Văn Sênh/Lâm Thị Huyền Trang(0816.157.689.0842.133.143),,1,Vũ Văn Sênh,,true,NHAP_THANG,
+830,L4C.321,Chủ Hộ,Nguyễn Thị Hiền,Nguyễn Thị Hiền,,,,,,,,,,Nguyễn Thị Hiền/Lê Đình Hưng(0936.528.569.0934.672.266),,1,Nguyễn Thị Hiền,,true,NHAP_THANG,
+831,L4C.322,Chủ Hộ,Đặng Thị Hải Hà,Đặng Thị Hải Hà,0901901396,Đức,0936979566,,,,,,,"Đặng Thị Hải Hà/(0901.901.396.)
+Anh Đức: 093 697 9566 ,",,1,Đặng Thị Hải Hà,0901901396,true,NHAP_THANG,
+831,L4C.322,Chủ Hộ,Đặng Thị Hải Hà,Đặng Thị Hải Hà,0901901396,Đức,0936979566,,,,,,,"Đặng Thị Hải Hà/(0901.901.396.)
+Anh Đức: 093 697 9566 ,",,2,Đức,0936979566,false,NHAP_THANG,
+832,L4C.323,Chủ Hộ,Nguyễn Thị Thu Huệ,Nguyễn Thị Thu Huệ,,,,,,,,,,Nguyễn Thị Thu Huệ/Nguyễn Văn Hiệp(0976.300.920.0986.383.567),,1,Nguyễn Thị Thu Huệ,,true,NHAP_THANG,
+834,L4C.326,Chủ Hộ,Lương Quốc Vương,Lương Quốc Vương,0866630645,,,,,,,,,Lương Quốc Vương/(0866.630.645.),,1,Lương Quốc Vương,0866630645,true,NHAP_THANG,
+838,L4C.331,Chủ Hộ,Nguyễn Thúy Quỳnh,Nguyễn Thúy Quỳnh,0987465890,,,,,,,,,Nguyễn Thúy Quỳnh/(0987.465.890.),,1,Nguyễn Thúy Quỳnh,0987465890,true,NHAP_THANG,
+839,L4C.332,Chủ Hộ,Trần Thị Thu Hương,Trần Thị Thu Hương,0919234688,,,,,,,,,Trần Thị Thu Hương/(0919.234.688.),,1,Trần Thị Thu Hương,0919234688,true,NHAP_THANG,
+844,L4C.418,Chủ Hộ,Bùi Thị Thương,Bùi Thị Thương,0987001794,,,,,,,,,Bùi Thị Thương/(0987001794.),,1,Bùi Thị Thương,0987001794,true,NHAP_THANG,
+845,L4C.419,Chủ Hộ,Nguyễn Đăng Quý,Nguyễn Đăng Quý,0846422999,,,,,,,,,Nguyễn Đăng Quý/(0846.422.999.),,1,Nguyễn Đăng Quý,0846422999,true,NHAP_THANG,
+852,L4C.429,Chủ Hộ,Nguyễn Thị Phương,Nguyễn Thị Phương,,,,,,,,,,Nguyễn Thị Phương/Nguyễn Đức Duy(0814.975.929.0906.926.296),,1,Nguyễn Thị Phương,,true,NHAP_THANG,
+862,L4C.520,Chủ Hộ,Nguyễn Thị Loan,Nguyễn Thị Loan,0987398518,,,,,,,,,Nguyễn Thị Loan/(0987.398.518.),,1,Nguyễn Thị Loan,0987398518,true,NHAP_THANG,
+864,L4C.522,Chủ Hộ,Nguyễn Quý Nam,Nguyễn Quý Nam,0915622780,,,,,,,,,Nguyễn Quý Nam/(0915.622.780.),,1,Nguyễn Quý Nam,0915622780,true,NHAP_THANG,
+866,L4C.524,Chủ Hộ,Phạm Văn Hoà,Phạm Văn Hoà,,,,,,,,,,Phạm Văn Hoà/Nguyễn Thị Bé(0782.203.896.0934.367.064),,1,Phạm Văn Hoà,,true,NHAP_THANG,
+868,L4C.527,Chủ Hộ,Đoàn Sơn Tùng,Đoàn Sơn Tùng,,,,,,,,,,Đoàn Sơn Tùng/Đỗ Như Quỳnh Mai(0936.983.789.0936.711.994),,1,Đoàn Sơn Tùng,,true,NHAP_THANG,
+869,L4C.529,Chủ Hộ,Vũ Thị Nhàn,Vũ Thị Nhàn,0966816404,,,,,,,,,Vũ Thị Nhàn/(0966.816.404.),,1,Vũ Thị Nhàn,0966816404,true,NHAP_THANG,
+871,L4C.531,Chủ Hộ,Tạ Thị Giang,Tạ Thị Giang,,,,,,,,,,Tạ Thị Giang/Lê Xuân Thảo(0989.603.914.0976.366.646),,1,Tạ Thị Giang,,true,NHAP_THANG,
+876,L4C.426,Chủ Hộ,Trương Thành Trung,Trương Thành Trung,0933456655,Bích,0932223638,Mỹ Linh,0794115765,,,,,"Trương Thành Trung/(0933.456.655/0932.223.638-Chị Bích.)
+Hiếu / Mỹ Linh 0794115765
+Thanh toán theo tháng: cứ cuối tháng sẽ nộp",,1,Trương Thành Trung,0933456655,true,NHAP_THANG,
+876,L4C.426,Chủ Hộ,Trương Thành Trung,Trương Thành Trung,0933456655,Bích,0932223638,Mỹ Linh,0794115765,,,,,"Trương Thành Trung/(0933.456.655/0932.223.638-Chị Bích.)
+Hiếu / Mỹ Linh 0794115765
+Thanh toán theo tháng: cứ cuối tháng sẽ nộp",,2,Bích,0932223638,false,NHAP_THANG,
+876,L4C.426,Chủ Hộ,Trương Thành Trung,Trương Thành Trung,0933456655,Bích,0932223638,Mỹ Linh,0794115765,,,,,"Trương Thành Trung/(0933.456.655/0932.223.638-Chị Bích.)
+Hiếu / Mỹ Linh 0794115765
+Thanh toán theo tháng: cứ cuối tháng sẽ nộp",,3,Mỹ Linh,0794115765,false,NHAP_THANG,
+890,LK1.32,Chủ Hộ,Lã Thị Bảo Ngọc/ Phạm Văn Long,Lã Thị Bảo Ngọc/ Phạm Văn Long,,,,,,,,,,0795.244.091.0983.390.312,,1,Lã Thị Bảo Ngọc/ Phạm Văn Long,,true,NHAP_THANG,
+891,LK1.33,Chủ Hộ,Ngô Mai Duy/ Bùi Thị Hoàn,Ngô Mai Duy/ Bùi Thị Hoàn,0904985557,,,,,,,,,0904.98.5557,,1,Ngô Mai Duy/ Bùi Thị Hoàn,0904985557,true,NHAP_THANG,
+895,LK1.37,Chủ Hộ,Đào Phú An/ Hà Thị Thơm,Đào Phú An/ Hà Thị Thơm,,,,,,,,,,966834888,,1,Đào Phú An/ Hà Thị Thơm,,true,NHAP_THANG,
+897,LK1.39,Chủ Hộ,Vũ Thị Hiền Linh,Vũ Thị Hiền Linh,0904445883,,,,,,,,,0904.445.883,,1,Vũ Thị Hiền Linh,0904445883,true,NHAP_THANG,
+900,LK1.43,Chủ Hộ,Phùng Thị Nhật,Phùng Thị Nhật,0946821357,,,,,,,,,0946.821.357,,1,Phùng Thị Nhật,0946821357,true,NHAP_THANG,
+901,LK1.46,Chủ Hộ,Vũ Thị Linh/Nguyễn Vĩnh Tỉnh,Vũ Thị Linh/Nguyễn Vĩnh Tỉnh,0963161864,,,,,,,,,0963.161.864,,1,Vũ Thị Linh/Nguyễn Vĩnh Tỉnh,0963161864,true,NHAP_THANG,
+902,LK1.48,Chủ Hộ,Nguyễn Quốc Hưng/ Cù Thị Phương Thảo,Nguyễn Quốc Hưng/ Cù Thị Phương Thảo,0948886166,,,,,,,,,0948.886.166,,1,Nguyễn Quốc Hưng/ Cù Thị Phương Thảo,0948886166,true,NHAP_THANG,
+907,LK2.1,Chủ Hộ,Phạm Anh Dũng/ Vương Thị Nga,Phạm Anh Dũng/ Vương Thị Nga,0989402248,,,,,,,,,0989.402.248,,1,Phạm Anh Dũng/ Vương Thị Nga,0989402248,true,NHAP_THANG,
+908,LK2.10,Chủ Hộ,Nguyễn Thế Công,Nguyễn Thế Công,,,,,,,,,,762110888,,1,Nguyễn Thế Công,,true,NHAP_THANG,
+910,LK2.14,Chủ Hộ,Trần Minh Tiến,Trần Minh Tiến,0915818888,Đồng Thị Liên,0915902575,,,,,,,"0915.818.888
+Đồng Thị Liên: 0915 902 575",,1,Trần Minh Tiến,0915818888,true,NHAP_THANG,
+910,LK2.14,Chủ Hộ,Trần Minh Tiến,Trần Minh Tiến,0915818888,Đồng Thị Liên,0915902575,,,,,,,"0915.818.888
+Đồng Thị Liên: 0915 902 575",,2,Đồng Thị Liên,0915902575,false,NHAP_THANG,
+911,LK2.15,Chủ Hộ,Lê Thị Phương,Lê Thị Phương,0931872999,,,,,,,,,0931.872.999,,1,Lê Thị Phương,0931872999,true,NHAP_THANG,
+914,LK2.18,Chủ Hộ,Lê Thanh Toàn,Lê Thanh Toàn,0919465689,,,,,,,,,0919.465.689,,1,Lê Thanh Toàn,0919465689,true,NHAP_THANG,
+915,LK2.19,Chủ Hộ,Nguyễn Thế Huy,Nguyễn Thế Huy,0973830999,,,,,,,,,0973.830.999,,1,Nguyễn Thế Huy,0973830999,true,NHAP_THANG,
+916,LK2.2,Chủ Hộ,Mai Văn Phong/ Phạm Thị Hương,Mai Văn Phong/ Phạm Thị Hương,,,,,,,,,,0374.777.832.0964.836.350,,1,Mai Văn Phong/ Phạm Thị Hương,,true,NHAP_THANG,
+917,LK2.21,Chủ Hộ,Phạm Mạnh Trường/ Nguyễn Thị Lan Anh,Phạm Mạnh Trường/ Nguyễn Thị Lan Anh,0913246772,,,,,,,,,0913.246.772,,1,Phạm Mạnh Trường/ Nguyễn Thị Lan Anh,0913246772,true,NHAP_THANG,
+918,LK2.22,Chủ Hộ,Bùi Thị Thanh Luyện,Bùi Thị Thanh Luyện,0912471263,,,,,,,,,0912471263,,1,Bùi Thị Thanh Luyện,0912471263,true,NHAP_THANG,
+919,LK2.23,Chủ Hộ,Phùng Mạnh Thắng/ Trần Thị Thu Hương,Phùng Mạnh Thắng/ Trần Thị Thu Hương,0914056298,Đinh Thị Ngân,0394094195,,,,,,,"0914.056.298
+Đinh Thị Ngân 0394.094.195",,1,Phùng Mạnh Thắng/ Trần Thị Thu Hương,0914056298,true,NHAP_THANG,
+919,LK2.23,Chủ Hộ,Phùng Mạnh Thắng/ Trần Thị Thu Hương,Phùng Mạnh Thắng/ Trần Thị Thu Hương,0914056298,Đinh Thị Ngân,0394094195,,,,,,,"0914.056.298
+Đinh Thị Ngân 0394.094.195",,2,Đinh Thị Ngân,0394094195,false,NHAP_THANG,
+920,LK2.24,Chủ Hộ,Lê Thị Thu Hà,Lê Thị Thu Hà,0868611963,Cường Nguyễn,0904484362,Nhân viên Dung,0948375686,,,,,"Lê Thị Thu Hà 0868611963
+Cường Nguyễn 0904484362
+Nhân viên Dung 0948 375 686",,1,Lê Thị Thu Hà,0868611963,true,NHAP_THANG,
+920,LK2.24,Chủ Hộ,Lê Thị Thu Hà,Lê Thị Thu Hà,0868611963,Cường Nguyễn,0904484362,Nhân viên Dung,0948375686,,,,,"Lê Thị Thu Hà 0868611963
+Cường Nguyễn 0904484362
+Nhân viên Dung 0948 375 686",,2,Cường Nguyễn,0904484362,false,NHAP_THANG,
+920,LK2.24,Chủ Hộ,Lê Thị Thu Hà,Lê Thị Thu Hà,0868611963,Cường Nguyễn,0904484362,Nhân viên Dung,0948375686,,,,,"Lê Thị Thu Hà 0868611963
+Cường Nguyễn 0904484362
+Nhân viên Dung 0948 375 686",,3,Nhân viên Dung,0948375686,false,NHAP_THANG,
+921,LK2.25,Chủ Hộ,Đào Dương Hùng,Đào Dương Hùng,0989392345,,,,,,,,,0989.392.345,,1,Đào Dương Hùng,0989392345,true,NHAP_THANG,
+924,LK2.3,Chủ Hộ,Phạm Thị Yến,Phạm Thị Yến,0974153046,Đại,0948715666,Đỗ Văn Chinh,0962919975,,,,,"0974 153 046/ Anh Đại 0948715666
+Đỗ Văn Chinh 0962919975",,1,Phạm Thị Yến,0974153046,true,NHAP_THANG,
+924,LK2.3,Chủ Hộ,Phạm Thị Yến,Phạm Thị Yến,0974153046,Đại,0948715666,Đỗ Văn Chinh,0962919975,,,,,"0974 153 046/ Anh Đại 0948715666
+Đỗ Văn Chinh 0962919975",,2,Đại,0948715666,false,NHAP_THANG,
+924,LK2.3,Chủ Hộ,Phạm Thị Yến,Phạm Thị Yến,0974153046,Đại,0948715666,Đỗ Văn Chinh,0962919975,,,,,"0974 153 046/ Anh Đại 0948715666
+Đỗ Văn Chinh 0962919975",,3,Đỗ Văn Chinh,0962919975,false,NHAP_THANG,
+925,LK2.30,Chủ Hộ,Nguyễn Mỹ Hạnh/Nguyễn Việt Hùng,Nguyễn Mỹ Hạnh/Nguyễn Việt Hùng,0912356692,,,,,,,,,0912356692,,1,Nguyễn Mỹ Hạnh/Nguyễn Việt Hùng,0912356692,true,NHAP_THANG,
+933,LKV.45,Chủ Hộ,Phùng Thị Nhật,Phùng Thị Nhật,0946821357,,,,,,,,,0946.821.357,,1,Phùng Thị Nhật,0946821357,true,NHAP_THANG,
+934,LKV.47,Chủ Hộ,Công ty TNHH sản xuất và kinh doanh gỗ Bình Minh,Công ty TNHH sản xuất và kinh doanh gỗ Bình Minh,,,,,,,,,,983129799 - A. Đương,,1,Công ty TNHH sản xuất và kinh doanh gỗ Bình Minh,,true,NHAP_THANG,
+935,LKV.58,Chủ Hộ,Phùng Thị Nhật,Phùng Thị Nhật,0946821357,,,,,,,,,0946.821.357,,1,Phùng Thị Nhật,0946821357,true,NHAP_THANG,

@@ -15,9 +15,11 @@
     "prisma:migrate:dev": "prisma migrate dev",
     "import:management:raw": "node scripts/import-management-raw.cjs",
     "sync:management:master": "node scripts/sync-management-master.cjs",
+    "sync:apartment:master": "node scripts/sync-apartment-master.cjs",
     "report:resident:duplicates": "node scripts/report-resident-duplicates.cjs",
     "audit:contacts": "node scripts/audit-resident-contact-notes.cjs",
     "preview:contacts": "node scripts/preview-resident-contact-parse.cjs",
+    "preview:master:contacts": "node scripts/preview-master-contact-parse.cjs",
     "db:backup:repo": "bash scripts/setup/backup-db-to-repo.sh",
     "db:restore:repo": "bash scripts/setup/restore-db-from-repo.sh"
   },

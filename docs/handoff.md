@@ -280,6 +280,19 @@ npm run dev
   - tập mã căn khớp hoàn toàn với dữ liệu hiện có: `934/934`
   - nên dùng làm nguồn master chính cho `can_ho`
   - chưa nên dùng thẳng cho contact master, vì các cột `Người sử dụng 1..5` vẫn còn dữ liệu bẩn
+- Script sync phần `can_ho`:
+  - `npm run sync:apartment:master`
+  - chỉ sync dữ liệu căn hộ từ file master mới
+  - chưa đụng vào contact master
+- Preview contact từ file master mới:
+  - `npm run preview:master:contacts`
+  - `docs/preview-master-lien-he-can-ho/README.md`
+  - `docs/preview-master-lien-he-can-ho/nhap-thang.csv`
+  - `docs/preview-master-lien-he-can-ho/can-ra-soat.csv`
+  - kết quả hiện tại:
+    - `NHAP_THANG`: `402` căn
+    - `CAN_RA_SOAT`: `532` căn
+    - `1977` dòng contact preview
 
 ### Bước 1
 
