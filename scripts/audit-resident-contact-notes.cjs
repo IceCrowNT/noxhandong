@@ -6,7 +6,8 @@ const XLSX = require("xlsx");
 
 const inputPath = process.argv[2] || "docs/Theo dõi thu phí T4.xlsx";
 const resolvedPath = path.resolve(process.cwd(), inputPath);
-const outputPath = path.resolve(process.cwd(), "docs/bao-cao-audit-lien-he-can-ho.md");
+const outputPath = path.resolve(process.cwd(), "docs/reports/bao-cao-audit-lien-he-can-ho.md");
+fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 
 function normalizePhoneChunks(text) {
   const matches = String(text).match(/0\d(?:[\d\.\s\-]){7,14}\d/g) || [];

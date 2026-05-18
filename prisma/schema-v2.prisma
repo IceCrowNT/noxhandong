@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma-v2"
 }
 
 datasource db {
@@ -20,6 +19,7 @@ enum TrangThaiCan {
 
 enum LoaiNguonNhap {
   WORKBOOK_QUAN_LY
+  WORKBOOK_THEO_DOI_THU_PHI
   SAO_KE_NGAN_HANG
   CHUNG_TU
 }
@@ -68,6 +68,41 @@ enum CachPhanBo {
   CHINH_TAY
 }
 
+enum VaiTroQuanTri {
+  SUPER_ADMIN
+  MANAGER
+}
+
+enum TrangThaiTaiKhoan {
+  DANG_HOAT_DONG
+  BI_KHOA
+}
+
+enum VaiTroLienHe {
+  CHU_HO
+  CHU_MOI
+  CHU_CU
+  KHACH_THUE
+  NGUOI_THAN
+  NGUOI_NHAN_THONG_BAO
+  DONG_HO
+  MOI_GIOI
+  KHAC
+}
+
+enum TrangThaiLienHe {
+  DANG_DUNG
+  CU
+  CAN_XAC_MINH
+}
+
+enum TrangThaiBatchPhiPublic {
+  NHAP
+  DA_KIEM_TRA
+  DA_PUBLIC
+  HUY
+}
+
 model CanHo {
   id             Int      @id @default(autoincrement())
   ma_can         String   @unique
@@ -75,12 +110,18 @@ model CanHo {
   ma_lo          String
   ma_so          String
   dien_tich_m2   Decimal? @db.Decimal(10, 2)
+  toa_lo_goc      String?
+  loai_hinh_goc   String?
+  chu_ho_ten_goc  String?
+  trang_thai_su_dung_goc String?
+  tinh_trang_goc  String?
   trang_thai     TrangThaiCan @default(DANG_O)
   ghi_chu        String?
   ngay_tao       DateTime @default(now())
   ngay_cap_nhat  DateTime @updatedAt
 
   lien_he        LienHeCanHo[]
+  trang_thai_phi_public TrangThaiPhiCanHoPublic[]
   phan_bo_giao_dich PhanBoGiaoDich[]
   ngoai_le_giao_dich NgoaiLeGiaoDich[]
 
@@ -95,15 +136,22 @@ model LienHeCanHo {
   la_lien_he_chinh    Boolean  @default(false)
   nhan_thong_bao      Boolean  @default(true)
   zalo_link           String?
+  vai_tro_lien_he     VaiTroLienHe?
+  trang_thai_lien_he  TrangThaiLienHe @default(DANG_DUNG)
+  thu_tu_uu_tien      Int?
   nguon_du_lieu       String?
+  nguon_dong_du_lieu_tho_id Int?
   co_can_ra_soat      Boolean  @default(false)
   ghi_chu             String?
   ngay_tao            DateTime @default(now())
   ngay_cap_nhat       DateTime @updatedAt
 
   can_ho              CanHo    @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
+  nguon_dong_du_lieu_tho DongDuLieuQuanLyTho? @relation(fields: [nguon_dong_du_lieu_tho_id], references: [id], onDelete: SetNull)
 
   @@index([can_ho_id])
+  @@index([so_dien_thoai])
+  @@index([nguon_dong_du_lieu_tho_id])
   @@map("lien_he_can_ho")
 }
 
@@ -132,13 +180,18 @@ model LoNhapDuLieu {
   trang_thai          TrangThaiLoNhap @default(CHO_XU_LY)
   tong_quan_loi       String?
   metadata_json       Json?
+  nguoi_nhap_id       Int?
   thoi_diem_nhap      DateTime @default(now())
 
+  nguoi_nhap               TaiKhoanQuanTri? @relation("NguoiNhapDuLieu", fields: [nguoi_nhap_id], references: [id], onDelete: SetNull)
   dong_du_lieu_quan_ly_tho DongDuLieuQuanLyTho[]
   ung_vien_lien_he_can_ho  UngVienLienHeCanHo[]
   dong_sao_ke_tho          DongSaoKeTho[]
   giao_dich_ngan_hang      GiaoDichNganHang[]
+  dong_theo_doi_thu_phi_tho DongTheoDoiThuPhiTho[]
+  batch_trang_thai_phi_public BatchTrangThaiPhiPublic[]
 
+  @@index([nguoi_nhap_id])
   @@map("lo_nhap_du_lieu")
 }
 
@@ -156,6 +209,7 @@ model DongDuLieuQuanLyTho {
 
   lo_nhap_du_lieu     LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Cascade)
   ung_vien_lien_he_can_ho UngVienLienHeCanHo[]
+  lien_he_can_ho_nguon LienHeCanHo[]
 
   @@index([lo_nhap_du_lieu_id, ten_sheet, so_dong_nguon])
   @@map("dong_du_lieu_quan_ly_tho")
@@ -168,10 +222,20 @@ model UngVienLienHeCanHo {
   ma_can                    String?
   ten_chu_ho_goc            String?
   thong_tin_cu_dan_goc      String?
+  thu_tu_nguon              Int?
+  ten_nguoi_su_dung_goc     String?
+  so_dien_thoai_goc         String?
+  thong_tin_phu_goc         String?
+  trang_thai_su_dung_goc    String?
+  tinh_trang_goc            String?
+  ghi_chu_goc               String?
   ten_hien_thi_parse        String?
   so_dien_thoai_parse       String?
   la_lien_he_chinh_du_doan  Boolean  @default(false)
+  vai_tro_du_doan           VaiTroLienHe?
+  nhan_thong_bao_du_doan    Boolean?
   co_can_ra_soat            Boolean  @default(false)
+  ly_do_ra_soat             String?
   flags_json                Json?
   ghi_chu_nghiep_vu         String?
   payload_parse_json        Json?
@@ -314,4 +378,88 @@ model NgoaiLeGiaoDich {
   @@index([giao_dich_ngan_hang_id])
   @@index([can_ho_id])
   @@map("ngoai_le_giao_dich")
+}
+
+model TaiKhoanQuanTri {
+  id                  Int      @id @default(autoincrement())
+  ten_dang_nhap       String   @unique
+  so_dien_thoai       String?  @unique
+  email               String?  @unique
+  mat_khau_hash       String
+  vai_tro             VaiTroQuanTri
+  trang_thai          TrangThaiTaiKhoan @default(DANG_HOAT_DONG)
+  ten_hien_thi        String?
+  lan_dang_nhap_cuoi  DateTime?
+  ngay_tao            DateTime @default(now())
+  ngay_cap_nhat       DateTime @updatedAt
+
+  lo_nhap_du_lieu     LoNhapDuLieu[] @relation("NguoiNhapDuLieu")
+  batch_phi_da_public BatchTrangThaiPhiPublic[] @relation("NguoiPublicBatchPhi")
+
+  @@map("tai_khoan_quan_tri")
+}
+
+model DongTheoDoiThuPhiTho {
+  id                  Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id  Int
+  ten_sheet           String
+  so_dong_nguon       Int
+  header_values_json  Json?
+  values_json         Json
+  mapped_row_json     Json?
+  ma_can              String?
+  thang_da_dong_den_hien_tai String?
+  payload_json        Json?
+  ngay_tao            DateTime @default(now())
+
+  lo_nhap_du_lieu     LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Cascade)
+
+  @@index([lo_nhap_du_lieu_id, ten_sheet, so_dong_nguon])
+  @@index([ma_can])
+  @@map("dong_theo_doi_thu_phi_tho")
+}
+
+model BatchTrangThaiPhiPublic {
+  id                  Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id  Int?
+  ky_du_lieu          String
+  ten_file_nguon      String?
+  trang_thai          TrangThaiBatchPhiPublic @default(NHAP)
+  la_batch_public_hien_hanh Boolean @default(false)
+  tong_so_can         Int?
+  tong_quan_loi       String?
+  metadata_json       Json?
+  nguoi_public_id     Int?
+  public_luc          DateTime?
+  ngay_tao            DateTime @default(now())
+  ngay_cap_nhat       DateTime @updatedAt
+
+  lo_nhap_du_lieu     LoNhapDuLieu? @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: SetNull)
+  nguoi_public        TaiKhoanQuanTri? @relation("NguoiPublicBatchPhi", fields: [nguoi_public_id], references: [id], onDelete: SetNull)
+  trang_thai_phi      TrangThaiPhiCanHoPublic[]
+
+  @@index([trang_thai, la_batch_public_hien_hanh])
+  @@index([lo_nhap_du_lieu_id])
+  @@index([nguoi_public_id])
+  @@map("batch_trang_thai_phi_public")
+}
+
+model TrangThaiPhiCanHoPublic {
+  id                  Int      @id @default(autoincrement())
+  batch_id            Int
+  can_ho_id           Int
+  ma_can              String
+  thang_da_dong_den_hien_tai String?
+  ky_du_lieu          String
+  ghi_chu_public      String?
+  payload_public_json Json?
+  ngay_tao            DateTime @default(now())
+
+  batch               BatchTrangThaiPhiPublic @relation(fields: [batch_id], references: [id], onDelete: Cascade)
+  can_ho              CanHo @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
+
+  @@unique([batch_id, can_ho_id])
+  @@index([ma_can])
+  @@index([can_ho_id])
+  @@map("trang_thai_phi_can_ho_public")
 }

@@ -6,6 +6,12 @@ File code chinh dang chay:
 
 File nay chi dung de doi chieu nghiep vu. Khong co logic thuc thi o day.
 
+Rule chi tiết, backlog test và quy trình bảo trì parser mã căn nằm tại:
+
+- [parser-ma-can-ho.md](parser-ma-can-ho.md)
+
+File này chỉ mô tả cách bộ lọc sử dụng tín hiệu parser để giữ/loại giao dịch.
+
 ## Muc tieu
 
 Bo loc chi co quyen dua mot dong vao nhom `Khong lien quan can ho` khi co dau hieu noi bo ro rang, hoac khong du bang chung de coi do la khoan cu dan dong phi.
@@ -23,7 +29,7 @@ Quy uoc moi:
 - `LK` = lien ke
 - `LK2-24` duoc chuan hoa thanh `LK2.24`
 - `IK2-25` trong sao ke co the la loi OCR/typing, parser se coi nhu `LK2.25`
-- `107lo2` duoc hieu la `LK2.107` theo ngu canh lien ke/lo
+- `107lo2` duoc hieu la `L2.107` theo ngu canh phong truoc, lo sau
 
 Neu mot dong co:
 - ma can parse duoc

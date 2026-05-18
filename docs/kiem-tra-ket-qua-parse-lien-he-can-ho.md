@@ -28,7 +28,7 @@ Mục tiêu của bước kiểm tra không phải là “đẹp dữ liệu”,
 
 ### File audit
 
-- `docs/bao-cao-audit-lien-he-can-ho.md`
+- `docs/reports/bao-cao-audit-lien-he-can-ho.md`
 
 ---
 
@@ -38,7 +38,7 @@ Mục tiêu của bước kiểm tra không phải là “đẹp dữ liệu”,
 
 Mở:
 
-- `docs/bao-cao-audit-lien-he-can-ho.md`
+- `docs/reports/bao-cao-audit-lien-he-can-ho.md`
 
 Xác nhận các chỉ số tổng:
 

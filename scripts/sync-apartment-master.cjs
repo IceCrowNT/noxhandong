@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const crypto = require("node:crypto");
+const fs = require("node:fs");
 const path = require("node:path");
 require("dotenv").config();
 const XLSX = require("xlsx");
@@ -49,8 +51,8 @@ function apartmentTypeFromCode(code) {
 }
 
 function splitApartmentCode(code) {
-  const [blockCode, roomCode] = code.split(".");
-  return { blockCode, roomCode };
+  const [maLo, maSo] = code.split(".");
+  return { maLo, maSo };
 }
 
 function parseArea(value) {
@@ -66,23 +68,45 @@ function parseArea(value) {
   return normalized.toFixed(2);
 }
 
-function buildApartmentNote(row) {
+function fileHash(filePath) {
+  return crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
+}
+
+function rowToMappedObject(headers, values) {
+  return headers.reduce((mapped, header, index) => {
+    const key = safeString(header) || `__EMPTY_${index}`;
+    mapped[key] = values[index] ?? "";
+    return mapped;
+  }, {});
+}
+
+function normalizeJsonValue(value) {
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (Array.isArray(value)) {
+    return value.map(normalizeJsonValue);
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, normalizeJsonValue(item)])
+    );
+  }
+  return value;
+}
+
+function buildApartmentNote(mappedRow) {
   const parts = [];
 
-  if (row.loaiHinh) {
-    parts.push(`Loại hình: ${row.loaiHinh}`);
+  const thongTinPhu = safeString(mappedRow["Thông tin phụ (Khách thuê/Chuyển nhượng)"]);
+  const ghiChu = safeString(mappedRow["Ghi chú"]);
+
+  if (thongTinPhu) {
+    parts.push(`Thông tin phụ: ${thongTinPhu}`);
   }
 
-  if (row.trangThaiSuDung) {
-    parts.push(`Trạng thái sử dụng: ${row.trangThaiSuDung}`);
-  }
-
-  if (row.thongTinPhu) {
-    parts.push(`Thông tin phụ: ${row.thongTinPhu}`);
-  }
-
-  if (row.ghiChu) {
-    parts.push(`Ghi chú: ${row.ghiChu}`);
+  if (ghiChu) {
+    parts.push(`Ghi chú: ${ghiChu}`);
   }
 
   return parts.join(" | ") || null;
@@ -92,66 +116,110 @@ async function main() {
   const inputPath = process.argv[2] || DEFAULT_INPUT;
   const resolvedPath = path.resolve(process.cwd(), inputPath);
 
-  const workbook = XLSX.readFile(resolvedPath);
+  const workbook = XLSX.readFile(resolvedPath, { cellDates: true });
   const sheet = workbook.Sheets[DEFAULT_SHEET];
 
   if (!sheet) {
     throw new Error(`Không tìm thấy sheet "${DEFAULT_SHEET}" trong file ${resolvedPath}`);
   }
 
-  const rows = XLSX.utils.sheet_to_json(sheet, {
+  const table = XLSX.utils.sheet_to_json(sheet, {
+    header: 1,
     defval: "",
-    raw: true
+    raw: true,
   });
 
-  let updated = 0;
+  const headers = table[0] ?? [];
+  const dataRows = table
+    .slice(1)
+    .map((values, index) => ({
+      excelRow: index + 2,
+      values,
+      mappedRow: rowToMappedObject(headers, values),
+    }))
+    .filter(({ values }) => values.some((value) => safeString(value) !== ""));
+
+  const batch = await prisma.loNhapDuLieu.create({
+    data: {
+      loai_nguon: "WORKBOOK_QUAN_LY",
+      ten_file: path.basename(resolvedPath),
+      ma_bam_file: fileHash(resolvedPath),
+      so_dong: dataRows.length,
+      trang_thai: "CHO_XU_LY",
+      metadata_json: {
+        sheetName: DEFAULT_SHEET,
+        sourcePath: inputPath,
+      },
+    },
+  });
+
   let created = 0;
+  let updated = 0;
   const invalidRows = [];
 
-  for (let index = 0; index < rows.length; index += 1) {
-    const row = rows[index];
-    const code = normalizeApartmentCodeForImport(row["Mã Căn Hộ"]);
+  for (const row of dataRows) {
+    const mappedRow = row.mappedRow;
+    const code = normalizeApartmentCodeForImport(mappedRow["Mã Căn Hộ"]);
+
+    const rawRow = await prisma.dongDuLieuQuanLyTho.create({
+      data: {
+        lo_nhap_du_lieu_id: batch.id,
+        ten_sheet: DEFAULT_SHEET,
+        so_dong_nguon: row.excelRow,
+        loai_dong: "DANH_SACH_KHACH_HANG",
+        header_values_json: normalizeJsonValue(headers),
+        values_json: normalizeJsonValue(row.values),
+        mapped_row_json: normalizeJsonValue(mappedRow),
+        payload_json: {
+          sourceRowIndex: row.excelRow,
+          rowType: "MASTER_DATA_CAN_HO",
+        },
+      },
+    });
 
     if (!code) {
       invalidRows.push({
-        excelRow: index + 2,
-        maCanHo: row["Mã Căn Hộ"] ?? ""
+        excelRow: row.excelRow,
+        maCanHo: mappedRow["Mã Căn Hộ"] ?? "",
       });
       continue;
     }
 
-    const { blockCode, roomCode } = splitApartmentCode(code);
-    const apartmentType = apartmentTypeFromCode(code);
-    const areaM2 = parseArea(row["Diện tích (m2)"]);
-    const note = buildApartmentNote({
-      loaiHinh: safeString(row["Loại Hình"]),
-      trangThaiSuDung: safeString(row["Trạng Thái Sử Dụng (Auto)"]),
-      thongTinPhu: safeString(row["Thông tin phụ (Khách thuê/Chuyển nhượng)"]),
-      ghiChu: safeString(row["Ghi chú"])
+    const { maLo, maSo } = splitApartmentCode(code);
+    const loaiCan = apartmentTypeFromCode(code);
+    const dienTichM2 = parseArea(mappedRow["Diện tích (m2)"]);
+    const existing = await prisma.canHo.findUnique({
+      where: { ma_can: code },
+      select: { id: true },
     });
 
-    const existing = await prisma.apartment.findUnique({
-      where: { code },
-      select: { id: true }
-    });
-
-    await prisma.apartment.upsert({
-      where: { code },
+    await prisma.canHo.upsert({
+      where: { ma_can: code },
       update: {
-        apartmentType,
-        blockCode,
-        roomCode,
-        areaM2,
-        note
+        loai_can: loaiCan,
+        ma_lo: maLo,
+        ma_so: maSo,
+        dien_tich_m2: dienTichM2,
+        toa_lo_goc: safeString(mappedRow["Tòa/Lô"]) || null,
+        loai_hinh_goc: safeString(mappedRow["Loại Hình"]) || null,
+        chu_ho_ten_goc: safeString(mappedRow["Chủ Hộ (Tên)"]) || null,
+        trang_thai_su_dung_goc: safeString(mappedRow["Trạng Thái Sử Dụng (Auto)"]) || null,
+        tinh_trang_goc: safeString(mappedRow["TÌNH TRẠNG"]) || null,
+        ghi_chu: buildApartmentNote(mappedRow),
       },
       create: {
-        code,
-        apartmentType,
-        blockCode,
-        roomCode,
-        areaM2,
-        note
-      }
+        ma_can: code,
+        loai_can: loaiCan,
+        ma_lo: maLo,
+        ma_so: maSo,
+        dien_tich_m2: dienTichM2,
+        toa_lo_goc: safeString(mappedRow["Tòa/Lô"]) || null,
+        loai_hinh_goc: safeString(mappedRow["Loại Hình"]) || null,
+        chu_ho_ten_goc: safeString(mappedRow["Chủ Hộ (Tên)"]) || null,
+        trang_thai_su_dung_goc: safeString(mappedRow["Trạng Thái Sử Dụng (Auto)"]) || null,
+        tinh_trang_goc: safeString(mappedRow["TÌNH TRẠNG"]) || null,
+        ghi_chu: buildApartmentNote(mappedRow),
+      },
     });
 
     if (existing) {
@@ -161,18 +229,37 @@ async function main() {
     }
   }
 
-  const apartmentTotal = await prisma.apartment.count();
+  await prisma.loNhapDuLieu.update({
+    where: { id: batch.id },
+    data: {
+      trang_thai: invalidRows.length > 0 ? "THAT_BAI" : "HOAN_TAT",
+      tong_quan_loi: invalidRows.length > 0 ? `Có ${invalidRows.length} dòng không nhận diện được mã căn` : null,
+    },
+  });
+
+  const apartmentTotal = await prisma.canHo.count();
+  const apartmentTypeCounts = await prisma.canHo.groupBy({
+    by: ["loai_can"],
+    _count: { _all: true },
+    orderBy: { loai_can: "asc" },
+  });
 
   console.log(
     JSON.stringify(
       {
+        batchId: batch.id,
         fileName: path.basename(resolvedPath),
         sheetName: DEFAULT_SHEET,
-        sourceRows: rows.length,
+        sourceRows: dataRows.length,
+        rawRowsCreated: dataRows.length,
         created,
         updated,
         apartmentTotal,
-        invalidRows: invalidRows.slice(0, 20)
+        apartmentTypeCounts: apartmentTypeCounts.map((item) => ({
+          loai_can: item.loai_can,
+          count: item._count._all,
+        })),
+        invalidRows: invalidRows.slice(0, 20),
       },
       null,
       2

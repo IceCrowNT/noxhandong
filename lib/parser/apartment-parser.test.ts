@@ -87,4 +87,13 @@ describe("parseApartmentCode", () => {
     expect(result.candidates.map((candidate) => candidate.code)).toEqual(["L2.307"]);
     expect(result.parsedApartmentCode).toBe("L2.307");
   });
+
+  it("parses resident-style room and tower/block aliases", () => {
+    expect(parseApartmentCode("can 124 lo 4b").parsedApartmentCode).toBe("L4B.124");
+    expect(parseApartmentCode("căn 124 lô 4b").parsedApartmentCode).toBe("L4B.124");
+    expect(parseApartmentCode("phong 124 toa 4b").parsedApartmentCode).toBe("L4B.124");
+    expect(parseApartmentCode("lo 4b can 124").parsedApartmentCode).toBe("L4B.124");
+    expect(parseApartmentCode("toa 4b phong 124").parsedApartmentCode).toBe("L4B.124");
+    expect(parseApartmentCode("124lo4b").parsedApartmentCode).toBe("L4B.124");
+  });
 });

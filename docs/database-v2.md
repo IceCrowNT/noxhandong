@@ -1,5 +1,13 @@
 # Database V2
 
+## Liên kết xương sống
+
+- Mục lục tài liệu: [README.md](README.md)
+- Handoff hiện tại: [handoff.md](handoff.md)
+- Roadmap control: [roadmap.md](roadmap.md)
+- Checklist nghiệm thu: [checklist-trien-khai-va-nghiem-thu.md](checklist-trien-khai-va-nghiem-thu.md)
+- Schema tương ứng: [../prisma/schema-v2.prisma](../prisma/schema-v2.prisma)
+
 ## Mục tiêu
 
 Database V2 sửa lại trọng tâm của V1 theo đúng nghiệp vụ thực tế:
@@ -92,6 +100,11 @@ Các cột chính:
 - `ma_lo`
 - `ma_so`
 - `dien_tich_m2`
+- `toa_lo_goc`
+- `loai_hinh_goc`
+- `chu_ho_ten_goc`
+- `trang_thai_su_dung_goc`
+- `tinh_trang_goc`
 - `trang_thai`
 - `ghi_chu`
 - `ngay_tao`
@@ -99,7 +112,8 @@ Các cột chính:
 
 Ghi chú:
 
-- `LKV.*` vẫn giữ nguyên `ma_can`
+- Mã liền kề trong dữ liệu thật hiện gồm `LK1.*`, `LK2.*`, `LKV.*`
+- Các mã này vẫn giữ nguyên `ma_can`
 - nhưng `loai_can = LIEN_KE`
 
 ## 2. `lien_he_can_ho`
@@ -121,7 +135,11 @@ Các cột chính:
 - `la_lien_he_chinh`
 - `nhan_thong_bao`
 - `zalo_link`
+- `vai_tro_lien_he`
+- `trang_thai_lien_he`
+- `thu_tu_uu_tien`
 - `nguon_du_lieu`
+- `nguon_dong_du_lieu_tho_id`
 - `co_can_ra_soat`
 - `ghi_chu`
 - `ngay_tao`
@@ -255,6 +273,118 @@ Các cột chính:
 - `payload_json`
 - `ngay_tao`
 
+## 7B. `tai_khoan_quan_tri`
+
+Bảng tài khoản quản trị nội bộ.
+
+Vai trò ban đầu:
+
+- `SUPER_ADMIN`
+- `MANAGER`
+
+Các cột chính:
+
+- `id`
+- `ten_dang_nhap`
+- `so_dien_thoai`
+- `email`
+- `mat_khau_hash`
+- `vai_tro`
+- `trang_thai`
+- `ten_hien_thi`
+- `lan_dang_nhap_cuoi`
+- `ngay_tao`
+- `ngay_cap_nhat`
+
+Quy tắc:
+
+- `SUPER_ADMIN` mới được import/chốt batch dữ liệu public.
+- `MANAGER` chỉ xem dữ liệu nội bộ và contact theo quyền.
+- `so_dien_thoai` là số đã chuẩn hóa, dùng được để đăng nhập admin/manager.
+- Không export hoặc hiển thị `mat_khau_hash` trong file Excel vận hành.
+
+## 7C. `dong_theo_doi_thu_phi_tho`
+
+Bảng staging cho file Excel theo dõi thu phí thủ công.
+
+Mục tiêu:
+
+- giữ raw/mapped row từ workbook thu phí
+- đọc cột `Tháng đã đóng đến hiện tại`
+- không public trực tiếp dữ liệu nháp
+
+Các cột chính:
+
+- `id`
+- `lo_nhap_du_lieu_id`
+- `ten_sheet`
+- `so_dong_nguon`
+- `header_values_json`
+- `values_json`
+- `mapped_row_json`
+- `ma_can`
+- `thang_da_dong_den_hien_tai`
+- `payload_json`
+- `ngay_tao`
+
+## 7D. `batch_trang_thai_phi_public`
+
+Bảng batch dữ liệu phí đã import/chốt để public cho cư dân.
+
+Các trạng thái:
+
+- `NHAP`
+- `DA_KIEM_TRA`
+- `DA_PUBLIC`
+- `HUY`
+
+Các cột chính:
+
+- `id`
+- `lo_nhap_du_lieu_id`
+- `ky_du_lieu`
+- `ten_file_nguon`
+- `trang_thai`
+- `la_batch_public_hien_hanh`
+- `tong_so_can`
+- `tong_quan_loi`
+- `metadata_json`
+- `nguoi_public_id`
+- `public_luc`
+- `ngay_tao`
+- `ngay_cap_nhat`
+
+Quy tắc:
+
+- Chỉ batch `DA_PUBLIC` và `la_batch_public_hien_hanh = true` được trang public đọc.
+- Batch nháp không được hiển thị cho cư dân.
+
+## 7E. `trang_thai_phi_can_ho_public`
+
+Bảng snapshot trạng thái phí public theo căn hộ.
+
+Đây là bảng duy nhất trang public cư dân nên đọc.
+
+Các cột chính:
+
+- `id`
+- `batch_id`
+- `can_ho_id`
+- `ma_can`
+- `thang_da_dong_den_hien_tai`
+- `ky_du_lieu`
+- `ghi_chu_public`
+- `payload_public_json`
+- `ngay_tao`
+
+Không lưu ở đây:
+
+- số điện thoại
+- CCCD
+- thường trú
+- ghi chú nội bộ
+- ghi chú gốc Excel chưa duyệt
+
 ## 8. `giao_dich_ngan_hang`
 
 Thay cho `BankTransaction`.
@@ -279,6 +409,8 @@ Các cột chính:
 ## 9. `ket_qua_parse_giao_dich`
 
 Thay cho `TransactionParseResult`.
+
+Rule parser mã căn, nguồn case và quy trình bảo trì nằm tại [parser-ma-can-ho.md](parser-ma-can-ho.md). Bảng này phải lưu đủ dấu vết để biết một kết quả parse được sinh bởi version/rule nào.
 
 Các cột chính:
 
@@ -388,6 +520,25 @@ Sau review mới đổ vào:
 - `ung_vien_khop_giao_dich`
 - `duyet_giao_dich`
 - `phan_bo_giao_dich`
+
+### 5. Import file theo dõi thu phí public
+
+Nguồn:
+
+- file Excel theo dõi thu phí đang được vận hành thủ công
+- cột `Tháng đã đóng đến hiện tại`
+
+Đích staging:
+
+- `lo_nhap_du_lieu`
+- `dong_theo_doi_thu_phi_tho`
+
+Đích public sau khi Super Admin chốt:
+
+- `batch_trang_thai_phi_public`
+- `trang_thai_phi_can_ho_public`
+
+Trang public cư dân chỉ đọc snapshot đã chốt, không đọc raw workbook.
 
 ## Kết luận
 

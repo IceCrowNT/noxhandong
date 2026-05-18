@@ -1,5 +1,7 @@
 .next
 node_modules
+.tools
+.local
 coverage
 dist
 *.log

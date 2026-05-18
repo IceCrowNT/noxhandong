@@ -2,13 +2,17 @@
 
 ## Mục tiêu
 
-Tài liệu này dùng để dựng môi trường chạy phần mềm trên một máy Mac mới mà không cần cài thủ công quá nhiều bước nhớ tay.
+Tài liệu này dùng để dựng môi trường chạy phần mềm trên máy mới mà không cần cài thủ công quá nhiều bước nhớ tay.
 
 Phần mềm hiện tại cần tối thiểu:
 
 - Node.js + npm
 - PostgreSQL
 - Prisma Client
+
+Phần mềm khuyến nghị để quản lý database bằng giao diện:
+
+- DBeaver Community
 
 ## Có nên đồng bộ luôn database qua Git không?
 
@@ -76,6 +80,13 @@ thì bắt buộc phải có:
 
 Không cần cài thêm một tool riêng để import Excel. App sẽ tự làm phần đó khi backend hoàn thiện.
 
+Nên cài thêm DBeaver nếu muốn:
+
+- xem bảng giống SQL Server Management Studio
+- chạy SQL kiểm tra dữ liệu
+- kiểm tra schema, index, relation
+- export/import dữ liệu thủ công khi cần debug
+
 ## Tại sao không đưa bộ cài binary vào repo?
 
 Không nên commit các file dạng:
@@ -96,6 +107,69 @@ Thay vào đó, project chỉ giữ:
 - script khởi động database local
 - tài liệu setup
 
+## DBeaver Community
+
+DBeaver là công cụ GUI khuyến nghị để kiểm tra PostgreSQL của project.
+
+### Cài trên Windows
+
+Khuyến nghị cài bằng `winget`:
+
+```powershell
+winget install --id DBeaver.DBeaver.Community --source winget --accept-package-agreements --accept-source-agreements
+```
+
+Trên máy hiện tại đã cài:
+
+- package id: `DBeaver.DBeaver.Community`
+- version: `26.0.4`
+- đường dẫn: `C:\Users\IceCrow\AppData\Local\DBeaver\dbeaver.exe`
+
+Có thể kiểm tra bằng:
+
+```powershell
+winget list --id DBeaver.DBeaver.Community
+```
+
+### Kết nối database project trong DBeaver
+
+Tạo connection mới:
+
+- Database type: `PostgreSQL`
+- Host: `localhost`
+- Port: `5432`
+- Database: `apartment_fee_reviewer`
+- Username: `postgres`
+- Password: `postgres`
+- Schema: `public`
+
+Các bảng nên mở kiểm tra trước:
+
+- `can_ho`
+- `ung_vien_lien_he_can_ho`
+- `tai_khoan_quan_tri`
+- `quy_tac_phi`
+- `lo_nhap_du_lieu`
+- `dong_du_lieu_quan_ly_tho`
+
+SQL kiểm tra nhanh:
+
+```sql
+select count(*) from can_ho;
+select loai_can, count(*) from can_ho group by loai_can order by loai_can;
+select count(*) from ung_vien_lien_he_can_ho;
+select ten_dang_nhap, vai_tro, trang_thai from tai_khoan_quan_tri;
+select loai_can, ma_phi, so_tien from quy_tac_phi;
+```
+
+Kỳ vọng DB dev V2 hiện tại:
+
+- `can_ho = 934`
+- `CHUNG_CU = 884`
+- `LIEN_KE = 50`
+- `ung_vien_lien_he_can_ho = 1977`
+- có user `admin` role `SUPER_ADMIN`
+
 ## Cấu trúc script setup
 
 Các script nằm ở:
@@ -115,6 +189,12 @@ Các script này:
 - không ảnh hưởng commit Git
 
 ## Quy trình setup trên máy mới
+
+Phần dưới đây là quy trình nền. Trên Windows hiện tại, project đang dùng Node portable trong `.tools/` và PostgreSQL portable ngoài repo ở:
+
+- `C:\Users\IceCrow\apartment_fee_reviewer_runtime`
+
+Trên Mac có thể dùng các script `Postgres.app` bên dưới.
 
 ### Bước 1. Cài Node.js
 
@@ -255,10 +335,12 @@ bash scripts/setup/stop-postgres-local.sh
 
 Đến thời điểm tài liệu này được tạo:
 
-- schema Prisma đã validate
-- Prisma client đã generate
-- migration đầu tiên đã chạy thành công
-- PostgreSQL local đang được dựng bằng `Postgres.app` user-local, không phụ thuộc Homebrew
+- schema V2 Prisma đã validate
+- Prisma Client đã generate theo `prisma/schema-v2.prisma`
+- DB dev đã migrate/reset sang V2
+- migration V2 hiện tại: `20260515000100_v2_public_web`
+- PostgreSQL local trên máy Windows hiện tại nằm ngoài repo ở `C:\Users\IceCrow\apartment_fee_reviewer_runtime`
+- DBeaver Community đã được cài để kiểm tra database bằng giao diện
 
 ## Kết luận
 

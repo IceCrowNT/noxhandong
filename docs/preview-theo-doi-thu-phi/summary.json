@@ -1,0 +1,13 @@
+{
+  "batchId": 3,
+  "fileName": "Theo dõi thu phí T4.xlsx",
+  "sheetName": "Lịch sử đóng phí",
+  "headerRow": 3,
+  "sourceRows": 934,
+  "importedRows": 934,
+  "invalidApartmentRows": 0,
+  "missingPaidThroughRows": 0,
+  "unparsedPaidThroughRows": 0,
+  "partialPaymentRows": 3,
+  "outsideBaseYearRows": 31
+}

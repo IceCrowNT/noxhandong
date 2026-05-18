@@ -142,6 +142,30 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildCandidate(match[2], match[1], "ROOM_LO_COMPACT_ALIAS", 0.94));
   }
 
+  const roomThenTowerBlockPattern = new RegExp(
+    `\\b(?:CAN|CANHO|HO|PHONG|SO|NHA)?\\s*${ROOM_CAPTURE}\\s+(?:LO|TOA|BLOCK|BLK)\\s+${BLOCK_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(roomThenTowerBlockPattern)) {
+    push(buildCandidate(match[2], match[1], "ROOM_TOWER_BLOCK_ALIAS", 0.95));
+  }
+
+  const towerBlockThenRoomPattern = new RegExp(
+    `\\b(?:LO|TOA|BLOCK|BLK)\\s+${BLOCK_CAPTURE}\\s+(?:CAN|CANHO|HO|PHONG|SO|NHA)?\\s*${ROOM_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(towerBlockThenRoomPattern)) {
+    push(buildCandidate(match[1], match[2], "TOWER_BLOCK_ROOM_ALIAS", 0.95));
+  }
+
+  const compactRoomTowerBlockPattern = new RegExp(
+    `\\b${ROOM_CAPTURE}(?:LO|TOA|BLOCK|BLK)${BLOCK_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(compactRoomTowerBlockPattern)) {
+    push(buildCandidate(match[2], match[1], "ROOM_TOWER_BLOCK_COMPACT_ALIAS", 0.94));
+  }
+
   const blockSoNhaPattern = new RegExp(`\\bL${BLOCK_CAPTURE}\\b(?:\\s+(?:SO|NHA|SO NHA)){1,2}\\s+${ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");
   for (const match of normalizedDescription.matchAll(blockSoNhaPattern)) {
     push(buildCandidate(match[1], match[2], "BLOCK_SO_NHA_ROOM", 0.95));

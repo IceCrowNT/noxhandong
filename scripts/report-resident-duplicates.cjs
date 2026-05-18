@@ -76,9 +76,10 @@ async function main() {
 
   const outputPath = path.resolve(
     process.cwd(),
-    "docs/bao-cao-cu-dan-bi-double.md"
+    "docs/reports/bao-cao-cu-dan-bi-double.md"
   );
 
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, `${lines.join("\n")}\n`, "utf8");
 
   console.log(

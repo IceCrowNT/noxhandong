@@ -1,70 +1,69 @@
-# Apartment Fee Reviewer MVP
+# Apartment Fee Reviewer
 
-Web app nội bộ để đọc file Excel quản lý phí chung cư và file sao kê ngân hàng dạng Excel hoặc PDF, parse mã căn hộ, cho người dùng rà soát trên web rồi export ra file Excel mới. Bản này không dùng database, toàn bộ dữ liệu được xử lý trong bộ nhớ.
+Web app quản lý/đối soát thu phí căn hộ. Project đang phát triển theo hướng PostgreSQL, import Excel, quản trị nội bộ và trang public để cư dân tra cứu tiến trình đóng phí.
 
-## Stack
+README này là **menu đầu vào của toàn project**. Chi tiết kỹ thuật và nghiệp vụ nằm trong `docs/`.
 
-- Next.js App Router
-- TypeScript
-- `xlsx` để đọc/ghi Excel
-- `pdf-parse` để trích text từ PDF sao kê
-- Vitest để test parser
+## Đọc đầu tiên
 
-## Chức năng MVP
+1. [docs/README.md](docs/README.md) - mục lục tài liệu xương sống
+2. [docs/handoff.md](docs/handoff.md) - trạng thái bàn giao hiện tại
+3. [docs/roadmap.md](docs/roadmap.md) - hướng đi và task cấp cao
+4. [docs/checklist-trien-khai-va-nghiem-thu.md](docs/checklist-trien-khai-va-nghiem-thu.md) - checklist review/check/test/confirm
+5. [docs/checklist-duyet-truoc-deploy.md](docs/checklist-duyet-truoc-deploy.md) - cổng dừng thủ công trước deploy
+6. [docs/database-v2.md](docs/database-v2.md) - thiết kế database mục tiêu
+7. [docs/module-map.md](docs/module-map.md) - cấu trúc thư mục và ranh giới module
+8. [docs/parser-ma-can-ho.md](docs/parser-ma-can-ho.md) - rule, dữ liệu thật và backlog parser mã căn
+9. [docs/design-system.md](docs/design-system.md) - global design/pattern cho UI
+10. [docs/production-deploy-vps.md](docs/production-deploy-vps.md) - quyết định production VPS
 
-- Upload file Excel quản lý và file sao kê Excel hoặc PDF
-- Đọc sheet `Danh sách khách hàng` làm nguồn chuẩn cho mã căn hộ
-- Parse nội dung chuyển khoản bằng rule-based parser
-- Chuẩn hóa mã căn hộ về format `Lx.xxx`
-- Match với danh sách căn hợp lệ
-- Review trên web:
-  - tick duyệt từng dòng
-  - tick hàng loạt cho các dòng đủ điều kiện
-  - lọc theo trạng thái
-  - tìm kiếm theo mã căn, nội dung, tên chủ hộ
-  - sửa tay mã căn bằng input có gợi ý `datalist`
-- Export file Excel mới với các sheet:
-  - `Lich su dong phi_reviewed`
-  - `Need_review`
-  - `Original_transactions`
-  - `Summary`
+File control tiến trình cấp cao: [docs/roadmap.md](docs/roadmap.md).
 
-## Cấu trúc thư mục
+File control nghiệm thu chi tiết: [docs/checklist-trien-khai-va-nghiem-thu.md](docs/checklist-trien-khai-va-nghiem-thu.md).
 
-```text
-app/
-  api/
-    analyze/route.ts
-    export/route.ts
-  globals.css
-  layout.tsx
-  page.tsx
-components/
-  review-dashboard.tsx
-config/
-  workbook-mapping.sample.json
-lib/
-  excel/
-    exporter.ts
-    management-reader.ts
-    statement-reader.ts
-  pdf/
-    statement-pdf-reader.ts
-    statement-pdf-reader.test.ts
-  parser/
-    apartment-parser.ts
-    apartment-parser.test.ts
-  review/
-    summary.ts
-  statement-reader.ts
-  utils/
-    text.ts
-  constants.ts
-  matcher.ts
-  types.ts
-```
+## Mục tiêu hiện tại
 
-## Cài đặt và chạy local
+- Public page cho cư dân tra cứu tiến trình đóng phí, không cần login.
+- Admin/Manager đăng nhập để xem dữ liệu nội bộ theo quyền.
+- Super Admin import/chốt dữ liệu thu phí trước khi public.
+- PostgreSQL là database chính.
+- Excel vẫn là nguồn vận hành thủ công ở giai đoạn đầu.
+
+## Trạng thái ngắn
+
+- DB dev đã migrate/reset sang V2.
+- Đã import `934` căn từ `Danh_Sach_Can_Ho_Master.xlsx`.
+- Đã sinh `1977` contact candidate, chưa nhập thẳng vào contact master.
+- Đã có auth/admin nền, dashboard quản lý, review contact, import sao kê DB và public route `/tra-cuu-phi`.
+- Trang chủ `/` hiện là trang cư dân mobile-first, có form tra cứu và lối vào `/admin/login`.
+- Task tiếp theo theo roadmap: Deploy public web.
+
+Xem chi tiết trong [docs/handoff.md](docs/handoff.md).
+
+## Tài liệu chính
+
+| File | Vai trò |
+| --- | --- |
+| [docs/README.md](docs/README.md) | Mục lục tài liệu |
+| [docs/handoff.md](docs/handoff.md) | Trạng thái bàn giao |
+| [docs/roadmap.md](docs/roadmap.md) | Điều phối hướng đi và task cấp cao |
+| [docs/checklist-trien-khai-va-nghiem-thu.md](docs/checklist-trien-khai-va-nghiem-thu.md) | Điều kiện nghiệm thu từng task |
+| [docs/checklist-duyet-truoc-deploy.md](docs/checklist-duyet-truoc-deploy.md) | Cổng duyệt thủ công trước deploy |
+| [docs/database-v2.md](docs/database-v2.md) | Database mục tiêu |
+| [docs/module-map.md](docs/module-map.md) | Cấu trúc project, module hiện tại và module mục tiêu |
+| [docs/parser-ma-can-ho.md](docs/parser-ma-can-ho.md) | Parser mã căn, test case, bảo trì thuật toán |
+| [docs/design-system.md](docs/design-system.md) | Design system mobile-first cho public/admin UI |
+| [docs/stitch-mobile-ui-prompt.md](docs/stitch-mobile-ui-prompt.md) | Prompt thiết kế mobile-first trên Stitch |
+| [docs/production-deploy-vps.md](docs/production-deploy-vps.md) | Deploy production trên VPS, PostgreSQL, domain, backup, Super Admin |
+| [docs/setup-may-moi-va-database.md](docs/setup-may-moi-va-database.md) | Setup máy mới và database |
+
+## Cấu trúc project
+
+Không mô tả chi tiết ở README để tránh lặp.
+
+Xem bản đồ module tại [docs/module-map.md](docs/module-map.md).
+
+## Chạy local
 
 ```bash
 npm install
@@ -73,72 +72,22 @@ npm run dev
 
 Mở `http://localhost:3000`.
 
-## Chạy test parser
+Nếu dùng Node portable trong repo:
+
+```powershell
+$env:PATH = "$PWD\.tools\node-v22.13.1-win-x64;$env:PATH"
+npm run dev
+```
+
+## Lệnh thường dùng
 
 ```bash
 npm test
+npm run build
+npm run prisma:validate
+npm run prisma:generate
 ```
 
-## Luồng xử lý
+## Ghi chú
 
-1. Upload workbook quản lý và workbook sao kê.
-2. API `/api/analyze` đọc dữ liệu trong bộ nhớ từ `FormData`.
-3. `management-reader` lấy danh sách căn hợp lệ từ sheet `Danh sách khách hàng`.
-4. `statement-reader` tự nhận diện file sao kê Excel hoặc PDF rồi gọi reader phù hợp.
-5. `apartment-parser` chuẩn hóa text và parse ra ứng viên mã căn.
-6. `matcher` gắn trạng thái:
-   - `EXACT_MATCH`
-   - `NORMALIZED_MATCH`
-   - `MULTI_MATCH`
-   - `INVALID_CODE`
-   - `UNPARSED`
-7. Người dùng review trên bảng và có thể sửa tay mã căn.
-8. API `/api/export` tạo workbook mới, không ghi đè file gốc.
-
-## Ghi chú thiết kế
-
-- Reader Excel dùng alias cột thay vì hardcode đúng một header.
-- Parser ưu tiên rule-based và có sẵn test cho các case thực tế từ mô tả nghiệp vụ.
-- MVP chưa cập nhật trực tiếp sheet `Lịch sử đóng phí` để tránh phá cấu trúc workbook gốc.
-- Nếu cần mở rộng sau này, có thể:
-  - thêm mapping config đọc từ file JSON
-  - thêm sheet ghi log thao tác duyệt
-  - thêm cơ chế merge an toàn vào workbook gốc sau khi thống nhất nghiệp vụ
-
-## Dữ liệu đầu vào kỳ vọng
-
-### File quản lý
-
-- Có sheet `Danh sách khách hàng`
-- Có cột mã căn hộ theo một trong các tên gần đúng:
-  - `Mã căn hộ`
-  - `Mã căn`
-  - `Số căn hộ`
-  - `Số căn`
-
-### File sao kê
-
-- Có cột nội dung chuyển khoản và số tiền
-- Hỗ trợ tên cột gần đúng:
-  - `Ngày giao dịch`
-  - `Số tiền`
-  - `Nội dung`
-  - `Tên người chuyển`
-  - `Tài khoản chuyển`
-  - `Mã giao dịch`
-
-### File sao kê PDF
-
-- MVP hỗ trợ PDF text-based, không hỗ trợ PDF scan ảnh hoặc OCR.
-- Reader PDF dùng heuristic để:
-  - tách nhóm giao dịch theo dòng bắt đầu bằng ngày `dd/mm/yyyy` hoặc `dd-mm-yyyy`
-  - lấy số tiền giao dịch từ cụm số tiền ở cuối hoặc gần cuối dòng
-  - giữ lại mô tả chuyển khoản để parser mã căn tiếp tục xử lý
-- Nếu PDF có bố cục quá khác, hệ thống sẽ báo lỗi parse để đổi sang Excel hoặc PDF text rõ hơn.
-
-## Hướng mở rộng
-
-- Bổ sung dropdown search component tốt hơn khi danh sách căn quá lớn
-- Thêm upload drag-and-drop
-- Thêm mapping gợi ý theo tên chủ hộ và lịch sử đóng phí
-- Thêm ghi nhận hành động reviewer và phân quyền nếu cần
+MVP cũ xử lý file trong bộ nhớ vẫn còn một số route/API để tương thích. Hướng phát triển chính hiện tại là DB V2 theo tài liệu trong `docs/`.
