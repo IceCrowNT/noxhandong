@@ -94,7 +94,7 @@ async function main() {
       mat_khau_hash: hashPassword(initialPassword),
       vai_tro: "SUPER_ADMIN",
       trang_thai: "DANG_HOAT_DONG",
-      ten_hien_thi: "Super Admin",
+      ten_hien_thi: "Quản trị cao nhất",
       so_dien_thoai: initialPhone || undefined,
     },
     create: {
@@ -103,7 +103,7 @@ async function main() {
       mat_khau_hash: hashPassword(initialPassword),
       vai_tro: "SUPER_ADMIN",
       trang_thai: "DANG_HOAT_DONG",
-      ten_hien_thi: "Super Admin",
+      ten_hien_thi: "Quản trị cao nhất",
     },
   });
 

@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { Database, FileSpreadsheet, Search, Users } from "lucide-react";
 
-import { logoutAction } from "@/app/admin/actions";
+import { AdminFrame } from "@/components/admin/admin-frame";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireAdmin } from "@/src/modules/auth/current-user";
+import { adminRoleLabel } from "@/src/modules/shared/labels";
 
 type AdminHomeProps = {
   searchParams?: Promise<{
@@ -9,54 +12,80 @@ type AdminHomeProps = {
   }>;
 };
 
+const adminCards = [
+  {
+    href: "/admin/dashboard",
+    icon: Search,
+    role: "Quản lý",
+    title: "Tra cứu nội bộ",
+    description: "Tìm căn, xem trạng thái phí, liên hệ cư dân và lịch sử nhập dữ liệu."
+  },
+  {
+    href: "/admin/contacts/review",
+    icon: Users,
+    role: "Quản lý",
+    title: "Duyệt liên hệ",
+    description: "Rà soát liên hệ nháp trước khi đưa vào danh bạ chính thức."
+  },
+  {
+    href: "/admin/import",
+    icon: FileSpreadsheet,
+    role: "Quản trị cao nhất",
+    title: "Nhập/chốt dữ liệu phí",
+    description: "Nhập file thu phí và chốt dữ liệu cho cư dân tra cứu."
+  },
+  {
+    href: "/admin/accounts",
+    icon: Database,
+    role: "Quản trị cao nhất",
+    title: "Tài khoản quản trị",
+    description: "Tạo, theo dõi và khóa tài khoản quản lý nội bộ."
+  }
+];
+
 export default async function AdminHomePage({ searchParams }: AdminHomeProps) {
   const account = await requireAdmin();
   const params = await searchParams;
 
   return (
-    <main className="page-shell admin-shell">
-      <section className="panel admin-header">
-        <div>
-          <p className="eyebrow">Admin</p>
-          <h1>Vùng quản trị</h1>
-          <p className="hero-copy">
-            Đăng nhập bằng {account.ten_hien_thi || account.ten_dang_nhap}, quyền{" "}
-            <strong>{account.vai_tro}</strong>.
-          </p>
-        </div>
-        <form action={logoutAction}>
-          <button className="secondary-button" type="submit">
-            Đăng xuất
-          </button>
-        </form>
-      </section>
-
+    <AdminFrame
+      activeKey="home"
+      badge={adminRoleLabel(account.vai_tro)}
+      title="Vùng quản trị"
+      description={
+        <>
+          Đăng nhập bằng {account.ten_hien_thi || account.ten_dang_nhap}, quyền{" "}
+          <strong>{adminRoleLabel(account.vai_tro)}</strong>.
+        </>
+      }
+    >
       {params?.denied === "1" ? (
-        <div className="error-banner">Tài khoản hiện tại không có quyền vào chức năng này.</div>
+        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-medium text-red-800">
+          Tài khoản hiện tại không có quyền vào chức năng này.
+        </div>
       ) : null}
 
-      <section className="admin-grid">
-        <Link className="admin-card" href="/admin/accounts">
-          <span>SUPER_ADMIN</span>
-          <strong>Quản lý tài khoản</strong>
-          <p>Tạo và khóa tài khoản manager.</p>
-        </Link>
-        <Link className="admin-card" href="/admin/import">
-          <span>SUPER_ADMIN</span>
-          <strong>Import/chốt dữ liệu public</strong>
-          <p>Khu vực dành cho batch thu phí sau này.</p>
-        </Link>
-        <Link className="admin-card" href="/admin/dashboard">
-          <span>MANAGER</span>
-          <strong>Dashboard quản lý</strong>
-          <p>Tìm căn, xem phí public, contact candidate và lịch sử import.</p>
-        </Link>
-        <Link className="admin-card" href="/admin/contacts/review">
-          <span>MANAGER</span>
-          <strong>Review contact</strong>
-          <p>Duyệt, sửa hoặc từ chối contact candidate trước khi vào master.</p>
-        </Link>
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {adminCards.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link key={item.href} href={item.href} className="group block">
+              <Card className="h-full bg-white/90 transition-colors group-hover:border-[var(--accent)]">
+                <CardHeader className="gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]">
+                    <Icon size={20} aria-hidden="true" />
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-strong)]">{item.role}</p>
+                  <CardTitle className="text-xl">{item.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm leading-6 text-[var(--muted)]">{item.description}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          );
+        })}
       </section>
-    </main>
+    </AdminFrame>
   );
 }

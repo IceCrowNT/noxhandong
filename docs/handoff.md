@@ -34,6 +34,9 @@ File này dùng để:
 - Chuẩn bị nền production: admin login bằng số điện thoại, script `pg_dump`, export Excel vận hành: 2026-05-17
 - Gắn SĐT `0904802553` cho tài khoản `admin` role `SUPER_ADMIN`; deploy VPS chuyển thành bước cuối: 2026-05-17
 - Chuyển design Stitch thành design system nội bộ và chỉnh public UI/copy theo nghiệp vụ BQT An Đồng: 2026-05-17
+- Rà soát 934 căn trong DB, tạo báo cáo dữ liệu thật và đề xuất mô hình DB/tình huống cư dân: 2026-05-18
+- Thêm ảnh nền chung cư xanh local, tối giản trang chủ theo hướng search-bar landing page: 2026-05-18
+- Chốt index là search-bar landing page; góp ý dài hạn để ở backlog, mục tiêu hiện tại vẫn là Task N local/staging readiness: 2026-05-19
 
 ## Trạng thái hiện tại
 
@@ -88,7 +91,8 @@ Dự án đã đi qua các bước nền tảng:
   - public bởi `admin`
   - batch nháp cũ `id = 1` đã chuyển `HUY` vì dùng rule cũ
 - triển khai trang public tra cứu phí:
-  - route `/` là trang chủ cư dân mobile-first, có form tra cứu và lối vào quản trị
+  - route `/` là trang chủ cư dân mobile-first/search-bar landing page
+  - trang chủ đã tối giản: brand, link quản trị nhỏ, tiêu đề, ô nhập mã căn và nút tra cứu
   - route `/tra-cuu-phi`
   - không cần login
   - chỉ đọc batch public hiện hành
@@ -99,6 +103,10 @@ Dự án đã đi qua các bước nền tảng:
   - query qua Prisma, không nối SQL thủ công
   - rate-limit nhẹ theo IP
   - hỗ trợ nhóm input tự nhiên như `can 124 lo 4b`
+  - ảnh nền desktop local đang dùng: `public/images/resident-home-desktop.webp`
+  - ảnh nền mobile local đang dùng: `public/images/resident-home-mobile.webp`
+  - logo header local đang dùng: `public/images/logo-hoanghuy.webp`
+  - background tự chọn ảnh 16:9 trên desktop và 9:16 trên mobile
   - tài liệu quản trị parser: `docs/parser-ma-can-ho.md`
   - prompt thiết kế mobile-first trên Stitch: `docs/stitch-mobile-ui-prompt.md`
   - checklist duyệt thủ công trước deploy: `docs/checklist-duyet-truoc-deploy.md`
@@ -138,12 +146,24 @@ Dự án đã đi qua các bước nền tảng:
   - `duyet_giao_dich`: `125`
   - `phan_bo_giao_dich`: `101`
   - parse status: `KHOP_TRUC_TIEP = 42`, `KHOP_SAU_CHUAN_HOA = 59`, `NHIEU_CAN = 4`, `CHUA_NHAN_DIEN_DUOC_CAN = 2`, `KHONG_LIEN_QUAN_CAN_HO = 18`
-  - `npm test`: `82` tests pass
+  - `npm test`: `95` tests pass
   - `npm run build`: pass
+- đã rà soát DB hiện tại:
+  - `can_ho`: `934`
+  - `CHUNG_CU`: `884`
+  - `LIEN_KE`: `50`
+  - mã liền kề hợp lệ hiện gồm `LK1.*`, `LK2.*`, `LKV.*`
+  - `ung_vien_lien_he_can_ho`: `1977`
+  - `lien_he_can_ho`: mới có `1`, cần duyệt contact master trước vận hành thật cho manager
+  - báo cáo: `docs/reports/bao-cao-ra-soat-934-can-ho-db.md`
+  - CSV từng dòng: `docs/reports/ra-soat-934-can-ho-db.csv`
 
 Hiện tại chưa làm xong:
 
-- cải thiện cấu trúc `raw payload` để dễ đối chiếu với Excel
+- duyệt hàng loạt contact master từ staging để manager có dữ liệu SĐT đủ sạch
+- kiểm tra UI mobile thực tế 360/390/414/430px cho search-bar landing page
+- kiểm tra dữ liệu nhạy cảm trước khi push remote nếu repo không private
+- cải thiện cấu trúc `raw payload` để dễ đối chiếu với Excel nếu tiếp tục mở rộng import/sao kê
 - mở rộng auth sang các màn hình nghiệp vụ sau này nếu có thêm route mới
 
 ## Mốc dữ liệu quan trọng
@@ -499,3 +519,81 @@ Nếu có thay đổi parser mã căn:
 - cập nhật `docs/parser-ma-can-ho.md`
 - thêm golden test tương ứng
 - chạy `npm test`
+## Cập nhật nhanh 2026-05-20
+
+- UI quản trị đã được tiếng Việt hóa phần hiển thị, không còn dùng nhãn tiếng Anh chính như `contact candidate`, `public`, `dashboard`, `review contact` trên các trang quản trị chính.
+- Trang `/admin/login` đã có link `Về trang chủ`.
+- Tài khoản `admin` vẫn giữ username kỹ thuật là `admin`, nhưng `ten_hien_thi` trong DB đã đổi thành `Quản trị cao nhất`.
+- File thu phí mới nhất hiện tại: `docs/Theo dõi thu phí T5.xlsx`.
+- Kết quả import T5: `lo_nhap_du_lieu.id = 8`, `934` dòng, `3` dòng đóng lẻ, `8` dòng ngoài năm gốc 2026, không có lỗi mã căn/thiếu tháng/không parse tháng.
+- Batch phí `T5-2026` có `batch_trang_thai_phi_public.id = 3` và đang là batch công khai hiện hành.
+- Sao kê mới `lich-su-giao-dich(20-05-2026 08_51_50).xls` đã được parse/đối chiếu:
+  - report Excel: `docs/reports/lich-su-giao-dich-20-05-2026-08_51_50--parser-doi-chieu.xlsx`
+  - summary JSON: `docs/reports/lich-su-giao-dich-20-05-2026-08_51_50--parser-summary.json`
+  - CSV cần kiểm tra: `docs/reports/lich-su-giao-dich-20-05-2026-08_51_50--can-kiem-tra.csv`
+  - DB import batch: `lo_nhap_du_lieu.id = 9`
+- Trang `/admin/import` đã có form upload file thu phí Excel:
+  - file upload được lưu tạm trong `.local/admin-uploads/fee-tracking`
+  - nút `Chỉ nhập staging` chạy import vào `dong_theo_doi_thu_phi_tho`
+  - nút `Nhập và chốt công khai` chạy import, tạo batch phí và public ngay
+
+## Cập nhật nhanh 2026-05-21
+
+- Đã cài Tailwind CSS chính thức vào project Next.js qua `@tailwindcss/postcss`.
+- Đã thêm cấu hình `postcss.config.mjs` và `components.json`.
+- Đã thêm bộ component nền theo phong cách shadcn/ui trong `components/ui/`: `button`, `input`, `card`, `badge`, `table`.
+- Đã thêm helper `cn()` tại `lib/utils.ts`.
+- Đã chuyển trước các màn `/admin/login`, `/admin`, `/admin/import`.
+- Kiểm tra kỹ thuật: `npm test` pass 95 tests, `npm run build` pass.
+- Lưu ý: `npm install` báo còn vulnerability trong dependency tree hiện tại; chưa chạy `npm audit fix --force` để tránh nâng version/bẻ project ngoài phạm vi.
+
+## Cập nhật UI nhanh 2026-05-21
+
+- Đã chuyển tiếp các màn admin còn lại sang Tailwind + component nền:
+  - `/admin/accounts`
+  - `/admin/dashboard`
+  - `/admin/contacts/review`
+- Tổng các màn admin đã chuyển hiện gồm: `/admin/login`, `/admin`, `/admin/import`, `/admin/accounts`, `/admin/dashboard`, `/admin/contacts/review`.
+- Không đổi parser, DB schema, import/export script hay server action nghiệp vụ.
+- Kiểm tra kỹ thuật sau chuyển UI: `npm test` pass 95 tests, `npm run build` pass.
+
+## Fix UI nhanh 2026-05-21
+
+- Lỗi: `/admin/login` và dashboard hiển thị như HTML thô vì Tailwind chỉ load theme/base, chưa sinh utility class.
+- Nguyên nhân: Tailwind v4 chưa scan source Next.js rõ ràng.
+- Đã thêm `@source` cho `app`, `components`, `src`, `lib` trong `app/globals.css`.
+- Đã restart dev server, `/admin/login` và `/` trả 200.
+- Kiểm tra sau fix: `npm test` pass 95 tests, `npm run build` pass.
+
+## Demo dashboard UI 2026-05-21
+
+- Đã tạo route demo `/admin/dashboard-demo`.
+- Có nút `Xem demo UI` từ trang `/admin`.
+- Demo chỉ dùng mock data, không đổi DB, parser, import/export hay dashboard thật.
+- Ý tưởng chính: sidebar, header sticky, KPI cards, chart SVG nhẹ, bảng cuộn trong từng card.
+- Kiểm tra kỹ thuật: `npm test` pass 95 tests, `npm run build` pass.
+
+## Áp dụng dashboard UI 2026-05-21
+
+- Đã áp dụng bố cục demo vào dashboard thật `/admin/dashboard`.
+- Dashboard thật vẫn dùng `getApartmentDashboardData`, không đổi truy vấn nghiệp vụ, DB schema, parser hay import/export.
+- Các bảng dài trong dashboard đã được đưa vào vùng cuộn nội bộ trong card.
+- Kiểm tra kỹ thuật: `npm test` pass 95 tests, `npm run build` pass.
+
+## Áp dụng UI toàn project 2026-05-21
+
+- Đã tạo `components/admin/admin-frame.tsx` gồm:
+  - `AdminFrame`: layout sidebar/header/sticky cho admin.
+  - `ScrollPanel`: khung cuộn nội bộ cho bảng dài.
+- Đã áp dụng khung admin mới cho:
+  - `/admin`
+  - `/admin/dashboard`
+  - `/admin/import`
+  - `/admin/accounts`
+  - `/admin/contacts/review`
+- Đã đồng bộ public UI cho:
+  - `/`
+  - `/tra-cuu-phi`
+- Đã gỡ route demo `/admin/dashboard-demo`.
+- Không đổi DB, parser, import/export hoặc server action nghiệp vụ.
+- Kiểm tra kỹ thuật: `npm test` pass 95 tests, `npm run build` pass.

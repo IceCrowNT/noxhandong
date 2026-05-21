@@ -27,7 +27,7 @@ File control tiến trình cấp cao vẫn là:
 
 File này control điều kiện nghiệm thu chi tiết.
 
-Trước khi sang Task N deploy public, phải dùng thêm cổng duyệt thủ công:
+Trước khi sang Task O deploy public, phải dùng thêm cổng duyệt thủ công:
 
 - [checklist-duyet-truoc-deploy.md](checklist-duyet-truoc-deploy.md)
 
@@ -749,8 +749,12 @@ Kết quả thực tế:
 
 - route public: `/tra-cuu-phi`
 - route trang chủ cư dân: `/`
-- trang chủ `/` là màn hình đầu tiên khi chạy project, ưu tiên mobile-first
-- trang chủ có form tra cứu phí và lối vào quản trị `/admin/login`
+- trang chủ `/` là màn hình đầu tiên khi chạy project, ưu tiên mobile-first/search-bar landing page
+- trang chủ đã tối giản: brand, link quản trị nhỏ, tiêu đề, ô nhập mã căn và nút tra cứu
+- ảnh nền desktop local đang dùng: `public/images/resident-home-desktop.webp`
+- ảnh nền mobile local đang dùng: `public/images/resident-home-mobile.webp`
+- logo header local đang dùng: `public/images/logo-hoanghuy.webp`
+- background tự chọn ảnh 16:9 trên desktop và 9:16 trên mobile
 - prompt thiết kế mobile-first trên Stitch: `docs/stitch-mobile-ui-prompt.md`
 - ví dụ kiểm tra: `/tra-cuu-phi?ma_can=L4A.311A`
 - `L4A.311A` hiển thị `đã đóng hết tháng 2 năm 2027`
@@ -769,7 +773,7 @@ Kết quả thực tế:
 - whitelist ký tự cho input tra cứu, chặn chuỗi có ký tự nguy hiểm như `'`, `=`, `<`, `>`
 - query DB qua Prisma với candidate list, không nối SQL thủ công
 - có rate-limit nhẹ theo IP: tối đa `40` lượt/phút
-- `npm test`: `82` tests pass
+- `npm test`: `95` tests pass
 - `npm run build`: pass
 - tài liệu quản trị parser: `docs/parser-ma-can-ho.md`
 - dữ liệu parser hiện có đã được gộp vào tài liệu trung tâm:
@@ -983,7 +987,7 @@ Hoàn thiện project ở mức có thể khởi chạy ổn định trên local
 
 ### Việc cần làm
 
-- kiểm tra trang chủ cư dân mobile-first
+- kiểm tra trang chủ cư dân mobile-first/search-bar landing page
 - áp dụng design system từ [design-system.md](design-system.md)
 - kiểm tra public lookup không login
 - kiểm tra login admin bằng username và số điện thoại
@@ -1014,6 +1018,8 @@ Hoàn thiện project ở mức có thể khởi chạy ổn định trên local
 
 - [x] Public page hoạt động trên dev
 - [x] Design system Stitch đã chuyển thành pattern nội bộ, không copy HTML prototype
+- [x] Trang chủ đã tối giản theo hướng search-bar landing page
+- [x] Ảnh nền chung cư xanh đã lưu local và áp dụng cho public pages
 - [x] Admin login có nền số điện thoại
 - [x] SĐT `0904802553` đã gắn với `admin` role `SUPER_ADMIN`
 - [x] Export Excel hoạt động như bản lưu vận hành trên máy dev
@@ -1112,3 +1118,18 @@ Nếu task thất bại:
 - ghi rõ lỗi
 - ghi rõ dữ liệu/file bị ảnh hưởng
 - sửa hoặc rollback trước khi tiếp tục
+## Cập nhật nhanh 2026-05-20
+
+- [x] Trang login quản trị có nút quay về trang chủ.
+- [x] Các trang quản trị chính đã dịch nhãn hiển thị sang tiếng Việt.
+- [x] UI dùng label tiếng Việt cho quyền, trạng thái tài khoản, trạng thái import, trạng thái batch phí, vai trò liên hệ.
+- [x] Import file `docs/Theo dõi thu phí T5.xlsx`.
+- [x] Tạo batch phí `T5-2026`.
+- [x] Public batch phí `T5-2026` làm dữ liệu hiện hành cho cư dân tra cứu.
+- [x] Tạo report parser sao kê có cột `Căn parser` cạnh cột nội dung giao dịch.
+- [x] Import sao kê mới ngày 2026-05-20 vào DB batch `9`.
+- [x] Trang `/admin/import` có form upload file thu phí Excel.
+- [ ] Chủ dự án test upload file thu phí bằng nút `Chỉ nhập staging`.
+- [ ] Chủ dự án chỉ dùng nút `Nhập và chốt công khai` sau khi đã xác nhận file đúng.
+- [ ] Chủ dự án mở file `docs/reports/lich-su-giao-dich-20-05-2026-08_51_50--parser-doi-chieu.xlsx` và kiểm tra sheet `Can kiem tra`.
+- [ ] Chủ dự án kiểm tra thủ công giao diện `/admin`, `/admin/login`, `/admin/dashboard`, `/admin/import`, `/admin/contacts/review` trên desktop/mobile.

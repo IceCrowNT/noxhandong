@@ -1,0 +1,15 @@
+{
+  "sourceFile": "c:\\Users\\IceCrow\\Desktop\\lich-su-giao-dich(20-05-2026 08_51_50).xls",
+  "parserVersion": "apartment-code-parser-v0.3-report",
+  "currentFeeBatchId": 3,
+  "currentFeePeriod": "T5-2026",
+  "totalRows": 269,
+  "incomeRows": 262,
+  "parsedValidRows": 221,
+  "multiCandidateRows": 5,
+  "invalidApartmentRows": 0,
+  "unparsedRows": 43,
+  "uniqueParsedApartments": 226,
+  "totalParsedIncomeAmount": 253200000,
+  "needsVisualReviewRows": 52
+}
