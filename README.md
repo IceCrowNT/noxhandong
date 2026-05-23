@@ -67,12 +67,15 @@ Xem bản đồ module tại [docs/module-map.md](docs/module-map.md).
 
 ```bash
 npm install
+npm run db:start:windows
 npm run dev
 ```
 
 Mở `http://localhost:3000`.
 
-Nếu dùng Node portable trong repo:
+Trên Windows hiện tại, Node.js và PostgreSQL đã được cài bản full. PostgreSQL chạy bằng service `postgresql-x64-17`; nếu terminal chưa nhận `node`/`npm`/`psql`, đóng VS Code hoặc terminal rồi mở lại.
+
+Chỉ dùng Node portable trong repo khi cần fallback:
 
 ```powershell
 $env:PATH = "$PWD\.tools\node-v22.13.1-win-x64;$env:PATH"

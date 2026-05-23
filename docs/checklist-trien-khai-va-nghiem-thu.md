@@ -1133,3 +1133,6 @@ Nếu task thất bại:
 - [ ] Chủ dự án chỉ dùng nút `Nhập và chốt công khai` sau khi đã xác nhận file đúng.
 - [ ] Chủ dự án mở file `docs/reports/lich-su-giao-dich-20-05-2026-08_51_50--parser-doi-chieu.xlsx` và kiểm tra sheet `Can kiem tra`.
 - [ ] Chủ dự án kiểm tra thủ công giao diện `/admin`, `/admin/login`, `/admin/dashboard`, `/admin/import`, `/admin/contacts/review` trên desktop/mobile.
+- [x] Admin mobile đã dùng topbar + Sheet thay sidebar dài; kiểm tra 390px/430px không overflow ngang toàn trang.
+- [x] Trang `/admin` mobile dùng list compact; desktop vẫn giữ card grid.
+- [x] Bảng dài admin có vùng cuộn riêng, không ép hết cột trên mobile.

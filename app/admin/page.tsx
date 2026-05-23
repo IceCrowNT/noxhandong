@@ -65,22 +65,35 @@ export default async function AdminHomePage({ searchParams }: AdminHomeProps) {
         </div>
       ) : null}
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-4">
         {adminCards.map((item) => {
           const Icon = item.icon;
           return (
             <Link key={item.href} href={item.href} className="group block">
               <Card className="h-full bg-white/90 transition-colors group-hover:border-[var(--accent)]">
-                <CardHeader className="gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]">
+                <div className="grid grid-cols-[44px_minmax(0,1fr)] gap-3 p-4 md:block md:p-0">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)] md:mx-6 md:mt-6">
                     <Icon size={20} aria-hidden="true" />
                   </div>
-                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-strong)]">{item.role}</p>
-                  <CardTitle className="text-xl">{item.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm leading-6 text-[var(--muted)]">{item.description}</p>
-                </CardContent>
+                  <div className="min-w-0 md:hidden">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">
+                      {item.role}
+                    </p>
+                    <strong className="mt-1 block truncate text-base">{item.title}</strong>
+                    <p className="mt-1 truncate text-sm text-[var(--muted)]">{item.description}</p>
+                  </div>
+                  <div className="hidden md:block">
+                    <CardHeader className="gap-3 pt-4">
+                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent-strong)]">
+                        {item.role}
+                      </p>
+                      <CardTitle className="text-xl">{item.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm leading-6 text-[var(--muted)]">{item.description}</p>
+                    </CardContent>
+                  </div>
+                </div>
               </Card>
             </Link>
           );

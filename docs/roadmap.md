@@ -252,6 +252,16 @@ Task A-M đã hoàn thành phần nền theo checklist hiện tại. Task O là 
 - Contact đi qua staging/review.
 - Các route admin nhạy cảm yêu cầu `SUPER_ADMIN`.
 - Parser mã căn có tài liệu trung tâm, golden test, blacklist false-positive và lưu `matchReason`/`phien_ban_parser` khi đưa sao kê vào DB.
+
+## Cập nhật Task N 2026-05-22
+
+- Đã xử lý phần admin responsive cần làm ngay:
+  - desktop giữ sidebar cố định.
+  - mobile/tablet nhỏ dùng topbar + `Sheet` menu.
+  - trang `/admin` mobile chuyển card chức năng sang list compact.
+  - bảng dài dùng vùng cuộn riêng, tránh overflow ngang toàn trang.
+- Đã kiểm tra `390px`, `430px`, desktop `1440px` bằng Playwright.
+- `npm test` pass 95 tests, `npm run build` pass sau build sạch.
 ## Cập nhật nhanh 2026-05-20
 
 - Đã cập nhật UI quản trị theo hướng tiếng Việt hóa: trang `/admin`, `/admin/login`, `/admin/dashboard`, `/admin/accounts`, `/admin/import`, `/admin/contacts/review`.

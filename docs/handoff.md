@@ -597,3 +597,54 @@ Nếu có thay đổi parser mã căn:
 - Đã gỡ route demo `/admin/dashboard-demo`.
 - Không đổi DB, parser, import/export hoặc server action nghiệp vụ.
 - Kiểm tra kỹ thuật: `npm test` pass 95 tests, `npm run build` pass.
+
+## Cập nhật môi trường Windows 2026-05-22
+
+- Đã chuyển môi trường Windows từ portable sang bản cài full:
+  - Node.js LTS full: `OpenJS.NodeJS.LTS` version `24.16.0`
+  - PostgreSQL full: `PostgreSQL.PostgreSQL.17` version `17.10-1`
+  - PostgreSQL service: `postgresql-x64-17`, trạng thái `Running`, `StartType = Automatic`
+- Đã backup DB portable trước khi chuyển:
+  - `.local/db-backups/apartment_fee_reviewer-before-full-postgres-20260522.dump`
+- Đã restore DB dev vào PostgreSQL full service:
+  - `can_ho = 934`
+  - `giao_dich_ngan_hang = 395`
+  - user `admin`, SĐT `0904802553`, role `SUPER_ADMIN`
+- Đã thêm script Windows:
+  - `scripts/setup/start-postgres-local.ps1`
+  - `scripts/setup/stop-postgres-local.ps1`
+  - `npm run db:start:windows`
+  - `npm run db:stop:windows`
+- Script Windows ưu tiên service `postgresql-x64-17`; Node/PostgreSQL portable trong `.tools/` và PostgreSQL runtime ở `C:\Users\IceCrow\apartment_fee_reviewer_runtime` chỉ còn là fallback/backup.
+- Kiểm tra kỹ thuật sau chuyển môi trường: `npm test` pass 95 tests, `npm run build` pass.
+
+## Cập nhật dashboard vận hành 2026-05-22
+
+- Dashboard `/admin/dashboard` đã chuyển hướng thành màn tra cứu/tổng quan nhanh, không xử lý nghiệp vụ nặng.
+- Khi vừa mở dashboard có KPI và chart kỳ phí:
+  - tổng căn hộ
+  - số căn đã hoàn thành kỳ hiện tại
+  - số căn chưa hoàn thành kỳ hiện tại
+  - phân bố tháng đã đóng đến
+  - danh sách căn cần chú ý
+- Quy tắc thống kê kỳ phí:
+  - số lẻ như `3.5` được làm tròn xuống thành tháng `3`
+  - căn đóng vượt kỳ hiện tại vẫn tính là hoàn thành kỳ hiện tại
+  - mốc ngoài năm 2026 giữ đúng tháng/năm thực tế khi hiển thị chart
+- Tra cứu căn hộ hiển thị nhanh tình trạng phí, dữ liệu liên hệ gốc từ Excel/chưa duyệt và nút `Gọi` bằng link `tel:`.
+- Kiểm tra kỹ thuật sau chỉnh dashboard: `npm test` pass 95 tests, `npm run build` pass, đã kiểm tra desktop và mobile 390/430px bằng Playwright screenshot.
+
+## Cập nhật admin mobile-first 2026-05-22
+
+- Admin layout đã chuyển sang mô hình responsive:
+  - Desktop `lg` trở lên: sidebar cố định bên trái.
+  - Mobile/tablet nhỏ: chỉ còn topbar gọn và nút menu; menu mở bằng `Sheet` trượt từ trái.
+- Trang `/admin` đã chuyển card chức năng sang dạng list compact trên mobile; desktop vẫn giữ card grid.
+- Các bảng dài trong admin dùng vùng cuộn riêng (`ScrollPanel`, `overflow-x-auto`, `min-width`) để không kéo ngang toàn trang.
+- Đã thêm test hook ổn định cho menu mobile:
+  - `data-testid="admin-mobile-menu-trigger"`
+  - `data-testid="admin-mobile-sheet"`
+- Kiểm tra kỹ thuật:
+  - `npm test` pass 95 tests.
+  - Build sạch sau khi dừng dev server và xoá `.next`: `npm run build` pass.
+  - Playwright kiểm tra `/admin` desktop 1440px, `/admin` mobile 430px/390px, `/admin/dashboard?ma_can=L1.112` mobile 430px: CSS có load, không overflow ngang toàn trang, menu mobile mở được bằng Sheet.

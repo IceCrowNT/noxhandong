@@ -122,8 +122,8 @@ winget install --id DBeaver.DBeaver.Community --source winget --accept-package-a
 Trên máy hiện tại đã cài:
 
 - package id: `DBeaver.DBeaver.Community`
-- version: `26.0.4`
-- đường dẫn: `C:\Users\IceCrow\AppData\Local\DBeaver\dbeaver.exe`
+- version: `26.0.5` bản full qua `winget`
+- còn thấy bản `26.0.4 (current user)` từ lần cài trước
 
 Có thể kiểm tra bằng:
 
@@ -170,10 +170,36 @@ Kỳ vọng DB dev V2 hiện tại:
 - `ung_vien_lien_he_can_ho = 1977`
 - có user `admin` role `SUPER_ADMIN`
 
+### Nếu DBeaver báo `Connection refused`
+
+Lỗi này thường có nghĩa là PostgreSQL local chưa chạy trên `localhost:5432`.
+
+Trên Windows, chạy trong thư mục project:
+
+```powershell
+npm run db:start:windows
+```
+
+Sau đó bấm `Retry` trong DBeaver hoặc reconnect lại connection.
+
+Kiểm tra nhanh port:
+
+```powershell
+Get-NetTCPConnection -LocalPort 5432 -State Listen
+```
+
+Nếu muốn dừng DB local:
+
+```powershell
+npm run db:stop:windows
+```
+
 ## Cấu trúc script setup
 
 Các script nằm ở:
 
+- `scripts/setup/start-postgres-local.ps1`
+- `scripts/setup/stop-postgres-local.ps1`
 - `scripts/setup/install-postgres-app-local.sh`
 - `scripts/setup/start-postgres-local.sh`
 - `scripts/setup/stop-postgres-local.sh`
@@ -190,11 +216,53 @@ Các script này:
 
 ## Quy trình setup trên máy mới
 
-Phần dưới đây là quy trình nền. Trên Windows hiện tại, project đang dùng Node portable trong `.tools/` và PostgreSQL portable ngoài repo ở:
+### Windows hiện tại
 
-- `C:\Users\IceCrow\apartment_fee_reviewer_runtime`
+Trên máy Windows hiện tại, project đã chuyển sang dùng bản cài full:
 
-Trên Mac có thể dùng các script `Postgres.app` bên dưới.
+- Node.js LTS full: `OpenJS.NodeJS.LTS`, version `24.16.0`
+- PostgreSQL full: `PostgreSQL.PostgreSQL.17`, version `17.10-1`
+- PostgreSQL service: `postgresql-x64-17`
+- service đang để `Automatic`, tự chạy cùng Windows
+- database dev: `apartment_fee_reviewer`
+- user/password local: `postgres` / `postgres`
+
+Các bản portable còn tồn tại để làm fallback/backup, không còn là môi trường chính:
+
+- Node portable trong `.tools/`
+- PostgreSQL portable trong `.tools/`
+- PostgreSQL portable runtime ngoài repo ở `C:\Users\IceCrow\apartment_fee_reviewer_runtime`
+
+Không xóa các thư mục portable nếu chưa có backup rõ ràng, vì có thể cần dùng lại để đối chiếu dữ liệu cũ.
+
+Khởi động PostgreSQL trên Windows:
+
+```powershell
+npm run db:start:windows
+```
+
+Dừng PostgreSQL trên Windows:
+
+```powershell
+npm run db:stop:windows
+```
+
+Script PowerShell sẽ ưu tiên service `postgresql-x64-17`; nếu máy không có service này mới fallback về PostgreSQL portable.
+
+Kiểm tra công cụ full:
+
+```powershell
+node -v
+npm -v
+psql --version
+Get-Service postgresql-x64-17
+```
+
+Nếu terminal cũ chưa nhận `node`, `npm` hoặc `psql`, đóng terminal/VS Code rồi mở lại để nhận PATH mới.
+
+### Mac/Linux hoặc máy khác
+
+Phần dưới đây là quy trình nền. Trên Mac có thể dùng các script `Postgres.app` bên dưới.
 
 ### Bước 1. Cài Node.js
 
@@ -307,7 +375,19 @@ File chính:
 
 ## Các lệnh kiểm tra nhanh
 
-### Kiểm tra postgres đang chạy chưa
+### Kiểm tra postgres đang chạy chưa trên Windows
+
+```powershell
+Get-NetTCPConnection -LocalPort 5432 -State Listen
+```
+
+### Kiểm tra database đã có chưa trên Windows
+
+```powershell
+psql -h localhost -p 5432 -U postgres -d apartment_fee_reviewer -c "\dt"
+```
+
+### Kiểm tra postgres đang chạy chưa trên Mac/Linux
 
 ```bash
 lsof -nP -iTCP:5432 -sTCP:LISTEN
@@ -327,6 +407,14 @@ $HOME/Applications/Postgres.app/Contents/Versions/17/bin/psql -h localhost -p 54
 
 ## Dừng database local
 
+Windows:
+
+```powershell
+npm run db:stop:windows
+```
+
+Mac/Linux:
+
 ```bash
 bash scripts/setup/stop-postgres-local.sh
 ```
@@ -339,7 +427,9 @@ bash scripts/setup/stop-postgres-local.sh
 - Prisma Client đã generate theo `prisma/schema-v2.prisma`
 - DB dev đã migrate/reset sang V2
 - migration V2 hiện tại: `20260515000100_v2_public_web`
-- PostgreSQL local trên máy Windows hiện tại nằm ngoài repo ở `C:\Users\IceCrow\apartment_fee_reviewer_runtime`
+- PostgreSQL local trên máy Windows hiện tại đã chuyển sang bản full, chạy bằng Windows service `postgresql-x64-17`
+- Node.js trên máy Windows hiện tại đã chuyển sang bản full `OpenJS.NodeJS.LTS`
+- PostgreSQL portable ở `C:\Users\IceCrow\apartment_fee_reviewer_runtime` chỉ còn là fallback/backup
 - DBeaver Community đã được cài để kiểm tra database bằng giao diện
 
 ## Kết luận

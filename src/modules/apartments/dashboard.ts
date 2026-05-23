@@ -7,6 +7,7 @@ import type { Prisma } from "@prisma/client";
 
 const MAX_SEARCH_LENGTH = 80;
 const RESULT_LIMIT = 20;
+const BASE_YEAR = 2026;
 
 export type ApartmentDashboardData = Awaited<ReturnType<typeof getApartmentDashboardData>>;
 
@@ -24,6 +25,186 @@ function jsonArray(value: unknown) {
 
 function publicPayloadText(payload: unknown, fallback: string | null) {
   return publicFeeDisplayText(payload, fallback);
+}
+
+function recordValue(value: unknown) {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+}
+
+function numericValue(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function stringValue(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function parsePeriod(period: string | null | undefined) {
+  const match = String(period || "").match(/T\s*(\d{1,2})\s*[-/]\s*(\d{4})/i);
+  if (!match) {
+    return { month: 12, year: BASE_YEAR, label: period || "Kỳ hiện tại" };
+  }
+
+  return {
+    month: Number(match[1]),
+    year: Number(match[2]),
+    label: `T${Number(match[1])}-${match[2]}`,
+  };
+}
+
+function extractPaidThrough(payload: unknown, fallback: string | null) {
+  const payloadRecord = recordValue(payload);
+  const paidThrough = recordValue(payloadRecord?.paidThrough);
+  const numericMonth =
+    numericValue(paidThrough?.numericMonth) ??
+    numericValue(payloadRecord?.numericMonth) ??
+    (() => {
+      const match = String(fallback || "").match(/-?\d+(?:[.,]\d+)?/);
+      return match ? Number(match[0].replace(",", ".")) : null;
+    })();
+
+  const flooredMonth = numericMonth === null ? null : Math.floor(numericMonth);
+  const resolvedMonth = numericValue(paidThrough?.resolvedMonth);
+  const resolvedYear = numericValue(paidThrough?.resolvedYear);
+  const isPartialPayment =
+    paidThrough?.isPartialPayment === true ||
+    payloadRecord?.isPartialPayment === true ||
+    (numericMonth !== null && !Number.isInteger(numericMonth));
+  const displayText = stringValue(payloadRecord?.publicDisplayText) || stringValue(paidThrough?.displayText);
+
+  if (flooredMonth === null) {
+    return {
+      numericMonth,
+      flooredMonth,
+      resolvedMonth: null,
+      resolvedYear: null,
+      isPartialPayment,
+      label: "Chưa có dữ liệu",
+      displayText,
+      sortKey: -9999,
+    };
+  }
+
+  const monthForLabel = resolvedMonth ?? (((flooredMonth - 1) % 12) + 12) % 12 + 1;
+  const yearForLabel = resolvedYear ?? BASE_YEAR + Math.floor((flooredMonth - 1) / 12);
+
+  return {
+    numericMonth,
+    flooredMonth,
+    resolvedMonth: monthForLabel,
+    resolvedYear: yearForLabel,
+    isPartialPayment,
+    label: `Hết tháng ${monthForLabel}/${yearForLabel}`,
+    displayText,
+    sortKey: yearForLabel * 100 + monthForLabel,
+  };
+}
+
+async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel: string | null | undefined) {
+  if (!currentBatchId) {
+    return {
+      currentPeriod: parsePeriod(currentPeriodLabel),
+      total: 0,
+      completedCount: 0,
+      notCompletedCount: 0,
+      noDataCount: 0,
+      partialRoundedCount: 0,
+      completionPercent: 0,
+      distribution: [],
+      attentionRows: [],
+    };
+  }
+
+  const currentPeriod = parsePeriod(currentPeriodLabel);
+  const feeRows = await prisma.trangThaiPhiCanHoPublic.findMany({
+    where: { batch_id: currentBatchId },
+    select: {
+      ma_can: true,
+      thang_da_dong_den_hien_tai: true,
+      payload_public_json: true,
+    },
+  });
+
+  const groups = new Map<
+    string,
+    { label: string; count: number; sortKey: number; isCurrentOrLater: boolean }
+  >();
+  const attentionRows: Array<{
+    ma_can: string;
+    label: string;
+    displayText: string;
+    kind: "PARTIAL" | "OVERDUE" | "NO_DATA";
+  }> = [];
+
+  let completedCount = 0;
+  let noDataCount = 0;
+  let partialRoundedCount = 0;
+
+  for (const row of feeRows) {
+    const paidThrough = extractPaidThrough(row.payload_public_json, row.thang_da_dong_den_hien_tai);
+    const monthIndex = paidThrough.flooredMonth;
+    const isCompleted = monthIndex !== null && monthIndex >= currentPeriod.month;
+
+    if (isCompleted) completedCount += 1;
+    if (monthIndex === null) noDataCount += 1;
+    if (paidThrough.isPartialPayment) partialRoundedCount += 1;
+
+    const groupKey = `${paidThrough.sortKey}:${paidThrough.label}`;
+    const existing = groups.get(groupKey);
+    groups.set(groupKey, {
+      label: paidThrough.label,
+      count: (existing?.count || 0) + 1,
+      sortKey: paidThrough.sortKey,
+      isCurrentOrLater: existing?.isCurrentOrLater || isCompleted,
+    });
+
+    if (attentionRows.length < 8) {
+      if (paidThrough.isPartialPayment) {
+        attentionRows.push({
+          ma_can: row.ma_can,
+          label: paidThrough.label,
+          displayText:
+            paidThrough.displayText ||
+            `Đóng lẻ, dashboard làm tròn xuống tháng ${monthIndex ?? "-"}`,
+          kind: "PARTIAL",
+        });
+      } else if (monthIndex !== null && monthIndex < currentPeriod.month - 6) {
+        attentionRows.push({
+          ma_can: row.ma_can,
+          label: paidThrough.label,
+          displayText: paidThrough.displayText || "Đóng phí chậm so với kỳ hiện tại.",
+          kind: "OVERDUE",
+        });
+      } else if (monthIndex === null) {
+        attentionRows.push({
+          ma_can: row.ma_can,
+          label: paidThrough.label,
+          displayText: "Chưa có mốc tháng đã đóng.",
+          kind: "NO_DATA",
+        });
+      }
+    }
+  }
+
+  const total = feeRows.length;
+  const notCompletedCount = Math.max(total - completedCount - noDataCount, 0);
+
+  return {
+    currentPeriod,
+    total,
+    completedCount,
+    notCompletedCount,
+    noDataCount,
+    partialRoundedCount,
+    completionPercent: total ? Math.round((completedCount / total) * 100) : 0,
+    distribution: [...groups.values()]
+      .sort((a, b) => b.sortKey - a.sortKey)
+      .map((item) => ({
+        ...item,
+        percent: total ? Math.round((item.count / total) * 100) : 0,
+      })),
+    attentionRows,
+  };
 }
 
 function normalizeSearchCandidates(rawQuery: string) {
@@ -83,7 +264,7 @@ export async function getApartmentDashboardData(rawQuery: string) {
     }),
     prisma.loNhapDuLieu.findMany({
       orderBy: { thoi_diem_nhap: "desc" },
-      take: 6,
+      take: 8,
       select: {
         id: true,
         loai_nguon: true,
@@ -94,6 +275,8 @@ export async function getApartmentDashboardData(rawQuery: string) {
       },
     }),
   ]);
+
+  const feeOverview = await getFeeOverview(currentBatch?.id ?? null, currentBatch?.ky_du_lieu);
 
   const searchWhere: Prisma.CanHoWhereInput[] = [{ ma_can: { contains: searchText } }];
   if (candidates.length) {
@@ -145,6 +328,7 @@ export async function getApartmentDashboardData(rawQuery: string) {
             public_luc: formatDate(currentBatch.public_luc),
           }
         : null,
+      feeOverview,
     },
     latestImports: latestImports.map((item) => ({
       ...item,
@@ -235,6 +419,7 @@ async function getApartmentDetail(apartmentId: number) {
     select: {
       id: true,
       ten_chu_ho_goc: true,
+      thong_tin_cu_dan_goc: true,
       ten_hien_thi_parse: true,
       so_dien_thoai_parse: true,
       ten_nguoi_su_dung_goc: true,

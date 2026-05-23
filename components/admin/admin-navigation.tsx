@@ -1,0 +1,112 @@
+"use client";
+
+import Link from "next/link";
+import { Database, Home, LayoutDashboard, Menu, ShieldCheck, Upload, Users } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
+export const adminNavigation = [
+  { key: "home", href: "/admin", label: "Vùng quản trị", icon: Home },
+  { key: "dashboard", href: "/admin/dashboard", label: "Tra cứu nội bộ", icon: LayoutDashboard },
+  { key: "import", href: "/admin/import", label: "Nhập dữ liệu", icon: Upload },
+  { key: "contacts", href: "/admin/contacts/review", label: "Duyệt liên hệ", icon: Users },
+  { key: "accounts", href: "/admin/accounts", label: "Tài khoản", icon: ShieldCheck },
+  { key: "database", href: "/admin#database", label: "Cơ sở dữ liệu", icon: Database },
+] as const;
+
+export type AdminNavigationKey = (typeof adminNavigation)[number]["key"];
+
+function AdminBrand() {
+  return (
+    <Link href="/admin" className="flex min-w-0 items-center gap-3 text-[var(--accent)]">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent)] text-white">
+        <Home size={17} aria-hidden="true" />
+      </div>
+      <div className="min-w-0">
+        <strong className="block truncate text-sm leading-5">BQT An Đồng</strong>
+        <span className="block truncate text-xs text-[var(--muted)]">Vùng quản trị</span>
+      </div>
+    </Link>
+  );
+}
+
+function NavigationLinks({ activeKey, closeOnClick = false }: { activeKey: AdminNavigationKey; closeOnClick?: boolean }) {
+  return (
+    <nav className="grid gap-1 p-2">
+      {adminNavigation.map((item) => {
+        const Icon = item.icon;
+        const active = activeKey === item.key;
+        const link = (
+          <Link
+            className={
+              active
+                ? "flex h-10 items-center gap-2 rounded-md bg-[var(--accent)] px-3 text-sm font-medium text-white"
+                : "flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
+            }
+            href={item.href}
+          >
+            <Icon size={16} aria-hidden="true" />
+            {item.label}
+          </Link>
+        );
+
+        return closeOnClick ? (
+          <SheetClose asChild key={item.key}>
+            {link}
+          </SheetClose>
+        ) : (
+          <div key={item.key}>{link}</div>
+        );
+      })}
+    </nav>
+  );
+}
+
+export function AdminDesktopSidebar({ activeKey }: { activeKey: AdminNavigationKey }) {
+  return (
+    <aside className="hidden border-r border-[var(--line)] bg-white lg:sticky lg:top-0 lg:block lg:h-screen">
+      <div className="flex h-14 items-center border-b border-[var(--line)] px-4">
+        <AdminBrand />
+      </div>
+      <NavigationLinks activeKey={activeKey} />
+    </aside>
+  );
+}
+
+export function AdminMobileMenu({ activeKey }: { activeKey: AdminNavigationKey }) {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          aria-label="Mở menu quản trị"
+          className="lg:hidden"
+          data-testid="admin-mobile-menu-trigger"
+          size="icon-sm"
+          variant="ghost"
+        >
+          <Menu size={18} aria-hidden="true" />
+          <span className="sr-only">Mở menu quản trị</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent data-testid="admin-mobile-sheet" side="left">
+        <SheetHeader className="border-b border-[var(--line)]">
+          <SheetTitle>Menu quản trị</SheetTitle>
+          <SheetDescription>Chọn nhanh khu vực cần thao tác.</SheetDescription>
+        </SheetHeader>
+        <div className="border-b border-[var(--line)] p-4">
+          <AdminBrand />
+        </div>
+        <NavigationLinks activeKey={activeKey} closeOnClick />
+      </SheetContent>
+    </Sheet>
+  );
+}
