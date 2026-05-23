@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireAdmin } from "@/src/modules/auth/current-user";
 import { getApartmentDashboardData } from "@/src/modules/apartments/dashboard";
 import {
@@ -255,6 +256,112 @@ function ApartmentTypeBars({
   );
 }
 
+function MobileMetricCard({
+  label,
+  value,
+  detail,
+}: {
+  label: string;
+  value: string;
+  detail?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-[var(--line)] bg-white/95 p-4">
+      <span className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">{label}</span>
+      <strong className="mt-2 block text-2xl leading-none">{value}</strong>
+      {detail ? <p className="mt-2 text-sm leading-5 text-[var(--muted)]">{detail}</p> : null}
+    </div>
+  );
+}
+
+function MobileSearchResultCards({
+  items,
+}: {
+  items: Array<{
+    id: number;
+    ma_can: string;
+    loai_can: string;
+    ma_lo: string;
+    ma_so: string;
+    chu_ho_ten_goc: string | null;
+    trang_thai_su_dung_goc: string | null;
+    tinh_trang_goc: string | null;
+  }>;
+}) {
+  if (!items.length) {
+    return (
+      <div className="rounded-xl border border-dashed border-[var(--line)] bg-white/80 p-4 text-sm text-[var(--muted)]">
+        Không tìm thấy căn phù hợp.
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-3">
+      {items.map((apartment) => (
+        <Link
+          href={`/admin/dashboard?ma_can=${encodeURIComponent(apartment.ma_can)}`}
+          key={apartment.id}
+          className="rounded-xl border border-[var(--line)] bg-white/95 p-4 transition-colors hover:border-[var(--accent)]"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <strong className="text-lg">{apartment.ma_can}</strong>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                {apartmentTypeLabel(apartment.loai_can)} · Lô {apartment.ma_lo} · Số {apartment.ma_so}
+              </p>
+            </div>
+            <span className="rounded-md bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]">
+              Xem
+            </span>
+          </div>
+          <div className="mt-3 grid gap-1 text-sm leading-6">
+            <span>Chủ hộ: <b>{compactText(apartment.chu_ho_ten_goc)}</b></span>
+            <span className="text-[var(--muted)]">
+              {compactText(apartment.trang_thai_su_dung_goc)} / {compactText(apartment.tinh_trang_goc)}
+            </span>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function MobileImportHistoryCards({
+  items,
+}: {
+  items: Array<{
+    id: number;
+    loai_nguon: string;
+    ten_file: string | null;
+    so_dong: number | null;
+    trang_thai: string;
+    thoi_diem_nhap: string | null;
+  }>;
+}) {
+  return (
+    <div className="grid gap-3">
+      {items.slice(0, 8).map((item) => (
+        <div key={item.id} className="overflow-hidden rounded-xl border border-[var(--line)] bg-white/95 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <strong className="block truncate">#{item.id} · {importSourceLabel(item.loai_nguon)}</strong>
+              <p className="mt-1 truncate text-sm text-[var(--muted)]">{compactText(item.ten_file)}</p>
+            </div>
+            <span className="shrink-0 rounded-md bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]">
+              {importStatusLabel(item.trang_thai)}
+            </span>
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-1 text-sm sm:grid-cols-2 sm:gap-2">
+            <span>Dòng: <b>{formatNumber(item.so_dong)}</b></span>
+            <span className="min-w-0 truncate text-[var(--muted)] sm:text-right">{formatDateTime(item.thoi_diem_nhap)}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default async function AdminDashboardPage({ searchParams }: DashboardPageProps) {
   const account = await requireAdmin();
   const params = await searchParams;
@@ -313,6 +420,207 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </>
       }
     >
+      <section className="lg:hidden">
+        <Tabs defaultValue={hasSearch ? "lookup" : "overview"} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Tổng quan</TabsTrigger>
+            <TabsTrigger value="lookup">Tra cứu</TabsTrigger>
+            <TabsTrigger value="history">Lịch sử</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="grid gap-4">
+            <div className="grid grid-cols-2 gap-3">
+              <MobileMetricCard label="Tổng căn" value={formatNumber(data.summary.totalApartments)} />
+              <MobileMetricCard label="Đã đạt kỳ" value={formatNumber(feeOverview.completedCount)} />
+              <MobileMetricCard label="Chưa đạt" value={formatNumber(feeOverview.notCompletedCount)} />
+              <MobileMetricCard label="Liên hệ chờ" value={formatNumber(data.summary.contactReviewCount)} />
+            </div>
+
+            <Card className="bg-white/90">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Hoàn thành kỳ phí</CardTitle>
+                <CardDescription>Kỳ hiện tại {feeOverview.currentPeriod.label}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FeeCompletionRing
+                  percent={feeOverview.completionPercent}
+                  completed={feeOverview.completedCount}
+                  total={feeOverview.total}
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Phân bố tháng phí</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FeeDistributionBars items={feeOverview.distribution.slice(0, 6)} />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Cần chú ý</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AttentionRows items={feeOverview.attentionRows.slice(0, 4)} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="lookup" className="grid gap-4">
+            <Card id="lookup-mobile" className="bg-white/90">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Tra cứu nhanh</CardTitle>
+                <CardDescription>Nhập mã căn để xem phí và liên hệ ngay.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form className="grid gap-3" action="/admin/dashboard">
+                  <Input defaultValue={data.search.query} maxLength={80} name="ma_can" placeholder="Ví dụ: L1.112" />
+                  <Button type="submit">
+                    <Search size={17} aria-hidden="true" />
+                    Tìm
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {data.search.parseMessage ? (
+              <div className="rounded-lg bg-red-50 p-3 text-sm font-medium text-red-800">
+                {data.search.parseMessage}
+              </div>
+            ) : null}
+
+            {selected ? (
+              <>
+                <Card className="border-emerald-200 bg-emerald-50">
+                  <CardHeader className="pb-3">
+                    <CardDescription className="font-semibold uppercase text-emerald-800">Tình trạng đóng phí</CardDescription>
+                    <CardTitle className="text-2xl leading-tight text-emerald-950">
+                      {selected.currentFeeStatus?.display_text || "Chưa có dữ liệu phí đã công khai"}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid gap-2 text-sm text-emerald-950/80">
+                    <span>Mã căn: <b>{selected.ma_can}</b></span>
+                    <span>Kỳ dữ liệu: <b>{selected.currentFeeStatus?.ky_du_lieu || "-"}</b></span>
+                    <span>Nguồn: batch #{selected.currentFeeStatus?.batch.id || "-"}</span>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white/90">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-xl">Gọi nhanh</CardTitle>
+                    <CardDescription>Dữ liệu lấy từ Excel/chưa duyệt và danh bạ nội bộ.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {quickPhones.length ? (
+                      <div className="grid gap-2">
+                        {quickPhones.map((item) => (
+                          <div key={item.phone} className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+                            <strong className="block truncate">{item.name}</strong>
+                            <span className="mt-1 block text-sm text-[var(--muted)]">{item.phone} · {item.source}</span>
+                            <Button asChild className="mt-3 w-full" size="sm">
+                              <a href={`tel:${item.phone}`}>
+                                <PhoneCall size={16} aria-hidden="true" />
+                                Gọi
+                              </a>
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-[var(--line)] p-4 text-sm text-[var(--muted)]">
+                        Chưa tìm thấy số điện thoại cho căn này.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white/90">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-xl">Hồ sơ căn hộ</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid gap-2">
+                    {details.slice(0, 6).map(([label, value]) => (
+                      <div key={label} className="flex items-start justify-between gap-3 border-b border-[var(--line)] py-2 text-sm last:border-0">
+                        <span className="text-[var(--muted)]">{label}</span>
+                        <strong className="text-right leading-5">{value}</strong>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white/90">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-xl">Dữ liệu gốc Excel</CardTitle>
+                    <CardDescription>Chưa phải danh bạ đã duyệt.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="grid gap-2">
+                    {selected.contactCandidates.length ? (
+                      selected.contactCandidates.slice(0, 5).map((candidate) => (
+                        <div key={candidate.id} className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm">
+                          <strong>{compactText(candidate.ten_hien_thi_parse || candidate.ten_chu_ho_goc)}</strong>
+                          <div className="mt-2 grid gap-1 leading-6 text-[var(--muted)]">
+                            <span>SĐT: <b>{compactText(candidate.so_dien_thoai_parse || candidate.so_dien_thoai_goc)}</b></span>
+                            <span>Người dùng: {compactText(candidate.ten_nguoi_su_dung_goc)}</span>
+                            <span>{compactText(candidate.thong_tin_cu_dan_goc || candidate.thong_tin_phu_goc || candidate.ghi_chu_goc)}</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-[var(--line)] p-4 text-sm text-[var(--muted)]">
+                        Chưa có dữ liệu liên hệ gốc từ Excel.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </>
+            ) : hasSearch ? (
+              <MobileSearchResultCards items={data.search.results} />
+            ) : (
+              <div className="rounded-xl border border-dashed border-[var(--line)] bg-white/80 p-5 text-sm leading-6 text-[var(--muted)]">
+                Mở tab này khi cần tra cứu căn hộ, kiểm tra phí hoặc gọi nhanh cho cư dân.
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="history" className="grid gap-4">
+            <Card className="bg-white/90">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Ma trận nhập dữ liệu</CardTitle>
+                <CardDescription>Các lô import gần nhất.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                <div className="grid grid-cols-3 gap-2 overflow-hidden">
+                  {[
+                    ["Lô", data.latestImports.length],
+                    ["Dòng", data.latestImports.reduce((sum, item) => sum + (item.so_dong || 0), 0)],
+                    ["Hoàn tất", data.latestImports.filter((item) => importStatusLabel(item.trang_thai) === "Hoàn tất").length],
+                  ].map(([label, value]) => (
+                    <div key={label} className="min-w-0 rounded-lg border border-[var(--line)] bg-white p-3 text-center">
+                      <span className="block text-[11px] font-semibold uppercase text-[var(--muted)]">{label}</span>
+                      <strong className="mt-1 block text-lg">{formatNumber(Number(value))}</strong>
+                    </div>
+                  ))}
+                </div>
+                <MobileImportHistoryCards items={data.latestImports} />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Cơ cấu căn hộ</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ApartmentTypeBars items={data.summary.apartmentTypes} total={data.summary.totalApartments} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      <div className="hidden lg:block">
       <section className="mb-5 grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
         <Card className="bg-white/90">
           <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
@@ -776,6 +1084,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
           </div>
         </CardContent>
       </Card>
+      </div>
     </AdminFrame>
   );
 }

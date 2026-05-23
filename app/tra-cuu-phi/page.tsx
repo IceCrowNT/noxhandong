@@ -79,7 +79,7 @@ async function checkRateLimit() {
 
 function PublicBackground() {
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10">
+    <div className="pointer-events-none fixed inset-0 z-0">
       <Image
         className="hidden h-full w-full object-cover md:block"
         src="/images/resident-home-desktop.webp"
@@ -156,10 +156,10 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
       : null;
 
   return (
-    <main className="relative min-h-screen bg-[#edf3ef] px-4 pb-8 text-[var(--text)]">
+    <main className="relative isolate min-h-screen bg-[#edf3ef] px-4 pb-8 text-[var(--text)]">
       <PublicBackground />
 
-      <header className="mx-auto flex min-h-16 w-full max-w-5xl items-center justify-between border-b border-[var(--line)] py-3">
+      <header className="relative z-10 mx-auto flex min-h-16 w-full max-w-5xl items-center justify-between border-b border-[var(--line)] py-3">
         <Link className="flex items-center gap-3 text-[var(--accent)]" href="/">
           <Image
             className="rounded-full border border-[rgba(0,75,70,0.18)] bg-white p-1"
@@ -176,7 +176,7 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
         </Button>
       </header>
 
-      <section className="mx-auto grid w-full max-w-4xl gap-4 py-8">
+      <section className="relative z-10 mx-auto grid w-full max-w-4xl gap-4 py-8">
         <Card className="bg-white/82 shadow-[0_18px_60px_rgba(25,28,28,0.12)]">
           <CardContent className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_360px] md:items-end md:p-7">
             <div>

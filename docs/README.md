@@ -112,3 +112,9 @@ Khi thay đổi rule nghiệp vụ:
 
 - cập nhật tài liệu rule tương ứng trong `docs/`
 - sinh lại báo cáo/preview nếu rule ảnh hưởng dữ liệu thật
+
+Khi thay đổi UI/UX:
+
+- cập nhật [design-system.md](design-system.md)
+- cập nhật [handoff.md](handoff.md)
+- nếu ảnh hưởng nghiệm thu mobile/desktop, cập nhật [checklist-trien-khai-va-nghiem-thu.md](checklist-trien-khai-va-nghiem-thu.md)

@@ -9,8 +9,8 @@ import { PUBLIC_LOOKUP_MAX_LENGTH } from "@/src/modules/billing/fee-status";
 
 export default function HomePage() {
   return (
-    <main className="relative grid min-h-screen grid-rows-[auto_1fr] overflow-hidden bg-[#edf3ef] px-4 pb-8 text-[var(--text)]">
-      <div className="pointer-events-none fixed inset-0 -z-10">
+    <main className="relative isolate grid min-h-screen grid-rows-[auto_1fr] overflow-hidden bg-[#edf3ef] px-4 pb-8 text-[var(--text)]">
+      <div className="pointer-events-none fixed inset-0 z-0">
         <Image
           className="hidden h-full w-full object-cover md:block"
           src="/images/resident-home-desktop.webp"
@@ -30,7 +30,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[rgba(247,250,248,0.58)] via-[rgba(247,250,248,0.78)] to-[rgba(247,250,248,0.95)]" />
       </div>
 
-      <header className="mx-auto flex min-h-16 w-full max-w-5xl items-center justify-between border-b border-[var(--line)] py-3">
+      <header className="relative z-10 mx-auto flex min-h-16 w-full max-w-5xl items-center justify-between border-b border-[var(--line)] py-3">
         <Link className="flex items-center gap-3 text-[var(--accent)]" href="/">
           <Image
             className="rounded-full border border-[rgba(0,75,70,0.18)] bg-white p-1"
@@ -47,7 +47,7 @@ export default function HomePage() {
         </Button>
       </header>
 
-      <section className="mx-auto grid w-full max-w-3xl place-items-center py-10">
+      <section className="relative z-10 mx-auto grid w-full max-w-3xl place-items-center py-10">
         <Card className="w-full bg-white/82 shadow-[0_18px_60px_rgba(25,28,28,0.12)]">
           <CardContent className="p-5 md:p-8">
             <div className="mb-6 text-center">

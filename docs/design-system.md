@@ -2,9 +2,28 @@
 
 ## Vai trò
 
-File này là nguồn chuẩn cho hướng thiết kế giao diện của project. Thiết kế lấy cảm hứng từ bản Stitch trong `stitch_markdown_dashboard_viewer/`, nhưng đã điều chỉnh nội dung và nguyên tắc cho đúng nghiệp vụ BQT An Đồng.
+File này là **xương sống UI/UX của project**.
+
+Mọi quyết định thiết kế quan trọng cho public page, admin dashboard, mobile layout, component pattern, copy hiển thị và quy tắc responsive phải được ghi tại đây. Khi có thay đổi UI/UX đáng kể, cập nhật file này cùng với `docs/handoff.md`.
+
+Thiết kế lấy cảm hứng từ bản Stitch trong `stitch_markdown_dashboard_viewer/`, nhưng đã điều chỉnh nội dung và nguyên tắc cho đúng nghiệp vụ BQT An Đồng.
 
 Không copy nguyên HTML từ Stitch vào app. Stitch chỉ là visual reference; code chính vẫn theo Next.js hiện tại.
+
+## Quan hệ với tài liệu khác
+
+- `docs/design-system.md`: quyết định UI/UX, layout, component, mobile-first, copy, token.
+- `docs/handoff.md`: trạng thái đã làm và kết quả kiểm tra gần nhất.
+- `docs/roadmap.md`: task cấp cao, không ghi chi tiết từng pattern UI.
+- `docs/checklist-trien-khai-va-nghiem-thu.md`: điều kiện nghiệm thu và checklist test.
+- `docs/stitch-mobile-ui-prompt.md`: prompt thiết kế tham khảo, không phải nguồn sự thật sau khi đã implement.
+
+Khi thay đổi UI lớn:
+
+1. Cập nhật `docs/design-system.md`.
+2. Cập nhật `docs/handoff.md`.
+3. Nếu ảnh hưởng nghiệm thu, cập nhật `docs/checklist-trien-khai-va-nghiem-thu.md`.
+4. Chạy test/build và ghi kết quả.
 
 ## Tinh thần thiết kế
 
@@ -22,7 +41,7 @@ Nguyên tắc:
 
 Tên hiển thị public:
 
-- `BQT An Đồng`
+- `NOXH An Đồng`
 
 Không dùng:
 
@@ -66,19 +85,19 @@ Trang public dùng ảnh nền chung cư xanh:
 
 Token chính đang dùng trong `app/globals.css`:
 
-| Token | Giá trị | Vai trò |
-| --- | --- | --- |
-| `--bg` | `#f7faf8` | nền public/admin |
-| `--panel` | `#f1f4f3` | surface nâng nhẹ |
-| `--panel-strong` | `#ffffff` | card/input |
-| `--line` | `#bec9c6` | border chính |
-| `--text` | `#191c1c` | chữ chính |
-| `--muted` | `#3f4947` | chữ phụ |
-| `--accent` | `#004b46` | nút chính, brand, focus |
-| `--accent-soft` | `#e5f2eb` | nền trạng thái tốt |
-| `--success` | `#2d7a4d` | thành công |
-| `--danger` | `#ba1a1a` | lỗi |
-| `--warning` | `#9a3412` | cảnh báo/đóng lẻ tiền |
+| Token              | Giá trị   | Vai trò                    |
+| ------------------ | ----------- | --------------------------- |
+| `--bg`           | `#f7faf8` | nền public/admin           |
+| `--panel`        | `#f1f4f3` | surface nâng nhẹ          |
+| `--panel-strong` | `#ffffff` | card/input                  |
+| `--line`         | `#bec9c6` | border chính               |
+| `--text`         | `#191c1c` | chữ chính                 |
+| `--muted`        | `#3f4947` | chữ phụ                   |
+| `--accent`       | `#004b46` | nút chính, brand, focus   |
+| `--accent-soft`  | `#e5f2eb` | nền trạng thái tốt      |
+| `--success`      | `#2d7a4d` | thành công                |
+| `--danger`       | `#ba1a1a` | lỗi                        |
+| `--warning`      | `#9a3412` | cảnh báo/đóng lẻ tiền |
 
 ## Typography
 
@@ -304,3 +323,78 @@ npm run test:mobile-ui
 ```
 
 Kết quả gần nhất: `40/40` test pass. Lỗi phát hiện trong lần đầu là `/admin/import` bị tràn ngang do card trong grid nở theo bảng rộng; đã sửa bằng cách thêm `min-w-0` vào `Card`.
+
+## Admin mobile-first hiện hành 2026-05-23
+
+### Điều hướng admin
+
+Desktop:
+
+- Dùng sidebar cố định bên trái.
+- Trang `/admin` có thể hiển thị shortcut card vì đủ không gian và hỗ trợ scan nhanh.
+
+Mobile/tablet nhỏ:
+
+- Dùng topbar gọn.
+- Menu điều hướng nằm trong `Sheet` mở bằng nút hamburger.
+- Không lặp lại toàn bộ menu dưới dạng card trên `/admin`, tránh tạo hai lớp điều hướng trùng nhau.
+- Trang `/admin` mobile chỉ giữ một hành động ưu tiên: `Tra cứu nhanh căn hộ`.
+
+Component liên quan:
+
+- `components/admin/admin-frame.tsx`
+- `components/admin/admin-navigation.tsx`
+- `components/ui/sheet.tsx`
+
+### Dashboard admin mobile
+
+Route: `/admin/dashboard`
+
+Desktop:
+
+- Giữ dashboard đầy đủ với KPI cards, chart, bảng và vùng cuộn nội bộ.
+- Desktop được phép hiển thị nhiều thông tin cùng lúc.
+
+Mobile:
+
+- Không ép toàn bộ dashboard desktop xuống một cột dài.
+- Dùng Tabs để giảm endless scroll:
+  - `Tổng quan`: KPI, vòng hoàn thành kỳ phí, phân bố tháng phí, danh sách cần chú ý.
+  - `Tra cứu`: ô tìm căn, tình trạng đóng phí, gọi nhanh, hồ sơ căn, dữ liệu gốc Excel.
+  - `Lịch sử`: ma trận nhập dữ liệu và lịch sử import dạng card.
+- Bảng dài không hiển thị dạng `<table>` trên mobile; chuyển sang card/list.
+- Tab mặc định:
+  - Không có query: `Tổng quan`.
+  - Có query `ma_can`: `Tra cứu`.
+
+Component liên quan:
+
+- `components/ui/tabs.tsx`
+- `@radix-ui/react-tabs`
+
+### Table-to-cards
+
+Quy tắc:
+
+- Desktop: dùng `Table` + `ScrollPanel` hoặc `overflow-x-auto` trong card.
+- Mobile: ưu tiên card/list summary.
+- Không để bảng rộng làm overflow ngang toàn trang.
+- Nếu bắt buộc giữ bảng trên mobile, phải cuộn trong khung riêng và không làm `body.scrollWidth` lớn hơn viewport.
+
+### Kiểm tra bắt buộc sau khi sửa UI mobile
+
+Sau mỗi thay đổi UI mobile/admin:
+
+- Kiểm tra `390px`.
+- Kiểm tra `400px` hoặc `430px`.
+- Kiểm tra desktop `1440px`.
+- Kiểm tra CSS/JS static không trả `500`.
+- Kiểm tra không overflow ngang toàn trang.
+- Chạy:
+
+```bash
+npm test
+npm run build
+```
+
+Nếu vừa chạy `npm run build` trong lúc dev server đang mở, phải dừng dev server và xoá `.next` trước khi chạy lại `npm run dev` để tránh lỗi mất CSS/chunk 500.

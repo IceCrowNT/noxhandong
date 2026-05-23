@@ -648,3 +648,42 @@ Nếu có thay đổi parser mã căn:
   - `npm test` pass 95 tests.
   - Build sạch sau khi dừng dev server và xoá `.next`: `npm run build` pass.
   - Playwright kiểm tra `/admin` desktop 1440px, `/admin` mobile 430px/390px, `/admin/dashboard?ma_can=L1.112` mobile 430px: CSS có load, không overflow ngang toàn trang, menu mobile mở được bằng Sheet.
+
+## Cập nhật dashboard mobile Tabs 2026-05-23
+
+- Tạm dừng clean project, quay lại mục tiêu Task N: hoàn thiện project để chạy ổn định trước deploy.
+- Dashboard `/admin/dashboard` trên mobile đã chuyển từ kiểu xếp chồng toàn bộ desktop sang Tabs:
+  - `Tổng quan`: KPI, vòng hoàn thành kỳ phí, phân bố tháng phí, danh sách cần chú ý.
+  - `Tra cứu`: ô tìm căn, tình trạng đóng phí, gọi nhanh, hồ sơ căn, dữ liệu gốc Excel.
+  - `Lịch sử`: ma trận nhập dữ liệu và lịch sử import dạng card.
+- Desktop vẫn giữ dashboard đầy đủ với table/card hiện tại.
+- Trên mobile, các bảng quan trọng không còn hiển thị dạng `<table>`; chuyển sang card/list để tránh kéo ngang.
+- Đã thêm component nền `components/ui/tabs.tsx` dùng `@radix-ui/react-tabs`.
+- Kiểm tra kỹ thuật:
+  - `npm test` pass 95 tests.
+  - `npm run build` pass sau build sạch.
+  - Playwright kiểm tra mobile 390px, mobile 430px tab Tra cứu, mobile 430px tab Lịch sử, desktop 1440px: CSS load, mobile không overflow ngang, mobile không còn visible table, desktop vẫn có table.
+
+## Cập nhật tài liệu UI/UX xương sống 2026-05-23
+
+- Xác nhận `docs/design-system.md` là file xương sống UI/UX của project.
+- Đã bổ sung quy tắc: mọi thay đổi UI/UX đáng kể phải cập nhật `docs/design-system.md` và `docs/handoff.md`.
+- Đã ghi vào design system các quyết định mới:
+  - admin mobile dùng topbar + Sheet menu.
+  - `/admin` mobile không lặp lại toàn bộ menu dạng card.
+  - `/admin/dashboard` mobile dùng Tabs `Tổng quan`, `Tra cứu`, `Lịch sử`.
+  - table-to-cards cho mobile.
+  - kiểm tra bắt buộc sau khi sửa UI mobile.
+
+## Fix background public 2026-05-23
+
+- Lỗi: trang public `/` và `/tra-cuu-phi` có thể mất ảnh nền vì background image đặt ở layer `-z-10` trong khi `<main>` có màu nền riêng.
+- Đã sửa:
+  - background layer chuyển sang `z-0`
+  - `<main>` dùng `isolate`
+  - header/content public dùng `relative z-10`
+- Kiểm tra sau sửa:
+  - `npm test` pass 95 tests.
+  - `npm run build` pass sau build sạch.
+  - Dev server đã chạy lại tại `http://localhost:3000`.
+  - Playwright kiểm tra `/` mobile 390px và `/tra-cuu-phi?ma_can=L1.115` mobile 390px: CSS load, ảnh background render, không overflow ngang, không có static asset lỗi.

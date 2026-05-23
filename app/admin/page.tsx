@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Database, FileSpreadsheet, Search, Users } from "lucide-react";
 
 import { AdminFrame } from "@/components/admin/admin-frame";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireAdmin } from "@/src/modules/auth/current-user";
 import { adminRoleLabel } from "@/src/modules/shared/labels";
@@ -65,7 +66,31 @@ export default async function AdminHomePage({ searchParams }: AdminHomeProps) {
         </div>
       ) : null}
 
-      <section className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-4">
+      <section className="grid gap-3 md:hidden">
+        <Card className="bg-white/90">
+          <CardContent className="grid gap-4 p-5">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]">
+                <Search size={20} aria-hidden="true" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-[0.1em] text-[var(--accent-strong)]">
+                  Ưu tiên trên mobile
+                </p>
+                <h2 className="mt-1 text-xl font-semibold">Tra cứu nhanh căn hộ</h2>
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                  Các chức năng khác nằm trong nút menu góc trái. Màn hình này giữ gọn để không trùng với menu điều hướng.
+                </p>
+              </div>
+            </div>
+            <Button asChild className="w-full">
+              <Link href="/admin/dashboard">Mở tra cứu nội bộ</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="hidden gap-3 md:grid md:grid-cols-2 md:gap-4 xl:grid-cols-4">
         {adminCards.map((item) => {
           const Icon = item.icon;
           return (
