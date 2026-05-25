@@ -16,7 +16,7 @@ README này là **menu đầu vào của toàn project**. Chi tiết kỹ thuậ
 8. [docs/parser-ma-can-ho.md](docs/parser-ma-can-ho.md) - rule, dữ liệu thật và backlog parser mã căn
 9. [docs/design-system.md](docs/design-system.md) - global design/pattern cho UI
 10. [docs/production-deploy-vps.md](docs/production-deploy-vps.md) - quyết định production VPS
-11. [docs/deploy-vps-step-by-step.md](docs/deploy-vps-step-by-step.md) - runbook deploy MVP lên VPS
+11. [docs/deploy-vps-step-by-step.md](docs/deploy-vps-step-by-step.md) - runbook xương sống deploy/vận hành VPS
 
 File control tiến trình cấp cao: [docs/roadmap.md](docs/roadmap.md).
 
@@ -56,7 +56,7 @@ Xem chi tiết trong [docs/handoff.md](docs/handoff.md).
 | [docs/design-system.md](docs/design-system.md) | Design system mobile-first cho public/admin UI |
 | [docs/stitch-mobile-ui-prompt.md](docs/stitch-mobile-ui-prompt.md) | Prompt thiết kế mobile-first trên Stitch |
 | [docs/production-deploy-vps.md](docs/production-deploy-vps.md) | Deploy production trên VPS, PostgreSQL, domain, backup, Super Admin |
-| [docs/deploy-vps-step-by-step.md](docs/deploy-vps-step-by-step.md) | Các bước deploy MVP lên VPS: DNS, PostgreSQL, PM2, Caddy, backup |
+| [docs/deploy-vps-step-by-step.md](docs/deploy-vps-step-by-step.md) | Deploy/vận hành VPS: DNS, PostgreSQL, NSSM service, Caddy HTTPS, backup |
 | [docs/setup-may-moi-va-database.md](docs/setup-may-moi-va-database.md) | Setup máy mới và database |
 
 ## Cấu trúc project

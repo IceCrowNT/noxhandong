@@ -62,7 +62,7 @@ Không nên dựa vào lịch sử chat làm nguồn sự thật chính.
 | [setup-may-moi-va-database.md](setup-may-moi-va-database.md) | Hướng dẫn dựng môi trường và database |
 | [stitch-mobile-ui-prompt.md](stitch-mobile-ui-prompt.md) | Prompt thiết kế mobile-first trên Stitch |
 | [production-deploy-vps.md](production-deploy-vps.md) | Quyết định và checklist production khi deploy trên VPS |
-| [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md) | Runbook thao tác deploy MVP lên VPS: DNS, PostgreSQL, PM2, Caddy, backup |
+| [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md) | Runbook xương sống deploy/vận hành VPS: Windows Server, PostgreSQL, NSSM, Caddy HTTPS, backup |
 | [todolist-dong-thuan-antigravity-codex.md](todolist-dong-thuan-antigravity-codex.md) | Todo list đã đồng thuận giữa Antigravity/Codex cho Task N và backlog đối soát sao kê |
 | [backlog-doi-soat-sao-ke.md](backlog-doi-soat-sao-ke.md) | Backlog Phase 2 cho import/đối soát sao kê, gồm ý tưởng card giao dịch gần nhất theo căn hộ |
 

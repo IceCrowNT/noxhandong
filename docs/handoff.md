@@ -31,14 +31,14 @@ File này dùng để:
 - Hoàn thành nền review contact nội bộ Task L: 2026-05-16
 - Hoàn thành nền import sao kê và đối soát DB Task M: 2026-05-16
 - Tối ưu hướng mobile-first cho trang cư dân và tạo cổng duyệt trước deploy: 2026-05-16
-- Chốt hướng production VPS, PostgreSQL cùng VPS, domain dự kiến `noxhandong.com`: 2026-05-16
+- Chốt hướng production VPS, PostgreSQL cùng VPS; domain ban đầu dự kiến `noxhandong.com`: 2026-05-16
 - Chuẩn bị nền production: admin login bằng số điện thoại, script `pg_dump`, export Excel vận hành: 2026-05-17
 - Gắn SĐT `0904802553` cho tài khoản `admin` role `SUPER_ADMIN`; deploy VPS chuyển thành bước cuối: 2026-05-17
 - Chuyển design Stitch thành design system nội bộ và chỉnh public UI/copy theo nghiệp vụ BQT An Đồng: 2026-05-17
 - Rà soát 934 căn trong DB, tạo báo cáo dữ liệu thật và đề xuất mô hình DB/tình huống cư dân: 2026-05-18
 - Thêm ảnh nền chung cư xanh local, tối giản trang chủ theo hướng search-bar landing page: 2026-05-18
 - Chốt index là search-bar landing page; góp ý dài hạn để ở backlog, mục tiêu hiện tại vẫn là Task N local/staging readiness: 2026-05-19
-- Chuẩn bị deploy MVP lên Vultr/domain `noxhandong.com`, thêm runbook deploy, mẫu `.env.production`, PM2 và Caddy: 2026-05-25
+- Deploy MVP lên Vultr/domain `noxhandong.vn`, chạy Windows Server với PostgreSQL local, NSSM service, Caddy HTTPS và backup tự động: 2026-05-25
 
 ## Trạng thái hiện tại
 
@@ -439,7 +439,7 @@ Lưu ý:
 
 - DB dev đã reset/migrate sang V2; dữ liệu V1 đã backup local trước migration.
 - Trang public chỉ đọc bảng snapshot trạng thái phí đã được Super Admin chốt.
-- Production dự kiến deploy trên VPS, PostgreSQL cài cùng VPS, domain `noxhandong.com`.
+- Production đã deploy trên VPS, PostgreSQL cài cùng VPS, domain `noxhandong.vn`.
 - Export Excel chỉ là bản lưu vận hành, không thay thế `pg_dump`/backup DB thật.
 - Đã có script `npm run prod:backup:postgres` để tạo PostgreSQL dump.
 - Đã có script `npm run export:operations:xlsx` để xuất Excel vận hành; lần test dev xuất `934` căn, `934` dòng phí public hiện hành.
@@ -797,7 +797,7 @@ Nếu có thay đổi parser mã căn:
 - Quyết định OS giai đoạn MVP:
   - chạy trên Windows Server trước;
   - có thể đổi sang Ubuntu LTS sau khi MVP ổn định;
-  - cần dùng mục `Deploy MVP trên Windows Server` trong runbook và cấu hình Caddy/PM2 tự chạy lại sau reboot.
+  - cần dùng runbook deploy VPS và cấu hình Caddy/NSSM tự chạy lại sau reboot.
 - Khuyến nghị kỹ thuật hiện tại:
   - mật khẩu VPS đã xuất hiện trong ảnh/chat nên cần đổi hoặc rotate trước khi vận hành.
 - Việc còn phải chốt trước deploy thật:

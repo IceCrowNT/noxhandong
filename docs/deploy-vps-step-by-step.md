@@ -1,87 +1,142 @@
-# Deploy VPS step by step
+# Runbook deploy VPS production
 
 ## Vai trò
 
-File này là runbook thao tác khi deploy MVP lên VPS. Không lưu mật khẩu, token, private key hoặc secret thật trong file này.
+File này là tài liệu xương sống cho việc cài đặt, deploy, vận hành và kiểm tra project trên VPS.
 
-## Khuyến nghị nền tảng
+Trạng thái hiện tại của project:
 
-Khuyến nghị dùng **Ubuntu 22.04/24.04 LTS** cho production vì Node.js, PostgreSQL, Caddy/Nginx, PM2 và backup tự động chạy ổn định, ít thao tác GUI.
-
-Tuy nhiên, giai đoạn MVP có thể chạy trên **Windows Server** trước. Khi ổn định vận hành, có thể chuyển sang Ubuntu sau.
-
-## Cảnh báo bảo mật ngay
-
-- Mật khẩu VPS đã xuất hiện trong ảnh/chat thì phải đổi sau khi server cài xong.
-- Không gửi password production, `.env`, private key, database dump lên Git.
-- PostgreSQL chỉ nghe `localhost`, không mở port `5432` ra internet.
-- Public chỉ mở `80`, `443`; SSH nên giới hạn IP nếu nhà cung cấp hỗ trợ firewall.
-
-## Thông tin cần chốt trước khi thao tác
-
-- Domain production: `noxhandong.com`
-- IP VPS: lấy trong dashboard Vultr
-- OS production: ưu tiên Ubuntu LTS
-- Cách chạy app: PM2
+- Domain chính: `noxhandong.vn`
+- VPS hiện tại: Windows Server trên Vultr
+- App runtime: Next.js chạy bằng Windows Service qua NSSM
 - Reverse proxy/HTTPS: Caddy
-- Database: PostgreSQL local trên VPS
-- App path: `/var/www/noxh-an-dong`
+- Database: PostgreSQL local trên cùng VPS
+- Backup: PostgreSQL dump + Excel export bằng Windows Scheduled Task
 
-## 1. Trỏ DNS
+Không lưu mật khẩu, token, private key, `.env`, database dump hoặc thông tin đăng nhập thật trong file này.
 
-Tạo bản ghi ở nơi quản lý domain:
+## Kiến trúc production hiện tại
 
 ```text
-A     @      <IP_VPS>
-A     www    <IP_VPS>
+Người dùng
+  -> https://noxhandong.vn
+  -> Caddy :443/:80
+  -> Next.js app 127.0.0.1:3000
+  -> PostgreSQL localhost:5432
 ```
 
-Chờ DNS propagate. Kiểm tra:
+Service trên Windows:
 
-```bash
-nslookup noxhandong.com
-nslookup www.noxhandong.com
+| Service | Vai trò |
+| --- | --- |
+| `noxh-an-dong` | Chạy Next.js production app |
+| `caddy` | Reverse proxy, redirect HTTP sang HTTPS, cấp SSL tự động |
+| `postgresql-x64-17` | PostgreSQL database |
+| `NoxhAnDongDailyBackup` | Scheduled Task backup DB và export Excel hằng ngày |
+
+Đường dẫn production:
+
+| Đường dẫn | Vai trò |
+| --- | --- |
+| `C:\apps\noxh-an-dong` | Source code production |
+| `C:\apps\noxh-an-dong\.env` | Biến môi trường production, không commit |
+| `C:\caddy\Caddyfile` | Cấu hình Caddy |
+| `C:\PostgreSQL\pgsql` | PostgreSQL binary package |
+| `C:\pgdata` | PostgreSQL data directory |
+| `C:\backups\noxh-an-dong\postgres` | File backup PostgreSQL `.dump` |
+| `C:\backups\noxh-an-dong\exports` | File Excel export vận hành |
+
+## Checklist bảo mật bắt buộc
+
+- Đổi mật khẩu `Administrator` của VPS sau khi deploy.
+- Đổi mật khẩu Super Admin trong app sau khi bàn giao.
+- Không mở port PostgreSQL `5432` ra internet.
+- Chỉ public `80` và `443`.
+- Không commit `.env`, backup DB, file dump, log chứa secret.
+- Nếu dùng SSH, nên giới hạn IP đăng nhập nếu nhà cung cấp VPS hỗ trợ firewall.
+- Nếu dùng Cloudflare, bật SSL mode `Full strict`.
+
+## 1. DNS
+
+Tại nơi quản lý domain, cấu hình tối thiểu:
+
+```text
+@      A       64.176.81.118
+www    CNAME   noxhandong.vn
 ```
 
-## 2. Cài package nền trên Ubuntu
+Hoặc có thể dùng:
 
-```bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y curl git ufw postgresql postgresql-contrib
+```text
+@      A       64.176.81.118
+www    A       64.176.81.118
 ```
 
-Cài Node.js LTS bằng NodeSource:
+Kiểm tra DNS từ máy local:
 
-```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt install -y nodejs
+```powershell
+nslookup noxhandong.vn
+nslookup www.noxhandong.vn
+```
+
+Kết quả mong muốn:
+
+```text
+noxhandong.vn -> 64.176.81.118
+www.noxhandong.vn -> noxhandong.vn hoặc 64.176.81.118
+```
+
+## 2. Cài phần mềm nền trên Windows Server
+
+Cài các phần mềm:
+
+- Node.js LTS
+- Git for Windows
+- Caddy
+- NSSM
+- PostgreSQL 17
+
+Kiểm tra:
+
+```powershell
 node -v
 npm -v
+git --version
+caddy version
+nssm
+psql --version
+pg_dump --version
 ```
 
-Cài PM2:
+Nếu cài PostgreSQL bằng bản zip binary, thêm PATH:
 
-```bash
-sudo npm install -g pm2
+```powershell
+[Environment]::SetEnvironmentVariable(
+  "Path",
+  "C:\PostgreSQL\pgsql\bin;C:\Program Files\nodejs;C:\Users\Administrator\AppData\Roaming\npm;" + $env:Path,
+  "Machine"
+)
 ```
 
-Cài Caddy:
+Đóng PowerShell rồi mở lại sau khi đổi PATH.
 
-```bash
-sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-sudo apt update
-sudo apt install -y caddy
+## 3. Tạo PostgreSQL local
+
+Nếu dùng PostgreSQL installer chuẩn, chỉ cần tạo user/database.
+
+Nếu dùng PostgreSQL zip binary:
+
+```powershell
+New-Item -ItemType Directory -Force C:\pgdata | Out-Null
+C:\PostgreSQL\pgsql\bin\initdb.exe -D C:\pgdata -U postgres -A scram-sha-256 -W
+C:\PostgreSQL\pgsql\bin\pg_ctl.exe register -N postgresql-x64-17 -D C:\pgdata -S auto
+Start-Service postgresql-x64-17
 ```
 
-## 3. Tạo database production
+Tạo database production:
 
-Đổi `CHANGE_STRONG_DB_PASSWORD` thành mật khẩu mạnh thật.
-
-```bash
-sudo -u postgres psql
+```powershell
+psql -U postgres
 ```
 
 Trong `psql`:
@@ -93,273 +148,81 @@ GRANT ALL PRIVILEGES ON DATABASE apartment_fee_reviewer TO apartment_app;
 \q
 ```
 
+Nguyên tắc:
+
+- App dùng user `apartment_app`, không dùng user `postgres`.
+- PostgreSQL chỉ nghe `localhost`.
+- Không mở firewall port `5432`.
+
 ## 4. Đưa source code lên VPS
 
-Cách khuyến nghị là dùng Git private repo:
-
-```bash
-sudo mkdir -p /var/www/noxh-an-dong
-sudo chown -R $USER:$USER /var/www/noxh-an-dong
-git clone <REPO_URL> /var/www/noxh-an-dong
-cd /var/www/noxh-an-dong
-```
-
-Nếu chưa dùng Git remote, có thể nén project và upload bằng `scp`, nhưng không upload `node_modules`, `.next`, `.env`, `.local`, DB dump nhạy cảm.
-
-## 5. Tạo `.env` production
-
-```bash
-cd /var/www/noxh-an-dong
-cp .env.production.example .env
-nano .env
-```
-
-Nội dung bắt buộc:
-
-```bash
-DATABASE_URL="postgresql://apartment_app:CHANGE_STRONG_DB_PASSWORD@localhost:5432/apartment_fee_reviewer?schema=public"
-ADMIN_SESSION_SECRET="CHANGE_LONG_RANDOM_SECRET"
-ADMIN_INITIAL_PASSWORD="CHANGE_TEMP_ADMIN_PASSWORD"
-ADMIN_INITIAL_PHONE="0904802553"
-EXPORT_DIR="/var/backups/noxh-an-dong/exports"
-BACKUP_DIR="/var/backups/noxh-an-dong/postgres"
-```
-
-Sinh secret:
-
-```bash
-openssl rand -base64 48
-```
-
-## 6. Install, migrate, seed, build
-
-```bash
-cd /var/www/noxh-an-dong
-npm ci
-npm run prisma:generate
-npm run prisma:migrate:deploy
-npm run seed:v2
-npm run build
-```
-
-Sau seed, đăng nhập bằng SĐT/tài khoản admin production và đổi mật khẩu tạm.
-
-## 7. Import dữ liệu ban đầu
-
-Nếu deploy từ source có kèm file Excel vận hành trong `docs`:
-
-```bash
-npm run import:management:raw
-npm run sync:management:master
-npm run sync:apartment:master
-npm run sync:master:contacts
-npm run import:fee-tracking:v2
-npm run prepare:fee-public-batch:v2
-```
-
-Nếu cần public batch bằng script cũ:
-
-```bash
-npm run publish:fee-public-batch:v2
-```
-
-Nếu dùng web UI, đăng nhập Super Admin tại `/admin/login`, vào `/admin/import`, upload file `Theo dõi thu phí T5.xlsx`, chọn `Nhập và công khai cho cư dân`.
-
-## 8. Chạy app bằng PM2
-
-Sửa `deploy/pm2/ecosystem.config.cjs` nếu app path khác `/var/www/noxh-an-dong`.
-
-```bash
-cd /var/www/noxh-an-dong
-pm2 start deploy/pm2/ecosystem.config.cjs
-pm2 save
-pm2 startup
-```
-
-Kiểm tra app local trên VPS:
-
-```bash
-curl -I http://127.0.0.1:3000
-pm2 status
-pm2 logs noxh-an-dong
-```
-
-## 9. Cấu hình Caddy HTTPS
-
-Copy cấu hình mẫu:
-
-```bash
-sudo cp deploy/caddy/Caddyfile.example /etc/caddy/Caddyfile
-sudo caddy fmt --overwrite /etc/caddy/Caddyfile
-sudo systemctl reload caddy
-sudo systemctl status caddy
-```
-
-Kiểm tra:
-
-```bash
-curl -I https://noxhandong.com
-```
-
-## 10. Firewall
-
-```bash
-sudo ufw allow OpenSSH
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-sudo ufw status
-```
-
-Không mở `5432/tcp`.
-
-## 11. Backup
-
-Tạo thư mục backup:
-
-```bash
-sudo mkdir -p /var/backups/noxh-an-dong/postgres /var/backups/noxh-an-dong/exports
-sudo chown -R $USER:$USER /var/backups/noxh-an-dong
-```
-
-Chạy backup DB:
-
-```bash
-npm run prod:backup:postgres
-```
-
-Chạy export Excel vận hành:
-
-```bash
-npm run export:operations:xlsx
-```
-
-Cron mẫu mỗi ngày 02:00:
-
-```bash
-crontab -e
-```
-
-Thêm:
-
-```cron
-0 2 * * * cd /var/www/noxh-an-dong && /usr/bin/npm run prod:backup:postgres >> /var/log/noxh-an-dong-backup.log 2>&1
-```
-
-## 12. Checklist nghiệm thu sau deploy
-
-- `https://noxhandong.com` mở trang cư dân.
-- Mobile 360px-430px không vỡ layout, không horizontal scroll.
-- Tra cứu `L1.115`, `can 124 lo 4b`, căn đóng lẻ, căn ngoài năm 2026.
-- Public không lộ số điện thoại, tên cư dân, ghi chú nội bộ, raw Excel.
-- `/admin/login` đăng nhập được bằng SĐT Super Admin production.
-- Manager/kỹ thuật không vào được `/admin/import` và `/admin/accounts`.
-- Super Admin import/chốt phí từ UI được.
-- `npm run prod:backup:postgres` tạo file dump.
-- Restore thử một bản dump trên database test trước khi bàn giao chính thức.
-
-## Deploy MVP trên Windows Server
-
-Phần này là hướng deploy tạm thời nếu VPS đang là Windows Server.
-
-### W1. Vào VPS và đổi mật khẩu
-
-- Đăng nhập bằng Remote Desktop/RDP với user `Administrator`.
-- Đổi mật khẩu Administrator ngay sau lần đăng nhập đầu tiên nếu mật khẩu đã từng xuất hiện trong ảnh/chat.
-- Bật Windows Update và restart nếu hệ thống yêu cầu.
-
-### W2. Cài phần mềm nền
-
-Cài các phần mềm bản Windows:
-
-- Node.js LTS.
-- Git for Windows.
-- PostgreSQL 17.
-- Caddy Windows binary.
-
-Kiểm tra trong PowerShell mới:
-
-```powershell
-node -v
-npm -v
-git --version
-psql --version
-pg_dump --version
-```
-
-Nếu `psql`/`pg_dump` chưa nhận, thêm PostgreSQL bin vào PATH:
-
-```powershell
-[Environment]::SetEnvironmentVariable(
-  "Path",
-  $env:Path + ";C:\Program Files\PostgreSQL\17\bin",
-  "Machine"
-)
-```
-
-Đóng PowerShell rồi mở lại.
-
-### W3. Tạo database production
-
-Mở SQL Shell hoặc PowerShell:
-
-```powershell
-psql -U postgres
-```
-
-Trong `psql`, thay mật khẩu thật:
-
-```sql
-CREATE USER apartment_app WITH PASSWORD 'CHANGE_STRONG_DB_PASSWORD';
-CREATE DATABASE apartment_fee_reviewer OWNER apartment_app;
-GRANT ALL PRIVILEGES ON DATABASE apartment_fee_reviewer TO apartment_app;
-\q
-```
-
-### W4. Đưa source code lên server
-
-Khuyến nghị clone từ Git private repo:
+Thư mục production:
 
 ```powershell
 New-Item -ItemType Directory -Force C:\apps | Out-Null
+```
+
+Cách tốt nhất là clone từ Git:
+
+```powershell
 git clone <REPO_URL> C:\apps\noxh-an-dong
 cd C:\apps\noxh-an-dong
 ```
 
-Nếu chưa có Git remote, có thể upload zip/source qua RDP, nhưng không upload:
+Nếu GitHub chưa cấp quyền trên VPS, có thể deploy bằng zip từ máy local:
+
+```powershell
+git archive --format=zip -o .local\deploy-source.zip HEAD
+```
+
+Upload zip lên VPS rồi giải nén vào:
+
+```text
+C:\apps\noxh-an-dong
+```
+
+Không upload các thư mục/file:
 
 - `node_modules`
 - `.next`
 - `.env`
 - `.local`
-- file backup/dump DB nhạy cảm
+- file backup DB
+- file log chứa secret
 
-### W5. Tạo `.env` production
+## 5. Tạo `.env` production
 
-```powershell
-cd C:\apps\noxh-an-dong
-Copy-Item .env.production.example .env
-notepad .env
+Tạo file:
+
+```text
+C:\apps\noxh-an-dong\.env
 ```
 
-Nội dung mẫu:
+Mẫu nội dung:
 
-```powershell
+```env
 DATABASE_URL="postgresql://apartment_app:CHANGE_STRONG_DB_PASSWORD@localhost:5432/apartment_fee_reviewer?schema=public"
 ADMIN_SESSION_SECRET="CHANGE_LONG_RANDOM_SECRET"
 ADMIN_INITIAL_PASSWORD="CHANGE_TEMP_ADMIN_PASSWORD"
 ADMIN_INITIAL_PHONE="0904802553"
-EXPORT_DIR="C:\backups\noxh-an-dong\exports"
-BACKUP_DIR="C:\backups\noxh-an-dong\postgres"
+EXPORT_DIR="C:/backups/noxh-an-dong/exports"
+BACKUP_DIR="C:/backups/noxh-an-dong/postgres"
 ```
 
-Sinh secret bằng PowerShell:
+Lưu ý đường dẫn Windows:
+
+- Nên dùng `/` trong `.env`: `C:/backups/...`
+- Tránh dùng `C:\backups\...` vì một số thư viện Node có thể hiểu `\n` là xuống dòng.
+
+Sinh secret:
 
 ```powershell
 [Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Maximum 256 }))
 ```
 
-### W6. Install, migrate, seed, build
+## 6. Install, migrate, seed, build
+
+Chạy trên VPS:
 
 ```powershell
 cd C:\apps\noxh-an-dong
@@ -367,135 +230,388 @@ npm ci
 npm run prisma:generate
 npm run prisma:migrate:deploy
 npm run seed:v2
-npm run build
-```
-
-Sau seed, tài khoản Super Admin production dùng SĐT từ `ADMIN_INITIAL_PHONE` và mật khẩu từ `ADMIN_INITIAL_PASSWORD`. Đăng nhập xong phải đổi mật khẩu tạm.
-
-### W7. Import dữ liệu ban đầu
-
-Cách an toàn nhất cho MVP:
-
-1. Chạy app.
-2. Vào `/admin/login`.
-3. Vào `/admin/import`.
-4. Upload file `Theo dõi thu phí T5.xlsx`.
-5. Chọn `Nhập và công khai cho cư dân`.
-
-Nếu muốn import bằng script:
-
-```powershell
-npm run import:management:raw
-npm run sync:management:master
 npm run sync:apartment:master
 npm run sync:master:contacts
 npm run import:fee-tracking:v2
 npm run prepare:fee-public-batch:v2
+npm run publish:fee-public-batch:v2
+npm run build
 ```
 
-### W8. Chạy app bằng PM2
+Kết quả mong muốn:
+
+- Migration Prisma chạy hết.
+- Có Super Admin theo `ADMIN_INITIAL_PHONE`.
+- Có `934` căn hộ.
+- Có contact candidate từ file master.
+- Có public fee batch hiện hành.
+- `npm run build` pass.
+
+## 7. Chạy Next.js bằng Windows Service
+
+Dùng NSSM thay vì PM2 trên Windows để service ổn định hơn sau reboot.
+
+Tạo file:
+
+```text
+C:\apps\noxh-an-dong\start-app.cmd
+```
+
+Nội dung:
+
+```cmd
+@echo off
+cd /d C:\apps\noxh-an-dong
+set NODE_ENV=production
+set PATH=C:\PostgreSQL\pgsql\bin;C:\Program Files\nodejs;C:\Users\Administrator\AppData\Roaming\npm;%PATH%
+node node_modules\next\dist\bin\next start -H 0.0.0.0 -p 3000
+```
+
+Cài service:
 
 ```powershell
-npm install -g pm2
-cd C:\apps\noxh-an-dong
-pm2 start npm --name noxh-an-dong -- run prod:start
-pm2 save
-pm2 status
-pm2 logs noxh-an-dong
+nssm install noxh-an-dong C:\apps\noxh-an-dong\start-app.cmd
+nssm set noxh-an-dong AppDirectory C:\apps\noxh-an-dong
+nssm set noxh-an-dong Start SERVICE_AUTO_START
+nssm set noxh-an-dong AppStdout C:\apps\noxh-an-dong\logs\service-out.log
+nssm set noxh-an-dong AppStderr C:\apps\noxh-an-dong\logs\service-err.log
+Start-Service noxh-an-dong
 ```
 
-Lưu ý: PM2 trên Windows không tự thành Windows Service ổn định như Linux. Nếu muốn tự chạy lại sau reboot, có hai cách:
-
-- dùng `pm2-windows-startup`;
-- hoặc tạo Task Scheduler chạy lệnh `pm2 resurrect` khi Windows start.
-
-Cài `pm2-windows-startup`:
+Kiểm tra:
 
 ```powershell
-npm install -g pm2-windows-startup
-pm2-startup install
-pm2 save
+Get-Service noxh-an-dong
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:3000/
 ```
 
-### W9. Caddy HTTPS trên Windows
+Kết quả mong muốn:
 
-Tạo thư mục:
-
-```powershell
-New-Item -ItemType Directory -Force C:\caddy | Out-Null
-Copy-Item deploy\caddy\Caddyfile.example C:\caddy\Caddyfile
-notepad C:\caddy\Caddyfile
+```text
+Status: Running
+HTTP status: 200
 ```
 
-Nội dung cần giữ:
+## 8. Cấu hình Caddy HTTPS
+
+Tạo file:
+
+```text
+C:\caddy\Caddyfile
+```
+
+Nội dung hiện tại:
 
 ```caddyfile
-noxhandong.com {
+noxhandong.vn {
   encode zstd gzip
   reverse_proxy 127.0.0.1:3000
+  header {
+    X-Content-Type-Options nosniff
+    Referrer-Policy strict-origin-when-cross-origin
+    X-Frame-Options SAMEORIGIN
+  }
 }
 
-www.noxhandong.com {
-  redir https://noxhandong.com{uri} permanent
+www.noxhandong.vn {
+  redir https://noxhandong.vn{uri} permanent
 }
 ```
 
-Chạy thử:
+Validate:
 
 ```powershell
-caddy run --config C:\caddy\Caddyfile
+caddy validate --config C:\caddy\Caddyfile --adapter caddyfile
 ```
 
-Nếu chạy ổn, cài Caddy thành Windows Service. Cách đơn giản là dùng NSSM hoặc `sc.exe`; nếu chưa quen service Windows, có thể để bước này tôi làm trực tiếp qua remote/terminal sau khi anh cung cấp phương thức truy cập an toàn.
+Cài Caddy thành Windows Service bằng NSSM:
 
-### W10. Mở firewall Windows
+```powershell
+nssm install caddy caddy run --config C:\caddy\Caddyfile --adapter caddyfile
+nssm set caddy AppDirectory C:\caddy
+nssm set caddy Start SERVICE_AUTO_START
+Start-Service caddy
+```
+
+Nếu service đã tồn tại:
+
+```powershell
+Restart-Service caddy
+```
+
+Kiểm tra trên VPS:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1/
+Invoke-WebRequest -UseBasicParsing https://noxhandong.vn/
+```
+
+Kiểm tra từ máy local:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing https://noxhandong.vn/
+Invoke-WebRequest -UseBasicParsing https://noxhandong.vn/tra-cuu-phi?ma_can=L1.115
+Invoke-WebRequest -UseBasicParsing https://noxhandong.vn/admin/login
+```
+
+Kết quả mong muốn:
+
+```text
+HTTP 200
+```
+
+## 9. Firewall
+
+Mở port web:
 
 ```powershell
 New-NetFirewallRule -DisplayName "HTTP 80" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
 New-NetFirewallRule -DisplayName "HTTPS 443" -Direction Inbound -Protocol TCP -LocalPort 443 -Action Allow
 ```
 
-Không mở port `5432` ra internet.
+Không mở PostgreSQL:
 
-### W11. Backup trên Windows
+```text
+Không mở 5432/tcp ra internet.
+```
 
-Tạo thư mục backup:
+Nếu dùng SSH:
+
+```powershell
+Get-Service sshd
+Get-NetFirewallRule -Name *ssh*
+```
+
+## 10. Backup và export Excel
+
+Tạo thư mục:
 
 ```powershell
 New-Item -ItemType Directory -Force C:\backups\noxh-an-dong\postgres | Out-Null
 New-Item -ItemType Directory -Force C:\backups\noxh-an-dong\exports | Out-Null
 ```
 
-Chạy backup DB:
+Chạy thủ công:
 
 ```powershell
+cd C:\apps\noxh-an-dong
 npm run prod:backup:postgres:windows
-```
-
-Chạy export Excel vận hành:
-
-```powershell
 npm run export:operations:xlsx
 ```
 
-Tạo Task Scheduler chạy backup mỗi ngày 02:00:
+File mong muốn:
 
-```powershell
-$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -NoProfile -Command `"cd C:\apps\noxh-an-dong; npm run prod:backup:postgres:windows`""
-$trigger = New-ScheduledTaskTrigger -Daily -At 2am
-Register-ScheduledTask -TaskName "NOXH An Dong PostgreSQL Backup" -Action $action -Trigger $trigger -RunLevel Highest
+```text
+C:\backups\noxh-an-dong\postgres\apartment_fee_reviewer-YYYYMMDD-HHMMSS.dump
+C:\backups\noxh-an-dong\exports\operations-export-YYYYMMDD-HHMMSS.xlsx
 ```
 
-### W12. Checklist nghiệm thu Windows sau deploy
+Tạo `daily-backup.cmd`:
 
-- `https://noxhandong.com` mở được trang cư dân.
-- App vẫn chạy sau khi restart Windows.
-- Caddy tự chạy lại sau restart.
-- PM2/app tự chạy lại sau restart.
-- `npm run prod:backup:postgres:windows` tạo file `.dump`.
-- PostgreSQL port `5432` không mở public.
-- Public lookup không lộ dữ liệu cá nhân.
+```cmd
+@echo off
+cd /d C:\apps\noxh-an-dong
+set PATH=C:\PostgreSQL\pgsql\bin;C:\Program Files\nodejs;C:\Users\Administrator\AppData\Roaming\npm;%PATH%
+call npm run prod:backup:postgres:windows >> C:\backups\noxh-an-dong\backup-task.log 2>&1
+call npm run export:operations:xlsx >> C:\backups\noxh-an-dong\backup-task.log 2>&1
+```
 
-## Nếu sau này chuyển sang Ubuntu
+Tạo Scheduled Task chạy hằng ngày lúc 02:00 bằng user `SYSTEM`:
 
-Khi chuyển OS, dùng lại phần Ubuntu ở đầu file này. Dữ liệu cần chuyển bằng `pg_dump`/`pg_restore`, không copy thư mục data PostgreSQL thủ công.
+```powershell
+schtasks /Create /TN "NoxhAnDongDailyBackup" /SC DAILY /ST 02:00 /TR "C:\apps\noxh-an-dong\daily-backup.cmd" /RL HIGHEST /RU SYSTEM /F
+```
+
+Test task:
+
+```powershell
+schtasks /Run /TN "NoxhAnDongDailyBackup"
+schtasks /Query /TN "NoxhAnDongDailyBackup" /FO LIST /V
+```
+
+Kết quả mong muốn:
+
+```text
+Last Result: 0
+Run As User: SYSTEM
+```
+
+## 11. Kiểm tra nghiệm thu sau deploy
+
+Các URL bắt buộc:
+
+| URL | Kết quả |
+| --- | --- |
+| `https://noxhandong.vn/` | Trang chủ cư dân mở được |
+| `https://noxhandong.vn/tra-cuu-phi?ma_can=L1.115` | Tra cứu phí mở được |
+| `https://noxhandong.vn/admin/login` | Trang login admin mở được |
+| `https://www.noxhandong.vn/` | Redirect về `https://noxhandong.vn/` |
+
+Checklist:
+
+- HTTPS hoạt động, trình duyệt không báo lỗi chứng chỉ.
+- Caddy redirect HTTP sang HTTPS.
+- App service `noxh-an-dong` chạy `Automatic`.
+- Caddy service chạy `Automatic`.
+- PostgreSQL service chạy.
+- Backup task sinh được file `.dump`.
+- Export task sinh được file `.xlsx`.
+- Public lookup không lộ tên cư dân, số điện thoại, ghi chú nội bộ.
+- Admin đăng nhập được bằng tài khoản production.
+- Quản lý/kỹ thuật không vào được chức năng import, duyệt, tạo tài khoản.
+
+## 12. Cloudflare nếu dùng sau này
+
+Cloudflare không bắt buộc vì Caddy đã có HTTPS thật.
+
+Nếu dùng Cloudflare:
+
+1. Add site `noxhandong.vn` vào Cloudflare.
+2. Đổi nameserver tại TenTen sang nameserver Cloudflare.
+3. Tạo DNS:
+
+```text
+@      A       64.176.81.118     Proxied
+www    CNAME   noxhandong.vn     Proxied
+```
+
+4. SSL/TLS mode: `Full strict`.
+5. Bật `Always Use HTTPS`.
+6. Không bật tối ưu JS/CSS nâng cao trước khi test UI.
+
+Lưu ý:
+
+- Khi bật proxy Cloudflare, server sẽ thấy IP Cloudflare, không phải IP người dùng thật.
+- Nếu sau này rate-limit theo IP, cần đọc header `CF-Connecting-IP`.
+- Không chọn SSL mode `Flexible`, vì dễ gây vòng lặp redirect HTTPS.
+
+## 13. Quy trình cập nhật phiên bản mới
+
+Trên máy local:
+
+```powershell
+npm test
+npm run build
+git status
+git add .
+git commit -m "..."
+git push origin main
+```
+
+Trên VPS nếu dùng Git clone:
+
+```powershell
+cd C:\apps\noxh-an-dong
+git pull
+npm ci
+npm run prisma:generate
+npm run prisma:migrate:deploy
+npm run build
+Restart-Service noxh-an-dong
+```
+
+Nếu deploy bằng zip:
+
+1. Tạo zip bằng `git archive`.
+2. Upload lên VPS.
+3. Giữ lại `.env`.
+4. Giải nén source mới vào `C:\apps\noxh-an-dong`.
+5. Chạy lại install/migrate/build.
+6. Restart service.
+
+Kiểm tra sau update:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing https://noxhandong.vn/
+Invoke-WebRequest -UseBasicParsing https://noxhandong.vn/admin/login
+```
+
+## 14. Phương án Ubuntu sau này
+
+Windows Server dùng được cho MVP. Khi cần vận hành lâu dài, Ubuntu LTS vẫn là phương án sạch hơn:
+
+- PostgreSQL service chuẩn hơn.
+- PM2/systemd ổn định hơn.
+- Backup/cron đơn giản hơn.
+- Ít vấn đề PATH/service hơn Windows.
+
+Khi chuyển sang Ubuntu:
+
+1. Backup DB bằng `pg_dump`.
+2. Export Excel vận hành.
+3. Dựng server Ubuntu mới.
+4. Cài Node.js LTS, PostgreSQL, Caddy.
+5. Restore DB bằng `pg_restore`.
+6. Deploy source.
+7. Trỏ DNS sang IP mới.
+
+Không copy thủ công thư mục data PostgreSQL giữa Windows và Linux.
+
+## 15. Sự cố thường gặp
+
+### Caddy trả 502
+
+Nguyên nhân thường là app Next chưa chạy trên `127.0.0.1:3000`.
+
+Kiểm tra:
+
+```powershell
+Get-Service noxh-an-dong
+Get-NetTCPConnection -LocalPort 3000 -State Listen
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:3000/
+```
+
+Sửa:
+
+```powershell
+Restart-Service noxh-an-dong
+Get-Content C:\apps\noxh-an-dong\logs\service-err.log -Tail 80
+```
+
+### HTTPS chưa hoạt động
+
+Kiểm tra DNS:
+
+```powershell
+nslookup noxhandong.vn
+```
+
+Kiểm tra Caddy:
+
+```powershell
+caddy validate --config C:\caddy\Caddyfile --adapter caddyfile
+Restart-Service caddy
+```
+
+### Backup DB tạo file rỗng
+
+Nguyên nhân có thể do `pg_dump` không hiểu tham số Prisma `?schema=public`.
+
+Script `scripts/production/backup-postgres.ps1` đã xử lý bỏ tham số `schema` khi gọi `pg_dump`. Nếu lỗi quay lại, kiểm tra version script trên VPS có khớp repo không.
+
+### Export Excel lỗi đường dẫn
+
+Dùng forward slash trong `.env`:
+
+```env
+EXPORT_DIR="C:/backups/noxh-an-dong/exports"
+BACKUP_DIR="C:/backups/noxh-an-dong/postgres"
+```
+
+Không dùng:
+
+```env
+EXPORT_DIR="C:\backups\noxh-an-dong\exports"
+```
+
+### Scheduled Task chỉ chạy backup, không chạy export
+
+Trong file `.cmd`, phải dùng `call npm ...`:
+
+```cmd
+call npm run prod:backup:postgres:windows
+call npm run export:operations:xlsx
+```
+
+Nếu không có `call`, batch có thể dừng sau lệnh npm đầu tiên.
+

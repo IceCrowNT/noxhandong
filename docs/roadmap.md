@@ -36,7 +36,7 @@ File này không ghi checklist nghiệm thu chi tiết. Điều kiện review/ch
 - 2026-05-16: hoàn thành nền màn hình review contact nội bộ Task L.
 - 2026-05-16: hoàn thành nền import sao kê và đối soát DB Task M.
 - 2026-05-16: đổi trang chủ `/` thành trang cư dân mobile-first, tạo prompt Stitch và checklist duyệt thủ công trước deploy.
-- 2026-05-16: chốt hướng production: deploy VPS, PostgreSQL cùng VPS, domain dự kiến `noxhandong.com`, cần backup DB thật ngoài export Excel.
+- 2026-05-16: chốt hướng production: deploy VPS, PostgreSQL cùng VPS, domain khi đó dự kiến `noxhandong.com`, cần backup DB thật ngoài export Excel.
 - 2026-05-17: chuẩn bị nền production: admin đăng nhập bằng số điện thoại, script `pg_dump`, script export Excel vận hành.
 - 2026-05-17: gắn SĐT `0904802553` cho tài khoản `admin` role `SUPER_ADMIN`; xác định deploy VPS là bước cuối sau khi roadmap hiện tại hoàn thiện.
 - 2026-05-17: chuyển design Stitch thành design system nội bộ và chỉnh public UI/copy theo nghiệp vụ BQT An Đồng.
@@ -46,7 +46,7 @@ File này không ghi checklist nghiệm thu chi tiết. Điều kiện review/ch
 - 2026-05-23: ghi nhận đồng thuận Antigravity/Codex, tạo `docs/todolist-dong-thuan-antigravity-codex.md` để tách việc chặn deploy public và backlog đối soát sao kê.
 - 2026-05-23: rebuild dữ liệu phí public theo `docs/Theo dõi thu phí T5.xlsx`; public batch hiện hành là `T5-2026`, đủ `934` căn.
 - 2026-05-25: chốt phân quyền nội bộ cố định: `SUPER_ADMIN` toàn quyền; `MANAGER` và `TECHNICIAN` ngang quyền chỉ tra cứu/xem liên hệ/gọi nhanh/tài khoản cá nhân.
-- 2026-05-25: chuẩn bị deploy MVP lên Vultr/domain `noxhandong.com`; chốt chạy Windows Server trước, có thể đổi Ubuntu sau; thêm runbook deploy, mẫu `.env.production`, cấu hình PM2/Caddy và backup PowerShell.
+- 2026-05-25: deploy MVP lên Vultr/domain `noxhandong.vn`; chạy Windows Server trước, PostgreSQL local, Next.js bằng NSSM service, Caddy HTTPS và backup/export tự động.
 
 ## Mục tiêu sản phẩm
 
@@ -159,7 +159,7 @@ Dự án hướng tới một web app có thể public, gồm hai vùng:
 - Đã chốt hướng production:
   - deploy trên VPS
   - PostgreSQL cài trên cùng VPS với app
-  - domain dự kiến `noxhandong.com`
+  - domain production hiện tại `noxhandong.vn`
   - dùng backup/snapshot VPS
   - đã thêm script `prod:backup:postgres` để chạy `pg_dump`
   - đã thêm script `export:operations:xlsx` để lưu bản vận hành trên máy local
