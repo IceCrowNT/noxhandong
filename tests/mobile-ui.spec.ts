@@ -22,11 +22,11 @@ const publicRoutes = [
 ] as const;
 
 const adminRoutes = [
-  { name: "admin-home", path: "/admin", requiredText: "Vùng quản trị" },
   { name: "admin-dashboard", path: "/admin/dashboard", requiredText: "Tra cứu nội bộ" },
   { name: "admin-import", path: "/admin/import", requiredText: "Nhập" },
   { name: "admin-contacts", path: "/admin/contacts/review", requiredText: "Liên hệ" },
-  { name: "admin-accounts", path: "/admin/accounts", requiredText: "Tài khoản" }
+  { name: "admin-accounts", path: "/admin/accounts", requiredText: "Tài khoản" },
+  { name: "admin-profile", path: "/admin/profile", requiredText: "Tài khoản của tôi" }
 ] as const;
 
 function safeName(value: string) {
@@ -55,7 +55,7 @@ async function login(page: import("@playwright/test").Page) {
   await page.locator('input[name="username"]').fill("admin");
   await page.locator('input[name="password"]').fill("Admin@123");
   await page.locator('button[type="submit"]').click();
-  await page.waitForURL(/\/admin(?:\?|$)/, { timeout: 15000 });
+  await page.waitForURL(/\/admin(?:\/dashboard)?(?:\?|$)/, { timeout: 15000 });
 }
 
 for (const device of mobileDevices) {

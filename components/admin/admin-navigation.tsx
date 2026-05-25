@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { Database, Home, LayoutDashboard, Menu, ShieldCheck, Upload, Users } from "lucide-react";
+import { Database, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,11 +16,11 @@ import {
 } from "@/components/ui/sheet";
 
 export const adminNavigation = [
-  { key: "home", href: "/admin", label: "Vùng quản trị", icon: Home },
   { key: "dashboard", href: "/admin/dashboard", label: "Tra cứu nội bộ", icon: LayoutDashboard },
   { key: "import", href: "/admin/import", label: "Nhập dữ liệu", icon: Upload },
-  { key: "contacts", href: "/admin/contacts/review", label: "Duyệt liên hệ", icon: Users },
+  { key: "contacts", href: "/admin/contacts/review", label: "Liên hệ cư dân", icon: Users },
   { key: "accounts", href: "/admin/accounts", label: "Tài khoản", icon: ShieldCheck },
+  { key: "profile", href: "/admin/profile", label: "Tài khoản của tôi", icon: UserCircle },
   { key: "database", href: "/admin#database", label: "Cơ sở dữ liệu", icon: Database },
 ] as const;
 
@@ -27,9 +28,15 @@ export type AdminNavigationKey = (typeof adminNavigation)[number]["key"];
 
 function AdminBrand() {
   return (
-    <Link href="/admin" className="flex min-w-0 items-center gap-3 text-[var(--accent)]">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent)] text-white">
-        <Home size={17} aria-hidden="true" />
+    <Link href="/admin/dashboard" className="flex min-w-0 items-center gap-3 text-[var(--accent)]">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--line)] bg-white shadow-sm">
+        <Image
+          alt="Hoang Huy Group"
+          className="h-7 w-7 object-contain"
+          height={28}
+          src="/images/logo-hoanghuy.webp"
+          width={28}
+        />
       </div>
       <div className="min-w-0">
         <strong className="block truncate text-sm leading-5">BQT An Đồng</strong>

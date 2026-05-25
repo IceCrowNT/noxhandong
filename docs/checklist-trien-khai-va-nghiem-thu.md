@@ -150,7 +150,7 @@ Chốt schema mục tiêu để phục vụ:
 - căn hộ master
 - contact staging/review
 - tài khoản quản trị
-- phân quyền `SUPER_ADMIN` / `MANAGER`
+- phân quyền `SUPER_ADMIN` / `MANAGER` / `TECHNICIAN`
 - import file theo dõi thu phí
 - batch public trạng thái phí
 - public snapshot cho cư dân tra cứu
@@ -191,6 +191,7 @@ Kết quả hiện tại:
 
 - [x] Có role `SUPER_ADMIN`
 - [x] Có role `MANAGER`
+- [x] Có role `TECHNICIAN`
 - [x] Có bảng tài khoản quản trị
 - [x] Có bảng staging file theo dõi thu phí
 - [x] Có batch public trạng thái phí
@@ -480,7 +481,7 @@ Kết quả thực tế:
 
 ### Mục tiêu
 
-Tạo vùng nội bộ bắt buộc đăng nhập, phân quyền rõ `SUPER_ADMIN` và `MANAGER`.
+Tạo vùng nội bộ bắt buộc đăng nhập, phân quyền rõ `SUPER_ADMIN`, `MANAGER` và `TECHNICIAN`.
 
 ### File liên quan
 
@@ -495,7 +496,8 @@ Tạo vùng nội bộ bắt buộc đăng nhập, phân quyền rõ `SUPER_ADMI
 - middleware bảo vệ route quản trị
 - role `SUPER_ADMIN`
 - role `MANAGER`
-- Super Admin quản lý tài khoản manager
+- role `TECHNICIAN`
+- Super Admin quản lý tài khoản `SUPER_ADMIN`, `MANAGER`, `TECHNICIAN`
 
 ### Review
 
@@ -530,14 +532,21 @@ Kết quả thực tế:
 - có route `/admin/accounts` chỉ cho `SUPER_ADMIN`
 - có route `/admin/import` chỉ cho `SUPER_ADMIN`
 - có migration `20260517000100_add_admin_phone_login`
+- có migration `20260525000100_add_technician_role`
 - có trường `tai_khoan_quan_tri.so_dien_thoai`
-- form tạo manager bắt buộc nhập số điện thoại đăng nhập
+- form tạo manager/kỹ thuật bắt buộc nhập số điện thoại đăng nhập
 - session lưu bằng cookie HTTP-only có chữ ký
 - production bắt buộc có `ADMIN_SESSION_SECRET`
 - middleware chặn vùng `/admin`
-- Super Admin tạo/khóa manager được ở `/admin/accounts`
-- `npm test`: `95` tests pass
+- Super Admin tạo/khóa/mở khóa tài khoản `SUPER_ADMIN`, `MANAGER` hoặc `TECHNICIAN` được ở `/admin/accounts`
+- Super Admin đổi role tài khoản nội bộ khác mình giữa `SUPER_ADMIN`, `MANAGER` và `TECHNICIAN` được ở `/admin/accounts`
+- `/admin/accounts` có bảng quyền theo role để đối chiếu chức năng được sử dụng
+- tài khoản nội bộ có trang `/admin/profile` để đổi tên hiển thị, email và mật khẩu
+- role `MANAGER` và `TECHNICIAN` ngang quyền: tra cứu nội bộ, xem liên hệ cư dân/dữ liệu gốc, gọi nhanh cư dân và tài khoản cá nhân
+- role `MANAGER` và `TECHNICIAN` bị chặn khỏi `/admin/import` và `/admin/accounts`, không có form duyệt/từ chối liên hệ
+- `npm test`: `265` tests pass
 - `npm run build`: pass
+- `npm run test:mobile-ui`: `40` tests pass
 
 ### Trạng thái
 

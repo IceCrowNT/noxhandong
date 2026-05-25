@@ -10,3 +10,6 @@ test-results
 .env
 .env.local
 .env.*.local
+db-sync/*.sql
+db-sync/*.dump
+db-sync/*.meta.json

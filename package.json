@@ -12,8 +12,10 @@
     "test:watch": "vitest",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
+    "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prisma:migrate:dev": "prisma migrate dev",
+    "prod:start": "next start -H 0.0.0.0 -p 3000",
     "db:start:windows": "powershell -ExecutionPolicy Bypass -File scripts/setup/start-postgres-local.ps1",
     "db:stop:windows": "powershell -ExecutionPolicy Bypass -File scripts/setup/stop-postgres-local.ps1",
     "import:management:raw": "node scripts/import-management-raw.cjs",
@@ -32,6 +34,7 @@
     "report:bank-statement:parser": "node scripts/report-bank-statement-parser-v2.cjs",
     "export:operations:xlsx": "node scripts/export-operations-excel-v2.cjs",
     "prod:backup:postgres": "bash scripts/production/backup-postgres.sh",
+    "prod:backup:postgres:windows": "powershell -ExecutionPolicy Bypass -File scripts/production/backup-postgres.ps1",
     "db:backup:repo": "bash scripts/setup/backup-db-to-repo.sh",
     "db:restore:repo": "bash scripts/setup/restore-db-from-repo.sh"
   },

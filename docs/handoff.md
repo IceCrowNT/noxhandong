@@ -10,6 +10,7 @@
 - Design system: [design-system.md](design-system.md)
 - Setup máy mới/database: [setup-may-moi-va-database.md](setup-may-moi-va-database.md)
 - Production VPS: [production-deploy-vps.md](production-deploy-vps.md)
+- Runbook deploy VPS: [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md)
 
 ## Mục đích
 
@@ -37,6 +38,7 @@ File này dùng để:
 - Rà soát 934 căn trong DB, tạo báo cáo dữ liệu thật và đề xuất mô hình DB/tình huống cư dân: 2026-05-18
 - Thêm ảnh nền chung cư xanh local, tối giản trang chủ theo hướng search-bar landing page: 2026-05-18
 - Chốt index là search-bar landing page; góp ý dài hạn để ở backlog, mục tiêu hiện tại vẫn là Task N local/staging readiness: 2026-05-19
+- Chuẩn bị deploy MVP lên Vultr/domain `noxhandong.com`, thêm runbook deploy, mẫu `.env.production`, PM2 và Caddy: 2026-05-25
 
 ## Trạng thái hiện tại
 
@@ -687,3 +689,228 @@ Nếu có thay đổi parser mã căn:
   - `npm run build` pass sau build sạch.
   - Dev server đã chạy lại tại `http://localhost:3000`.
   - Playwright kiểm tra `/` mobile 390px và `/tra-cuu-phi?ma_can=L1.115` mobile 390px: CSS load, ảnh background render, không overflow ngang, không có static asset lỗi.
+
+## Đồng thuận kỹ thuật Antigravity/Codex 2026-05-23
+
+- Đã đọc và phản hồi tiếp phần `CURRENT_FEEDBACK.md`.
+- Hai bên thống nhất chia ưu tiên thành 2 giai đoạn:
+  - Giai đoạn 1: hoàn thiện public lookup, admin cơ bản, import/chốt Excel phí, nghiệm thu mobile và deploy readiness.
+  - Giai đoạn 2: trước khi vận hành đối soát sao kê thật mới xử lý các blocker transaction/unique constraint/parser/re-import/hardcode phí.
+- Đã tạo todo list đồng thuận tại `docs/todolist-dong-thuan-antigravity-codex.md`.
+- Todo list này không thay thế `docs/roadmap.md`; nó dùng để kiểm soát các việc kỹ thuật đã được cả hai bên đồng ý.
+
+## Rebuild dữ liệu phí public T5 2026-05-23
+
+- Chủ dự án chốt `docs/Theo dõi thu phí T5.xlsx` là cơ sở dữ liệu thô chính xác/toàn vẹn hiện tại cho trạng thái phí public.
+- Phát hiện lỗi suy luận kỳ phí khi upload web: tên file tạm có timestamp dạng `...T09...-Theo dõi thu phí T5.xlsx`, script lấy nhầm `T09-2026`.
+- Đã sửa `scripts/prepare-fee-public-batch-v2.cjs` để lấy kỳ `T*` cuối cùng trong tên file, tránh lấy nhầm timestamp upload.
+- Đã đổi default input của `scripts/import-fee-tracking-v2.cjs` sang `docs/Theo dõi thu phí T5.xlsx`.
+- Đã backup DB dev trước khi rebuild fee public vào `.local/db-backups/`.
+- Đã xóa riêng các batch/dòng thu phí test cũ, không đụng `can_ho`, contact, tài khoản admin.
+- Kết quả rebuild:
+  - import batch `lo_nhap_du_lieu.id = 25`
+  - public batch `batch_trang_thai_phi_public.id = 8`
+  - kỳ dữ liệu `T5-2026`
+  - `trang_thai_phi_can_ho_public = 934`
+  - `invalidApartmentRows = 0`
+  - `missingPaidThroughRows = 0`
+  - `unparsedPaidThroughRows = 0`
+  - `partialPaymentRows = 3`
+  - `outsideBaseYearRows = 8`
+  - chỉ còn 1 batch public hiện hành
+- Đã kiểm tra public lookup `/tra-cuu-phi?ma_can=L1.115` hiển thị `T5-2026` và không có token PII rõ ràng.
+- Đã gỡ dữ liệu nhạy cảm `db-sync/*.sql`, `db-sync/*.meta.json` khỏi Git index và thêm rule ignore; file vẫn nằm trên máy local.
+- Kiểm tra kỹ thuật:
+  - `npm test`: 95/95 pass
+  - `npm run build`: pass sau build sạch
+  - `npm run test:mobile-ui`: 40/40 pass trên 10 viewport mobile
+  - Desktop 1440px: `/`, `/tra-cuu-phi`, `/admin`, `/admin/dashboard` không overflow ngang
+
+## Fix UI trang import 2026-05-23
+
+- Trang `/admin/import` bị vỡ bảng khi hai bảng lớn bị ép vào layout 2 cột.
+- Đã chỉnh:
+  - hai bảng import/public batch hiển thị theo từng hàng full-width thay vì 2 cột.
+  - `ScrollPanel` có `max-height` và `overflow-auto` rõ ràng.
+  - tên file dài dùng `truncate` và `title` để không phá layout.
+  - nút import trên màn nhỏ chuyển sang full-width dễ bấm.
+- Kiểm tra:
+  - `npm test`: 95/95 pass.
+  - `npm run build`: pass.
+  - Playwright kiểm tra `/admin/import` desktop 1920px và mobile 430px: không overflow ngang toàn trang.
+  - Dev server đã restart lại tại `http://localhost:3000`.
+
+## UX import phí 2026-05-24
+
+- Đã chốt không thêm nút `Công khai từ staging` vì hiện chưa có màn review/duyệt staging thật sự.
+- Đã đổi wording vận hành:
+  - `Chỉ nhập staging` -> `Chỉ kiểm tra file`
+  - `Nhập và chốt công khai` -> `Nhập và công khai cho cư dân`
+- Sau khi kiểm tra file, trang `/admin/import` hiển thị summary:
+  - tổng dòng đọc được
+  - mã căn không khớp
+  - thiếu tháng đã đóng
+  - không parse được tháng
+  - đóng lẻ tiền
+  - ngoài năm 2026
+- Redirect sau import hiện truyền các chỉ số lỗi từ script import sang UI.
+- Kiểm tra:
+  - `npm test`: 95/95 pass.
+  - `npm run build`: pass sau khi dừng dev server, xóa `.next`, build sạch.
+  - Playwright kiểm tra `/admin/import` với kết quả batch `#26`, desktop 1440px và mobile 430px: không overflow ngang toàn trang.
+  - Dev server đang chạy lại tại `http://localhost:3000`.
+
+## Kiểm tra cuối Task N 2026-05-24
+
+- Đã kiểm tra public lookup với input: `L1.115`, `l1 115`, `can 115 lo l1`, `L1115`, `LK2.10`.
+- Các input đều trả dữ liệu `T5-2026`, đúng mã căn, không lộ số điện thoại trên public page, không overflow ngang ở mobile 390px.
+- Đã kiểm tra `/admin/dashboard?ma_can=L1.115` desktop 1440px và mobile 430px: đúng căn, đúng batch `T5-2026`, không overflow ngang.
+- Đã test web import trực tiếp bằng `docs/Theo dõi thu phí T5.xlsx`:
+  - `Chỉ kiểm tra file`: chạy được, trả summary `934` dòng, `0` lỗi mã căn, `0` thiếu tháng, `0` không parse được, `3` đóng lẻ, `8` ngoài năm 2026.
+  - `Nhập và công khai cho cư dân`: chạy được, tạo public batch mới đúng `T5-2026`, không sinh lỗi kỳ `T09-2026`.
+- Sau test, đã dọn các lô thu phí test phát sinh; DB hiện giữ:
+  - public batch hiện hành `batch_trang_thai_phi_public.id = 9`
+  - import batch tương ứng `lo_nhap_du_lieu.id = 32`
+  - `trang_thai_phi_can_ho_public = 934`
+  - chỉ có `1` batch public hiện hành
+- Git/dữ liệu nhạy cảm:
+  - `db-sync/*.sql` và `db-sync/*.meta.json` đã được gỡ khỏi Git index.
+  - `.gitignore` đã ignore `db-sync/*.sql`, `db-sync/*.dump`, `db-sync/*.meta.json`.
+  - `db-sync/README.md` vẫn được track.
+- Kiểm tra kỹ thuật cuối:
+  - `npm test`: 95/95 pass.
+  - `npm run build`: pass sau build sạch.
+  - `npm run test:mobile-ui`: 40/40 pass.
+- Dev server đang chạy tại `http://localhost:3000`.
+
+## Chuẩn bị deploy VPS 2026-05-25
+
+- Chủ dự án đã mua VPS Vultr và domain dự kiến dùng cho production.
+- Đã thêm tài liệu [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md) làm runbook deploy MVP.
+- Đã thêm `.env.production.example` để tạo `.env` production không chứa secret thật.
+- Đã thêm script:
+  - `npm run prisma:migrate:deploy`
+  - `npm run prod:start`
+- Đã thêm cấu hình mẫu:
+  - `deploy/pm2/ecosystem.config.cjs`
+  - `deploy/caddy/Caddyfile.example`
+- Quyết định OS giai đoạn MVP:
+  - chạy trên Windows Server trước;
+  - có thể đổi sang Ubuntu LTS sau khi MVP ổn định;
+  - cần dùng mục `Deploy MVP trên Windows Server` trong runbook và cấu hình Caddy/PM2 tự chạy lại sau reboot.
+- Khuyến nghị kỹ thuật hiện tại:
+  - mật khẩu VPS đã xuất hiện trong ảnh/chat nên cần đổi hoặc rotate trước khi vận hành.
+- Việc còn phải chốt trước deploy thật:
+  - DNS domain đã trỏ về VPS;
+  - `ADMIN_SESSION_SECRET` production riêng;
+  - mật khẩu Super Admin production mới;
+  - `pg_dump` định kỳ và nơi lưu backup ngoài VPS.
+  - kiểm tra app/Caddy/backup tự chạy lại sau khi restart Windows Server.
+
+## Rà soát UI admin mobile 2026-05-24
+
+- Đã đánh giá lại các trang admin sau phản hồi UI mobile bị vấp.
+- Thay đổi chính:
+  - đăng nhập admin chuyển thẳng tới `/admin/dashboard`;
+  - `/admin` mặc định redirect sang `/admin/dashboard`, chỉ giữ `/admin?denied=1` để báo lỗi phân quyền;
+  - bỏ mục menu `Vùng quản trị` vì route này không còn là màn thao tác chính; brand/logo dẫn về dashboard;
+  - dashboard mobile mở tab `Tra cứu` trước;
+  - bảng ở `/admin/import`, `/admin/accounts`, `/admin/contacts/review` có bản card/list trên mobile;
+  - form duyệt/từ chối liên hệ trên mobile được gom vào khối mở rộng, mặc định chỉ xem tóm tắt.
+- Đã sửa lỗi overflow ngang phát sinh từ tên file dài trong card import mobile bằng `min-w-0`/`truncate`.
+- Kiểm tra:
+  - `npm test`: 95/95 pass.
+  - `npm run build`: pass.
+  - `npm run test:mobile-ui`: 40/40 pass trên 10 viewport mobile.
+- Dev server đã restart lại tại `http://localhost:3000`.
+
+## Cập nhật dashboard cảnh báo cắt điện 2026-05-24
+
+- Card `Cần chú ý` đã đổi thành `Cảnh báo cắt điện`.
+- Logic hiện tại:
+  - `Chuẩn bị cắt`: mốc đã đóng hết tháng bằng `kỳ hiện tại - 4`.
+  - `Đã cắt điện`: mốc đã đóng thấp hơn ngưỡng chuẩn bị cắt.
+- Với batch hiện hành `T5-2026`, kết quả đang hiển thị:
+  - `Đã cắt điện`: 6 căn.
+  - `Chuẩn bị cắt`: 4 căn.
+- Kiểm tra:
+  - `npm test`: 95/95 pass.
+  - `npm run build`: pass.
+  - `npm run test:mobile-ui`: 40/40 pass.
+
+## Cập nhật parser mã căn 2026-05-24
+
+- Đã bổ sung rule parser cho cách nhập số lô/tòa bằng chữ tiếng Việt:
+  - `lo hai 306`, `lô hai 306`, `lô hai căn 306` -> candidate `L2.306`
+  - `can 306 lo hai`, `306lohai` -> candidate `L2.306`
+  - `lo bon b can 124`, `lô bốn b căn 124`, `lô tư b căn 124` -> candidate `L4B.124`
+- Public lookup xử lý an toàn trường hợp candidate gốc mơ hồ:
+  - ví dụ `lo hai 306` tạo candidate `L2.306`
+  - DB hiện có `L2.306A` và `L2.306B`
+  - UI hiển thị `Cần chọn rõ căn`, không tự chọn căn hộ thay người dùng.
+- Đã thêm 100+ case tự động cho nhóm input `lô/tòa/căn/phòng` + số bằng chữ.
+- Kiểm tra thực tế:
+  - `/tra-cuu-phi?ma_can=lo%20hai%20306`: hiển thị lựa chọn `L2.306A`, `L2.306B`.
+  - `/tra-cuu-phi?ma_can=L2.306A`: tra cứu thành công, trả dữ liệu `T5-2026`.
+- Kiểm tra kỹ thuật:
+  - `npm test`: 265/265 pass.
+  - `npm run build`: pass.
+  - `npm run test:mobile-ui`: 40/40 pass.
+- Dev server đang chạy tại `http://localhost:3000`.
+
+## Cập nhật UI dashboard admin 2026-05-24
+
+- Đã đồng bộ logo admin/sidebar với logo public: `public/images/logo-hoanghuy.webp`.
+- Desktop `/admin/dashboard` đã đưa card `Tra cứu nhanh` lên đầu trang để manager/kỹ thuật tra cứu ngay, không phải kéo qua KPI/chart.
+- Mobile vẫn giữ layout Tabs và mở tab `Tra cứu` mặc định.
+- Card `Hoàn thành kỳ phí` bổ sung số liệu phụ để giảm khoảng trống:
+  - kỳ hiện tại
+  - số căn còn thiếu
+  - số căn đóng lẻ đã làm tròn
+  - số căn chưa có dữ liệu
+- Card `Phân bố tháng đã đóng đến` hiển thị phần trăm có số lẻ, ví dụ nhóm rất nhỏ hiển thị `0,1%` thay vì `0%`.
+- Card `Cảnh báo cắt điện` đổi nhãn:
+  - `Chuẩn bị cắt` -> `Cắt tháng này`
+  - danh sách `Cắt tháng này` hiển thị trước, `Đã cắt điện` hiển thị sau.
+- Kiểm tra:
+  - `npm test`: 265/265 pass.
+  - `npm run build`: pass.
+  - Playwright desktop 1440px: search form hiển thị ngay đầu dashboard, không overflow ngang, logo admin render.
+  - Playwright mobile 430px: không overflow ngang, chỉ có 1 search input visible trong tab mặc định.
+  - `npm run test:mobile-ui`: 40/40 pass.
+- Dev server đang chạy tại `http://localhost:3000`.
+
+## Cập nhật tài khoản quản trị 2026-05-25
+
+- Đã thêm role quản trị mới `TECHNICIAN` bằng migration `20260525000100_add_technician_role`.
+- Quyền `TECHNICIAN` hiện được xử lý ngang `MANAGER`:
+  - vào được dashboard/tra cứu nội bộ, xem liên hệ cư dân/dữ liệu gốc, gọi nhanh cư dân và trang hồ sơ cá nhân.
+  - không có form duyệt/từ chối liên hệ.
+  - bị chặn khỏi `/admin/import` và `/admin/accounts`, giống manager.
+- Trang `/admin/accounts`:
+  - Super Admin có thể tạo tài khoản `SUPER_ADMIN`, `MANAGER` hoặc `TECHNICIAN`; không cần tạo admin trực tiếp trong DB ở vận hành bình thường.
+  - Super Admin có thể đổi vai trò tài khoản nội bộ khác mình giữa `SUPER_ADMIN`, `MANAGER` và `TECHNICIAN`.
+  - Trang có bảng quyền theo vai trò để đối chiếu nhanh chức năng được sử dụng.
+  - Super Admin có thể khóa tài khoản nội bộ khác mình.
+  - Super Admin có thể mở khóa lại tài khoản đã khóa.
+- Thêm trang `/admin/profile` cho tài khoản đang đăng nhập:
+  - đổi tên hiển thị.
+  - đổi email.
+  - đổi mật khẩu sau khi nhập mật khẩu hiện tại.
+- Đã cập nhật navigation admin thêm mục `Tài khoản của tôi`.
+- Kiểm tra thực tế bằng UI:
+  - tạo thử tài khoản `SUPER_ADMIN`: DB nhận đúng role `SUPER_ADMIN`.
+  - tạo thử tài khoản `TECHNICIAN`: DB nhận đúng role `TECHNICIAN`.
+  - tạo thử tài khoản `MANAGER`, đổi role sang `TECHNICIAN`: DB cập nhật đúng.
+  - khóa/mở khóa tài khoản kỹ thuật: trạng thái đổi `DANG_HOAT_DONG` -> `BI_KHOA` -> `DANG_HOAT_DONG`.
+  - đăng nhập tài khoản kỹ thuật: vào được `/admin/dashboard` và `/admin/profile`.
+  - tài khoản kỹ thuật bị chặn khỏi `/admin/import` và `/admin/accounts`.
+  - tài khoản quản lý/kỹ thuật xem được trang liên hệ nhưng không có quyền duyệt/từ chối.
+  - đổi tên/email/mật khẩu ở `/admin/profile`: cập nhật DB và đăng nhập được bằng mật khẩu mới.
+- Kiểm tra kỹ thuật:
+  - `npx prisma migrate dev --name add_technician_role`: đã áp dụng migration.
+  - `npx prisma generate`: pass.
+  - `npm test`: 265/265 pass.
+  - `npm run build`: pass sau khi dừng dev server và build sạch.
+  - `npm run test:mobile-ui`: 40/40 pass.
+- Dev server đang chạy tại `http://localhost:3000`.

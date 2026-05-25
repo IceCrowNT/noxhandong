@@ -13,11 +13,13 @@ const prisma = new PrismaClient({ adapter });
 const BASE_YEAR = 2026;
 
 function inferPeriod(fileName) {
-  const match = String(fileName || "").match(/T\s*(\d{1,2})/i);
-  if (!match) {
+  const matches = Array.from(String(fileName || "").matchAll(/(?:^|[^A-Z0-9])T\s*(\d{1,2})(?!\d)/gi));
+  if (!matches.length) {
     return "UNKNOWN";
   }
-  return `T${match[1]}-2026`;
+
+  const month = matches[matches.length - 1][1];
+  return `T${Number(month)}-2026`;
 }
 
 function parseArgs() {

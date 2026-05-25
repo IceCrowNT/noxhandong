@@ -63,8 +63,8 @@ export function AdminFrame({ activeKey, badge, children, description, headerActi
 
 export function ScrollPanel({ children, minWidth = 900 }: { children: ReactNode; minWidth?: number }) {
   return (
-    <div className="w-full max-w-full overflow-x-auto overflow-y-auto rounded-lg border border-[var(--line)] bg-white">
-      <div className="max-h-[420px]" style={{ minWidth }}>
+    <div className="max-h-[380px] w-full max-w-full overflow-auto rounded-md border border-[var(--line)] bg-white">
+      <div className="w-max min-w-full" style={{ minWidth }}>
         {children}
       </div>
     </div>

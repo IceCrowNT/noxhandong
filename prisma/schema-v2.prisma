@@ -71,6 +71,7 @@ enum CachPhanBo {
 enum VaiTroQuanTri {
   SUPER_ADMIN
   MANAGER
+  TECHNICIAN
 }
 
 enum TrangThaiTaiKhoan {

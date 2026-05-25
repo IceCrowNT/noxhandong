@@ -15,7 +15,7 @@ if (!process.env.DATABASE_URL) {
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
-const DEFAULT_INPUT = "docs/Theo dõi thu phí T4.xlsx";
+const DEFAULT_INPUT = "docs/Theo dõi thu phí T5.xlsx";
 const TARGET_SHEET = "Lịch sử đóng phí";
 const PREVIEW_DIR = "docs/preview-theo-doi-thu-phi";
 const BASE_YEAR = 2026;

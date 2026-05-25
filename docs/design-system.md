@@ -363,9 +363,7 @@ Mobile:
   - `Tra cứu`: ô tìm căn, tình trạng đóng phí, gọi nhanh, hồ sơ căn, dữ liệu gốc Excel.
   - `Lịch sử`: ma trận nhập dữ liệu và lịch sử import dạng card.
 - Bảng dài không hiển thị dạng `<table>` trên mobile; chuyển sang card/list.
-- Tab mặc định:
-  - Không có query: `Tổng quan`.
-  - Có query `ma_can`: `Tra cứu`.
+- Tab mặc định trên mobile: `Tra cứu`, vì nhân sự nội bộ cần tìm căn/SĐT nhanh ngay sau khi đăng nhập.
 
 Component liên quan:
 
@@ -398,3 +396,61 @@ npm run build
 ```
 
 Nếu vừa chạy `npm run build` trong lúc dev server đang mở, phải dừng dev server và xoá `.next` trước khi chạy lại `npm run dev` để tránh lỗi mất CSS/chunk 500.
+
+## Cập nhật table import 2026-05-23
+
+- Trang có bảng dữ liệu dài như `/admin/import` ưu tiên mỗi bảng là một section full-width.
+- Không ép hai bảng lớn vào hai cột nếu làm mất khả năng đọc hoặc làm thanh cuộn khó thao tác.
+- Chuỗi dài trong bảng như tên file upload phải dùng `truncate`/`title` hoặc đặt trong vùng scroll riêng, không để phá card.
+- `ScrollPanel` phải có `max-height` và `overflow-auto` rõ ràng; table chỉ được cuộn trong card, không làm tràn ngang toàn trang.
+
+## UX import phí 2026-05-24
+
+- Không dùng chữ `staging` trên giao diện vận hành vì quá kỹ thuật.
+- Nút phụ là `Chỉ kiểm tra file`: đọc file, parse dữ liệu, báo số dòng/lỗi nhưng không công khai cho cư dân.
+- Nút chính là `Nhập và công khai cho cư dân`: import file, tạo snapshot public và đặt batch mới làm dữ liệu hiện hành.
+- Không thêm nút `Công khai từ staging` khi chưa có màn review thật sự; tránh tạo hai đường public khác nhau và rủi ro public nhầm batch cũ.
+- Sau khi kiểm tra file, phải hiển thị số dòng, mã căn không khớp, thiếu tháng, không parse được tháng, đóng lẻ tiền và ngoài năm 2026.
+
+## Rà soát UI admin mobile 2026-05-24
+
+- Sau đăng nhập chuyển thẳng vào `/admin/dashboard` thay vì trang đệm `/admin`.
+- Route `/admin` mặc định cũng chuyển sang `/admin/dashboard`; chỉ giữ trang `/admin?denied=1` để báo lỗi phân quyền.
+- Menu admin không hiển thị mục `Vùng quản trị` riêng vì route này chỉ redirect; brand/logo dẫn về dashboard.
+- Mobile dashboard mở tab `Tra cứu` trước để phục vụ thao tác nhanh.
+- `/admin/accounts`, `/admin/import`, `/admin/contacts/review` dùng card/list trên mobile; bảng desktop chỉ hiện từ breakpoint lớn hơn.
+- Trang duyệt liên hệ mobile chỉ hiển thị tóm tắt từng liên hệ; form duyệt/từ chối nằm trong khối mở rộng để giảm cuộn dài.
+- Tên file dài phải có `truncate` và card mobile phải có `min-w-0` để không tạo overflow ngang.
+
+## Chart phân bố phí 2026-05-24
+
+- Phân bố `Tháng đã đóng đến hiện tại` dùng histogram/thanh ngang, không dùng pie/donut.
+- Lý do: cần hiển thị đủ toàn bộ nhóm tháng của `934` căn, có số căn và phần trăm từng nhóm.
+- Phần trăm từng nhóm hiển thị 1 chữ số thập phân khi cần, ví dụ `1 căn` trên `934 căn` hiển thị khoảng `0,1%`, không làm tròn thành `0%`.
+- Chart phải có tổng đối soát ngay trong card:
+  - `Tổng`: tổng căn trong batch.
+  - `Đạt kỳ`: số căn đã đạt/vượt kỳ hiện tại.
+  - `Số mốc`: số nhóm tháng/năm đang tồn tại.
+- Màu:
+  - xanh: đã đạt hoặc vượt kỳ hiện tại.
+  - vàng: chưa đạt kỳ hiện tại.
+- Mobile vẫn hiển thị đủ các mốc tháng, không cắt top 6/top 10.
+
+## Card cảnh báo cắt điện 2026-05-24
+
+- Card `Cần chú ý` trên dashboard đổi thành `Cảnh báo cắt điện`.
+- Logic theo kỳ phí hiện tại:
+  - `Cắt tháng này`: căn đã đóng hết tháng `kỳ hiện tại - 4`.
+  - `Đã cắt điện`: căn có mốc đóng phí thấp hơn ngưỡng cắt tháng này.
+- Ví dụ kỳ `T5-2026`:
+  - đóng hết tháng `1/2026` là `Cắt tháng này`;
+  - đóng hết trước tháng `1/2026` là `Đã cắt điện`.
+- UI hiển thị nhóm `Cắt tháng này` trước, nhóm `Đã cắt điện` sau.
+- Đây là cảnh báo nội bộ cho admin/manager, không hiển thị trên public lookup.
+
+## Cập nhật dashboard desktop 2026-05-24
+
+- Desktop `/admin/dashboard` ưu tiên thao tác vận hành: card `Tra cứu nhanh` nằm ngay đầu nội dung, trước KPI và chart.
+- Mobile vẫn giữ Tabs và mở tab `Tra cứu` mặc định.
+- Logo admin dùng cùng asset `public/images/logo-hoanghuy.webp` với public header để đồng bộ nhận diện.
+- Card `Hoàn thành kỳ phí` bổ sung số liệu phụ trong phần trống: kỳ hiện tại, số căn còn thiếu, số căn đóng lẻ đã làm tròn và số căn chưa có dữ liệu.

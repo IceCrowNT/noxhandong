@@ -52,6 +52,12 @@ function parsePeriod(period: string | null | undefined) {
   };
 }
 
+function internalMonthLabel(monthIndex: number) {
+  const month = (((monthIndex - 1) % 12) + 12) % 12 + 1;
+  const year = BASE_YEAR + Math.floor((monthIndex - 1) / 12);
+  return `tháng ${month}/${year}`;
+}
+
 function extractPaidThrough(payload: unknown, fallback: string | null) {
   const payloadRecord = recordValue(payload);
   const paidThrough = recordValue(payloadRecord?.paidThrough);
@@ -102,8 +108,14 @@ function extractPaidThrough(payload: unknown, fallback: string | null) {
 
 async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel: string | null | undefined) {
   if (!currentBatchId) {
+    const currentPeriod = parsePeriod(currentPeriodLabel);
+    const powerCutSoonMonth = currentPeriod.month - 4;
     return {
-      currentPeriod: parsePeriod(currentPeriodLabel),
+      currentPeriod,
+      powerCutPolicy: {
+        soonPaidThroughLabel: internalMonthLabel(powerCutSoonMonth),
+        overdueFromLabel: internalMonthLabel(powerCutSoonMonth + 1),
+      },
       total: 0,
       completedCount: 0,
       notCompletedCount: 0,
@@ -116,6 +128,7 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
   }
 
   const currentPeriod = parsePeriod(currentPeriodLabel);
+  const powerCutSoonMonth = currentPeriod.month - 4;
   const feeRows = await prisma.trangThaiPhiCanHoPublic.findMany({
     where: { batch_id: currentBatchId },
     select: {
@@ -133,13 +146,12 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
     ma_can: string;
     label: string;
     displayText: string;
-    kind: "PARTIAL" | "OVERDUE" | "NO_DATA";
+    kind: "POWER_CUT" | "POWER_CUT_SOON";
   }> = [];
 
   let completedCount = 0;
   let noDataCount = 0;
   let partialRoundedCount = 0;
-
   for (const row of feeRows) {
     const paidThrough = extractPaidThrough(row.payload_public_json, row.thang_da_dong_den_hien_tai);
     const monthIndex = paidThrough.flooredMonth;
@@ -158,31 +170,23 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
       isCurrentOrLater: existing?.isCurrentOrLater || isCompleted,
     });
 
-    if (attentionRows.length < 8) {
-      if (paidThrough.isPartialPayment) {
-        attentionRows.push({
-          ma_can: row.ma_can,
-          label: paidThrough.label,
-          displayText:
-            paidThrough.displayText ||
-            `Đóng lẻ, dashboard làm tròn xuống tháng ${monthIndex ?? "-"}`,
-          kind: "PARTIAL",
-        });
-      } else if (monthIndex !== null && monthIndex < currentPeriod.month - 6) {
-        attentionRows.push({
-          ma_can: row.ma_can,
-          label: paidThrough.label,
-          displayText: paidThrough.displayText || "Đóng phí chậm so với kỳ hiện tại.",
-          kind: "OVERDUE",
-        });
-      } else if (monthIndex === null) {
-        attentionRows.push({
-          ma_can: row.ma_can,
-          label: paidThrough.label,
-          displayText: "Chưa có mốc tháng đã đóng.",
-          kind: "NO_DATA",
-        });
-      }
+    if (monthIndex !== null && monthIndex === powerCutSoonMonth) {
+      attentionRows.push({
+        ma_can: row.ma_can,
+        label: "Cắt tháng này",
+        displayText: `${paidThrough.displayText || paidThrough.label}. Chậm phí từ ${internalMonthLabel(powerCutSoonMonth + 1)}.`,
+        kind: "POWER_CUT_SOON",
+      });
+    } else if (monthIndex === null || monthIndex < powerCutSoonMonth) {
+      attentionRows.push({
+        ma_can: row.ma_can,
+        label: "Đã cắt điện",
+        displayText:
+          monthIndex === null
+            ? "Chưa có mốc tháng đã đóng trong dữ liệu public."
+            : `${paidThrough.displayText || paidThrough.label}. Đóng thiếu trước ngưỡng cắt tháng này.`,
+        kind: "POWER_CUT",
+      });
     }
   }
 
@@ -191,6 +195,10 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
 
   return {
     currentPeriod,
+    powerCutPolicy: {
+      soonPaidThroughLabel: internalMonthLabel(powerCutSoonMonth),
+      overdueFromLabel: internalMonthLabel(powerCutSoonMonth + 1),
+    },
     total,
     completedCount,
     notCompletedCount,
@@ -203,7 +211,10 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
         ...item,
         percent: total ? Math.round((item.count / total) * 100) : 0,
       })),
-    attentionRows,
+    attentionRows: attentionRows.sort((a, b) => {
+      if (a.kind !== b.kind) return a.kind === "POWER_CUT_SOON" ? -1 : 1;
+      return a.ma_can.localeCompare(b.ma_can, "vi-VN", { numeric: true });
+    }),
   };
 }
 

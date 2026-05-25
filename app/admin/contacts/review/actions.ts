@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { requireAdmin } from "@/src/modules/auth/current-user";
+import { requireAdminRole } from "@/src/modules/auth/current-user";
 import {
   approveContactCandidate,
   isContactRole,
@@ -31,7 +31,7 @@ function redirectWithStatus(status: string) {
 }
 
 export async function approveContactAction(formData: FormData) {
-  const account = await requireAdmin();
+  const account = await requireAdminRole("SUPER_ADMIN");
   const roleValue = getString(formData, "role");
 
   try {
@@ -53,7 +53,7 @@ export async function approveContactAction(formData: FormData) {
 }
 
 export async function rejectContactAction(formData: FormData) {
-  const account = await requireAdmin();
+  const account = await requireAdminRole("SUPER_ADMIN");
 
   try {
     await rejectContactCandidate({

@@ -2,6 +2,7 @@ export function adminRoleLabel(value: string | null | undefined) {
   const labels: Record<string, string> = {
     SUPER_ADMIN: "Quản trị cao nhất",
     MANAGER: "Quản lý",
+    TECHNICIAN: "Kỹ thuật",
   };
   return value ? labels[value] || value : "-";
 }
@@ -110,4 +111,3 @@ export function reviewFlagLabel(value: string | null | undefined) {
   if (!value) return "-";
   return labels[value] || value.toLowerCase().replace(/_/g, " ");
 }
-

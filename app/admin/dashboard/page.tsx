@@ -66,13 +66,28 @@ function pct(value: number, total: number) {
 function FeeCompletionRing({
   percent,
   completed,
-  total
+  total,
+  notCompleted,
+  partialRounded,
+  noData,
+  periodLabel
 }: {
   percent: number;
   completed: number;
   total: number;
+  notCompleted: number;
+  partialRounded: number;
+  noData: number;
+  periodLabel: string;
 }) {
   const degrees = Math.min(100, Math.max(0, percent)) * 3.6;
+  const remainingPercent = total ? (notCompleted / total) * 100 : 0;
+  const stats = [
+    ["Kỳ hiện tại", periodLabel],
+    ["Còn thiếu", `${formatNumber(notCompleted)} căn · ${remainingPercent.toLocaleString("vi-VN", { maximumFractionDigits: 1 })}%`],
+    ["Đóng lẻ đã làm tròn", `${formatNumber(partialRounded)} căn`],
+    ["Chưa có dữ liệu", `${formatNumber(noData)} căn`],
+  ];
 
   return (
     <div className="grid gap-4 md:grid-cols-[150px_1fr] md:items-center">
@@ -95,6 +110,14 @@ function FeeCompletionRing({
           hiện tại.
         </p>
         <p className="m-0">Căn đóng vượt kỳ được tính là đã hoàn thành kỳ hiện tại.</p>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          {stats.map(([label, value]) => (
+            <div key={label} className="rounded-lg border border-[var(--line)] bg-white p-3">
+              <span className="block text-[11px] font-semibold uppercase text-[var(--muted)]">{label}</span>
+              <strong className="mt-1 block leading-5 text-[var(--text)]">{value}</strong>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -105,26 +128,59 @@ function FeeDistributionBars({
 }: {
   items: Array<{ label: string; count: number; percent: number; isCurrentOrLater: boolean }>;
 }) {
-  const visible = items.slice(0, 10);
-  const max = Math.max(...visible.map((item) => item.count), 1);
+  const total = items.reduce((sum, item) => sum + item.count, 0);
+  const max = Math.max(...items.map((item) => item.count), 1);
+  const completed = items.reduce((sum, item) => sum + (item.isCurrentOrLater ? item.count : 0), 0);
 
   return (
-    <div className="grid gap-3">
-      {visible.map((item) => (
-        <div key={item.label} className="grid gap-1">
-          <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="font-semibold text-[var(--text)]">{item.label}</span>
-            <span className="shrink-0 font-bold">{formatNumber(item.count)} căn</span>
+    <div className="grid gap-4">
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          ["Tổng", total],
+          ["Đạt kỳ", completed],
+          ["Số mốc", items.length],
+        ].map(([label, value]) => (
+          <div key={label} className="rounded-lg border border-[var(--line)] bg-white p-3">
+            <span className="text-[11px] font-semibold uppercase text-[var(--muted)]">{label}</span>
+            <strong className="mt-1 block text-xl">{formatNumber(Number(value))}</strong>
           </div>
-          <div className="h-3 overflow-hidden rounded-full bg-[var(--accent-soft)]">
-            <div
-              className={item.isCurrentOrLater ? "h-full rounded-full bg-[var(--accent)]" : "h-full rounded-full bg-amber-500"}
-              style={{ width: `${Math.max(4, Math.round((item.count / max) * 100))}%` }}
-            />
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-[var(--line)] bg-white p-3">
+        <div className="grid gap-3">
+          {items.map((item) => {
+            const width = Math.max(2, Math.round((item.count / max) * 100));
+            const tone = item.isCurrentOrLater ? "bg-[var(--accent)]" : "bg-amber-500";
+            const detailedPercent = total
+              ? ((item.count / total) * 100).toLocaleString("vi-VN", {
+                  maximumFractionDigits: 1,
+                  minimumFractionDigits: item.count > 0 && item.count < total / 100 ? 1 : 0,
+                })
+              : "0";
+
+            return (
+              <div key={item.label} className="grid gap-1">
+                <div className="grid grid-cols-[minmax(130px,1fr)_auto] items-baseline gap-3 text-sm">
+                  <span className="min-w-0 truncate font-semibold text-[var(--text)]" title={item.label}>
+                    {item.label}
+                  </span>
+                  <span className="shrink-0 text-right font-bold">
+                    {formatNumber(item.count)} căn · {detailedPercent}%
+                  </span>
+                </div>
+                <div className="h-4 overflow-hidden rounded-full bg-[var(--accent-soft)]">
+                  <div className={`h-full rounded-full ${tone}`} style={{ width: `${width}%` }} />
+                </div>
+              </div>
+            );
+          })}
+          <div className="border-t border-[var(--line)] pt-3 text-sm text-[var(--muted)]">
+            Tổng các nhóm: <b className="text-[var(--text)]">{formatNumber(total)}</b> căn. Thanh xanh là đã đạt hoặc
+            vượt kỳ hiện tại; thanh vàng là chưa đạt kỳ hiện tại.
           </div>
-          <div className="text-xs text-[var(--muted)]">{item.percent}% tổng số căn</div>
         </div>
-      ))}
+      </div>
     </div>
   );
 }
@@ -132,16 +188,48 @@ function FeeDistributionBars({
 function AttentionRows({
   items,
 }: {
-  items: Array<{ ma_can: string; label: string; displayText: string; kind: "PARTIAL" | "OVERDUE" | "NO_DATA" }>;
+  items: Array<{ ma_can: string; label: string; displayText: string; kind: "POWER_CUT" | "POWER_CUT_SOON" }>;
 }) {
+  const counts = items.reduce(
+    (acc, item) => {
+      acc[item.kind] += 1;
+      return acc;
+    },
+    { POWER_CUT: 0, POWER_CUT_SOON: 0 }
+  );
+
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-3">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+          <span className="text-[11px] font-semibold uppercase text-amber-700">Cắt tháng này</span>
+          <strong className="mt-1 block text-2xl text-amber-900">{formatNumber(counts.POWER_CUT_SOON)}</strong>
+        </div>
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+          <span className="text-[11px] font-semibold uppercase text-red-700">Đã cắt điện</span>
+          <strong className="mt-1 block text-2xl text-red-900">{formatNumber(counts.POWER_CUT)}</strong>
+        </div>
+      </div>
+
       {items.length ? (
         items.map((item) => (
-          <div key={`${item.kind}-${item.ma_can}`} className="rounded-lg border border-[var(--line)] bg-white p-3 text-sm">
+          <div
+            key={`${item.kind}-${item.ma_can}`}
+            className={
+              item.kind === "POWER_CUT"
+                ? "rounded-lg border border-red-200 bg-red-50 p-3 text-sm"
+                : "rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm"
+            }
+          >
             <div className="flex items-center justify-between gap-3">
               <strong>{item.ma_can}</strong>
-              <span className="rounded-md bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]">
+              <span
+                className={
+                  item.kind === "POWER_CUT"
+                    ? "rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-800"
+                    : "rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800"
+                }
+              >
                 {item.label}
               </span>
             </div>
@@ -150,7 +238,7 @@ function AttentionRows({
         ))
       ) : (
         <div className="rounded-lg border border-dashed border-[var(--line)] bg-white p-4 text-sm text-[var(--muted)]">
-          Chưa có dữ liệu cần chú ý trong batch hiện tại.
+          Không có căn trong ngưỡng đã cắt điện hoặc cắt tháng này theo kỳ hiện tại.
         </div>
       )}
     </div>
@@ -421,7 +509,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
       }
     >
       <section className="lg:hidden">
-        <Tabs defaultValue={hasSearch ? "lookup" : "overview"} className="w-full">
+        <Tabs defaultValue="lookup" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Tổng quan</TabsTrigger>
             <TabsTrigger value="lookup">Tra cứu</TabsTrigger>
@@ -446,6 +534,10 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                   percent={feeOverview.completionPercent}
                   completed={feeOverview.completedCount}
                   total={feeOverview.total}
+                  notCompleted={feeOverview.notCompletedCount}
+                  partialRounded={feeOverview.partialRoundedCount}
+                  noData={feeOverview.noDataCount}
+                  periodLabel={feeOverview.currentPeriod.label}
                 />
               </CardContent>
             </Card>
@@ -455,16 +547,16 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                 <CardTitle className="text-xl">Phân bố tháng phí</CardTitle>
               </CardHeader>
               <CardContent>
-                <FeeDistributionBars items={feeOverview.distribution.slice(0, 6)} />
+                <FeeDistributionBars items={feeOverview.distribution} />
               </CardContent>
             </Card>
 
             <Card className="bg-white/90">
               <CardHeader className="pb-3">
-                <CardTitle className="text-xl">Cần chú ý</CardTitle>
+                <CardTitle className="text-xl">Cảnh báo cắt điện</CardTitle>
               </CardHeader>
               <CardContent>
-                <AttentionRows items={feeOverview.attentionRows.slice(0, 4)} />
+                <AttentionRows items={feeOverview.attentionRows} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -620,8 +712,8 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </Tabs>
       </section>
 
-      <div className="hidden lg:block">
-      <section className="mb-5 grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
+      <div className="hidden lg:flex lg:flex-col">
+      <section className="order-2 mb-5 grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
         <Card className="bg-white/90">
           <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
             <div>
@@ -686,7 +778,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </Card>
       </section>
 
-      <section className="mb-5 grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)_minmax(320px,0.8fr)]">
+      <section className="order-3 mb-5 grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)_minmax(320px,0.8fr)]">
         <Card className="bg-white/90">
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -702,6 +794,10 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
               percent={feeOverview.completionPercent}
               completed={feeOverview.completedCount}
               total={feeOverview.total}
+              notCompleted={feeOverview.notCompletedCount}
+              partialRounded={feeOverview.partialRoundedCount}
+              noData={feeOverview.noDataCount}
+              periodLabel={feeOverview.currentPeriod.label}
             />
           </CardContent>
         </Card>
@@ -718,8 +814,11 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
 
         <Card className="bg-white/90">
           <CardHeader>
-            <CardTitle>Cần chú ý</CardTitle>
-            <CardDescription>Căn có đóng lẻ hoặc mốc phí thấp bất thường.</CardDescription>
+            <CardTitle>Cảnh báo cắt điện</CardTitle>
+            <CardDescription>
+              Theo kỳ {feeOverview.currentPeriod.label}: đóng hết {feeOverview.powerCutPolicy.soonPaidThroughLabel} là
+              cắt tháng này; thấp hơn là đã cắt điện.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <AttentionRows items={feeOverview.attentionRows} />
@@ -727,7 +826,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </Card>
       </section>
 
-      <section className="mb-5 grid gap-4 xl:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)]">
+      <section className="order-1 mb-5 grid gap-4 xl:grid-cols-[minmax(0,1.24fr)_minmax(340px,0.76fr)]">
         <Card id="lookup" className="bg-white/90">
           <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
             <div>
@@ -898,7 +997,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
       </section>
 
       {selected ? (
-        <section className="mb-5 grid gap-4 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+        <section className="order-4 mb-5 grid gap-4 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
           <div className="grid gap-4">
             <Card className="bg-white/90">
               <CardHeader>
@@ -1045,7 +1144,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </section>
       ) : null}
 
-      <Card className="bg-white/90">
+      <Card className="order-5 bg-white/90">
         <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center gap-2">

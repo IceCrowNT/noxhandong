@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Database, FileSpreadsheet, Search, Users } from "lucide-react";
 
 import { AdminFrame } from "@/components/admin/admin-frame";
@@ -25,8 +26,8 @@ const adminCards = [
     href: "/admin/contacts/review",
     icon: Users,
     role: "Quản lý",
-    title: "Duyệt liên hệ",
-    description: "Rà soát liên hệ nháp trước khi đưa vào danh bạ chính thức."
+    title: "Liên hệ cư dân",
+    description: "Xem liên hệ nháp và dữ liệu gốc; chỉ Super Admin được duyệt vào danh bạ chính thức."
   },
   {
     href: "/admin/import",
@@ -48,9 +49,13 @@ export default async function AdminHomePage({ searchParams }: AdminHomeProps) {
   const account = await requireAdmin();
   const params = await searchParams;
 
+  if (params?.denied !== "1") {
+    redirect("/admin/dashboard");
+  }
+
   return (
     <AdminFrame
-      activeKey="home"
+      activeKey="dashboard"
       badge={adminRoleLabel(account.vai_tro)}
       title="Vùng quản trị"
       description={

@@ -96,4 +96,13 @@ describe("parseApartmentCode", () => {
     expect(parseApartmentCode("toa 4b phong 124").parsedApartmentCode).toBe("L4B.124");
     expect(parseApartmentCode("124lo4b").parsedApartmentCode).toBe("L4B.124");
   });
+
+  it("parses resident-style Vietnamese word-number block aliases", () => {
+    expect(parseApartmentCode("lo hai 306").parsedApartmentCode).toBe("L2.306");
+    expect(parseApartmentCode("lô hai căn 306").parsedApartmentCode).toBe("L2.306");
+    expect(parseApartmentCode("can 306 lo hai").parsedApartmentCode).toBe("L2.306");
+    expect(parseApartmentCode("306lohai").parsedApartmentCode).toBe("L2.306");
+    expect(parseApartmentCode("lo bon b can 124").parsedApartmentCode).toBe("L4B.124");
+    expect(parseApartmentCode("lô tư b căn 124").parsedApartmentCode).toBe("L4B.124");
+  });
 });

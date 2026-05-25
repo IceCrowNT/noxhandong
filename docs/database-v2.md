@@ -281,6 +281,7 @@ Vai trò ban đầu:
 
 - `SUPER_ADMIN`
 - `MANAGER`
+- `TECHNICIAN`
 
 Các cột chính:
 
@@ -298,9 +299,13 @@ Các cột chính:
 
 Quy tắc:
 
-- `SUPER_ADMIN` mới được import/chốt batch dữ liệu public.
-- `MANAGER` chỉ xem dữ liệu nội bộ và contact theo quyền.
+- `SUPER_ADMIN` có toàn quyền: import/chốt batch dữ liệu public, duyệt/từ chối liên hệ, tạo/khóa/mở khóa/đổi vai trò tài khoản quản trị.
+- `SUPER_ADMIN` có thể tạo thêm tài khoản `SUPER_ADMIN`, `MANAGER`, hoặc `TECHNICIAN` từ UI `/admin/accounts`; không cần tạo admin trực tiếp trong DB ở vận hành bình thường.
+- `MANAGER` chỉ được tra cứu nội bộ, xem liên hệ cư dân/dữ liệu gốc, gọi nhanh cư dân và quản lý tài khoản cá nhân.
+- `TECHNICIAN` dùng cho đội kỹ thuật, quyền hiện tại ngang `MANAGER`: tra cứu nội bộ, xem liên hệ cư dân/dữ liệu gốc, gọi nhanh cư dân và quản lý tài khoản cá nhân.
+- `MANAGER` và `TECHNICIAN` không được import/chốt phí, duyệt/từ chối liên hệ, tạo tài khoản hoặc đổi phân quyền.
 - `so_dien_thoai` là số đã chuẩn hóa, dùng được để đăng nhập admin/manager.
+- Mỗi tài khoản quản trị có trang hồ sơ riêng để tự đổi `ten_hien_thi`, `email`, và `mat_khau_hash` thông qua đổi mật khẩu.
 - Không export hoặc hiển thị `mat_khau_hash` trong file Excel vận hành.
 
 ## 7C. `dong_theo_doi_thu_phi_tho`

@@ -11,6 +11,9 @@
 - Parser mã căn: [parser-ma-can-ho.md](parser-ma-can-ho.md)
 - Design system: [design-system.md](design-system.md)
 - Production VPS: [production-deploy-vps.md](production-deploy-vps.md)
+- Runbook deploy VPS: [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md)
+- Todo đồng thuận kỹ thuật: [todolist-dong-thuan-antigravity-codex.md](todolist-dong-thuan-antigravity-codex.md)
+- Backlog đối soát sao kê: [backlog-doi-soat-sao-ke.md](backlog-doi-soat-sao-ke.md)
 
 ## Mục đích
 
@@ -39,6 +42,9 @@ Không nên dựa vào lịch sử chat làm nguồn sự thật chính.
 9. [setup-may-moi-va-database.md](setup-may-moi-va-database.md)
 10. [module-map.md](module-map.md)
 11. [production-deploy-vps.md](production-deploy-vps.md)
+12. [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md)
+13. [todolist-dong-thuan-antigravity-codex.md](todolist-dong-thuan-antigravity-codex.md)
+14. [backlog-doi-soat-sao-ke.md](backlog-doi-soat-sao-ke.md)
 
 ## Nhóm tài liệu xương sống
 
@@ -56,6 +62,9 @@ Không nên dựa vào lịch sử chat làm nguồn sự thật chính.
 | [setup-may-moi-va-database.md](setup-may-moi-va-database.md) | Hướng dẫn dựng môi trường và database |
 | [stitch-mobile-ui-prompt.md](stitch-mobile-ui-prompt.md) | Prompt thiết kế mobile-first trên Stitch |
 | [production-deploy-vps.md](production-deploy-vps.md) | Quyết định và checklist production khi deploy trên VPS |
+| [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md) | Runbook thao tác deploy MVP lên VPS: DNS, PostgreSQL, PM2, Caddy, backup |
+| [todolist-dong-thuan-antigravity-codex.md](todolist-dong-thuan-antigravity-codex.md) | Todo list đã đồng thuận giữa Antigravity/Codex cho Task N và backlog đối soát sao kê |
+| [backlog-doi-soat-sao-ke.md](backlog-doi-soat-sao-ke.md) | Backlog Phase 2 cho import/đối soát sao kê, gồm ý tưởng card giao dịch gần nhất theo căn hộ |
 
 ## Nhóm nghiệp vụ import và contact
 
@@ -89,7 +98,7 @@ Không nên dựa vào lịch sử chat làm nguồn sự thật chính.
 Các file Excel/CSV trong `docs/` là dữ liệu mẫu hoặc kết quả preview để kiểm chứng rule:
 
 - `Danh_Sach_Can_Ho_Master.xlsx`
-- `Theo dõi thu phí T4.xlsx`
+- `Theo dõi thu phí T5.xlsx`
 - `lich-su-giao-dich(...).xls`
 - các file CSV trong `preview-lien-he-can-ho/`
 - các file CSV trong `preview-master-lien-he-can-ho/`

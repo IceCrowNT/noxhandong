@@ -1,4 +1,4 @@
-export type AdminRole = "SUPER_ADMIN" | "MANAGER";
+export type AdminRole = "SUPER_ADMIN" | "MANAGER" | "TECHNICIAN";
 
 export type AdminSession = {
   userId: number;
@@ -47,7 +47,7 @@ async function sign(value: string) {
 }
 
 function isAdminRole(value: unknown): value is AdminRole {
-  return value === "SUPER_ADMIN" || value === "MANAGER";
+  return value === "SUPER_ADMIN" || value === "MANAGER" || value === "TECHNICIAN";
 }
 
 export async function createAdminSessionToken(input: Omit<AdminSession, "exp">) {

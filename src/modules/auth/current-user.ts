@@ -21,6 +21,8 @@ export async function getCurrentAdmin() {
       id: true,
       ten_dang_nhap: true,
       ten_hien_thi: true,
+      so_dien_thoai: true,
+      email: true,
       vai_tro: true,
       trang_thai: true,
     },

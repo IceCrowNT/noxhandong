@@ -6,6 +6,26 @@ const ROOM_CAPTURE = "([1-9]\\d{2}[A-Z]?)";
 const LK_BLOCK_CAPTURE = "(LK[1-9])";
 const LK_BLOCK_ALIAS_CAPTURE = "((?:LK|IK)[1-9])";
 const LK_ROOM_CAPTURE = "([1-9]\\d?)";
+const BLOCK_WORD_CAPTURE = "(MOT|NHAT|HAI|BA|BON|TU|NAM|SAU|BAY|TAM|CHIN)";
+
+const BLOCK_WORD_VALUES: Record<string, string> = {
+  MOT: "1",
+  NHAT: "1",
+  HAI: "2",
+  BA: "3",
+  BON: "4",
+  TU: "4",
+  NAM: "5",
+  SAU: "6",
+  BAY: "7",
+  TAM: "8",
+  CHIN: "9",
+};
+
+function normalizeBlockAlias(block: string, suffix = "") {
+  const normalizedBlock = BLOCK_WORD_VALUES[block] || block;
+  return `${normalizedBlock}${suffix || ""}`;
+}
 
 function formatApartmentCode(block: string, room: string, prefix = "L"): string {
   return `${prefix}${block}.${room}`;
@@ -156,6 +176,30 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
   );
   for (const match of normalizedDescription.matchAll(towerBlockThenRoomPattern)) {
     push(buildCandidate(match[1], match[2], "TOWER_BLOCK_ROOM_ALIAS", 0.95));
+  }
+
+  const roomThenTowerBlockWordPattern = new RegExp(
+    `\\b(?:CAN|CANHO|HO|PHONG|SO|NHA)?\\s*${ROOM_CAPTURE}\\s+(?:LO|TOA|BLOCK|BLK)\\s+${BLOCK_WORD_CAPTURE}\\s*([A-C])?(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(roomThenTowerBlockWordPattern)) {
+    push(buildCandidate(normalizeBlockAlias(match[2], match[3]), match[1], "ROOM_TOWER_BLOCK_WORD_ALIAS", 0.94));
+  }
+
+  const towerBlockWordThenRoomPattern = new RegExp(
+    `\\b(?:LO|TOA|BLOCK|BLK)\\s+${BLOCK_WORD_CAPTURE}\\s*([A-C])?\\s+(?:CAN|CANHO|HO|PHONG|SO|NHA)?\\s*${ROOM_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(towerBlockWordThenRoomPattern)) {
+    push(buildCandidate(normalizeBlockAlias(match[1], match[2]), match[3], "TOWER_BLOCK_WORD_ROOM_ALIAS", 0.94));
+  }
+
+  const compactRoomTowerBlockWordPattern = new RegExp(
+    `\\b${ROOM_CAPTURE}(?:LO|TOA|BLOCK|BLK)${BLOCK_WORD_CAPTURE}([A-C])?(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(compactRoomTowerBlockWordPattern)) {
+    push(buildCandidate(normalizeBlockAlias(match[2], match[3]), match[1], "ROOM_TOWER_BLOCK_WORD_COMPACT_ALIAS", 0.92));
   }
 
   const compactRoomTowerBlockPattern = new RegExp(

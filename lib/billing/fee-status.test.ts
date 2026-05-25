@@ -48,6 +48,58 @@ describe("parsePublicLookupInput", () => {
     expect(result.candidates[0]).toBe(expected);
   });
 
+  const wordBlockInputs = [
+    { aliases: ["mot", "một", "nhat", "nhất"], block: "L1", room: "115" },
+    { aliases: ["hai"], block: "L2", room: "306" },
+    { aliases: ["ba"], block: "L3", room: "209" },
+    { aliases: ["bon", "bốn", "tu", "tư"], block: "L4", room: "212" },
+    { aliases: ["nam", "năm"], block: "L5", room: "321" },
+    { aliases: ["sau", "sáu"], block: "L6", room: "318" },
+    { aliases: ["bay", "bảy"], block: "L7", room: "415" },
+    { aliases: ["tam", "tám"], block: "L8", room: "416" },
+    { aliases: ["chin", "chín"], block: "L9", room: "417" },
+  ];
+  const wordBlockTemplates = [
+    ({ alias, room }: { alias: string; room: string }) => `lo ${alias} ${room}`,
+    ({ alias, room }: { alias: string; room: string }) => `lô ${alias} căn ${room}`,
+    ({ alias, room }: { alias: string; room: string }) => `toa ${alias} phong ${room}`,
+    ({ alias, room }: { alias: string; room: string }) => `block ${alias} so ${room}`,
+    ({ alias, room }: { alias: string; room: string }) => `can ${room} lo ${alias}`,
+    ({ alias, room }: { alias: string; room: string }) => `căn ${room} lô ${alias}`,
+    ({ alias, room }: { alias: string; room: string }) => `${room} lo ${alias}`,
+    ({ alias, room }: { alias: string; room: string }) => `${room}lo${alias}`,
+  ];
+  const generatedWordBlockCases: Array<[string, string]> = wordBlockInputs.flatMap(({ aliases, block, room }) =>
+    aliases.flatMap((alias) =>
+      wordBlockTemplates.map((template) => [template({ alias, room }), `${block}.${room}`] as [string, string])
+    )
+  );
+
+  it("covers at least 100 resident-style word-number block lookup cases", () => {
+    expect(generatedWordBlockCases.length).toBeGreaterThanOrEqual(100);
+  });
+
+  it.each(generatedWordBlockCases)("parses word-number block lookup %s", (input, expected) => {
+    const result = parsePublicLookupInput(input);
+    expect(result.ok).toBe(true);
+    expect(result.candidates[0]).toBe(expected);
+  });
+
+  it.each([
+    ["lo bon b can 124", "L4B.124"],
+    ["lô bốn b căn 124", "L4B.124"],
+    ["lo tu b can 124", "L4B.124"],
+    ["lô tư b căn 124", "L4B.124"],
+    ["can 124 lo bon b", "L4B.124"],
+    ["căn 124 lô bốn b", "L4B.124"],
+    ["124 lo tu b", "L4B.124"],
+    ["124lo4b", "L4B.124"],
+  ])("parses word-number block suffix lookup %s", (input, expected) => {
+    const result = parsePublicLookupInput(input);
+    expect(result.ok).toBe(true);
+    expect(result.candidates[0]).toBe(expected);
+  });
+
   it("returns all candidates for multi-code input without inventing SQL-like behavior", () => {
     const result = parsePublicLookupInput("L4C.305; L4A.401; L1.423");
 

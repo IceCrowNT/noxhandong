@@ -154,6 +154,28 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
           .map((candidate) => feeStatuses.find((status) => status.ma_can === candidate))
           .find((status) => Boolean(status)) || null
       : null;
+  const expandableCandidatePrefixes =
+    lookup?.ok && !feeStatus
+      ? lookup.candidates.filter((candidate) => /^L[1-9][A-Z]?\.[1-9]\d{2}$/.test(candidate))
+      : [];
+  const expandedFeeStatuses =
+    currentBatch && lookup?.ok && !feeStatus && expandableCandidatePrefixes.length > 0 && !rateLimit.limited
+      ? await prisma.trangThaiPhiCanHoPublic.findMany({
+          where: {
+            batch_id: currentBatch.id,
+            OR: expandableCandidatePrefixes.map((candidate) => ({
+              ma_can: {
+                startsWith: candidate,
+              },
+            })),
+          },
+          orderBy: {
+            ma_can: "asc",
+          },
+        })
+      : [];
+  const resolvedFeeStatus = feeStatus || (expandedFeeStatuses.length === 1 ? expandedFeeStatuses[0] : null);
+  const ambiguousFeeStatuses = !feeStatus && expandedFeeStatuses.length > 1 ? expandedFeeStatuses : [];
 
   return (
     <main className="relative isolate min-h-screen bg-[#edf3ef] px-4 pb-8 text-[var(--text)]">
@@ -243,7 +265,7 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
           </StateCard>
         ) : null}
 
-        {currentBatch && hasQuery && !rateLimit.limited && lookup?.ok && !feeStatus ? (
+        {currentBatch && hasQuery && !rateLimit.limited && lookup?.ok && !resolvedFeeStatus && ambiguousFeeStatuses.length === 0 ? (
           <StateCard tone="error">
             <h2 className="text-2xl font-bold text-red-800">Không tìm thấy dữ liệu</h2>
             <p className="mx-auto max-w-xl text-sm leading-6 text-red-800">
@@ -256,7 +278,30 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
           </StateCard>
         ) : null}
 
-        {currentBatch && feeStatus ? (
+        {currentBatch && hasQuery && !rateLimit.limited && lookup?.ok && ambiguousFeeStatuses.length > 1 ? (
+          <Card className="border-l-4 border-l-amber-400 bg-white/90 shadow-[0_18px_60px_rgba(25,28,28,0.12)]">
+            <CardContent className="grid gap-4 p-5 md:p-7">
+              <div>
+                <div className="mb-2 w-fit rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-800">
+                  Cần chọn rõ căn
+                </div>
+                <h2 className="text-2xl font-bold text-amber-900">Tìm thấy nhiều căn phù hợp</h2>
+                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                  Nội dung nhập có thể là nhiều căn cùng số. Vui lòng chọn đúng hậu tố căn hộ.
+                </p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {ambiguousFeeStatuses.map((status) => (
+                  <Button asChild key={status.ma_can} variant="secondary" className="justify-start">
+                    <Link href={`/tra-cuu-phi?ma_can=${encodeURIComponent(status.ma_can)}`}>{status.ma_can}</Link>
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {currentBatch && resolvedFeeStatus ? (
           <Card className="border-l-4 border-l-[var(--success)] bg-white/90 shadow-[0_18px_60px_rgba(25,28,28,0.12)]">
             <CardContent className="grid gap-5 p-5 md:p-7">
               <div className="flex items-center gap-4">
@@ -267,18 +312,18 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
                   <div className="mb-1 w-fit rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-800">
                     Tra cứu thành công
                   </div>
-                  <h2 className="text-4xl font-bold leading-none text-[var(--accent)]">{feeStatus.ma_can}</h2>
+                  <h2 className="text-4xl font-bold leading-none text-[var(--accent)]">{resolvedFeeStatus.ma_can}</h2>
                 </div>
               </div>
 
               <div className="grid gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Trạng thái đóng phí</span>
                 <strong className="text-2xl leading-snug text-emerald-800">
-                  {publicFeeDisplayText(feeStatus.payload_public_json, feeStatus.thang_da_dong_den_hien_tai)}
+                  {publicFeeDisplayText(resolvedFeeStatus.payload_public_json, resolvedFeeStatus.thang_da_dong_den_hien_tai)}
                 </strong>
               </div>
 
-              {payloadFlag(feeStatus.payload_public_json, "isPartialPayment") ? (
+              {payloadFlag(resolvedFeeStatus.payload_public_json, "isPartialPayment") ? (
                 <div className="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm font-semibold leading-6 text-orange-800">
                   Căn này có dữ liệu đóng lẻ tiền so với mức phí chuẩn. Vui lòng liên hệ BQT nếu cần đối chiếu chi tiết.
                 </div>
@@ -295,7 +340,7 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
                 </div>
                 <div className="rounded-lg border border-[var(--line)] bg-white p-4">
                   <span className="mb-2 block text-xs font-bold uppercase text-[var(--muted)]">Nguồn hiển thị</span>
-                  <strong>Dữ liệu đã được BQT xác nhận</strong>
+                  <strong>Dữ liệu chỉ mang tính chất tham khảo - Sẽ được kiểm duyệt mỗi cuối tháng</strong>
                 </div>
               </div>
 

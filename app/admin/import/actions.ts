@@ -22,12 +22,24 @@ function safeFileName(value: string) {
 }
 
 function readJsonFromScriptOutput(output: string) {
-  const start = output.indexOf("{");
   const end = output.lastIndexOf("}");
-  if (start < 0 || end <= start) {
+  if (end < 0) {
     throw new Error(`Không đọc được kết quả script: ${output.slice(0, 500)}`);
   }
-  return JSON.parse(output.slice(start, end + 1)) as Record<string, unknown>;
+
+  const candidateStarts = Array.from(output.matchAll(/\{/g))
+    .map((match) => match.index)
+    .filter((index): index is number => typeof index === "number");
+
+  for (const start of candidateStarts.reverse()) {
+    try {
+      return JSON.parse(output.slice(start, end + 1)) as Record<string, unknown>;
+    } catch {
+      // dotenv can print tips containing braces before the actual JSON payload.
+    }
+  }
+
+  throw new Error(`Không đọc được kết quả script: ${output.slice(0, 500)}`);
 }
 
 function runScript(scriptPath: string, args: string[]) {
@@ -43,6 +55,23 @@ function runScript(scriptPath: string, args: string[]) {
 function numberField(result: Record<string, unknown>, field: string) {
   const value = result[field];
   return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function appendImportSummaryParams(params: URLSearchParams, importResult: Record<string, unknown>) {
+  const fields = [
+    "invalidApartmentRows",
+    "missingPaidThroughRows",
+    "unparsedPaidThroughRows",
+    "partialPaymentRows",
+    "outsideBaseYearRows",
+  ];
+
+  for (const field of fields) {
+    const value = numberField(importResult, field);
+    if (value !== null) {
+      params.set(field, String(value));
+    }
+  }
 }
 
 export async function importFeeTrackingWorkbookAction(formData: FormData) {
@@ -81,7 +110,13 @@ export async function importFeeTrackingWorkbookAction(formData: FormData) {
     }
 
     if (intent !== "import_and_publish") {
-      redirectUrl = `/admin/import?imported=1&importBatchId=${importBatchId}&rows=${importedRows || 0}`;
+      const redirectParams = new URLSearchParams({
+        checked: "1",
+        importBatchId: String(importBatchId),
+        rows: String(importedRows || 0),
+      });
+      appendImportSummaryParams(redirectParams, importResult);
+      redirectUrl = `/admin/import?${redirectParams.toString()}`;
     } else {
       const prepareResult = runScript("scripts/prepare-fee-public-batch-v2.cjs", [
         `--import-batch-id=${importBatchId}`,
@@ -98,7 +133,14 @@ export async function importFeeTrackingWorkbookAction(formData: FormData) {
       ]);
       const snapshotCount = numberField(publishResult, "snapshotCount");
 
-      redirectUrl = `/admin/import?published=1&importBatchId=${importBatchId}&publicBatchId=${publicBatchId}&rows=${snapshotCount || importedRows || 0}`;
+      const redirectParams = new URLSearchParams({
+        published: "1",
+        importBatchId: String(importBatchId),
+        publicBatchId: String(publicBatchId),
+        rows: String(snapshotCount || importedRows || 0),
+      });
+      appendImportSummaryParams(redirectParams, importResult);
+      redirectUrl = `/admin/import?${redirectParams.toString()}`;
     }
   } catch (error) {
     console.error(error);

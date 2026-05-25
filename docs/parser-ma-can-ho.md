@@ -331,3 +331,34 @@ Khi thay đổi parser mã căn:
 3. Bổ sung chống false-positive khi mã căn compact dính số điện thoại hoặc số tài khoản.
 4. Tách rõ output `single high confidence`, `multi candidate`, `need review`, `invalid`.
 5. Khi làm Task M, lưu `matchReason`, `confidence`, `phien_ban_parser` vào DB để audit.
+
+## Cập nhật 2026-05-24: alias số bằng chữ cho lô/tòa
+
+Nhóm rule mới đã được thêm cho các input cư dân hay nhập bằng tiếng Việt tự nhiên:
+
+- `lo hai 306`, `lô hai 306`, `lô hai căn 306` -> candidate `L2.306`
+- `can 306 lo hai`, `căn 306 lô hai` -> candidate `L2.306`
+- `306lohai`, `306 lo hai` -> candidate `L2.306`
+- `lo bon b can 124`, `lô bốn b căn 124`, `lô tư b căn 124` -> candidate `L4B.124`
+
+Parser hiện hỗ trợ số lô/tòa viết bằng chữ sau khi bỏ dấu:
+
+- `mot`, `nhat` -> `1`
+- `hai` -> `2`
+- `ba` -> `3`
+- `bon`, `tu` -> `4`
+- `nam` -> `5`
+- `sau` -> `6`
+- `bay` -> `7`
+- `tam` -> `8`
+- `chin` -> `9`
+
+Quy tắc an toàn: nếu candidate dạng gốc không tồn tại trực tiếp nhưng có nhiều căn cùng tiền tố, ví dụ `L2.306` khớp `L2.306A` và `L2.306B`, public lookup phải hiển thị màn `Cần chọn rõ căn`, không được tự chọn A/B.
+
+Kiểm tra đã bổ sung:
+
+- 100+ case sinh tự động cho public lookup với nhiều mẫu câu `lô/tòa/căn/phòng` và số bằng chữ.
+- Test trực tiếp parser cho các biến thể `lo hai 306`, `lô hai căn 306`, `can 306 lo hai`, `306lohai`, `lo bon b can 124`.
+- `npm test`: 265/265 pass.
+- `npm run build`: pass.
+- `npm run test:mobile-ui`: 40/40 pass.
