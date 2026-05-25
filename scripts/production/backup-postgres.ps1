@@ -4,6 +4,44 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Load-DotEnv {
+  param([string]$Path)
+
+  if (-not (Test-Path -LiteralPath $Path)) {
+    return
+  }
+
+  Get-Content -LiteralPath $Path | ForEach-Object {
+    $line = $_.Trim()
+    if ([string]::IsNullOrWhiteSpace($line) -or $line.StartsWith("#")) {
+      return
+    }
+
+    $separatorIndex = $line.IndexOf("=")
+    if ($separatorIndex -le 0) {
+      return
+    }
+
+    $name = $line.Substring(0, $separatorIndex).Trim()
+    $value = $line.Substring($separatorIndex + 1).Trim()
+    if ($value.Length -ge 2) {
+      $first = $value[0]
+      $last = $value[$value.Length - 1]
+      if (($first -eq '"' -and $last -eq '"') -or ($first -eq "'" -and $last -eq "'")) {
+        $value = $value.Substring(1, $value.Length - 2)
+      }
+    }
+
+    [Environment]::SetEnvironmentVariable($name, $value, "Process")
+  }
+}
+
+Load-DotEnv -Path (Join-Path (Get-Location) ".env")
+
+if ([string]::IsNullOrWhiteSpace($OutputDir)) {
+  $OutputDir = $env:BACKUP_DIR
+}
+
 if ([string]::IsNullOrWhiteSpace($env:DATABASE_URL)) {
   Write-Error "Missing DATABASE_URL"
 }
@@ -36,8 +74,11 @@ if (-not $pgDump) {
 
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $outputFile = Join-Path $OutputDir "apartment_fee_reviewer-$timestamp.dump"
+$pgDumpDatabaseUrl = $env:DATABASE_URL `
+  -replace "([?&])schema=[^&]+&?", '$1' `
+  -replace "[?&]$", ""
 
-& $pgDump.Source $env:DATABASE_URL `
+& $pgDump.Source $pgDumpDatabaseUrl `
   --format=custom `
   --no-owner `
   --no-privileges `
