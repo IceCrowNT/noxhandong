@@ -1,252 +1,276 @@
-# Checklist triển khai và nghiệm thu hệ thống
+﻿# Checklist triá»ƒn khai vÃ  nghiá»‡m thu há»‡ thá»‘ng
 
-## Liên kết xương sống
+## LiÃªn káº¿t xÆ°Æ¡ng sá»‘ng
 
-- Mục lục tài liệu: [README.md](README.md)
-- Handoff hiện tại: [handoff.md](handoff.md)
+- Má»¥c lá»¥c tÃ i liá»‡u: [README.md](README.md)
+- Handoff hiá»‡n táº¡i: [handoff.md](handoff.md)
 - Roadmap control: [roadmap.md](roadmap.md)
-- Database V2: [database-v2.md](database-v2.md)
-- Parser mã căn: [parser-ma-can-ho.md](parser-ma-can-ho.md)
+- Roadmap Phase 2: [phase-2-roadmap.md](phase-2-roadmap.md)
+- Database: [database.md](database.md)
+- Parser mÃ£ cÄƒn: [parser-ma-can-ho.md](parser-ma-can-ho.md)
 - Design system: [design-system.md](design-system.md)
 - Production VPS: [production-deploy-vps.md](production-deploy-vps.md)
 - Project README: [../README.md](../README.md)
 
-## Mục đích
+## Má»¥c Ä‘Ã­ch
 
-File này là checklist điều phối triển khai và nghiệm thu. Mỗi task phải trả lời rõ:
+File nÃ y lÃ  checklist Ä‘iá»u phá»‘i triá»ƒn khai vÃ  nghiá»‡m thu. Má»—i task pháº£i tráº£ lá»i rÃµ:
 
-- làm gì
-- dữ liệu/file nào liên quan
-- review ở đâu
-- check/test bằng gì
-- confirm điều gì trước khi sang bước tiếp theo
+- lÃ m gÃ¬
+- dá»¯ liá»‡u/file nÃ o liÃªn quan
+- review á»Ÿ Ä‘Ã¢u
+- check/test báº±ng gÃ¬
+- confirm Ä‘iá»u gÃ¬ trÆ°á»›c khi sang bÆ°á»›c tiáº¿p theo
 
-File control tiến trình cấp cao vẫn là:
+File control tiáº¿n trÃ¬nh cáº¥p cao váº«n lÃ :
 
 - `docs/roadmap.md`
 
-File này control điều kiện nghiệm thu chi tiết.
+File nÃ y control Ä‘iá»u kiá»‡n nghiá»‡m thu chi tiáº¿t.
 
-Trước khi sang Task O deploy public, phải dùng thêm cổng duyệt thủ công:
+TrÆ°á»›c khi sang Task O deploy public, pháº£i dÃ¹ng thÃªm cá»•ng duyá»‡t thá»§ cÃ´ng:
 
 - [checklist-duyet-truoc-deploy.md](checklist-duyet-truoc-deploy.md)
 
-## Quy tắc cập nhật
+## Quy táº¯c cáº­p nháº­t
 
-Mỗi khi bắt đầu hoặc hoàn tất task:
+Má»—i khi báº¯t Ä‘áº§u hoáº·c hoÃ n táº¥t task:
 
-- cập nhật trạng thái task trong file này
-- cập nhật `docs/roadmap.md` nếu trạng thái cấp cao thay đổi
-- cập nhật `docs/handoff.md` nếu là mốc bàn giao lớn
+- cáº­p nháº­t tráº¡ng thÃ¡i task trong file nÃ y
+- cáº­p nháº­t `docs/roadmap.md` náº¿u tráº¡ng thÃ¡i cáº¥p cao thay Ä‘á»•i
+- cáº­p nháº­t `docs/handoff.md` náº¿u lÃ  má»‘c bÃ n giao lá»›n
 
-Mỗi khi đổi schema:
+Má»—i khi Ä‘á»•i schema:
 
-- cập nhật `prisma/schema-v2.prisma`
-- cập nhật `docs/database-v2.md`
-- chạy validate schema
-- ghi rõ chưa/chạy migration trong `docs/handoff.md`
+- cáº­p nháº­t `prisma/schema.prisma`
+- cáº­p nháº­t `docs/database.md`
+- cháº¡y validate schema
+- ghi rÃµ chÆ°a/cháº¡y migration trong `docs/handoff.md`
 
-Mỗi khi đổi parser mã căn:
+Má»—i khi Ä‘á»•i parser mÃ£ cÄƒn:
 
-- cập nhật `docs/parser-ma-can-ho.md`
-- thêm hoặc cập nhật golden test trong `lib/parser/apartment-parser.test.ts`
-- nếu ảnh hưởng public lookup, cập nhật `lib/billing/fee-status.test.ts`
-- nếu ảnh hưởng lọc giao dịch, cập nhật `docs/filter-rules.vi.md`
-- chạy `npm test`
+- cáº­p nháº­t `docs/parser-ma-can-ho.md`
+- thÃªm hoáº·c cáº­p nháº­t golden test trong `lib/parser/apartment-parser.test.ts`
+- náº¿u áº£nh hÆ°á»Ÿng public lookup, cáº­p nháº­t `lib/billing/fee-status.test.ts`
+- náº¿u áº£nh hÆ°á»Ÿng lá»c giao dá»‹ch, cáº­p nháº­t `docs/filter-rules.vi.md`
+- cháº¡y `npm test`
 
-## Quy tắc qua cổng nghiệm thu
+## Quy táº¯c qua cá»•ng nghiá»‡m thu
 
-Không sang task tiếp theo nếu task hiện tại chưa có đủ:
+KhÃ´ng sang task tiáº¿p theo náº¿u task hiá»‡n táº¡i chÆ°a cÃ³ Ä‘á»§:
 
-1. Review: tài liệu/code/schema đã được đọc lại, không mâu thuẫn với roadmap.
-2. Check: có lệnh hoặc báo cáo kiểm chứng dữ liệu.
-3. Test: có test/build/validate phù hợp với phạm vi thay đổi.
-4. Confirm: ghi rõ kết quả vào checklist hoặc handoff.
+1. Review: tÃ i liá»‡u/code/schema Ä‘Ã£ Ä‘Æ°á»£c Ä‘á»c láº¡i, khÃ´ng mÃ¢u thuáº«n vá»›i roadmap.
+2. Check: cÃ³ lá»‡nh hoáº·c bÃ¡o cÃ¡o kiá»ƒm chá»©ng dá»¯ liá»‡u.
+3. Test: cÃ³ test/build/validate phÃ¹ há»£p vá»›i pháº¡m vi thay Ä‘á»•i.
+4. Confirm: ghi rÃµ káº¿t quáº£ vÃ o checklist hoáº·c handoff.
 
-Với các bước có reset DB, migrate hoặc import dữ liệu thật, phải có backup/snapshot hoặc xác nhận rõ môi trường đang là dev.
+Vá»›i cÃ¡c bÆ°á»›c cÃ³ reset DB, migrate hoáº·c import dá»¯ liá»‡u tháº­t, pháº£i cÃ³ backup/snapshot hoáº·c xÃ¡c nháº­n rÃµ mÃ´i trÆ°á»ng Ä‘ang lÃ  dev.
 
-## Trạng thái nền đã hoàn thành
+## Checklist Phase 2 sau MVP
 
-Các phần dưới đây đã hoàn thành trước roadmap public web:
+Phase 2 Ä‘ang Ä‘i theo quyáº¿t Ä‘á»‹nh má»›i ngÃ y 2026-05-27:
 
-- [x] Cấu trúc code mới ưu tiên `src/modules/`
-- [x] Database V1 đã thiết kế và migrate
-- [x] PostgreSQL local đã chạy được
-- [x] Prisma validate/generate đã chạy được
-- [x] Import workbook quản lý cũ vào raw V1
+- KhÃ´ng nháº­p láº¡i toÃ n bá»™ sao kÃª quÃ¡ khá»© T1-T5/2026 vÃ o DB chÃ­nh thá»©c.
+- Chá»‘t dá»¯ liá»‡u T5/2026 lÃ m opening balance.
+- Tá»« T6/2026 trá»Ÿ Ä‘i má»›i váº­n hÃ nh sao kÃª ngÃ¢n hÃ ng báº±ng luá»“ng import, parser, duyá»‡t, lÆ°u báº±ng chá»©ng vÃ  chá»‘t public.
+
+Cá»•ng nghiá»‡m thu tá»‘i thiá»ƒu cho Phase 2:
+
+- [ ] Chá»§ dá»± Ã¡n duyá»‡t file T5 cuá»‘i cÃ¹ng lÃ m opening balance.
+- [ ] Backup DB trÆ°á»›c má»i migration production.
+- [ ] Schema sao kÃª T6 Ä‘Ã£ validate trÃªn dev.
+- [ ] Parser khÃ´ng tá»± suy luáº­n case thiáº¿u lÃ´ nhÆ° `L 111B`.
+- [ ] MÃ n hÃ¬nh import sao kÃª cÃ³ preview trÆ°á»›c khi ghi staging.
+- [ ] MÃ n hÃ¬nh duyá»‡t sao kÃª xá»­ lÃ½ Ä‘Æ°á»£c má»™t cÄƒn, nhiá»u cÄƒn, khÃ´ng nháº­n diá»‡n, Zalo/báº±ng chá»©ng.
+- [ ] MÃ n hÃ¬nh duyá»‡t sao kÃª desktop 24 inch khÃ´ng cÃ³ kÃ©o ngang toÃ n trang vÃ  xem Ä‘Æ°á»£c giao dá»‹ch, parser result, gá»£i Ã½ cÄƒn, action duyá»‡t trong má»™t mÃ n hÃ¬nh.
+- [ ] MÃ n hÃ¬nh duyá»‡t sao kÃª cÃ³ Ä‘Ã¡nh giÃ¡ cháº¥t lÆ°á»£ng thÃ´ng tin: cháº¯c, khÃ¡ cháº¯c, cáº§n kiá»ƒm tra, khÃ´ng Ä‘á»§ dá»¯ liá»‡u.
+- [ ] Giao dá»‹ch Ä‘Ã£ duyá»‡t má»›i Ä‘Æ°á»£c ghi vÃ o lá»‹ch sá»­ phÃ­.
+- [ ] Super Admin má»›i Ä‘Æ°á»£c chá»‘t batch public.
+- [ ] Public lookup khÃ´ng Ä‘á»c dá»¯ liá»‡u sao kÃª chÆ°a duyá»‡t.
+- [ ] `npm test` vÃ  `npm run build` pass trÆ°á»›c deploy.
+
+## Tráº¡ng thÃ¡i ná»n Ä‘Ã£ hoÃ n thÃ nh
+
+CÃ¡c pháº§n dÆ°á»›i Ä‘Ã¢y Ä‘Ã£ hoÃ n thÃ nh trÆ°á»›c roadmap public web:
+
+- [x] Cáº¥u trÃºc code má»›i Æ°u tiÃªn `src/modules/`
+- [x] Database V1 Ä‘Ã£ thiáº¿t káº¿ vÃ  migrate
+- [x] PostgreSQL local Ä‘Ã£ cháº¡y Ä‘Æ°á»£c
+- [x] Prisma validate/generate Ä‘Ã£ cháº¡y Ä‘Æ°á»£c
+- [x] Import workbook quáº£n lÃ½ cÅ© vÃ o raw V1
 - [x] Transform V1 ra `Apartment`, `Resident`, `Occupancy`
-- [x] Audit dữ liệu contact từ file quản lý cũ
-- [x] Preview contact từ file quản lý cũ
-- [x] Đánh giá file `Danh_Sach_Can_Ho_Master.xlsx`
-- [x] Preview contact từ file master mới
-- [x] Mở rộng `schema-v2.prisma` cho auth, public fee snapshot và contact review
+- [x] Audit dá»¯ liá»‡u contact tá»« file quáº£n lÃ½ cÅ©
+- [x] Preview contact tá»« file quáº£n lÃ½ cÅ©
+- [x] ÄÃ¡nh giÃ¡ file `Danh_Sach_Can_Ho_Master.xlsx`
+- [x] Preview contact tá»« file master má»›i
+- [x] Má»Ÿ rá»™ng `schema.prisma` cho auth, public fee snapshot vÃ  contact review
 
-Mốc dữ liệu đã chốt:
+Má»‘c dá»¯ liá»‡u Ä‘Ã£ chá»‘t:
 
-- `934` căn hợp lệ
-- `884` căn `CHUNG_CU`
-- `50` căn `LIEN_KE`
-- `LKV.45`, `LKV.47`, `LKV.58` giữ nguyên mã, tính phí như `LIEN_KE`
-- file master mới khớp `934/934` mã căn
-- preview contact file master mới:
-  - `402` căn `NHAP_THANG`
-  - `532` căn `CAN_RA_SOAT`
-  - `1977` dòng contact preview
+- `934` cÄƒn há»£p lá»‡
+- `884` cÄƒn `CHUNG_CU`
+- `50` cÄƒn `LIEN_KE`
+- `LKV.45`, `LKV.47`, `LKV.58` giá»¯ nguyÃªn mÃ£, tÃ­nh phÃ­ nhÆ° `LIEN_KE`
+- file master má»›i khá»›p `934/934` mÃ£ cÄƒn
+- preview contact file master má»›i:
+  - `402` cÄƒn `NHAP_THANG`
+  - `532` cÄƒn `CAN_RA_SOAT`
+  - `1977` dÃ²ng contact preview
 
 ---
 
-# Task list hiện tại
+# Task list hiá»‡n táº¡i
 
-## Task A. Chuẩn hóa tài liệu cấp cao
+## Task A. Chuáº©n hÃ³a tÃ i liá»‡u cáº¥p cao
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-`docs/` là nơi lưu tài liệu xương sống. Người mới vào dự án phải biết đọc file nào trước và file nào control tiến trình.
+`docs/` lÃ  nÆ¡i lÆ°u tÃ i liá»‡u xÆ°Æ¡ng sá»‘ng. NgÆ°á»i má»›i vÃ o dá»± Ã¡n pháº£i biáº¿t Ä‘á»c file nÃ o trÆ°á»›c vÃ  file nÃ o control tiáº¿n trÃ¬nh.
 
-### File liên quan
+### File liÃªn quan
 
 - `docs/README.md`
 - `docs/roadmap.md`
 - `docs/handoff.md`
 - `docs/checklist-trien-khai-va-nghiem-thu.md`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- tạo mục lục tài liệu
-- tạo roadmap public web
-- cập nhật handoff trỏ tới roadmap
-- gộp checklist triển khai/nghiệm thu thành file hiện tại
+- táº¡o má»¥c lá»¥c tÃ i liá»‡u
+- táº¡o roadmap public web
+- cáº­p nháº­t handoff trá» tá»›i roadmap
+- gá»™p checklist triá»ƒn khai/nghiá»‡m thu thÃ nh file hiá»‡n táº¡i
 
 ### Review
 
-- đọc lại `docs/README.md`
-- đọc lại `docs/roadmap.md`
-- kiểm tra thứ tự đọc trong `docs/handoff.md`
+- Ä‘á»c láº¡i `docs/README.md`
+- Ä‘á»c láº¡i `docs/roadmap.md`
+- kiá»ƒm tra thá»© tá»± Ä‘á»c trong `docs/handoff.md`
 
 ### Check/Test
 
-- kiểm tra đủ 4 file tài liệu xương sống
-- kiểm tra không còn mâu thuẫn: file control cấp cao là `docs/roadmap.md`, file nghiệm thu là checklist này
+- kiá»ƒm tra Ä‘á»§ 4 file tÃ i liá»‡u xÆ°Æ¡ng sá»‘ng
+- kiá»ƒm tra khÃ´ng cÃ²n mÃ¢u thuáº«n: file control cáº¥p cao lÃ  `docs/roadmap.md`, file nghiá»‡m thu lÃ  checklist nÃ y
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] `docs/README.md` tồn tại
-- [x] `docs/roadmap.md` tồn tại
-- [x] `docs/handoff.md` đã trỏ tới README/roadmap
-- [x] checklist này đã gộp roadmap + nghiệm thu
+- [x] `docs/README.md` tá»“n táº¡i
+- [x] `docs/roadmap.md` tá»“n táº¡i
+- [x] `docs/handoff.md` Ä‘Ã£ trá» tá»›i README/roadmap
+- [x] checklist nÃ y Ä‘Ã£ gá»™p roadmap + nghiá»‡m thu
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành
+- [x] HoÃ n thÃ nh
 
 ---
 
-## Task B. Chốt schema V2 mở rộng
+## Task B. Chá»‘t schema hiện hành má»Ÿ rá»™ng
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Chốt schema mục tiêu để phục vụ:
+Chá»‘t schema má»¥c tiÃªu Ä‘á»ƒ phá»¥c vá»¥:
 
-- căn hộ master
+- cÄƒn há»™ master
 - contact staging/review
-- tài khoản quản trị
-- phân quyền `SUPER_ADMIN` / `MANAGER` / `TECHNICIAN`
-- import file theo dõi thu phí
-- batch public trạng thái phí
-- public snapshot cho cư dân tra cứu
+- tÃ i khoáº£n quáº£n trá»‹
+- phÃ¢n quyá»n `SUPER_ADMIN` / `MANAGER` / `TECHNICIAN`
+- import file theo dÃµi thu phÃ­
+- batch public tráº¡ng thÃ¡i phÃ­
+- public snapshot cho cÆ° dÃ¢n tra cá»©u
 
-### File liên quan
+### File liÃªn quan
 
-- `prisma/schema-v2.prisma`
-- `docs/database-v2.md`
+- `prisma/schema.prisma`
+- `docs/database.md`
 - `docs/roadmap.md`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- bổ sung field gốc từ file master cho `can_ho`
-- bổ sung vai trò/trạng thái contact
-- bổ sung metadata review cho `ung_vien_lien_he_can_ho`
-- thêm `tai_khoan_quan_tri`
-- thêm staging `dong_theo_doi_thu_phi_tho`
-- thêm `batch_trang_thai_phi_public`
-- thêm `trang_thai_phi_can_ho_public`
+- bá»• sung field gá»‘c tá»« file master cho `can_ho`
+- bá»• sung vai trÃ²/tráº¡ng thÃ¡i contact
+- bá»• sung metadata review cho `ung_vien_lien_he_can_ho`
+- thÃªm `tai_khoan_quan_tri`
+- thÃªm staging `dong_theo_doi_thu_phi_tho`
+- thÃªm `batch_trang_thai_phi_public`
+- thÃªm `trang_thai_phi_can_ho_public`
 
 ### Review
 
-- đọc lại schema V2
-- đối chiếu với `docs/database-v2.md`
-- đối chiếu với roadmap: public không đọc raw/contact
+- Ä‘á»c láº¡i schema hiện hành
+- Ä‘á»‘i chiáº¿u vá»›i `docs/database.md`
+- Ä‘á»‘i chiáº¿u vá»›i roadmap: public khÃ´ng Ä‘á»c raw/contact
 
 ### Check/Test
 
 ```bash
-npx prisma validate --schema prisma/schema-v2.prisma
+npx prisma validate --schema prisma/schema.prisma
 ```
 
-Kết quả hiện tại:
+Káº¿t quáº£ hiá»‡n táº¡i:
 
-- schema V2 đã validate thành công
+- schema hiện hành Ä‘Ã£ validate thÃ nh cÃ´ng
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Có role `SUPER_ADMIN`
-- [x] Có role `MANAGER`
-- [x] Có role `TECHNICIAN`
-- [x] Có bảng tài khoản quản trị
-- [x] Có bảng staging file theo dõi thu phí
-- [x] Có batch public trạng thái phí
-- [x] Có snapshot phí public theo căn
-- [x] Contact có vai trò/trạng thái/nguồn dữ liệu
+- [x] CÃ³ role `SUPER_ADMIN`
+- [x] CÃ³ role `MANAGER`
+- [x] CÃ³ role `TECHNICIAN`
+- [x] CÃ³ báº£ng tÃ i khoáº£n quáº£n trá»‹
+- [x] CÃ³ báº£ng staging file theo dÃµi thu phÃ­
+- [x] CÃ³ batch public tráº¡ng thÃ¡i phÃ­
+- [x] CÃ³ snapshot phÃ­ public theo cÄƒn
+- [x] Contact cÃ³ vai trÃ²/tráº¡ng thÃ¡i/nguá»“n dá»¯ liá»‡u
 - [x] Prisma validate pass
-- [x] Đã tạo migration/reset DB dev
+- [x] ÄÃ£ táº¡o migration/reset DB dev
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành phần schema
-- [x] Đã áp dụng vào DB dev
+- [x] HoÃ n thÃ nh pháº§n schema
+- [x] ÄÃ£ Ã¡p dá»¥ng vÃ o DB dev
 
 ---
 
 ## Task C. Migrate/reset DB dev sang V2
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Đưa DB dev sang schema V2 mở rộng để bắt đầu import dữ liệu theo pipeline mới.
+ÄÆ°a DB dev sang schema hiện hành má»Ÿ rá»™ng Ä‘á»ƒ báº¯t Ä‘áº§u import dá»¯ liá»‡u theo pipeline má»›i.
 
-### File liên quan
+### File liÃªn quan
 
-- `prisma/schema-v2.prisma`
+- `prisma/schema.prisma`
 - `prisma/migrations/`
 - `.env`
 - `db-sync/`
 - `docs/handoff.md`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- backup/snapshot DB dev hiện tại nếu cần giữ
-- chuyển Prisma config hoặc lệnh migration sang `schema-v2.prisma`
-- tạo migration V2
+- backup/snapshot DB dev hiá»‡n táº¡i náº¿u cáº§n giá»¯
+- chuyá»ƒn Prisma config hoáº·c lá»‡nh migration sang `schema.prisma`
+- táº¡o migration V2
 - reset DB dev
 - generate Prisma Client V2
-- seed rule phí
-- chuẩn bị tài khoản `SUPER_ADMIN` đầu tiên
+- seed rule phÃ­
+- chuáº©n bá»‹ tÃ i khoáº£n `SUPER_ADMIN` Ä‘áº§u tiÃªn
 
 ### Review
 
-- đọc lại `schema-v2.prisma`
-- xác nhận DB hiện tại là dev
-- xác nhận snapshot cũ có thể restore nếu cần
+- Ä‘á»c láº¡i `schema.prisma`
+- xÃ¡c nháº­n DB hiá»‡n táº¡i lÃ  dev
+- xÃ¡c nháº­n snapshot cÅ© cÃ³ thá»ƒ restore náº¿u cáº§n
 
 ### Check/Test
 
-Các lệnh kiểm tra tối thiểu:
+CÃ¡c lá»‡nh kiá»ƒm tra tá»‘i thiá»ƒu:
 
 ```bash
-npx prisma validate --schema prisma/schema-v2.prisma
-npx prisma generate --schema prisma/schema-v2.prisma
+npx prisma validate --schema prisma/schema.prisma
+npx prisma generate --schema prisma/schema.prisma
 ```
 
-Sau migration/reset, kiểm tra bằng SQL:
+Sau migration/reset, kiá»ƒm tra báº±ng SQL:
 
 ```sql
 select count(*) from can_ho;
@@ -254,47 +278,47 @@ select count(*) from tai_khoan_quan_tri;
 select count(*) from quy_tac_phi;
 ```
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Có migration V2
-- [x] DB dev đã reset/migrate thành công
-- [x] Prisma Client V2 generate được
-- [x] Có seed rule phí `CHUNG_CU = 250000`, `LIEN_KE = 200000`
-- [x] Có tài khoản `SUPER_ADMIN` đầu tiên
-- [x] `docs/handoff.md` ghi rõ DB đã sang V2
+- [x] CÃ³ migration V2
+- [x] DB dev Ä‘Ã£ reset/migrate thÃ nh cÃ´ng
+- [x] Prisma Client V2 generate Ä‘Æ°á»£c
+- [x] CÃ³ seed rule phÃ­ `CHUNG_CU = 250000`, `LIEN_KE = 200000`
+- [x] CÃ³ tÃ i khoáº£n `SUPER_ADMIN` Ä‘áº§u tiÃªn
+- [x] `docs/handoff.md` ghi rÃµ DB Ä‘Ã£ sang V2
 
-Kết quả thực tế:
+Káº¿t quáº£ thá»±c táº¿:
 
 - migration: `20260515000100_v2_public_web`
-- backup trước migration: `.local/db-backups/apartment_fee_reviewer-before-v2-20260515-163208.sql`
-- `npx prisma validate`, `npx prisma generate`, `npm test`, `npm run build` đã pass
+- backup trÆ°á»›c migration: `.local/db-backups/apartment_fee_reviewer-before-v2-20260515-163208.sql`
+- `npx prisma validate`, `npx prisma generate`, `npm test`, `npm run build` Ä‘Ã£ pass
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành
+- [x] HoÃ n thÃ nh
 
 ---
 
-## Task D. Import master căn hộ
+## Task D. Import master cÄƒn há»™
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Import `Danh_Sach_Can_Ho_Master.xlsx` làm nguồn chính cho `can_ho`.
+Import `Danh_Sach_Can_Ho_Master.xlsx` lÃ m nguá»“n chÃ­nh cho `can_ho`.
 
-### File liên quan
+### File liÃªn quan
 
 - `docs/Danh_Sach_Can_Ho_Master.xlsx`
 - `docs/reports/danh-gia-danh-sach-can-ho-master.md`
-- bảng `lo_nhap_du_lieu`
-- bảng `dong_du_lieu_quan_ly_tho`
-- bảng `can_ho`
+- báº£ng `lo_nhap_du_lieu`
+- báº£ng `dong_du_lieu_quan_ly_tho`
+- báº£ng `can_ho`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
 - import raw sheet `MASTER DATA`
-- lưu `header_values_json`, `values_json`, `mapped_row_json`
-- sync `934` căn vào `can_ho`
-- lưu:
+- lÆ°u `header_values_json`, `values_json`, `mapped_row_json`
+- sync `934` cÄƒn vÃ o `can_ho`
+- lÆ°u:
   - `ma_can`
   - `ma_lo`
   - `ma_so`
@@ -305,17 +329,17 @@ Import `Danh_Sach_Can_Ho_Master.xlsx` làm nguồn chính cho `can_ho`.
   - `chu_ho_ten_goc`
   - `trang_thai_su_dung_goc`
   - `tinh_trang_goc`
-- giữ `LKV.*` nguyên mã, tính phí như `LIEN_KE`
+- giá»¯ `LKV.*` nguyÃªn mÃ£, tÃ­nh phÃ­ nhÆ° `LIEN_KE`
 
 ### Review
 
-- review mapping cột Excel sang DB
-- đối chiếu với báo cáo file master
-- kiểm tra các case `LKV.45`, `LKV.47`, `LKV.58`
+- review mapping cá»™t Excel sang DB
+- Ä‘á»‘i chiáº¿u vá»›i bÃ¡o cÃ¡o file master
+- kiá»ƒm tra cÃ¡c case `LKV.45`, `LKV.47`, `LKV.58`
 
 ### Check/Test
 
-Kiểm tra sau import:
+Kiá»ƒm tra sau import:
 
 ```sql
 select count(*) from can_ho;
@@ -323,77 +347,77 @@ select loai_can, count(*) from can_ho group by loai_can order by loai_can;
 select ma_can from can_ho where ma_can in ('LKV.45', 'LKV.47', 'LKV.58');
 ```
 
-Kỳ vọng:
+Ká»³ vá»ng:
 
 - `can_ho = 934`
 - `CHUNG_CU = 884`
 - `LIEN_KE = 50`
-- đủ 3 căn `LKV.*`
+- Ä‘á»§ 3 cÄƒn `LKV.*`
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Import raw master có batch
-- [x] `can_ho` có đủ `934` căn
-- [x] Không có `ma_can` trùng
-- [x] Không có `ma_can` rỗng
-- [x] Loại căn đúng
-- [x] Có báo cáo/check output sau import
+- [x] Import raw master cÃ³ batch
+- [x] `can_ho` cÃ³ Ä‘á»§ `934` cÄƒn
+- [x] KhÃ´ng cÃ³ `ma_can` trÃ¹ng
+- [x] KhÃ´ng cÃ³ `ma_can` rá»—ng
+- [x] Loáº¡i cÄƒn Ä‘Ãºng
+- [x] CÃ³ bÃ¡o cÃ¡o/check output sau import
 
-Kết quả thực tế:
+Káº¿t quáº£ thá»±c táº¿:
 
 - batch master V2: `1`
-- `dong_du_lieu_quan_ly_tho`: `934` dòng
-- `can_ho`: `934` căn
+- `dong_du_lieu_quan_ly_tho`: `934` dÃ²ng
+- `can_ho`: `934` cÄƒn
 - `CHUNG_CU`: `884`
 - `LIEN_KE`: `50`
-- đủ `LKV.45`, `LKV.47`, `LKV.58`
+- Ä‘á»§ `LKV.45`, `LKV.47`, `LKV.58`
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành trong DB V2
+- [x] HoÃ n thÃ nh trong DB V2
 
 ---
 
-## Task E. Sinh staging contact từ file master
+## Task E. Sinh staging contact tá»« file master
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Sinh `ung_vien_lien_he_can_ho` từ file master, không đổ thẳng contact bẩn vào `lien_he_can_ho`.
+Sinh `ung_vien_lien_he_can_ho` tá»« file master, khÃ´ng Ä‘á»• tháº³ng contact báº©n vÃ o `lien_he_can_ho`.
 
-### File liên quan
+### File liÃªn quan
 
 - `docs/Danh_Sach_Can_Ho_Master.xlsx`
 - `docs/preview-master-lien-he-can-ho/README.md`
 - `docs/preview-master-lien-he-can-ho/preview-tong-hop.csv`
-- bảng `ung_vien_lien_he_can_ho`
+- báº£ng `ung_vien_lien_he_can_ho`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- đọc `Chủ Hộ (Tên)`
-- đọc `Người sử dụng 1..5`
-- đọc `SĐT 1..5`
-- đọc `Thông tin phụ`
-- đọc `Trạng Thái Sử Dụng (Auto)`
-- đọc `TÌNH TRẠNG`
+- Ä‘á»c `Chá»§ Há»™ (TÃªn)`
+- Ä‘á»c `NgÆ°á»i sá»­ dá»¥ng 1..5`
+- Ä‘á»c `SÄT 1..5`
+- Ä‘á»c `ThÃ´ng tin phá»¥`
+- Ä‘á»c `Tráº¡ng ThÃ¡i Sá»­ Dá»¥ng (Auto)`
+- Ä‘á»c `TÃŒNH TRáº NG`
 - sinh candidate contact
-- phân loại `NHAP_THANG` / `CAN_RA_SOAT`
-- lưu `ly_do_ra_soat`
-- lưu payload gốc để manager xem lại
+- phÃ¢n loáº¡i `NHAP_THANG` / `CAN_RA_SOAT`
+- lÆ°u `ly_do_ra_soat`
+- lÆ°u payload gá»‘c Ä‘á»ƒ manager xem láº¡i
 
 ### Review
 
-- mở `preview-tong-hop.csv`
-- mở `can-ra-soat.csv`
-- kiểm tra các case có:
-  - chủ mới
-  - khách thuê
-  - tên lẫn số
-  - số không tên
-  - nhiều căn dùng chung số
+- má»Ÿ `preview-tong-hop.csv`
+- má»Ÿ `can-ra-soat.csv`
+- kiá»ƒm tra cÃ¡c case cÃ³:
+  - chá»§ má»›i
+  - khÃ¡ch thuÃª
+  - tÃªn láº«n sá»‘
+  - sá»‘ khÃ´ng tÃªn
+  - nhiá»u cÄƒn dÃ¹ng chung sá»‘
 
 ### Check/Test
 
-Query tối thiểu:
+Query tá»‘i thiá»ƒu:
 
 ```sql
 select count(*) from ung_vien_lien_he_can_ho;
@@ -401,56 +425,56 @@ select co_can_ra_soat, count(*) from ung_vien_lien_he_can_ho group by co_can_ra_
 select ma_can, count(*) from ung_vien_lien_he_can_ho group by ma_can order by count(*) desc limit 20;
 ```
 
-Kỳ vọng tham chiếu từ preview:
+Ká»³ vá»ng tham chiáº¿u tá»« preview:
 
-- khoảng `1977` dòng contact candidate
-- `402` căn nhập tương đối thẳng
-- `532` căn cần rà soát
+- khoáº£ng `1977` dÃ²ng contact candidate
+- `402` cÄƒn nháº­p tÆ°Æ¡ng Ä‘á»‘i tháº³ng
+- `532` cÄƒn cáº§n rÃ  soÃ¡t
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Candidate được sinh vào DB
-- [x] Có phân loại cần rà soát
-- [x] Có lý do rà soát
-- [x] Có payload gốc để review
-- [x] Chưa tự nhập toàn bộ vào `lien_he_can_ho`
+- [x] Candidate Ä‘Æ°á»£c sinh vÃ o DB
+- [x] CÃ³ phÃ¢n loáº¡i cáº§n rÃ  soÃ¡t
+- [x] CÃ³ lÃ½ do rÃ  soÃ¡t
+- [x] CÃ³ payload gá»‘c Ä‘á»ƒ review
+- [x] ChÆ°a tá»± nháº­p toÃ n bá»™ vÃ o `lien_he_can_ho`
 
-Kết quả thực tế:
+Káº¿t quáº£ thá»±c táº¿:
 
-- `ung_vien_lien_he_can_ho`: `1977` dòng
-- candidate không cần rà soát: `484` dòng, thuộc `402` căn
-- candidate cần rà soát: `1493` dòng, thuộc `532` căn
+- `ung_vien_lien_he_can_ho`: `1977` dÃ²ng
+- candidate khÃ´ng cáº§n rÃ  soÃ¡t: `484` dÃ²ng, thuá»™c `402` cÄƒn
+- candidate cáº§n rÃ  soÃ¡t: `1493` dÃ²ng, thuá»™c `532` cÄƒn
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành trong DB V2
+- [x] HoÃ n thÃ nh trong DB V2
 
 ---
 
-## Task F. Seed dữ liệu nền và tài khoản Super Admin
+## Task F. Seed dá»¯ liá»‡u ná»n vÃ  tÃ i khoáº£n Super Admin
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Chuẩn bị dữ liệu tối thiểu để vùng quản trị hoạt động.
+Chuáº©n bá»‹ dá»¯ liá»‡u tá»‘i thiá»ƒu Ä‘á»ƒ vÃ¹ng quáº£n trá»‹ hoáº¡t Ä‘á»™ng.
 
-### File liên quan
+### File liÃªn quan
 
-- `prisma/schema-v2.prisma`
-- script seed sẽ tạo mới
-- bảng `quy_tac_phi`
-- bảng `tai_khoan_quan_tri`
+- `prisma/schema.prisma`
+- script seed sáº½ táº¡o má»›i
+- báº£ng `quy_tac_phi`
+- báº£ng `tai_khoan_quan_tri`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
 - seed `quy_tac_phi`
-- tạo tài khoản `SUPER_ADMIN` đầu tiên
-- lưu password dạng hash, không lưu plain text
-- ghi cách đổi mật khẩu ban đầu vào tài liệu vận hành
+- táº¡o tÃ i khoáº£n `SUPER_ADMIN` Ä‘áº§u tiÃªn
+- lÆ°u password dáº¡ng hash, khÃ´ng lÆ°u plain text
+- ghi cÃ¡ch Ä‘á»•i máº­t kháº©u ban Ä‘áº§u vÃ o tÃ i liá»‡u váº­n hÃ nh
 
 ### Review
 
-- xác nhận không hardcode password thật trong repo
-- xác nhận role admin đúng `SUPER_ADMIN`
+- xÃ¡c nháº­n khÃ´ng hardcode password tháº­t trong repo
+- xÃ¡c nháº­n role admin Ä‘Ãºng `SUPER_ADMIN`
 
 ### Check/Test
 
@@ -459,137 +483,137 @@ select loai_can, ma_phi, so_tien from quy_tac_phi;
 select ten_dang_nhap, vai_tro, trang_thai from tai_khoan_quan_tri;
 ```
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Có rule phí chung cư/liền kề
-- [x] Có Super Admin đầu tiên
-- [x] Không commit mật khẩu thật
+- [x] CÃ³ rule phÃ­ chung cÆ°/liá»n ká»
+- [x] CÃ³ Super Admin Ä‘áº§u tiÃªn
+- [x] KhÃ´ng commit máº­t kháº©u tháº­t
 
-Kết quả thực tế:
+Káº¿t quáº£ thá»±c táº¿:
 
-- `quy_tac_phi`: có rule `CHUNG_CU`, `LIEN_KE`
-- `tai_khoan_quan_tri`: có user `admin`, role `SUPER_ADMIN`, trạng thái `DANG_HOAT_DONG`
-- password dev được truyền qua biến môi trường khi seed, không ghi vào repo
+- `quy_tac_phi`: cÃ³ rule `CHUNG_CU`, `LIEN_KE`
+- `tai_khoan_quan_tri`: cÃ³ user `admin`, role `SUPER_ADMIN`, tráº¡ng thÃ¡i `DANG_HOAT_DONG`
+- password dev Ä‘Æ°á»£c truyá»n qua biáº¿n mÃ´i trÆ°á»ng khi seed, khÃ´ng ghi vÃ o repo
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành trên DB dev V2
+- [x] HoÃ n thÃ nh trÃªn DB dev V2
 
 ---
 
-## Task G. Auth và phân quyền quản trị
+## Task G. Auth vÃ  phÃ¢n quyá»n quáº£n trá»‹
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Tạo vùng nội bộ bắt buộc đăng nhập, phân quyền rõ `SUPER_ADMIN`, `MANAGER` và `TECHNICIAN`.
+Táº¡o vÃ¹ng ná»™i bá»™ báº¯t buá»™c Ä‘Äƒng nháº­p, phÃ¢n quyá»n rÃµ `SUPER_ADMIN`, `MANAGER` vÃ  `TECHNICIAN`.
 
-### File liên quan
+### File liÃªn quan
 
-- app/admin hoặc route quản trị sẽ tạo
-- bảng `tai_khoan_quan_tri`
+- app/admin hoáº·c route quáº£n trá»‹ sáº½ táº¡o
+- báº£ng `tai_khoan_quan_tri`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- login quản trị
-- đăng nhập quản trị bằng `ten_dang_nhap` hoặc số điện thoại
-- session/cookie bảo mật
-- middleware bảo vệ route quản trị
+- login quáº£n trá»‹
+- Ä‘Äƒng nháº­p quáº£n trá»‹ báº±ng `ten_dang_nhap` hoáº·c sá»‘ Ä‘iá»‡n thoáº¡i
+- session/cookie báº£o máº­t
+- middleware báº£o vá»‡ route quáº£n trá»‹
 - role `SUPER_ADMIN`
 - role `MANAGER`
 - role `TECHNICIAN`
-- Super Admin quản lý tài khoản `SUPER_ADMIN`, `MANAGER`, `TECHNICIAN`
+- Super Admin quáº£n lÃ½ tÃ i khoáº£n `SUPER_ADMIN`, `MANAGER`, `TECHNICIAN`
 
 ### Review
 
-- xác nhận route admin không truy cập được khi chưa login
-- xác nhận manager không vào được chức năng Super Admin
+- xÃ¡c nháº­n route admin khÃ´ng truy cáº­p Ä‘Æ°á»£c khi chÆ°a login
+- xÃ¡c nháº­n manager khÃ´ng vÃ o Ä‘Æ°á»£c chá»©c nÄƒng Super Admin
 
 ### Check/Test
 
-Test thủ công tối thiểu:
+Test thá»§ cÃ´ng tá»‘i thiá»ƒu:
 
-- chưa login vào admin bị redirect/login
-- Super Admin vào được trang quản trị
-- Manager không vào được trang import/chốt public
+- chÆ°a login vÃ o admin bá»‹ redirect/login
+- Super Admin vÃ o Ä‘Æ°á»£c trang quáº£n trá»‹
+- Manager khÃ´ng vÃ o Ä‘Æ°á»£c trang import/chá»‘t public
 
-Test tự động nếu có:
+Test tá»± Ä‘á»™ng náº¿u cÃ³:
 
-- unit/integration cho guard phân quyền
+- unit/integration cho guard phÃ¢n quyá»n
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Login hoạt động
-- [x] Login bằng số điện thoại đã có nền schema/code
-- [x] Logout hoạt động
-- [x] Route admin được bảo vệ
-- [x] Role Super Admin đúng quyền
-- [x] Role Manager bị chặn quyền nhạy cảm
+- [x] Login hoáº¡t Ä‘á»™ng
+- [x] Login báº±ng sá»‘ Ä‘iá»‡n thoáº¡i Ä‘Ã£ cÃ³ ná»n schema/code
+- [x] Logout hoáº¡t Ä‘á»™ng
+- [x] Route admin Ä‘Æ°á»£c báº£o vá»‡
+- [x] Role Super Admin Ä‘Ãºng quyá»n
+- [x] Role Manager bá»‹ cháº·n quyá»n nháº¡y cáº£m
 
-Kết quả thực tế:
+Káº¿t quáº£ thá»±c táº¿:
 
-- có route `/admin/login`
-- có route `/admin`
-- có route `/admin/accounts` chỉ cho `SUPER_ADMIN`
-- có route `/admin/import` chỉ cho `SUPER_ADMIN`
-- có migration `20260517000100_add_admin_phone_login`
-- có migration `20260525000100_add_technician_role`
-- có trường `tai_khoan_quan_tri.so_dien_thoai`
-- form tạo manager/kỹ thuật bắt buộc nhập số điện thoại đăng nhập
-- session lưu bằng cookie HTTP-only có chữ ký
-- production bắt buộc có `ADMIN_SESSION_SECRET`
-- middleware chặn vùng `/admin`
-- Super Admin tạo/khóa/mở khóa tài khoản `SUPER_ADMIN`, `MANAGER` hoặc `TECHNICIAN` được ở `/admin/accounts`
-- Super Admin đổi role tài khoản nội bộ khác mình giữa `SUPER_ADMIN`, `MANAGER` và `TECHNICIAN` được ở `/admin/accounts`
-- `/admin/accounts` có bảng quyền theo role để đối chiếu chức năng được sử dụng
-- tài khoản nội bộ có trang `/admin/profile` để đổi tên hiển thị, email và mật khẩu
-- role `MANAGER` và `TECHNICIAN` ngang quyền: tra cứu nội bộ, xem liên hệ cư dân/dữ liệu gốc, gọi nhanh cư dân và tài khoản cá nhân
-- role `MANAGER` và `TECHNICIAN` bị chặn khỏi `/admin/import` và `/admin/accounts`, không có form duyệt/từ chối liên hệ
+- cÃ³ route `/admin/login`
+- cÃ³ route `/admin`
+- cÃ³ route `/admin/accounts` chá»‰ cho `SUPER_ADMIN`
+- cÃ³ route `/admin/import` chá»‰ cho `SUPER_ADMIN`
+- cÃ³ migration `20260517000100_add_admin_phone_login`
+- cÃ³ migration `20260525000100_add_technician_role`
+- cÃ³ trÆ°á»ng `tai_khoan_quan_tri.so_dien_thoai`
+- form táº¡o manager/ká»¹ thuáº­t báº¯t buá»™c nháº­p sá»‘ Ä‘iá»‡n thoáº¡i Ä‘Äƒng nháº­p
+- session lÆ°u báº±ng cookie HTTP-only cÃ³ chá»¯ kÃ½
+- production báº¯t buá»™c cÃ³ `ADMIN_SESSION_SECRET`
+- middleware cháº·n vÃ¹ng `/admin`
+- Super Admin táº¡o/khÃ³a/má»Ÿ khÃ³a tÃ i khoáº£n `SUPER_ADMIN`, `MANAGER` hoáº·c `TECHNICIAN` Ä‘Æ°á»£c á»Ÿ `/admin/accounts`
+- Super Admin Ä‘á»•i role tÃ i khoáº£n ná»™i bá»™ khÃ¡c mÃ¬nh giá»¯a `SUPER_ADMIN`, `MANAGER` vÃ  `TECHNICIAN` Ä‘Æ°á»£c á»Ÿ `/admin/accounts`
+- `/admin/accounts` cÃ³ báº£ng quyá»n theo role Ä‘á»ƒ Ä‘á»‘i chiáº¿u chá»©c nÄƒng Ä‘Æ°á»£c sá»­ dá»¥ng
+- tÃ i khoáº£n ná»™i bá»™ cÃ³ trang `/admin/profile` Ä‘á»ƒ Ä‘á»•i tÃªn hiá»ƒn thá»‹, email vÃ  máº­t kháº©u
+- role `MANAGER` vÃ  `TECHNICIAN` ngang quyá»n: tra cá»©u ná»™i bá»™, xem liÃªn há»‡ cÆ° dÃ¢n/dá»¯ liá»‡u gá»‘c, gá»i nhanh cÆ° dÃ¢n vÃ  tÃ i khoáº£n cÃ¡ nhÃ¢n
+- role `MANAGER` vÃ  `TECHNICIAN` bá»‹ cháº·n khá»i `/admin/import` vÃ  `/admin/accounts`, khÃ´ng cÃ³ form duyá»‡t/tá»« chá»‘i liÃªn há»‡
 - `npm test`: `265` tests pass
 - `npm run build`: pass
 - `npm run test:mobile-ui`: `40` tests pass
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành phần nền auth/phân quyền
+- [x] HoÃ n thÃ nh pháº§n ná»n auth/phÃ¢n quyá»n
 
 ---
 
-## Task H. Import file theo dõi thu phí
+## Task H. Import file theo dÃµi thu phÃ­
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Import file Excel theo dõi thu phí thủ công để lấy dữ liệu public cho cư dân.
+Import file Excel theo dÃµi thu phÃ­ thá»§ cÃ´ng Ä‘á»ƒ láº¥y dá»¯ liá»‡u public cho cÆ° dÃ¢n.
 
-### File liên quan
+### File liÃªn quan
 
-- file mẫu hiện tại: `docs/Theo dõi thu phí T4.xlsx`
-- file tháng mới sau này: `Theo dõi thu phí T*.xlsx`
-- bảng `lo_nhap_du_lieu`
-- bảng `dong_theo_doi_thu_phi_tho`
+- file máº«u hiá»‡n táº¡i: `docs/Theo dÃµi thu phÃ­ T4.xlsx`
+- file thÃ¡ng má»›i sau nÃ y: `Theo dÃµi thu phÃ­ T*.xlsx`
+- báº£ng `lo_nhap_du_lieu`
+- báº£ng `dong_theo_doi_thu_phi_tho`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- import raw workbook thu phí
-- nhận diện sheet/bảng lịch sử đóng phí
-- map mã căn
-- map cột `Tháng đã đóng đến hiện tại`
+- import raw workbook thu phÃ­
+- nháº­n diá»‡n sheet/báº£ng lá»‹ch sá»­ Ä‘Ã³ng phÃ­
+- map mÃ£ cÄƒn
+- map cá»™t `ThÃ¡ng Ä‘Ã£ Ä‘Ã³ng Ä‘áº¿n hiá»‡n táº¡i`
 - sinh preview import
-- phát hiện mã căn thiếu/sai
-- phát hiện tháng bất thường
+- phÃ¡t hiá»‡n mÃ£ cÄƒn thiáº¿u/sai
+- phÃ¡t hiá»‡n thÃ¡ng báº¥t thÆ°á»ng
 
 ### Review
 
-- review mapping cột trong file Excel thật
-- review danh sách căn không map được
-- review căn có tháng đóng bất thường
+- review mapping cá»™t trong file Excel tháº­t
+- review danh sÃ¡ch cÄƒn khÃ´ng map Ä‘Æ°á»£c
+- review cÄƒn cÃ³ thÃ¡ng Ä‘Ã³ng báº¥t thÆ°á»ng
 
 ### Check/Test
 
-Kiểm tra file T4 hiện tại:
+Kiá»ƒm tra file T4 hiá»‡n táº¡i:
 
-- `Danh sách khách hàng`: khoảng `937` dòng có dữ liệu
-- `Lịch sử đóng phí`: khoảng `937` dòng có dữ liệu
-- kỳ vọng map về khoảng `934` căn hợp lệ
+- `Danh sÃ¡ch khÃ¡ch hÃ ng`: khoáº£ng `937` dÃ²ng cÃ³ dá»¯ liá»‡u
+- `Lá»‹ch sá»­ Ä‘Ã³ng phÃ­`: khoáº£ng `937` dÃ²ng cÃ³ dá»¯ liá»‡u
+- ká»³ vá»ng map vá» khoáº£ng `934` cÄƒn há»£p lá»‡
 
 Query sau import:
 
@@ -599,62 +623,62 @@ select count(*) from dong_theo_doi_thu_phi_tho where lo_nhap_du_lieu_id = 3 and 
 select count(*) from dong_theo_doi_thu_phi_tho where lo_nhap_du_lieu_id = 3 and thang_da_dong_den_hien_tai is null;
 ```
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Raw workbook thu phí đã được lưu
-- [x] Mã căn được map
-- [x] Cột `Tháng đã đóng đến hiện tại` được đọc
-- [x] Có preview lỗi
-- [x] Chưa public dữ liệu nháp
+- [x] Raw workbook thu phÃ­ Ä‘Ã£ Ä‘Æ°á»£c lÆ°u
+- [x] MÃ£ cÄƒn Ä‘Æ°á»£c map
+- [x] Cá»™t `ThÃ¡ng Ä‘Ã£ Ä‘Ã³ng Ä‘áº¿n hiá»‡n táº¡i` Ä‘Æ°á»£c Ä‘á»c
+- [x] CÃ³ preview lá»—i
+- [x] ChÆ°a public dá»¯ liá»‡u nhÃ¡p
 
-Kết quả thực tế:
+Káº¿t quáº£ thá»±c táº¿:
 
 - script: `npm run import:fee-tracking:v2`
-- file: `docs/Theo dõi thu phí T4.xlsx`
-- sheet: `Lịch sử đóng phí`
+- file: `docs/Theo dÃµi thu phÃ­ T4.xlsx`
+- sheet: `Lá»‹ch sá»­ Ä‘Ã³ng phÃ­`
 - header row: `3`
 - batch import: `lo_nhap_du_lieu.id = 3`
-- `dong_theo_doi_thu_phi_tho`: `934` dòng
-- mã căn không map được: `0`
-- thiếu `Tháng đã đóng đến hiện tại`: `0`
-- mã căn distinct: `934`
-- không parse được tháng đã đóng: `0`
-- đóng lẻ tiền: `3`
-- tháng ngoài năm gốc 2026: `31`
+- `dong_theo_doi_thu_phi_tho`: `934` dÃ²ng
+- mÃ£ cÄƒn khÃ´ng map Ä‘Æ°á»£c: `0`
+- thiáº¿u `ThÃ¡ng Ä‘Ã£ Ä‘Ã³ng Ä‘áº¿n hiá»‡n táº¡i`: `0`
+- mÃ£ cÄƒn distinct: `934`
+- khÃ´ng parse Ä‘Æ°á»£c thÃ¡ng Ä‘Ã£ Ä‘Ã³ng: `0`
+- Ä‘Ã³ng láº» tiá»n: `3`
+- thÃ¡ng ngoÃ i nÄƒm gá»‘c 2026: `31`
 - preview: `docs/preview-theo-doi-thu-phi/`
 - `npm test`: `43` tests pass
 - `npm run build`: pass
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành staging import, chưa public
+- [x] HoÃ n thÃ nh staging import, chÆ°a public
 
 ---
 
-## Task I. Chốt batch trạng thái phí public
+## Task I. Chá»‘t batch tráº¡ng thÃ¡i phÃ­ public
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Chỉ dữ liệu đã được Super Admin chốt mới hiển thị cho cư dân.
+Chá»‰ dá»¯ liá»‡u Ä‘Ã£ Ä‘Æ°á»£c Super Admin chá»‘t má»›i hiá»ƒn thá»‹ cho cÆ° dÃ¢n.
 
-### File liên quan
+### File liÃªn quan
 
-- bảng `batch_trang_thai_phi_public`
-- bảng `trang_thai_phi_can_ho_public`
-- bảng `dong_theo_doi_thu_phi_tho`
+- báº£ng `batch_trang_thai_phi_public`
+- báº£ng `trang_thai_phi_can_ho_public`
+- báº£ng `dong_theo_doi_thu_phi_tho`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- tạo batch trạng thái phí từ dữ liệu thu phí đã import
-- trạng thái: `NHAP`, `DA_KIEM_TRA`, `DA_PUBLIC`, `HUY`
-- chỉ một batch được đánh dấu public hiện hành
-- lưu người public và thời điểm public
+- táº¡o batch tráº¡ng thÃ¡i phÃ­ tá»« dá»¯ liá»‡u thu phÃ­ Ä‘Ã£ import
+- tráº¡ng thÃ¡i: `NHAP`, `DA_KIEM_TRA`, `DA_PUBLIC`, `HUY`
+- chá»‰ má»™t batch Ä‘Æ°á»£c Ä‘Ã¡nh dáº¥u public hiá»‡n hÃ nh
+- lÆ°u ngÆ°á»i public vÃ  thá»i Ä‘iá»ƒm public
 
 ### Review
 
-- Super Admin xem preview trước khi chốt
-- kiểm tra số căn trong batch
-- kiểm tra căn thiếu dữ liệu tháng đóng
+- Super Admin xem preview trÆ°á»›c khi chá»‘t
+- kiá»ƒm tra sá»‘ cÄƒn trong batch
+- kiá»ƒm tra cÄƒn thiáº¿u dá»¯ liá»‡u thÃ¡ng Ä‘Ã³ng
 
 ### Check/Test
 
@@ -666,110 +690,110 @@ group by trang_thai, la_batch_public_hien_hanh;
 select count(*) from trang_thai_phi_can_ho_public where batch_id = <batch_id>;
 ```
 
-Kỳ vọng:
+Ká»³ vá»ng:
 
-- batch public hiện hành có khoảng `934` dòng trạng thái căn
-- không có nhiều hơn một batch `la_batch_public_hien_hanh = true`
+- batch public hiá»‡n hÃ nh cÃ³ khoáº£ng `934` dÃ²ng tráº¡ng thÃ¡i cÄƒn
+- khÃ´ng cÃ³ nhiá»u hÆ¡n má»™t batch `la_batch_public_hien_hanh = true`
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Có batch trạng thái phí
-- [x] Có snapshot phí theo căn
-- [x] Chỉ một batch public hiện hành
-- [x] Có người chốt và thời điểm chốt
+- [x] CÃ³ batch tráº¡ng thÃ¡i phÃ­
+- [x] CÃ³ snapshot phÃ­ theo cÄƒn
+- [x] Chá»‰ má»™t batch public hiá»‡n hÃ nh
+- [x] CÃ³ ngÆ°á»i chá»‘t vÃ  thá»i Ä‘iá»ƒm chá»‘t
 
-Kết quả hiện tại:
+Káº¿t quáº£ hiá»‡n táº¡i:
 
-- script tạo batch nháp: `npm run prepare:fee-public-batch:v2`
-- import batch nguồn: `lo_nhap_du_lieu.id = 3`
-- batch trạng thái phí: `batch_trang_thai_phi_public.id = 2`
-- trạng thái batch: `DA_PUBLIC`
+- script táº¡o batch nhÃ¡p: `npm run prepare:fee-public-batch:v2`
+- import batch nguá»“n: `lo_nhap_du_lieu.id = 3`
+- batch tráº¡ng thÃ¡i phÃ­: `batch_trang_thai_phi_public.id = 2`
+- tráº¡ng thÃ¡i batch: `DA_PUBLIC`
 - `la_batch_public_hien_hanh = true`
-- snapshot phí: `934` dòng
-- batch public hiện hành: `1`
-- người public: `admin`
-- script chốt public: `npm run publish:fee-public-batch:v2 -- --batch-id=2 --admin=admin`
-- batch nháp cũ `id = 1` đã chuyển `HUY` vì dùng rule cũ
-- không còn dòng lỗi parse tháng
-- có `3` dòng đóng lẻ tiền
-- có `31` dòng nằm ngoài năm gốc 2026, đã quy đổi được tháng/năm hiển thị
+- snapshot phÃ­: `934` dÃ²ng
+- batch public hiá»‡n hÃ nh: `1`
+- ngÆ°á»i public: `admin`
+- script chá»‘t public: `npm run publish:fee-public-batch:v2 -- --batch-id=2 --admin=admin`
+- batch nhÃ¡p cÅ© `id = 1` Ä‘Ã£ chuyá»ƒn `HUY` vÃ¬ dÃ¹ng rule cÅ©
+- khÃ´ng cÃ²n dÃ²ng lá»—i parse thÃ¡ng
+- cÃ³ `3` dÃ²ng Ä‘Ã³ng láº» tiá»n
+- cÃ³ `31` dÃ²ng náº±m ngoÃ i nÄƒm gá»‘c 2026, Ä‘Ã£ quy Ä‘á»•i Ä‘Æ°á»£c thÃ¡ng/nÄƒm hiá»ƒn thá»‹
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành
+- [x] HoÃ n thÃ nh
 
 ---
 
-## Task J. Trang public cư dân tra cứu phí
+## Task J. Trang public cÆ° dÃ¢n tra cá»©u phÃ­
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Cư dân không cần login có thể tra cứu tiến trình đóng phí căn hộ.
+CÆ° dÃ¢n khÃ´ng cáº§n login cÃ³ thá»ƒ tra cá»©u tiáº¿n trÃ¬nh Ä‘Ã³ng phÃ­ cÄƒn há»™.
 
-### File/bảng liên quan
+### File/báº£ng liÃªn quan
 
-- bảng `trang_thai_phi_can_ho_public`
-- bảng `batch_trang_thai_phi_public`
-- public route/page sẽ tạo
+- báº£ng `trang_thai_phi_can_ho_public`
+- báº£ng `batch_trang_thai_phi_public`
+- public route/page sáº½ táº¡o
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- form nhập mã căn
-- normalize mã căn
-- chỉ đọc batch public hiện hành
-- hiển thị:
-  - mã căn
-  - tháng đã đóng đến hiện tại
-  - kỳ dữ liệu
-  - thời điểm cập nhật
-  - ghi chú public nếu có
-- không hiển thị dữ liệu cá nhân
+- form nháº­p mÃ£ cÄƒn
+- normalize mÃ£ cÄƒn
+- chá»‰ Ä‘á»c batch public hiá»‡n hÃ nh
+- hiá»ƒn thá»‹:
+  - mÃ£ cÄƒn
+  - thÃ¡ng Ä‘Ã£ Ä‘Ã³ng Ä‘áº¿n hiá»‡n táº¡i
+  - ká»³ dá»¯ liá»‡u
+  - thá»i Ä‘iá»ƒm cáº­p nháº­t
+  - ghi chÃº public náº¿u cÃ³
+- khÃ´ng hiá»ƒn thá»‹ dá»¯ liá»‡u cÃ¡ nhÃ¢n
 
 ### Review
 
-- kiểm tra UI trên desktop/mobile
-- kiểm tra nội dung không lộ phone/CCCD/ghi chú nội bộ
+- kiá»ƒm tra UI trÃªn desktop/mobile
+- kiá»ƒm tra ná»™i dung khÃ´ng lá»™ phone/CCCD/ghi chÃº ná»™i bá»™
 
 ### Check/Test
 
-Test thủ công:
+Test thá»§ cÃ´ng:
 
-- nhập mã căn hợp lệ có dữ liệu
-- nhập mã căn hợp lệ chưa có dữ liệu
-- nhập mã căn sai format
-- nhập mã căn thường/hoa/khoảng trắng
-- không có batch public hiện hành
+- nháº­p mÃ£ cÄƒn há»£p lá»‡ cÃ³ dá»¯ liá»‡u
+- nháº­p mÃ£ cÄƒn há»£p lá»‡ chÆ°a cÃ³ dá»¯ liá»‡u
+- nháº­p mÃ£ cÄƒn sai format
+- nháº­p mÃ£ cÄƒn thÆ°á»ng/hoa/khoáº£ng tráº¯ng
+- khÃ´ng cÃ³ batch public hiá»‡n hÃ nh
 
-Test kỹ thuật:
+Test ká»¹ thuáº­t:
 
 ```bash
 npm test
 npm run build
 ```
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Public page hoạt động không login
-- [x] Chỉ đọc batch đã public
-- [x] Không lộ dữ liệu nhạy cảm
+- [x] Public page hoáº¡t Ä‘á»™ng khÃ´ng login
+- [x] Chá»‰ Ä‘á»c batch Ä‘Ã£ public
+- [x] KhÃ´ng lá»™ dá»¯ liá»‡u nháº¡y cáº£m
 - [x] Build pass
 
-Kết quả thực tế:
+Káº¿t quáº£ thá»±c táº¿:
 
 - route public: `/tra-cuu-phi`
-- route trang chủ cư dân: `/`
-- trang chủ `/` là màn hình đầu tiên khi chạy project, ưu tiên mobile-first/search-bar landing page
-- trang chủ đã tối giản: brand, link quản trị nhỏ, tiêu đề, ô nhập mã căn và nút tra cứu
-- ảnh nền desktop local đang dùng: `public/images/resident-home-desktop.webp`
-- ảnh nền mobile local đang dùng: `public/images/resident-home-mobile.webp`
-- logo header local đang dùng: `public/images/logo-hoanghuy.webp`
-- background tự chọn ảnh 16:9 trên desktop và 9:16 trên mobile
-- prompt thiết kế mobile-first trên Stitch: `docs/stitch-mobile-ui-prompt.md`
-- ví dụ kiểm tra: `/tra-cuu-phi?ma_can=L4A.311A`
-- `L4A.311A` hiển thị `đã đóng hết tháng 2 năm 2027`
-- `L2.207` hiển thị trạng thái đóng lẻ tiền
-- không hiển thị phone/contact/ghi chú nội bộ
-- search box dùng parser mã căn hiện có để nhận nhiều kiểu input:
+- route trang chá»§ cÆ° dÃ¢n: `/`
+- trang chá»§ `/` lÃ  mÃ n hÃ¬nh Ä‘áº§u tiÃªn khi cháº¡y project, Æ°u tiÃªn mobile-first/search-bar landing page
+- trang chá»§ Ä‘Ã£ tá»‘i giáº£n: brand, link quáº£n trá»‹ nhá», tiÃªu Ä‘á», Ã´ nháº­p mÃ£ cÄƒn vÃ  nÃºt tra cá»©u
+- áº£nh ná»n desktop local Ä‘ang dÃ¹ng: `public/images/resident-home-desktop.webp`
+- áº£nh ná»n mobile local Ä‘ang dÃ¹ng: `public/images/resident-home-mobile.webp`
+- logo header local Ä‘ang dÃ¹ng: `public/images/logo-hoanghuy.webp`
+- background tá»± chá»n áº£nh 16:9 trÃªn desktop vÃ  9:16 trÃªn mobile
+- prompt thiáº¿t káº¿ mobile-first trÃªn Stitch: `docs/stitch-mobile-ui-prompt.md`
+- vÃ­ dá»¥ kiá»ƒm tra: `/tra-cuu-phi?ma_can=L4A.311A`
+- `L4A.311A` hiá»ƒn thá»‹ `Ä‘Ã£ Ä‘Ã³ng háº¿t thÃ¡ng 2 nÄƒm 2027`
+- `L2.207` hiá»ƒn thá»‹ tráº¡ng thÃ¡i Ä‘Ã³ng láº» tiá»n
+- khÃ´ng hiá»ƒn thá»‹ phone/contact/ghi chÃº ná»™i bá»™
+- search box dÃ¹ng parser mÃ£ cÄƒn hiá»‡n cÃ³ Ä‘á»ƒ nháº­n nhiá»u kiá»ƒu input:
   - `L1.115`
   - `L1 115`
   - `L1115`
@@ -778,168 +802,168 @@ Kết quả thực tế:
   - `lo 4b can 124`
   - `124lo4b`
   - `LK2-24`
-- giới hạn input public tối đa `80` ký tự
-- whitelist ký tự cho input tra cứu, chặn chuỗi có ký tự nguy hiểm như `'`, `=`, `<`, `>`
-- query DB qua Prisma với candidate list, không nối SQL thủ công
-- có rate-limit nhẹ theo IP: tối đa `40` lượt/phút
+- giá»›i háº¡n input public tá»‘i Ä‘a `80` kÃ½ tá»±
+- whitelist kÃ½ tá»± cho input tra cá»©u, cháº·n chuá»—i cÃ³ kÃ½ tá»± nguy hiá»ƒm nhÆ° `'`, `=`, `<`, `>`
+- query DB qua Prisma vá»›i candidate list, khÃ´ng ná»‘i SQL thá»§ cÃ´ng
+- cÃ³ rate-limit nháº¹ theo IP: tá»‘i Ä‘a `40` lÆ°á»£t/phÃºt
 - `npm test`: `95` tests pass
 - `npm run build`: pass
-- tài liệu quản trị parser: `docs/parser-ma-can-ho.md`
-- dữ liệu parser hiện có đã được gộp vào tài liệu trung tâm:
-  - nguồn code/test hiện tại
+- tÃ i liá»‡u quáº£n trá»‹ parser: `docs/parser-ma-can-ho.md`
+- dá»¯ liá»‡u parser hiá»‡n cÃ³ Ä‘Ã£ Ä‘Æ°á»£c gá»™p vÃ o tÃ i liá»‡u trung tÃ¢m:
+  - nguá»“n code/test hiá»‡n táº¡i
   - 100 case backlog
-  - 6 case thật parser từng bỏ sót từ báo cáo giao dịch 1.500.000 tháng 5/2026
-  - quy trình version hóa, golden test, chống false-positive
-- kiểm tra giao diện/kỹ thuật sau khi đổi trang chủ:
+  - 6 case tháº­t parser tá»«ng bá» sÃ³t tá»« bÃ¡o cÃ¡o giao dá»‹ch 1.500.000 thÃ¡ng 5/2026
+  - quy trÃ¬nh version hÃ³a, golden test, chá»‘ng false-positive
+- kiá»ƒm tra giao diá»‡n/ká»¹ thuáº­t sau khi Ä‘á»•i trang chá»§:
   - `npm test`: `82` tests pass
   - `npm run build`: pass
-  - `/` trả `200`
-  - `/tra-cuu-phi?ma_can=L1.115` trả `200`
-  - `/admin/login` trả `200`
+  - `/` tráº£ `200`
+  - `/tra-cuu-phi?ma_can=L1.115` tráº£ `200`
+  - `/admin/login` tráº£ `200`
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành phần nền public lookup
-- [x] Hoàn thành chuyển trang chủ sang public resident mobile-first
+- [x] HoÃ n thÃ nh pháº§n ná»n public lookup
+- [x] HoÃ n thÃ nh chuyá»ƒn trang chá»§ sang public resident mobile-first
 
 ---
 
-## Task K. Dashboard quản lý
+## Task K. Dashboard quáº£n lÃ½
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Manager xem được dữ liệu căn hộ/contact/phí trong vùng nội bộ.
+Manager xem Ä‘Æ°á»£c dá»¯ liá»‡u cÄƒn há»™/contact/phÃ­ trong vÃ¹ng ná»™i bá»™.
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- [x] tìm căn theo mã
-- [x] xem thông tin căn
-- [x] xem contact đã duyệt
-- [x] xem contact candidate chưa duyệt
-- [x] xem ghi chú gốc Excel khi dữ liệu chưa sạch
-- [x] xem trạng thái phí public hiện tại
-- [x] xem lịch sử import/chốt batch
+- [x] tÃ¬m cÄƒn theo mÃ£
+- [x] xem thÃ´ng tin cÄƒn
+- [x] xem contact Ä‘Ã£ duyá»‡t
+- [x] xem contact candidate chÆ°a duyá»‡t
+- [x] xem ghi chÃº gá»‘c Excel khi dá»¯ liá»‡u chÆ°a sáº¡ch
+- [x] xem tráº¡ng thÃ¡i phÃ­ public hiá»‡n táº¡i
+- [x] xem lá»‹ch sá»­ import/chá»‘t batch
 
 ### Review
 
-- [x] xác nhận dashboard nằm trong vùng `/admin`, bắt buộc login
-- [x] xác nhận manager không được cấp chức năng import/chốt batch
-- [x] xác nhận dữ liệu contact chỉ hiển thị trong vùng admin, không public
+- [x] xÃ¡c nháº­n dashboard náº±m trong vÃ¹ng `/admin`, báº¯t buá»™c login
+- [x] xÃ¡c nháº­n manager khÃ´ng Ä‘Æ°á»£c cáº¥p chá»©c nÄƒng import/chá»‘t batch
+- [x] xÃ¡c nháº­n dá»¯ liá»‡u contact chá»‰ hiá»ƒn thá»‹ trong vÃ¹ng admin, khÃ´ng public
 
 ### Check/Test
 
 - route dashboard: `/admin/dashboard`
-- chưa login vào `/admin/dashboard?ma_can=L1.115` trả redirect `307` về login
-- `/admin/login` trả `200`
-- `/tra-cuu-phi?ma_can=L1.115` vẫn trả `200`
+- chÆ°a login vÃ o `/admin/dashboard?ma_can=L1.115` tráº£ redirect `307` vá» login
+- `/admin/login` tráº£ `200`
+- `/tra-cuu-phi?ma_can=L1.115` váº«n tráº£ `200`
 - `npm test`: `82` tests pass
 - `npm run build`: pass
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Dashboard quản lý hoạt động
-- [x] Tìm căn đúng qua parser/search
-- [x] Xem được contact/ghi chú gốc khi cần
-- [x] Quyền manager bị giới hạn đúng ở mức nền: xem dashboard, không vào route import/accounts Super Admin
+- [x] Dashboard quáº£n lÃ½ hoáº¡t Ä‘á»™ng
+- [x] TÃ¬m cÄƒn Ä‘Ãºng qua parser/search
+- [x] Xem Ä‘Æ°á»£c contact/ghi chÃº gá»‘c khi cáº§n
+- [x] Quyá»n manager bá»‹ giá»›i háº¡n Ä‘Ãºng á»Ÿ má»©c ná»n: xem dashboard, khÃ´ng vÃ o route import/accounts Super Admin
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành phần nền dashboard quản lý
+- [x] HoÃ n thÃ nh pháº§n ná»n dashboard quáº£n lÃ½
 
 ---
 
-## Task L. Màn hình review contact nội bộ
+## Task L. MÃ n hÃ¬nh review contact ná»™i bá»™
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Duyệt contact candidate trước khi chuyển sang `lien_he_can_ho`.
+Duyá»‡t contact candidate trÆ°á»›c khi chuyá»ƒn sang `lien_he_can_ho`.
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- [x] danh sách candidate
-- [x] filter theo căn/trạng thái/chất lượng dữ liệu
-- [x] xem ô gốc Excel
-- [x] sửa tên/số điện thoại
-- [x] chọn vai trò
-- [x] chọn liên hệ chính
-- [x] chọn nhận thông báo
-- [x] duyệt/từ chối
-- [x] ghi log người duyệt/thời điểm duyệt vào `payload_duyet_json`
+- [x] danh sÃ¡ch candidate
+- [x] filter theo cÄƒn/tráº¡ng thÃ¡i/cháº¥t lÆ°á»£ng dá»¯ liá»‡u
+- [x] xem Ã´ gá»‘c Excel
+- [x] sá»­a tÃªn/sá»‘ Ä‘iá»‡n thoáº¡i
+- [x] chá»n vai trÃ²
+- [x] chá»n liÃªn há»‡ chÃ­nh
+- [x] chá»n nháº­n thÃ´ng bÃ¡o
+- [x] duyá»‡t/tá»« chá»‘i
+- [x] ghi log ngÆ°á»i duyá»‡t/thá»i Ä‘iá»ƒm duyá»‡t vÃ o `payload_duyet_json`
 
 ### Review
 
-- [x] route `/admin/contacts/review` nằm trong vùng admin, cần login
-- [x] dữ liệu gốc Excel vẫn giữ trong `ung_vien_lien_he_can_ho`
-- [x] duyệt không xóa candidate staging
-- [x] từ chối chỉ đổi trạng thái candidate, không xóa raw payload
+- [x] route `/admin/contacts/review` náº±m trong vÃ¹ng admin, cáº§n login
+- [x] dá»¯ liá»‡u gá»‘c Excel váº«n giá»¯ trong `ung_vien_lien_he_can_ho`
+- [x] duyá»‡t khÃ´ng xÃ³a candidate staging
+- [x] tá»« chá»‘i chá»‰ Ä‘á»•i tráº¡ng thÃ¡i candidate, khÃ´ng xÃ³a raw payload
 
 ### Check/Test
 
-- route `/admin/contacts/review` khi chưa login trả redirect `307`
-- `/admin/login` trả `200`
-- `/tra-cuu-phi?ma_can=L1.115` vẫn trả `200`
+- route `/admin/contacts/review` khi chÆ°a login tráº£ redirect `307`
+- `/admin/login` tráº£ `200`
+- `/tra-cuu-phi?ma_can=L1.115` váº«n tráº£ `200`
 - smoke test DB dev:
-  - candidate `1` được chuyển `DA_DUYET`
-  - tạo được contact master từ candidate `1`
-  - candidate `2` được chuyển `TU_CHOI`
+  - candidate `1` Ä‘Æ°á»£c chuyá»ƒn `DA_DUYET`
+  - táº¡o Ä‘Æ°á»£c contact master tá»« candidate `1`
+  - candidate `2` Ä‘Æ°á»£c chuyá»ƒn `TU_CHOI`
 - `npm test`: `82` tests pass
 - `npm run build`: pass
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Duyệt contact tạo được master contact
-- [x] Từ chối không tạo master contact
-- [x] Có log duyệt
-- [x] Raw payload vẫn còn
+- [x] Duyá»‡t contact táº¡o Ä‘Æ°á»£c master contact
+- [x] Tá»« chá»‘i khÃ´ng táº¡o master contact
+- [x] CÃ³ log duyá»‡t
+- [x] Raw payload váº«n cÃ²n
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành phần nền review contact nội bộ
+- [x] HoÃ n thÃ nh pháº§n ná»n review contact ná»™i bá»™
 
 ---
 
-## Task M. Import sao kê và đối soát DB
+## Task M. Import sao kÃª vÃ  Ä‘á»‘i soÃ¡t DB
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Đưa pipeline sao kê từ memory/app cũ vào DB.
+ÄÆ°a pipeline sao kÃª tá»« memory/app cÅ© vÃ o DB.
 
-### File liên quan
+### File liÃªn quan
 
 - `docs/lich-su-giao-dich(15-04-2026 09_33_29).xls`
 - `docs/filter-rules.vi.md`
-- bảng `dong_sao_ke_tho`
-- bảng `giao_dich_ngan_hang`
-- bảng `ket_qua_parse_giao_dich`
-- bảng `ung_vien_khop_giao_dich`
-- bảng `duyet_giao_dich`
-- bảng `phan_bo_giao_dich`
+- báº£ng `dong_sao_ke_tho`
+- báº£ng `giao_dich_ngan_hang`
+- báº£ng `ket_qua_parse_giao_dich`
+- báº£ng `ung_vien_khop_giao_dich`
+- báº£ng `duyet_giao_dich`
+- báº£ng `phan_bo_giao_dich`
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- [x] import raw sao kê
-- [x] tạo fingerprint chống trùng
-- [x] chuẩn hóa giao dịch
-- [x] parse mã căn
-- [x] lưu candidate
-- [x] tạo review row mặc định
-- [x] tạo allocation một-căn cho giao dịch khớp rõ
+- [x] import raw sao kÃª
+- [x] táº¡o fingerprint chá»‘ng trÃ¹ng
+- [x] chuáº©n hÃ³a giao dá»‹ch
+- [x] parse mÃ£ cÄƒn
+- [x] lÆ°u candidate
+- [x] táº¡o review row máº·c Ä‘á»‹nh
+- [x] táº¡o allocation má»™t-cÄƒn cho giao dá»‹ch khá»›p rÃµ
 
 ### Review
 
-- [x] kiểm tra parser đang lưu `phien_ban_parser`
-- [x] kiểm tra trạng thái parse được lưu vào `ket_qua_parse_giao_dich`
-- [x] kiểm tra candidate được lưu vào `ung_vien_khop_giao_dich`
-- [x] kiểm tra review/allocation được sinh vào DB
-- [ ] kiểm tra sâu 6 case parser bỏ sót trong báo cáo giao dịch 1.500.000 tháng 5/2026 ở vòng cải tiến parser tiếp theo:
+- [x] kiá»ƒm tra parser Ä‘ang lÆ°u `phien_ban_parser`
+- [x] kiá»ƒm tra tráº¡ng thÃ¡i parse Ä‘Æ°á»£c lÆ°u vÃ o `ket_qua_parse_giao_dich`
+- [x] kiá»ƒm tra candidate Ä‘Æ°á»£c lÆ°u vÃ o `ung_vien_khop_giao_dich`
+- [x] kiá»ƒm tra review/allocation Ä‘Æ°á»£c sinh vÃ o DB
+- [ ] kiá»ƒm tra sÃ¢u 6 case parser bá» sÃ³t trong bÃ¡o cÃ¡o giao dá»‹ch 1.500.000 thÃ¡ng 5/2026 á»Ÿ vÃ²ng cáº£i tiáº¿n parser tiáº¿p theo:
   - `L3p509`
-  - `L4B426...` dính số điện thoại
+  - `L4B426...` dÃ­nh sá»‘ Ä‘iá»‡n thoáº¡i
   - `L3 phong 305`
   - `L4C phong515`
   - `107 lo 2`
   - `L4B p321`
-- kiểm tra case nội bộ/không liên quan
-- kiểm tra case multi-allocation
+- kiá»ƒm tra case ná»™i bá»™/khÃ´ng liÃªn quan
+- kiá»ƒm tra case multi-allocation
 
 ### Check/Test
 
@@ -947,7 +971,7 @@ Duyệt contact candidate trước khi chuyển sang `lien_he_can_ho`.
 npm test
 ```
 
-Query kiểm tra:
+Query kiá»ƒm tra:
 
 ```sql
 select count(*) from dong_sao_ke_tho;
@@ -955,17 +979,17 @@ select count(*) from giao_dich_ngan_hang;
 select trang_thai_khop, count(*) from ket_qua_parse_giao_dich group by trang_thai_khop;
 ```
 
-Kết quả thực tế:
+Káº¿t quáº£ thá»±c táº¿:
 
 - script: `npm run import:bank-statement:v2`
 - file: `docs/lich-su-giao-dich(15-04-2026 09_33_29).xls`
-- batch import mới nhất: `lo_nhap_du_lieu.id = 7`
+- batch import má»›i nháº¥t: `lo_nhap_du_lieu.id = 7`
 - `dong_sao_ke_tho`: `125`
 - `giao_dich_ngan_hang`: `125`
 - `ket_qua_parse_giao_dich`: `125`
 - `duyet_giao_dich`: `125`
 - `phan_bo_giao_dich`: `101`
-- trạng thái parse:
+- tráº¡ng thÃ¡i parse:
   - `KHOP_TRUC_TIEP`: `42`
   - `KHOP_SAU_CHUAN_HOA`: `59`
   - `NHIEU_CAN`: `4`
@@ -974,174 +998,177 @@ Kết quả thực tế:
 - `npm test`: `82` tests pass
 - `npm run build`: pass
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Sao kê import không trùng theo fingerprint/tham chiếu ngân hàng
-- [x] Transaction được chuẩn hóa
-- [x] Parse result được lưu
-- [x] Candidate được lưu
-- [x] Review/allocation được lưu
+- [x] Sao kÃª import khÃ´ng trÃ¹ng theo fingerprint/tham chiáº¿u ngÃ¢n hÃ ng
+- [x] Transaction Ä‘Æ°á»£c chuáº©n hÃ³a
+- [x] Parse result Ä‘Æ°á»£c lÆ°u
+- [x] Candidate Ä‘Æ°á»£c lÆ°u
+- [x] Review/allocation Ä‘Æ°á»£c lÆ°u
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [x] Hoàn thành phần nền import sao kê và đối soát DB
+- [x] HoÃ n thÃ nh pháº§n ná»n import sao kÃª vÃ  Ä‘á»‘i soÃ¡t DB
 
 ---
 
-## Task N. Hoàn thiện project để khởi chạy ổn định
+## Task N. HoÃ n thiá»‡n project Ä‘á»ƒ khá»Ÿi cháº¡y á»•n Ä‘á»‹nh
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Hoàn thiện project ở mức có thể khởi chạy ổn định trên local/staging trước khi deploy thật.
+HoÃ n thiá»‡n project á»Ÿ má»©c cÃ³ thá»ƒ khá»Ÿi cháº¡y á»•n Ä‘á»‹nh trÃªn local/staging trÆ°á»›c khi deploy tháº­t.
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- kiểm tra trang chủ cư dân mobile-first/search-bar landing page
-- áp dụng design system từ [design-system.md](design-system.md)
-- kiểm tra public lookup không login
-- kiểm tra login admin bằng username và số điện thoại
-- kiểm tra dashboard quản lý
-- kiểm tra review contact
-- kiểm tra import sao kê/đối soát DB
-- kiểm tra export Excel vận hành
-- chuẩn hóa runbook khởi chạy project
-- đảm bảo test/build pass
+- kiá»ƒm tra trang chá»§ cÆ° dÃ¢n mobile-first/search-bar landing page
+- Ã¡p dá»¥ng design system tá»« [design-system.md](design-system.md)
+- kiá»ƒm tra public lookup khÃ´ng login
+- kiá»ƒm tra login admin báº±ng username vÃ  sá»‘ Ä‘iá»‡n thoáº¡i
+- kiá»ƒm tra dashboard quáº£n lÃ½
+- kiá»ƒm tra review contact
+- kiá»ƒm tra import sao kÃª/Ä‘á»‘i soÃ¡t DB
+- kiá»ƒm tra export Excel váº­n hÃ nh
+- chuáº©n hÃ³a runbook khá»Ÿi cháº¡y project
+- Ä‘áº£m báº£o test/build pass
 
 ### Review
 
-- review route public/admin trên máy dev
-- review tài khoản `admin`, SĐT `0904802553`, role `SUPER_ADMIN`
-- review dữ liệu public không lộ SĐT/tên cư dân/ghi chú nội bộ
-- review file export Excel chỉ dùng nội bộ
+- review route public/admin trÃªn mÃ¡y dev
+- review tÃ i khoáº£n `admin`, SÄT `0904802553`, role `SUPER_ADMIN`
+- review dá»¯ liá»‡u public khÃ´ng lá»™ SÄT/tÃªn cÆ° dÃ¢n/ghi chÃº ná»™i bá»™
+- review file export Excel chá»‰ dÃ¹ng ná»™i bá»™
 
 ### Check/Test
 
 - build production pass
-- public page hoạt động
-- admin login hoạt động
-- export Excel chạy thử và đọc được trên máy local
-- route admin nhạy cảm redirect khi chưa login
+- public page hoáº¡t Ä‘á»™ng
+- admin login hoáº¡t Ä‘á»™ng
+- export Excel cháº¡y thá»­ vÃ  Ä‘á»c Ä‘Æ°á»£c trÃªn mÃ¡y local
+- route admin nháº¡y cáº£m redirect khi chÆ°a login
 - `npm test` pass
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [x] Public page hoạt động trên dev
-- [x] Design system Stitch đã chuyển thành pattern nội bộ, không copy HTML prototype
-- [x] Trang chủ đã tối giản theo hướng search-bar landing page
-- [x] Ảnh nền chung cư xanh đã lưu local và áp dụng cho public pages
-- [x] Admin login có nền số điện thoại
-- [x] SĐT `0904802553` đã gắn với `admin` role `SUPER_ADMIN`
-- [x] Export Excel hoạt động như bản lưu vận hành trên máy dev
+- [x] Public page hoáº¡t Ä‘á»™ng trÃªn dev
+- [x] Design system Stitch Ä‘Ã£ chuyá»ƒn thÃ nh pattern ná»™i bá»™, khÃ´ng copy HTML prototype
+- [x] Trang chá»§ Ä‘Ã£ tá»‘i giáº£n theo hÆ°á»›ng search-bar landing page
+- [x] áº¢nh ná»n chung cÆ° xanh Ä‘Ã£ lÆ°u local vÃ  Ã¡p dá»¥ng cho public pages
+- [x] Admin login cÃ³ ná»n sá»‘ Ä‘iá»‡n thoáº¡i
+- [x] SÄT `0904802553` Ä‘Ã£ gáº¯n vá»›i `admin` role `SUPER_ADMIN`
+- [x] Export Excel hoáº¡t Ä‘á»™ng nhÆ° báº£n lÆ°u váº­n hÃ nh trÃªn mÃ¡y dev
 - [x] `npm test` pass
 - [x] `npm run build` pass
-- [ ] Chủ dự án duyệt giao diện mobile thực tế
-- [ ] Chủ dự án duyệt dữ liệu public không lộ thông tin nhạy cảm
+- [ ] Chá»§ dá»± Ã¡n duyá»‡t giao diá»‡n mobile thá»±c táº¿
+- [ ] Chá»§ dá»± Ã¡n duyá»‡t dá»¯ liá»‡u public khÃ´ng lá»™ thÃ´ng tin nháº¡y cáº£m
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [ ] Đang làm
+- [ ] Äang lÃ m
 
 ---
 
-## Task O. Deploy public web lên VPS
+## Task O. Deploy public web lÃªn VPS
 
-### Mục tiêu
+### Má»¥c tiÃªu
 
-Đưa web lên môi trường public an toàn. Đây là bước cuối của roadmap version hiện tại, chỉ làm sau khi Task N đạt.
+ÄÆ°a web lÃªn mÃ´i trÆ°á»ng public an toÃ n. ÄÃ¢y lÃ  bÆ°á»›c cuá»‘i cá»§a roadmap version hiá»‡n táº¡i, chá»‰ lÃ m sau khi Task N Ä‘áº¡t.
 
-Quyết định production chi tiết: [production-deploy-vps.md](production-deploy-vps.md).
+Quyáº¿t Ä‘á»‹nh production chi tiáº¿t: [production-deploy-vps.md](production-deploy-vps.md).
 
-### Việc cần làm
+### Viá»‡c cáº§n lÃ m
 
-- chủ dự án duyệt [checklist-duyet-truoc-deploy.md](checklist-duyet-truoc-deploy.md)
-- deploy trên VPS
-- cài PostgreSQL trên cùng VPS
-- cấu hình domain `noxhandong.com` sau khi mua và trỏ DNS
-- cấu hình HTTPS
-- cấu hình env production
-- cấu hình backup DB bằng VPS snapshot và `pg_dump`
-- tạo admin production
-- kiểm tra public page không lộ dữ liệu nhạy cảm
+- chá»§ dá»± Ã¡n duyá»‡t [checklist-duyet-truoc-deploy.md](checklist-duyet-truoc-deploy.md)
+- deploy trÃªn VPS
+- cÃ i PostgreSQL trÃªn cÃ¹ng VPS
+- cáº¥u hÃ¬nh domain `noxhandong.com` sau khi mua vÃ  trá» DNS
+- cáº¥u hÃ¬nh HTTPS
+- cáº¥u hÃ¬nh env production
+- cáº¥u hÃ¬nh backup DB báº±ng VPS snapshot vÃ  `pg_dump`
+- táº¡o admin production
+- kiá»ƒm tra public page khÃ´ng lá»™ dá»¯ liá»‡u nháº¡y cáº£m
 
 ### Review
 
-- review biến môi trường production
-- review quyền DB
+- review biáº¿n mÃ´i trÆ°á»ng production
+- review quyá»n DB
 - review route public/admin
-- review Super Admin production và danh sách người giữ quyền
+- review Super Admin production vÃ  danh sÃ¡ch ngÆ°á»i giá»¯ quyá»n
 
 ### Check/Test
 
 - build production pass
-- public page hoạt động
-- admin login hoạt động
-- backup DB chạy thử
-- restore thử một bản `pg_dump`
-- export Excel chạy thử và đọc được trên máy local
+- public page hoáº¡t Ä‘á»™ng
+- admin login hoáº¡t Ä‘á»™ng
+- backup DB cháº¡y thá»­
+- restore thá»­ má»™t báº£n `pg_dump`
+- export Excel cháº¡y thá»­ vÃ  Ä‘á»c Ä‘Æ°á»£c trÃªn mÃ¡y local
 
-### Confirm để qua bước
+### Confirm Ä‘á»ƒ qua bÆ°á»›c
 
-- [ ] Domain/HTTPS hoạt động
-- [ ] Public page hoạt động
-- [ ] Admin login hoạt động
-- [ ] Backup DB có quy trình rõ và có `pg_dump`
-- [ ] Super Admin production đã được bàn giao đúng người, không dùng mật khẩu dev
-- [ ] Không lộ dữ liệu nhạy cảm
+- [ ] Domain/HTTPS hoáº¡t Ä‘á»™ng
+- [ ] Public page hoáº¡t Ä‘á»™ng
+- [ ] Admin login hoáº¡t Ä‘á»™ng
+- [ ] Backup DB cÃ³ quy trÃ¬nh rÃµ vÃ  cÃ³ `pg_dump`
+- [ ] Super Admin production Ä‘Ã£ Ä‘Æ°á»£c bÃ n giao Ä‘Ãºng ngÆ°á»i, khÃ´ng dÃ¹ng máº­t kháº©u dev
+- [ ] KhÃ´ng lá»™ dá»¯ liá»‡u nháº¡y cáº£m
 
-### Trạng thái
+### Tráº¡ng thÃ¡i
 
-- [ ] Chưa làm
+- [ ] ChÆ°a lÃ m
 
 ---
 
-# Thứ tự triển khai bắt buộc
+# Thá»© tá»± triá»ƒn khai báº¯t buá»™c
 
 1. Task C: Migrate/reset DB dev sang V2
-2. Task D: Import master căn hộ
-3. Task E: Sinh staging contact từ file master
-4. Task F: Seed dữ liệu nền và tài khoản Super Admin
-5. Task G: Auth và phân quyền quản trị
-6. Task H: Import file theo dõi thu phí
-7. Task I: Chốt batch trạng thái phí public
-8. Task J: Trang public cư dân tra cứu phí
-9. Task K: Dashboard quản lý
-10. Task L: Màn hình review contact nội bộ
-11. Task M: Import sao kê và đối soát DB
-12. Task N: Hoàn thiện project để khởi chạy ổn định
-13. Task O: Deploy public web lên VPS
+2. Task D: Import master cÄƒn há»™
+3. Task E: Sinh staging contact tá»« file master
+4. Task F: Seed dá»¯ liá»‡u ná»n vÃ  tÃ i khoáº£n Super Admin
+5. Task G: Auth vÃ  phÃ¢n quyá»n quáº£n trá»‹
+6. Task H: Import file theo dÃµi thu phÃ­
+7. Task I: Chá»‘t batch tráº¡ng thÃ¡i phÃ­ public
+8. Task J: Trang public cÆ° dÃ¢n tra cá»©u phÃ­
+9. Task K: Dashboard quáº£n lÃ½
+10. Task L: MÃ n hÃ¬nh review contact ná»™i bá»™
+11. Task M: Import sao kÃª vÃ  Ä‘á»‘i soÃ¡t DB
+12. Task N: HoÃ n thiá»‡n project Ä‘á»ƒ khá»Ÿi cháº¡y á»•n Ä‘á»‹nh
+13. Task O: Deploy public web lÃªn VPS
 
-Task A-M đã hoàn thành theo checklist hiện tại. Hiện tại đang ở Task N. Task O là bước cuối và chưa làm.
+Task A-M Ä‘Ã£ hoÃ n thÃ nh theo checklist hiá»‡n táº¡i. Hiá»‡n táº¡i Ä‘ang á»Ÿ Task N. Task O lÃ  bÆ°á»›c cuá»‘i vÃ  chÆ°a lÃ m.
 
-# Quy trình sau mỗi task
+# Quy trÃ¬nh sau má»—i task
 
-Sau mỗi task phải làm 4 việc:
+Sau má»—i task pháº£i lÃ m 4 viá»‡c:
 
-1. Chạy check/test tương ứng trong task.
-2. Ghi kết quả vào task đó.
-3. Cập nhật `docs/roadmap.md`.
-4. Nếu là mốc lớn, cập nhật `docs/handoff.md`.
+1. Cháº¡y check/test tÆ°Æ¡ng á»©ng trong task.
+2. Ghi káº¿t quáº£ vÃ o task Ä‘Ã³.
+3. Cáº­p nháº­t `docs/roadmap.md`.
+4. Náº¿u lÃ  má»‘c lá»›n, cáº­p nháº­t `docs/handoff.md`.
 
-Nếu task thất bại:
+Náº¿u task tháº¥t báº¡i:
 
-- không sang task tiếp theo
-- ghi rõ lỗi
-- ghi rõ dữ liệu/file bị ảnh hưởng
-- sửa hoặc rollback trước khi tiếp tục
-## Cập nhật nhanh 2026-05-20
+- khÃ´ng sang task tiáº¿p theo
+- ghi rÃµ lá»—i
+- ghi rÃµ dá»¯ liá»‡u/file bá»‹ áº£nh hÆ°á»Ÿng
+- sá»­a hoáº·c rollback trÆ°á»›c khi tiáº¿p tá»¥c
+## Cáº­p nháº­t nhanh 2026-05-20
 
-- [x] Trang login quản trị có nút quay về trang chủ.
-- [x] Các trang quản trị chính đã dịch nhãn hiển thị sang tiếng Việt.
-- [x] UI dùng label tiếng Việt cho quyền, trạng thái tài khoản, trạng thái import, trạng thái batch phí, vai trò liên hệ.
-- [x] Import file `docs/Theo dõi thu phí T5.xlsx`.
-- [x] Tạo batch phí `T5-2026`.
-- [x] Public batch phí `T5-2026` làm dữ liệu hiện hành cho cư dân tra cứu.
-- [x] Tạo report parser sao kê có cột `Căn parser` cạnh cột nội dung giao dịch.
-- [x] Import sao kê mới ngày 2026-05-20 vào DB batch `9`.
-- [x] Trang `/admin/import` có form upload file thu phí Excel.
-- [ ] Chủ dự án test upload file thu phí bằng nút `Chỉ nhập staging`.
-- [ ] Chủ dự án chỉ dùng nút `Nhập và chốt công khai` sau khi đã xác nhận file đúng.
-- [ ] Chủ dự án mở file `docs/reports/lich-su-giao-dich-20-05-2026-08_51_50--parser-doi-chieu.xlsx` và kiểm tra sheet `Can kiem tra`.
-- [ ] Chủ dự án kiểm tra thủ công giao diện `/admin`, `/admin/login`, `/admin/dashboard`, `/admin/import`, `/admin/contacts/review` trên desktop/mobile.
-- [x] Admin mobile đã dùng topbar + Sheet thay sidebar dài; kiểm tra 390px/430px không overflow ngang toàn trang.
-- [x] Trang `/admin` mobile dùng list compact; desktop vẫn giữ card grid.
-- [x] Bảng dài admin có vùng cuộn riêng, không ép hết cột trên mobile.
+- [x] Trang login quáº£n trá»‹ cÃ³ nÃºt quay vá» trang chá»§.
+- [x] CÃ¡c trang quáº£n trá»‹ chÃ­nh Ä‘Ã£ dá»‹ch nhÃ£n hiá»ƒn thá»‹ sang tiáº¿ng Viá»‡t.
+- [x] UI dÃ¹ng label tiáº¿ng Viá»‡t cho quyá»n, tráº¡ng thÃ¡i tÃ i khoáº£n, tráº¡ng thÃ¡i import, tráº¡ng thÃ¡i batch phÃ­, vai trÃ² liÃªn há»‡.
+- [x] Import file `docs/Theo dÃµi thu phÃ­ T5.xlsx`.
+- [x] Táº¡o batch phÃ­ `T5-2026`.
+- [x] Public batch phÃ­ `T5-2026` lÃ m dá»¯ liá»‡u hiá»‡n hÃ nh cho cÆ° dÃ¢n tra cá»©u.
+- [x] Táº¡o report parser sao kÃª cÃ³ cá»™t `CÄƒn parser` cáº¡nh cá»™t ná»™i dung giao dá»‹ch.
+- [x] Import sao kÃª má»›i ngÃ y 2026-05-20 vÃ o DB batch `9`.
+- [x] Trang `/admin/import` cÃ³ form upload file thu phÃ­ Excel.
+- [ ] Chá»§ dá»± Ã¡n test upload file thu phÃ­ báº±ng nÃºt `Chá»‰ nháº­p staging`.
+- [ ] Chá»§ dá»± Ã¡n chá»‰ dÃ¹ng nÃºt `Nháº­p vÃ  chá»‘t cÃ´ng khai` sau khi Ä‘Ã£ xÃ¡c nháº­n file Ä‘Ãºng.
+- [ ] Chá»§ dá»± Ã¡n má»Ÿ file `docs/reports/lich-su-giao-dich-20-05-2026-08_51_50--parser-doi-chieu.xlsx` vÃ  kiá»ƒm tra sheet `Can kiem tra`.
+- [ ] Chá»§ dá»± Ã¡n kiá»ƒm tra thá»§ cÃ´ng giao diá»‡n `/admin`, `/admin/login`, `/admin/dashboard`, `/admin/import`, `/admin/contacts/review` trÃªn desktop/mobile.
+- [x] Admin mobile Ä‘Ã£ dÃ¹ng topbar + Sheet thay sidebar dÃ i; kiá»ƒm tra 390px/430px khÃ´ng overflow ngang toÃ n trang.
+- [x] Trang `/admin` mobile dÃ¹ng list compact; desktop váº«n giá»¯ card grid.
+- [x] Báº£ng dÃ i admin cÃ³ vÃ¹ng cuá»™n riÃªng, khÃ´ng Ã©p háº¿t cá»™t trÃªn mobile.
+
+
+

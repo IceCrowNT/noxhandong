@@ -146,6 +146,20 @@ Không dùng font-size scale theo viewport cho text nhỏ. Chỉ heading public 
 - Không dùng hero lớn trong admin.
 - Route nhạy cảm vẫn ưu tiên rõ quyền và trạng thái.
 
+### Màn duyệt sao kê
+
+Spec chi tiết: [thiet-ke-duyet-sao-ke-phase-2.md](thiet-ke-duyet-sao-ke-phase-2.md).
+
+Nguyên tắc thiết kế:
+
+- Không dùng table rộng làm màn chính.
+- Desktop 24 inch dùng bố cục `master-detail-review`: danh sách giao dịch, chi tiết giao dịch, gợi ý căn/action duyệt.
+- Không có horizontal scroll toàn trang.
+- Nội dung chuyển khoản gốc phải wrap nhiều dòng, không tràn khung.
+- Danh sách giao dịch dùng row card compact thay vì nhiều cột.
+- Dữ liệu cần được phân cấp theo chất lượng: chắc, khá chắc, cần kiểm tra, không đủ dữ liệu.
+- Case thiếu lô như `L 111B` chỉ hiển thị gợi ý ứng viên, không tự chọn căn.
+
 ## Quy tắc phát triển sau này
 
 - Mọi UI public mới phải theo token trong `app/globals.css`.
@@ -454,3 +468,22 @@ Nếu vừa chạy `npm run build` trong lúc dev server đang mở, phải dừ
 - Mobile vẫn giữ Tabs và mở tab `Tra cứu` mặc định.
 - Logo admin dùng cùng asset `public/images/logo-hoanghuy.webp` với public header để đồng bộ nhận diện.
 - Card `Hoàn thành kỳ phí` bổ sung số liệu phụ trong phần trống: kỳ hiện tại, số căn còn thiếu, số căn đóng lẻ đã làm tròn và số căn chưa có dữ liệu.
+
+## Button và thông báo 2026-06-02
+
+- Button dùng chung tại `components/ui/button.tsx` phải có phản hồi rõ khi hover, focus và active:
+  - hover đổi nền/viền rõ hơn và có shadow nhẹ;
+  - active có cảm giác nhấn xuống bằng `translate-y-px` và `scale-[0.99]`;
+  - disabled giảm opacity và không nhận click.
+- Form submit trong vùng admin ưu tiên dùng `components/ui/submit-button.tsx` thay vì `Button type="submit"`.
+- `SubmitButton` dùng `useFormStatus` để:
+  - đổi chữ sang `Đang xử lý...` hoặc nội dung cụ thể như `Đang duyệt...`;
+  - hiện spinner;
+  - disable nút trong lúc server action đang chạy để tránh click nhiều lần.
+- Thông báo trạng thái dùng `components/ui/notice.tsx`.
+- Font thông báo:
+  - cỡ `15px`;
+  - `font-semibold`;
+  - `leading-6`;
+  - có icon theo trạng thái để người dùng nhận biết nhanh thành công/lỗi/cảnh báo.
+- Các trang đã áp dụng: public lookup, login, admin frame/logout, dashboard, import, preview public, duyệt sao kê, duyệt liên hệ, tài khoản, profile, thông báo public.

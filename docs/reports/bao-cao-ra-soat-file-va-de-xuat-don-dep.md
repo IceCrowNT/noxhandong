@@ -1,64 +1,64 @@
-# Báo cáo rà soát file và đề xuất dọn dẹp project
+﻿# BÃ¡o cÃ¡o rÃ  soÃ¡t file vÃ  Ä‘á» xuáº¥t dá»n dáº¹p project
 
-Ngày rà soát: 2026-05-23
+NgÃ y rÃ  soÃ¡t: 2026-05-23
 
-Mục tiêu: phân loại file trong project, xác định file đang phục vụ runtime/tài liệu/dữ liệu, và note các nhóm file cũ hoặc có thể không dùng nữa để chủ dự án duyệt trước khi xoá.
+Má»¥c tiÃªu: phÃ¢n loáº¡i file trong project, xÃ¡c Ä‘á»‹nh file Ä‘ang phá»¥c vá»¥ runtime/tÃ i liá»‡u/dá»¯ liá»‡u, vÃ  note cÃ¡c nhÃ³m file cÅ© hoáº·c cÃ³ thá»ƒ khÃ´ng dÃ¹ng ná»¯a Ä‘á»ƒ chá»§ dá»± Ã¡n duyá»‡t trÆ°á»›c khi xoÃ¡.
 
-## 1. Tóm tắt dung lượng và loại file
+## 1. TÃ³m táº¯t dung lÆ°á»£ng vÃ  loáº¡i file
 
-Các nhóm lớn theo dung lượng thư mục:
+CÃ¡c nhÃ³m lá»›n theo dung lÆ°á»£ng thÆ° má»¥c:
 
-| Thư mục | Vai trò | Dung lượng ước tính | Nhận xét |
+| ThÆ° má»¥c | Vai trÃ² | Dung lÆ°á»£ng Æ°á»›c tÃ­nh | Nháº­n xÃ©t |
 |---|---:|---:|---|
-| `.tools` | Node/PostgreSQL portable cũ | ~1.28 GB | Đã chuyển sang bản cài full Windows; chỉ còn là fallback/backup. |
-| `node_modules` | dependency local | ~826 MB | Sinh lại được bằng `npm install`; không commit. |
-| `.next` | build/dev cache Next.js | ~135 MB | Sinh lại được; có thể xoá khi lỗi CSS/chunk hoặc trước build sạch. |
-| `.local` | backup, upload tạm, screenshot test | ~112 MB | Không commit; nhiều file có thể xoá sau khi chốt backup. |
-| `docs` | tài liệu + Excel/CSV report | ~7.9 MB | Có nhiều report/preview có thể archive. |
-| `public/images` | ảnh nền/logo | ~6.46 MB | UI chỉ dùng `.webp`; `.jpg` là file gốc/source. |
-| `db-sync` | dump SQL cũ | ~1 MB | Có thể nhạy cảm, nên move khỏi repo nếu không cần. |
-| `stitch_markdown_dashboard_viewer` | export design Stitch | ~0.42 MB | Chỉ dùng tham khảo, không chạy runtime. |
+| `.tools` | Node/PostgreSQL portable cÅ© | ~1.28 GB | ÄÃ£ chuyá»ƒn sang báº£n cÃ i full Windows; chá»‰ cÃ²n lÃ  fallback/backup. |
+| `node_modules` | dependency local | ~826 MB | Sinh láº¡i Ä‘Æ°á»£c báº±ng `npm install`; khÃ´ng commit. |
+| `.next` | build/dev cache Next.js | ~135 MB | Sinh láº¡i Ä‘Æ°á»£c; cÃ³ thá»ƒ xoÃ¡ khi lá»—i CSS/chunk hoáº·c trÆ°á»›c build sáº¡ch. |
+| `.local` | backup, upload táº¡m, screenshot test | ~112 MB | KhÃ´ng commit; nhiá»u file cÃ³ thá»ƒ xoÃ¡ sau khi chá»‘t backup. |
+| `docs` | tÃ i liá»‡u + Excel/CSV report | ~7.9 MB | CÃ³ nhiá»u report/preview cÃ³ thá»ƒ archive. |
+| `public/images` | áº£nh ná»n/logo | ~6.46 MB | UI chá»‰ dÃ¹ng `.webp`; `.jpg` lÃ  file gá»‘c/source. |
+| `db-sync` | dump SQL cÅ© | ~1 MB | CÃ³ thá»ƒ nháº¡y cáº£m, nÃªn move khá»i repo náº¿u khÃ´ng cáº§n. |
+| `stitch_markdown_dashboard_viewer` | export design Stitch | ~0.42 MB | Chá»‰ dÃ¹ng tham kháº£o, khÃ´ng cháº¡y runtime. |
 
-Các loại file chính:
+CÃ¡c loáº¡i file chÃ­nh:
 
-| Đuôi file | Nội dung | Trạng thái |
+| ÄuÃ´i file | Ná»™i dung | Tráº¡ng thÃ¡i |
 |---|---|---|
-| `.tsx`, `.ts` | Next.js app, component UI, module nghiệp vụ, test | Giữ. |
-| `.cjs` | script import/sync/report/export dữ liệu | Giữ phần V2; xem lại script preview cũ khi dọn docs. |
-| `.prisma`, `.sql` | schema/migration/dump DB | Giữ V2/migration; schema V1 và dump SQL cần phân loại archive. |
-| `.xlsx`, `.xls`, `.csv` | dữ liệu master, phí, sao kê, preview/report | Giữ dữ liệu nguồn mới nhất; archive report cũ. |
-| `.md` | tài liệu xương sống và report | Giữ file xương sống; archive report tham khảo. |
-| `.jpg`, `.webp`, `.png` | asset UI, ảnh source, screenshot | UI dùng `.webp`; screenshot/test artifact có thể xoá. |
+| `.tsx`, `.ts` | Next.js app, component UI, module nghiá»‡p vá»¥, test | Giá»¯. |
+| `.cjs` | script import/sync/report/export dá»¯ liá»‡u | Giá»¯ pháº§n V2; xem láº¡i script preview cÅ© khi dá»n docs. |
+| `.prisma`, `.sql` | schema/migration/dump DB | Giá»¯ V2/migration; schema V1 vÃ  dump SQL cáº§n phÃ¢n loáº¡i archive. |
+| `.xlsx`, `.xls`, `.csv` | dá»¯ liá»‡u master, phÃ­, sao kÃª, preview/report | Giá»¯ dá»¯ liá»‡u nguá»“n má»›i nháº¥t; archive report cÅ©. |
+| `.md` | tÃ i liá»‡u xÆ°Æ¡ng sá»‘ng vÃ  report | Giá»¯ file xÆ°Æ¡ng sá»‘ng; archive report tham kháº£o. |
+| `.jpg`, `.webp`, `.png` | asset UI, áº£nh source, screenshot | UI dÃ¹ng `.webp`; screenshot/test artifact cÃ³ thá»ƒ xoÃ¡. |
 
-## 2. Nhóm đang dùng, không nên xoá
+## 2. NhÃ³m Ä‘ang dÃ¹ng, khÃ´ng nÃªn xoÃ¡
 
 ### Runtime Next.js
 
-- `app/page.tsx`: trang chủ public dạng search-bar landing page.
-- `app/tra-cuu-phi/page.tsx`: trang cư dân tra cứu phí public.
+- `app/page.tsx`: trang chá»§ public dáº¡ng search-bar landing page.
+- `app/tra-cuu-phi/page.tsx`: trang cÆ° dÃ¢n tra cá»©u phÃ­ public.
 - `app/admin/**`: login, dashboard, import, account, review contact.
-- `middleware.ts`: bảo vệ route admin.
-- `components/ui/**`: component nền theo Tailwind/shadcn style.
+- `middleware.ts`: báº£o vá»‡ route admin.
+- `components/ui/**`: component ná»n theo Tailwind/shadcn style.
 - `components/admin/**`: layout admin, sidebar desktop, Sheet mobile.
-- `app/globals.css`: theme Tailwind/global CSS. Không xoá file này.
+- `app/globals.css`: theme Tailwind/global CSS. KhÃ´ng xoÃ¡ file nÃ y.
 
-### Module nghiệp vụ V2
+### Module nghiá»‡p vá»¥ V2
 
 - `src/modules/auth/**`: login, session, password, current user.
 - `src/modules/database/**`: Prisma client.
-- `src/modules/billing/**`: parser input public và hiển thị trạng thái phí.
-- `src/modules/apartments/dashboard.ts`: dữ liệu dashboard admin.
-- `src/modules/contacts/review.ts`: duyệt contact candidate.
+- `src/modules/billing/**`: parser input public vÃ  hiá»ƒn thá»‹ tráº¡ng thÃ¡i phÃ­.
+- `src/modules/apartments/dashboard.ts`: dá»¯ liá»‡u dashboard admin.
+- `src/modules/contacts/review.ts`: duyá»‡t contact candidate.
 - `src/modules/shared/**`: label, type, utility chung.
-- `src/modules/transactions/parser/apartment-parser.ts`: parser mã căn lõi.
+- `src/modules/transactions/parser/apartment-parser.ts`: parser mÃ£ cÄƒn lÃµi.
 
 ### Database
 
-- `prisma.config.ts`: đang trỏ schema thật tới `prisma/schema-v2.prisma`.
-- `prisma/schema-v2.prisma`: schema mục tiêu hiện tại.
-- `prisma/migrations/**`: lịch sử migration.
+- `prisma.config.ts`: Ä‘ang trá» schema tháº­t tá»›i `prisma/schema.prisma`.
+- `prisma/schema.prisma`: schema má»¥c tiÃªu hiá»‡n táº¡i.
+- `prisma/migrations/**`: lá»‹ch sá»­ migration.
 
-### Script vận hành hiện tại
+### Script váº­n hÃ nh hiá»‡n táº¡i
 
 - `scripts/seed-v2.cjs`
 - `scripts/sync-apartment-master.cjs`
@@ -73,7 +73,7 @@ Các loại file chính:
 - `scripts/setup/stop-postgres-local.ps1`
 - `scripts/production/backup-postgres.sh`
 
-### Tài liệu xương sống
+### TÃ i liá»‡u xÆ°Æ¡ng sá»‘ng
 
 - `README.md`
 - `docs/README.md`
@@ -81,111 +81,111 @@ Các loại file chính:
 - `docs/checklist-trien-khai-va-nghiem-thu.md`
 - `docs/handoff.md`
 - `docs/module-map.md`
-- `docs/database-v2.md`
+- `docs/database.md`
 - `docs/parser-ma-can-ho.md`
 - `docs/design-system.md`
 - `docs/setup-may-moi-va-database.md`
 - `docs/production-deploy-vps.md`
 - `docs/checklist-duyet-truoc-deploy.md`
 
-## 3. Nhóm có thể xoá ngay nếu chỉ muốn dọn máy local
+## 3. NhÃ³m cÃ³ thá»ƒ xoÃ¡ ngay náº¿u chá»‰ muá»‘n dá»n mÃ¡y local
 
-Các mục này đang trong `.gitignore`, không ảnh hưởng source code và có thể sinh lại:
+CÃ¡c má»¥c nÃ y Ä‘ang trong `.gitignore`, khÃ´ng áº£nh hÆ°á»Ÿng source code vÃ  cÃ³ thá»ƒ sinh láº¡i:
 
 - `.next/`: cache/build output Next.js.
-- `node_modules/`: dependency local, sinh lại bằng `npm install`.
+- `node_modules/`: dependency local, sinh láº¡i báº±ng `npm install`.
 - `test-results/`: artifact test Playwright.
-- `.local/*.png`: screenshot kiểm thử UI.
+- `.local/*.png`: screenshot kiá»ƒm thá»­ UI.
 - `.local/mobile-ui-audit/`: screenshot audit mobile.
 - `.local/dev-server.log`, `.local/dev-server.err.log`, `.local/next-dev.*.log`: log local.
 
-Lưu ý: không nên xoá toàn bộ `.local` nếu còn cần:
+LÆ°u Ã½: khÃ´ng nÃªn xoÃ¡ toÃ n bá»™ `.local` náº¿u cÃ²n cáº§n:
 
 - `.local/db-backups/**`: backup DB.
-- `.local/admin-uploads/**`: file người dùng upload qua UI import, dùng để audit.
+- `.local/admin-uploads/**`: file ngÆ°á»i dÃ¹ng upload qua UI import, dÃ¹ng Ä‘á»ƒ audit.
 
-## 4. Nhóm có thể xoá sau khi xác nhận không cần fallback
+## 4. NhÃ³m cÃ³ thá»ƒ xoÃ¡ sau khi xÃ¡c nháº­n khÃ´ng cáº§n fallback
 
-### Portable runtime cũ
+### Portable runtime cÅ©
 
 - `.tools/`
 
-Lý do: môi trường đã chuyển sang bản cài full Windows:
+LÃ½ do: mÃ´i trÆ°á»ng Ä‘Ã£ chuyá»ƒn sang báº£n cÃ i full Windows:
 
 - Node.js full: `C:\Program Files\nodejs`
 - PostgreSQL full service: `postgresql-x64-17`
 
-Khuyến nghị: giữ thêm vài ngày hoặc sau một lần restart máy + chạy project ổn định rồi xoá.
+Khuyáº¿n nghá»‹: giá»¯ thÃªm vÃ i ngÃ y hoáº·c sau má»™t láº§n restart mÃ¡y + cháº¡y project á»•n Ä‘á»‹nh rá»“i xoÃ¡.
 
-### Upload tạm bị lặp
+### Upload táº¡m bá»‹ láº·p
 
 - `.local/admin-uploads/fee-tracking/**`
 
-Quan sát: có nhiều bản copy file thu phí T5, mỗi file khoảng 5 MB. DB đã import/public batch nên các bản upload này chỉ còn giá trị audit.
+Quan sÃ¡t: cÃ³ nhiá»u báº£n copy file thu phÃ­ T5, má»—i file khoáº£ng 5 MB. DB Ä‘Ã£ import/public batch nÃªn cÃ¡c báº£n upload nÃ y chá»‰ cÃ²n giÃ¡ trá»‹ audit.
 
-Khuyến nghị:
+Khuyáº¿n nghá»‹:
 
-- Giữ bản mới nhất hoặc bản đã dùng để publish.
-- Xoá các bản upload thử lặp lại.
+- Giá»¯ báº£n má»›i nháº¥t hoáº·c báº£n Ä‘Ã£ dÃ¹ng Ä‘á»ƒ publish.
+- XoÃ¡ cÃ¡c báº£n upload thá»­ láº·p láº¡i.
 
-## 5. Nhóm nên archive hoặc xoá khỏi repo sau khi duyệt
+## 5. NhÃ³m nÃªn archive hoáº·c xoÃ¡ khá»i repo sau khi duyá»‡t
 
 ### Export Stitch
 
 - `stitch_markdown_dashboard_viewer/**`
 
-Lý do: chỉ là export thiết kế tham khảo. UI hiện tại đã được đưa vào code và tài liệu:
+LÃ½ do: chá»‰ lÃ  export thiáº¿t káº¿ tham kháº£o. UI hiá»‡n táº¡i Ä‘Ã£ Ä‘Æ°á»£c Ä‘Æ°a vÃ o code vÃ  tÃ i liá»‡u:
 
 - `docs/design-system.md`
 - `docs/stitch-mobile-ui-prompt.md`
 
-Khuyến nghị: xoá khỏi repo hoặc nén ra ngoài project nếu muốn lưu lịch sử thiết kế.
+Khuyáº¿n nghá»‹: xoÃ¡ khá»i repo hoáº·c nÃ©n ra ngoÃ i project náº¿u muá»‘n lÆ°u lá»‹ch sá»­ thiáº¿t káº¿.
 
-### Ảnh source không còn dùng trực tiếp
+### áº¢nh source khÃ´ng cÃ²n dÃ¹ng trá»±c tiáº¿p
 
-UI hiện tại dùng `.webp`:
+UI hiá»‡n táº¡i dÃ¹ng `.webp`:
 
 - `public/images/resident-home-desktop.webp`
 - `public/images/resident-home-mobile.webp`
 - `public/images/logo-hoanghuy.webp`
 
-Các file có thể xoá khỏi repo sau khi backup source ảnh ở ngoài:
+CÃ¡c file cÃ³ thá»ƒ xoÃ¡ khá»i repo sau khi backup source áº£nh á»Ÿ ngoÃ i:
 
 - `public/images/resident-home-desktop.jpg`
 - `public/images/resident-home-mobile.jpg`
 - `public/images/logo-hoanghuy.jpg`
 - `public/images/green-apartment-courtyard-bg.jpg`
 
-Lưu ý: nếu muốn sau này xuất lại ảnh `.webp` với chất lượng khác, giữ `.jpg` ở ngoài repo là hợp lý hơn.
+LÆ°u Ã½: náº¿u muá»‘n sau nÃ y xuáº¥t láº¡i áº£nh `.webp` vá»›i cháº¥t lÆ°á»£ng khÃ¡c, giá»¯ `.jpg` á»Ÿ ngoÃ i repo lÃ  há»£p lÃ½ hÆ¡n.
 
-### DB dump sync cũ
+### DB dump sync cÅ©
 
 - `db-sync/apartment_fee_reviewer.latest.sql`
 - `db-sync/apartment_fee_reviewer.latest.meta.json`
 
-Lý do: hiện project đã dùng Prisma migration + PostgreSQL full service. Dump SQL cũ có thể chứa dữ liệu thật/nhạy cảm.
+LÃ½ do: hiá»‡n project Ä‘Ã£ dÃ¹ng Prisma migration + PostgreSQL full service. Dump SQL cÅ© cÃ³ thá»ƒ chá»©a dá»¯ liá»‡u tháº­t/nháº¡y cáº£m.
 
-Khuyến nghị: move ra ổ backup riêng, không để trong repo nếu repo sẽ push lên GitHub/private remote.
+Khuyáº¿n nghá»‹: move ra á»• backup riÃªng, khÃ´ng Ä‘á»ƒ trong repo náº¿u repo sáº½ push lÃªn GitHub/private remote.
 
 ### Schema V1
 
 - `prisma/schema.prisma`
-- `docs/database-v1.md`
+- `docs/archive/legacy-v1/database-v1.archive.md`
 
-Lý do: `prisma.config.ts` đang dùng `prisma/schema-v2.prisma`. V1 chỉ còn ý nghĩa lịch sử.
+LÃ½ do: `prisma.config.ts` Ä‘ang dÃ¹ng `prisma/schema.prisma`. V1 chá»‰ cÃ²n Ã½ nghÄ©a lá»‹ch sá»­.
 
-Khuyến nghị: không xoá ngay; đổi tên hoặc chuyển vào archive:
+Khuyáº¿n nghá»‹: khÃ´ng xoÃ¡ ngay; Ä‘á»•i tÃªn hoáº·c chuyá»ƒn vÃ o archive:
 
 - `prisma/archive/schema-v1.prisma`
-- `docs/archive/database-v1.md`
+- `docs/archive/archive/legacy-v1/database-v1.archive.md`
 
-Mục tiêu là tránh chạy nhầm schema V1.
+Má»¥c tiÃªu lÃ  trÃ¡nh cháº¡y nháº§m schema V1.
 
-## 6. Nhóm legacy V1 cần quyết định trước khi xoá
+## 6. NhÃ³m legacy V1 cáº§n quyáº¿t Ä‘á»‹nh trÆ°á»›c khi xoÃ¡
 
-Nhóm này phục vụ luồng cũ: upload file quản lý + sao kê, phân tích trong browser/API, export workbook review. Hiện roadmap mới đã chuyển sang DB-centric/import bằng script và admin dashboard.
+NhÃ³m nÃ y phá»¥c vá»¥ luá»“ng cÅ©: upload file quáº£n lÃ½ + sao kÃª, phÃ¢n tÃ­ch trong browser/API, export workbook review. Hiá»‡n roadmap má»›i Ä‘Ã£ chuyá»ƒn sang DB-centric/import báº±ng script vÃ  admin dashboard.
 
-Các file liên quan:
+CÃ¡c file liÃªn quan:
 
 - `app/api/analyze/route.ts`
 - `app/api/export/route.ts`
@@ -201,96 +201,98 @@ Các file liên quan:
 - `src/modules/imports/excel/exporter.ts`
 - `src/modules/imports/pdf/statement-pdf-reader.ts`
 - wrapper trong `lib/`: `lib/statement-reader.ts`, `lib/excel/**`, `lib/review/**`, `lib/matcher.ts`, `lib/types.ts`, `lib/constants.ts`, `lib/filter-rules.ts`
-- test cũ liên quan: `lib/review/allocations.test.ts`, `lib/matcher.test.ts`, `lib/excel/statement-reader.test.ts`, `lib/pdf/statement-pdf-reader.test.ts`
+- test cÅ© liÃªn quan: `lib/review/allocations.test.ts`, `lib/matcher.test.ts`, `lib/excel/statement-reader.test.ts`, `lib/pdf/statement-pdf-reader.test.ts`
 
-Không nên xoá từng file rời rạc. Nếu bỏ luồng V1 thì nên làm thành một task riêng:
+KhÃ´ng nÃªn xoÃ¡ tá»«ng file rá»i ráº¡c. Náº¿u bá» luá»“ng V1 thÃ¬ nÃªn lÃ m thÃ nh má»™t task riÃªng:
 
-1. Xác nhận không còn cần `/api/analyze` và `/api/export`.
-2. Xoá UI/API V1 cùng các module chỉ phục vụ nó.
-3. Giữ lại parser mã căn lõi nếu vẫn được billing/dashboard dùng:
+1. XÃ¡c nháº­n khÃ´ng cÃ²n cáº§n `/api/analyze` vÃ  `/api/export`.
+2. XoÃ¡ UI/API V1 cÃ¹ng cÃ¡c module chá»‰ phá»¥c vá»¥ nÃ³.
+3. Giá»¯ láº¡i parser mÃ£ cÄƒn lÃµi náº¿u váº«n Ä‘Æ°á»£c billing/dashboard dÃ¹ng:
    - `src/modules/transactions/parser/apartment-parser.ts`
-   - test parser tương ứng.
-4. Chạy `npm test` và `npm run build`.
+   - test parser tÆ°Æ¡ng á»©ng.
+4. Cháº¡y `npm test` vÃ  `npm run build`.
 
-## 7. Nhóm CSS legacy nên dọn trong task riêng
+## 7. NhÃ³m CSS legacy nÃªn dá»n trong task riÃªng
 
-`app/globals.css` hiện có hai lớp nội dung:
+`app/globals.css` hiá»‡n cÃ³ hai lá»›p ná»™i dung:
 
-1. Phần cần giữ:
+1. Pháº§n cáº§n giá»¯:
    - Tailwind import/source.
    - CSS variables/theme.
    - base body/font.
-   - `.admin-auth-shell`, `.admin-shell` nếu login/admin còn dùng.
-2. Phần có dấu hiệu legacy:
+   - `.admin-auth-shell`, `.admin-shell` náº¿u login/admin cÃ²n dÃ¹ng.
+2. Pháº§n cÃ³ dáº¥u hiá»‡u legacy:
    - `.hero-card`, `.upload-grid`, `.upload-field`
    - `.resident-home-shell`, `.resident-home-panel`, `.resident-lookup-form`
    - `.public-fee-shell`, `.public-fee-hero`, `.public-fee-result`
    - `.review-table`, `.reconcile-table`
-   - nhiều class admin cũ: `.admin-card`, `.admin-grid`, `.admin-table`, `.admin-kpi-*`
+   - nhiá»u class admin cÅ©: `.admin-card`, `.admin-grid`, `.admin-table`, `.admin-kpi-*`
 
-Lý do: UI hiện tại chủ yếu dùng Tailwind class trực tiếp trong TSX và component shadcn-style. Các selector legacy còn phục vụ `ReviewDashboard` V1 hoặc UI cũ.
+LÃ½ do: UI hiá»‡n táº¡i chá»§ yáº¿u dÃ¹ng Tailwind class trá»±c tiáº¿p trong TSX vÃ  component shadcn-style. CÃ¡c selector legacy cÃ²n phá»¥c vá»¥ `ReviewDashboard` V1 hoáº·c UI cÅ©.
 
-Khuyến nghị: dọn CSS sau khi quyết định giữ/xoá legacy V1. Không xoá CSS trước vì có thể làm hỏng `/admin/login` hoặc route V1 nếu còn dùng.
+Khuyáº¿n nghá»‹: dá»n CSS sau khi quyáº¿t Ä‘á»‹nh giá»¯/xoÃ¡ legacy V1. KhÃ´ng xoÃ¡ CSS trÆ°á»›c vÃ¬ cÃ³ thá»ƒ lÃ m há»ng `/admin/login` hoáº·c route V1 náº¿u cÃ²n dÃ¹ng.
 
-## 8. Nhóm docs/report nên chuyển archive
+## 8. NhÃ³m docs/report nÃªn chuyá»ƒn archive
 
-Các file báo cáo tham khảo, không phải tài liệu xương sống:
+CÃ¡c file bÃ¡o cÃ¡o tham kháº£o, khÃ´ng pháº£i tÃ i liá»‡u xÆ°Æ¡ng sá»‘ng:
 
 - `docs/reports/danh-gia-project.md`
 - `docs/reports/desktop-asng7jb-overview.md`
 - `docs/reports/de-xuat-mo-hinh-db-va-tinh-huong-cu-dan.md`
 - `docs/reports/danh-gia-danh-sach-can-ho-master.md`
-- các báo cáo cũ từ ngày 2026-05-13 nếu đã tổng hợp vào roadmap/handoff.
+- cÃ¡c bÃ¡o cÃ¡o cÅ© tá»« ngÃ y 2026-05-13 náº¿u Ä‘Ã£ tá»•ng há»£p vÃ o roadmap/handoff.
 
-Các folder preview sinh từ import/parse:
+CÃ¡c folder preview sinh tá»« import/parse:
 
 - `docs/preview-lien-he-can-ho/**`
 - `docs/preview-master-lien-he-can-ho/**`
 - `docs/preview-theo-doi-thu-phi/**`
 
-Khuyến nghị:
+Khuyáº¿n nghá»‹:
 
-- Giữ `docs/preview-theo-doi-thu-phi/**` cho đến khi batch T5 đã được chủ dự án nghiệm thu.
-- Sau nghiệm thu, chuyển toàn bộ preview/report cũ vào `docs/archive/2026-05-import-audit/` hoặc xoá nếu đã backup.
+- Giá»¯ `docs/preview-theo-doi-thu-phi/**` cho Ä‘áº¿n khi batch T5 Ä‘Ã£ Ä‘Æ°á»£c chá»§ dá»± Ã¡n nghiá»‡m thu.
+- Sau nghiá»‡m thu, chuyá»ƒn toÃ n bá»™ preview/report cÅ© vÃ o `docs/archive/2026-05-import-audit/` hoáº·c xoÃ¡ náº¿u Ä‘Ã£ backup.
 
-## 9. File đã bị xoá trong working tree
+## 9. File Ä‘Ã£ bá»‹ xoÃ¡ trong working tree
 
-Git đang ghi nhận:
+Git Ä‘ang ghi nháº­n:
 
-- `docs/Theo dõi thu phí T4.xlsx` đã xoá.
-- `docs/lich-su-giao-dich(15-04-2026 09_33_29).xls` đã xoá.
+- `docs/Theo dÃµi thu phÃ­ T4.xlsx` Ä‘Ã£ xoÃ¡.
+- `docs/lich-su-giao-dich(15-04-2026 09_33_29).xls` Ä‘Ã£ xoÃ¡.
 
-Đánh giá: hợp lý nếu T5 và sao kê 20-05-2026 là dữ liệu mới nhất. Không cần restore trừ khi muốn lưu lịch sử nguồn.
+ÄÃ¡nh giÃ¡: há»£p lÃ½ náº¿u T5 vÃ  sao kÃª 20-05-2026 lÃ  dá»¯ liá»‡u má»›i nháº¥t. KhÃ´ng cáº§n restore trá»« khi muá»‘n lÆ°u lá»‹ch sá»­ nguá»“n.
 
-## 10. Đề xuất thứ tự dọn an toàn
+## 10. Äá» xuáº¥t thá»© tá»± dá»n an toÃ n
 
-### Phase 1: Dọn local không ảnh hưởng code
+### Phase 1: Dá»n local khÃ´ng áº£nh hÆ°á»Ÿng code
 
-- Xoá `.next/`
-- Xoá `test-results/`
-- Xoá screenshot/log trong `.local`
-- Xoá các bản upload trùng trong `.local/admin-uploads/fee-tracking`, giữ bản audit cần thiết
+- XoÃ¡ `.next/`
+- XoÃ¡ `test-results/`
+- XoÃ¡ screenshot/log trong `.local`
+- XoÃ¡ cÃ¡c báº£n upload trÃ¹ng trong `.local/admin-uploads/fee-tracking`, giá»¯ báº£n audit cáº§n thiáº¿t
 
-### Phase 2: Dọn asset/design tham khảo
+### Phase 2: Dá»n asset/design tham kháº£o
 
-- Move hoặc xoá `stitch_markdown_dashboard_viewer/`
-- Move `.jpg` source trong `public/images` ra ngoài repo, giữ `.webp`
-- Xoá `green-apartment-courtyard-bg.jpg` nếu không dùng nữa
+- Move hoáº·c xoÃ¡ `stitch_markdown_dashboard_viewer/`
+- Move `.jpg` source trong `public/images` ra ngoÃ i repo, giá»¯ `.webp`
+- XoÃ¡ `green-apartment-courtyard-bg.jpg` náº¿u khÃ´ng dÃ¹ng ná»¯a
 
-### Phase 3: Dọn tài liệu/report
+### Phase 3: Dá»n tÃ i liá»‡u/report
 
-- Tạo `docs/archive/`
-- Chuyển report/preview cũ vào archive hoặc xoá sau khi backup
-- Giữ `docs/reports/README.md` nếu vẫn muốn có mục lục report
+- Táº¡o `docs/archive/`
+- Chuyá»ƒn report/preview cÅ© vÃ o archive hoáº·c xoÃ¡ sau khi backup
+- Giá»¯ `docs/reports/README.md` náº¿u váº«n muá»‘n cÃ³ má»¥c lá»¥c report
 
-### Phase 4: Dọn legacy V1 bằng PR/task riêng
+### Phase 4: Dá»n legacy V1 báº±ng PR/task riÃªng
 
-- Xoá route `/api/analyze`, `/api/export`
-- Xoá `ReviewDashboard` V1 và module phục vụ riêng nó
-- Dọn CSS legacy tương ứng
-- Chạy `npm test`, `npm run build`, kiểm tra UI public/admin
+- XoÃ¡ route `/api/analyze`, `/api/export`
+- XoÃ¡ `ReviewDashboard` V1 vÃ  module phá»¥c vá»¥ riÃªng nÃ³
+- Dá»n CSS legacy tÆ°Æ¡ng á»©ng
+- Cháº¡y `npm test`, `npm run build`, kiá»ƒm tra UI public/admin
 
-## 11. Kết luận
+## 11. Káº¿t luáº­n
 
-Không nên xoá code legacy V1 ngay trong một lượt dọn rác chung, vì nó còn có API/test liên kết. Phần xoá an toàn nhất hiện tại là artifact local, export Stitch, ảnh source `.jpg` nếu đã backup, dump SQL cũ, và report/preview đã nghiệm thu.
+KhÃ´ng nÃªn xoÃ¡ code legacy V1 ngay trong má»™t lÆ°á»£t dá»n rÃ¡c chung, vÃ¬ nÃ³ cÃ²n cÃ³ API/test liÃªn káº¿t. Pháº§n xoÃ¡ an toÃ n nháº¥t hiá»‡n táº¡i lÃ  artifact local, export Stitch, áº£nh source `.jpg` náº¿u Ä‘Ã£ backup, dump SQL cÅ©, vÃ  report/preview Ä‘Ã£ nghiá»‡m thu.
+
+
 

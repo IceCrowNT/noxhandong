@@ -100,6 +100,41 @@ export function publicBatchStatusLabel(value: string | null | undefined) {
   return value ? labels[value] || value : "-";
 }
 
+export function transactionMatchStatusLabel(value: string | null | undefined) {
+  const labels: Record<string, string> = {
+    KHOP_TRUC_TIEP: "Khớp chắc",
+    KHOP_SAU_CHUAN_HOA: "Khớp sau chuẩn hóa",
+    NHIEU_CAN: "Nhiều căn",
+    MA_CAN_KHONG_HOP_LE: "Mã căn không tồn tại",
+    CHUA_NHAN_DIEN_DUOC_CAN: "Chưa rõ căn",
+    KHONG_LIEN_QUAN_CAN_HO: "Không liên quan",
+    CAN_RA_SOAT: "Cần rà soát",
+    SUA_TAY: "Sửa tay",
+    DA_DUYET: "Đã duyệt",
+  };
+  return value ? labels[value] || value : "-";
+}
+
+export function transactionReviewStatusLabel(value: string | null | undefined) {
+  const labels: Record<string, string> = {
+    CHUA_DUYET: "Chưa duyệt",
+    DA_RA_SOAT: "Đã rà soát",
+    DA_DUYET: "Đã duyệt",
+    TU_CHOI: "Từ chối",
+  };
+  return value ? labels[value] || value : "-";
+}
+
+export function evidenceTypeLabel(value: string | null | undefined) {
+  const labels: Record<string, string> = {
+    ZALO: "Ảnh Zalo",
+    SAO_KE_CU_DAN: "Sao kê cư dân",
+    GHI_CHU_THU_CONG: "Ghi chú thủ công",
+    KHAC: "Khác",
+  };
+  return value ? labels[value] || value : "-";
+}
+
 export function reviewFlagLabel(value: string | null | undefined) {
   const labels: Record<string, string> = {
     MISSING_PHONE: "Thiếu số điện thoại",

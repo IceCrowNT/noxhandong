@@ -1,14 +1,23 @@
 import { Lock, LockOpen, UserPlus } from "lucide-react";
 
-import { createManagerAction, lockAccountAction, unlockAccountAction, updateAccountRoleAction } from "@/app/admin/actions";
+import {
+  createManagerAction,
+  lockAccountAction,
+  resetAccountPasswordAction,
+  unlockAccountAction,
+  updateAccountRoleAction,
+} from "@/app/admin/actions";
 import { AdminFrame, ScrollPanel } from "@/components/admin/admin-frame";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Notice } from "@/components/ui/notice";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { requireAdminRole } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 import { accountStatusLabel, adminRoleLabel } from "@/src/modules/shared/labels";
+import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
 
 type AccountsPageProps = {
   searchParams?: Promise<{
@@ -16,6 +25,7 @@ type AccountsPageProps = {
     locked?: string;
     unlocked?: string;
     roleUpdated?: string;
+    passwordReset?: string;
     error?: string;
   }>;
 };
@@ -49,6 +59,7 @@ function getStatusMessage(params?: Awaited<AccountsPageProps["searchParams"]>) {
   if (params?.locked === "1") return "Đã khóa tài khoản.";
   if (params?.unlocked === "1") return "Đã mở khóa tài khoản.";
   if (params?.roleUpdated === "1") return "Đã cập nhật vai trò tài khoản.";
+  if (params?.passwordReset === "1") return "Đã reset mật khẩu tài khoản.";
   if (params?.error === "duplicate") return "Tài khoản, số điện thoại hoặc email đã tồn tại.";
   if (params?.error === "invalid") {
     return "Dữ liệu không hợp lệ. Cần tài khoản, số điện thoại hợp lệ và mật khẩu ít nhất 10 ký tự.";
@@ -77,7 +88,8 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
   const params = await searchParams;
   const statusMessage = getStatusMessage(params);
   const isError = Boolean(params?.error);
-  const accounts = await prisma.taiKhoanQuanTri.findMany({
+  const [accounts, loginLogs] = await Promise.all([
+  prisma.taiKhoanQuanTri.findMany({
     orderBy: [{ vai_tro: "asc" }, { ten_dang_nhap: "asc" }],
     select: {
       id: true,
@@ -89,7 +101,15 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
       trang_thai: true,
       lan_dang_nhap_cuoi: true
     }
-  });
+  }),
+  prisma.nhatKyDangNhapQuanTri.findMany({
+    orderBy: { thoi_diem: "desc" },
+    take: 12,
+    include: {
+      tai_khoan: { select: { ten_dang_nhap: true, ten_hien_thi: true } },
+    },
+  }),
+  ]);
 
   return (
     <AdminFrame
@@ -99,15 +119,7 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
       description="Tạo, phân quyền, khóa hoặc mở khóa tài khoản quản trị nội bộ."
     >
       {statusMessage ? (
-        <div
-          className={
-            isError
-              ? "mb-4 rounded-lg bg-red-50 p-3 text-sm font-medium text-red-800"
-              : "mb-4 rounded-lg bg-emerald-50 p-3 text-sm font-medium text-emerald-800"
-          }
-        >
-          {statusMessage}
-        </div>
+        <Notice tone={isError ? "error" : "success"}>{statusMessage}</Notice>
       ) : null}
 
       <Card className="mb-5 bg-white/90">
@@ -157,9 +169,9 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
               <Input name="password" type="password" minLength={10} required />
             </label>
             <div className="flex items-end">
-              <Button className="w-full" type="submit" size="lg">
+              <SubmitButton className="w-full" size="lg" pendingText="Đang tạo tài khoản...">
                 Tạo tài khoản
-              </Button>
+              </SubmitButton>
             </div>
           </form>
         </CardContent>
@@ -212,33 +224,42 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
                   <span>Email: <b className="text-[var(--text)]">{account.email || "-"}</b></span>
                   <span>
                     Đăng nhập cuối:{" "}
-                    <b className="text-[var(--text)]">{account.lan_dang_nhap_cuoi?.toLocaleString("vi-VN") || "-"}</b>
+                    <b className="text-[var(--text)]">{formatVietnamDateTime(account.lan_dang_nhap_cuoi)}</b>
                   </span>
                 </div>
                 {account.id !== currentAccount.id ? (
                   <form action={updateAccountRoleAction} className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-2">
                     <input name="id" type="hidden" value={account.id} />
                     <RoleSelect defaultValue={account.vai_tro} />
-                    <Button size="sm" type="submit">
+                    <SubmitButton size="sm" pendingText="Đang lưu...">
                       Lưu
-                    </Button>
+                    </SubmitButton>
                   </form>
                 ) : null}
                 {account.trang_thai === "DANG_HOAT_DONG" && account.id !== currentAccount.id ? (
                   <form action={lockAccountAction} className="mt-3">
                     <input name="id" type="hidden" value={account.id} />
-                    <Button variant="secondary" size="sm" type="submit" className="w-full">
+                    <SubmitButton variant="secondary" size="sm" className="w-full" pendingText="Đang khóa...">
                       <Lock size={15} aria-hidden="true" />
                       Khóa tài khoản
-                    </Button>
+                    </SubmitButton>
                   </form>
                 ) : account.trang_thai === "BI_KHOA" && account.id !== currentAccount.id ? (
                   <form action={unlockAccountAction} className="mt-3">
                     <input name="id" type="hidden" value={account.id} />
-                    <Button size="sm" type="submit" className="w-full">
+                    <SubmitButton size="sm" className="w-full" pendingText="Đang mở khóa...">
                       <LockOpen size={15} aria-hidden="true" />
                       Mở khóa tài khoản
-                    </Button>
+                    </SubmitButton>
+                  </form>
+                ) : null}
+                {account.id !== currentAccount.id ? (
+                  <form action={resetAccountPasswordAction} className="mt-3 grid gap-2">
+                    <input name="id" type="hidden" value={account.id} />
+                    <Input name="newPassword" type="password" minLength={10} placeholder="Mật khẩu mới" required />
+                    <SubmitButton variant="outline" size="sm" className="w-full" pendingText="Đang reset...">
+                      Reset mật khẩu
+                    </SubmitButton>
                   </form>
                 ) : null}
               </div>
@@ -256,8 +277,9 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
                     <TableHead>Email</TableHead>
                     <TableHead>Quyền</TableHead>
                     <TableHead>Trạng thái</TableHead>
-                    <TableHead>Đăng nhập cuối</TableHead>
-                    <TableHead>Thao tác</TableHead>
+                      <TableHead>Đăng nhập cuối</TableHead>
+                    <TableHead>Reset mật khẩu</TableHead>
+                      <TableHead>Thao tác</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -272,32 +294,45 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
                           <form action={updateAccountRoleAction} className="flex items-center gap-2">
                             <input name="id" type="hidden" value={account.id} />
                             <RoleSelect defaultValue={account.vai_tro} />
-                            <Button size="sm" type="submit">
+                            <SubmitButton size="sm" pendingText="Đang lưu...">
                               Lưu
-                            </Button>
+                            </SubmitButton>
                           </form>
                         ) : (
                           adminRoleLabel(account.vai_tro)
                         )}
                       </TableCell>
                       <TableCell>{accountStatusLabel(account.trang_thai)}</TableCell>
-                      <TableCell>{account.lan_dang_nhap_cuoi?.toLocaleString("vi-VN") || "-"}</TableCell>
+                      <TableCell>{formatVietnamDateTime(account.lan_dang_nhap_cuoi)}</TableCell>
+                      <TableCell>
+                        {account.id !== currentAccount.id ? (
+                          <form action={resetAccountPasswordAction} className="flex min-w-[220px] items-center gap-2">
+                            <input name="id" type="hidden" value={account.id} />
+                            <Input name="newPassword" type="password" minLength={10} placeholder="Mật khẩu mới" required />
+                            <SubmitButton size="sm" variant="outline" pendingText="Đang reset...">
+                              Reset
+                            </SubmitButton>
+                          </form>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
                       <TableCell>
                         {account.trang_thai === "DANG_HOAT_DONG" && account.id !== currentAccount.id ? (
                           <form action={lockAccountAction}>
                             <input name="id" type="hidden" value={account.id} />
-                            <Button variant="secondary" size="sm" type="submit">
+                            <SubmitButton variant="secondary" size="sm" pendingText="Đang khóa...">
                               <Lock size={15} aria-hidden="true" />
                               Khóa
-                            </Button>
+                            </SubmitButton>
                           </form>
                         ) : account.trang_thai === "BI_KHOA" && account.id !== currentAccount.id ? (
                           <form action={unlockAccountAction}>
                             <input name="id" type="hidden" value={account.id} />
-                            <Button size="sm" type="submit">
+                            <SubmitButton size="sm" pendingText="Đang mở khóa...">
                               <LockOpen size={15} aria-hidden="true" />
                               Mở khóa
-                            </Button>
+                            </SubmitButton>
                           </form>
                         ) : (
                           "-"
@@ -308,6 +343,29 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
                 </TableBody>
               </Table>
             </ScrollPanel>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-5 bg-white/90">
+        <CardHeader>
+          <CardTitle>Nhật ký đăng nhập gần nhất</CardTitle>
+          <CardDescription>Theo dõi thời gian, IP và thiết bị cơ bản của tài khoản nội bộ.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-2">
+            {loginLogs.map((log) => (
+              <div key={log.id} className="grid gap-1 rounded-xl border border-[var(--line)] bg-white p-3 text-sm md:grid-cols-[180px_1fr_160px_1fr] md:items-center">
+                <span className="font-semibold">{formatVietnamDateTime(log.thoi_diem)}</span>
+                <span>{log.tai_khoan?.ten_hien_thi || log.tai_khoan?.ten_dang_nhap || log.dinh_danh_dang_nhap || "-"}</span>
+                <span className={log.thanh_cong ? "text-emerald-700" : "text-red-700"}>
+                  {log.thanh_cong ? "Thành công" : "Thất bại"}
+                </span>
+                <span className="truncate text-[var(--muted)]" title={log.user_agent || undefined}>
+                  IP: {log.ip || "-"} · {log.user_agent || "-"}
+                </span>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

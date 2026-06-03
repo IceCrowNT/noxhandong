@@ -5,6 +5,8 @@ import { AdminFrame } from "@/components/admin/admin-frame";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Notice } from "@/components/ui/notice";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { requireAdmin } from "@/src/modules/auth/current-user";
 import { accountStatusLabel, adminRoleLabel } from "@/src/modules/shared/labels";
 
@@ -38,15 +40,7 @@ export default async function AdminProfilePage({ searchParams }: ProfilePageProp
       description="Cập nhật tên hiển thị, email và mật khẩu đăng nhập của tài khoản hiện tại."
     >
       {statusMessage ? (
-        <div
-          className={
-            isError
-              ? "mb-4 rounded-lg bg-red-50 p-3 text-sm font-medium text-red-800"
-              : "mb-4 rounded-lg bg-emerald-50 p-3 text-sm font-medium text-emerald-800"
-          }
-        >
-          {statusMessage}
-        </div>
+        <Notice tone={isError ? "error" : "success"}>{statusMessage}</Notice>
       ) : null}
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.8fr)]">
@@ -77,10 +71,10 @@ export default async function AdminProfilePage({ searchParams }: ProfilePageProp
                 <Input name="email" type="email" defaultValue={account.email || ""} />
               </label>
               <div className="md:col-span-2">
-                <Button type="submit">
+                <SubmitButton pendingText="Đang lưu...">
                   <Save size={16} aria-hidden="true" />
                   Lưu thông tin
-                </Button>
+                </SubmitButton>
               </div>
             </form>
           </CardContent>
@@ -128,10 +122,10 @@ export default async function AdminProfilePage({ searchParams }: ProfilePageProp
                 <Input name="confirmPassword" type="password" autoComplete="new-password" minLength={10} required />
               </label>
               <div className="md:col-span-3">
-                <Button type="submit" variant="secondary">
+                <SubmitButton variant="secondary" pendingText="Đang đổi mật khẩu...">
                   <KeyRound size={16} aria-hidden="true" />
                   Đổi mật khẩu
-                </Button>
+                </SubmitButton>
               </div>
             </form>
           </CardContent>

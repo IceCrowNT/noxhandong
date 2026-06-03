@@ -8,7 +8,12 @@ export type AdminSession = {
 };
 
 export const ADMIN_SESSION_COOKIE = "admin_session";
-export const ADMIN_SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
+
+export function getAdminSessionMaxAgeSeconds() {
+  const days = Number(process.env.ADMIN_SESSION_MAX_AGE_DAYS || 3650);
+  const safeDays = Number.isFinite(days) && days > 0 ? Math.min(days, 3650) : 3650;
+  return Math.floor(safeDays * 24 * 60 * 60);
+}
 
 function getSessionSecret() {
   const secret = process.env.ADMIN_SESSION_SECRET || process.env.NEXTAUTH_SECRET;
@@ -53,7 +58,7 @@ function isAdminRole(value: unknown): value is AdminRole {
 export async function createAdminSessionToken(input: Omit<AdminSession, "exp">) {
   const session: AdminSession = {
     ...input,
-    exp: Math.floor(Date.now() / 1000) + ADMIN_SESSION_MAX_AGE_SECONDS,
+    exp: Math.floor(Date.now() / 1000) + getAdminSessionMaxAgeSeconds(),
   };
   const payload = encodeBase64Url(JSON.stringify(session));
   const signature = await sign(payload);

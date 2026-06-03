@@ -1,0 +1,24 @@
+{
+  "sourceFile": "D:\\VS code\\Quản lý nội bộ\\Nh-p-li-u-t--sao-k-\\.local\\admin-uploads\\bank-statements\\2026-06-02T09-04-53-684Z-lich-su-giao-dich(02-06-2026 03_52_10).xls",
+  "parserVersion": "apartment-code-parser-v0.5-lkv",
+  "currentFeeBatchId": 18,
+  "currentFeePeriod": "T6-2026",
+  "rawRows": 21,
+  "skippedExpenseRows": 0,
+  "skippedBeforeOrAtClosingRows": 5,
+  "totalRows": 16,
+  "incomeRows": 16,
+  "parsedValidRows": 12,
+  "multiCandidateRows": 1,
+  "invalidApartmentRows": 0,
+  "unparsedRows": 3,
+  "uniqueParsedApartments": 13,
+  "totalParsedIncomeAmount": 10250000,
+  "needsVisualReviewRows": 8,
+  "importCutoff": {
+    "source": "latest_monthly_closing_with_cutoff",
+    "cutoffAt": "2026-05-31T16:59:00.000Z",
+    "closingId": 3,
+    "closingPeriod": "T5-2026"
+  }
+}

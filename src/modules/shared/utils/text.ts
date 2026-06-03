@@ -21,13 +21,14 @@ export function normalizeHeader(value: string): string {
   return normalizeWhitespace(removeVietnameseDiacritics(value).toLowerCase());
 }
 
-const APARTMENT_BLOCK_PATTERN = "(L[1-9][A-Z]?|LK[1-9])";
+const APARTMENT_BLOCK_PATTERN = "(L[1-9][A-C]?|LK[1-9])";
 const APARTMENT_ROOM_PATTERN = "([1-9]\\d{2}[A-Z]?)";
 const LK_ROOM_PATTERN = "([1-9]\\d?)";
+const LKV_ROOM_PATTERN = "([1-9]\\d{0,2}[A-Z]?)";
 
 export function normalizeApartmentCode(value: string): string | undefined {
   const normalized = normalizeFreeText(value).replace(/\s+/g, "");
-  const standardMatch = normalized.match(new RegExp(`^(L[1-9][A-Z]?)${APARTMENT_ROOM_PATTERN}$`));
+  const standardMatch = normalized.match(new RegExp(`^(L[1-9][A-C]?)${APARTMENT_ROOM_PATTERN}$`));
   if (standardMatch) {
     return `${standardMatch[1]}.${standardMatch[2]}`;
   }
@@ -37,8 +38,13 @@ export function normalizeApartmentCode(value: string): string | undefined {
     return `${lkMatch[1]}.${lkMatch[2]}`;
   }
 
+  const lkvMatch = normalized.match(new RegExp(`^(LKV)${LKV_ROOM_PATTERN}$`));
+  if (lkvMatch) {
+    return `${lkvMatch[1]}.${lkvMatch[2]}`;
+  }
+
   const dotted = value.trim().toUpperCase().replace(/\s+/g, "");
-  const dottedStandardMatch = dotted.match(new RegExp(`^(L[1-9][A-Z]?)\\.${APARTMENT_ROOM_PATTERN}$`));
+  const dottedStandardMatch = dotted.match(new RegExp(`^(L[1-9][A-C]?)\\.${APARTMENT_ROOM_PATTERN}$`));
   if (dottedStandardMatch) {
     return `${dottedStandardMatch[1]}.${dottedStandardMatch[2]}`;
   }
@@ -46,6 +52,11 @@ export function normalizeApartmentCode(value: string): string | undefined {
   const dottedLkMatch = dotted.match(new RegExp(`^(LK[1-9])\\.${LK_ROOM_PATTERN}$`));
   if (dottedLkMatch) {
     return `${dottedLkMatch[1]}.${dottedLkMatch[2]}`;
+  }
+
+  const dottedLkvMatch = dotted.match(new RegExp(`^(LKV)\\.${LKV_ROOM_PATTERN}$`));
+  if (dottedLkvMatch) {
+    return `${dottedLkvMatch[1]}.${dottedLkvMatch[2]}`;
   }
 
   return undefined;

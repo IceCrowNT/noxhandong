@@ -6,6 +6,7 @@ import { AlertCircle, CheckCircle2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { prisma } from "@/src/modules/database";
 import {
   parsePublicLookupInput,
@@ -222,10 +223,10 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
                   inputMode="text"
                 />
               </label>
-              <Button type="submit" size="lg">
+              <SubmitButton size="lg" pendingText="Đang tra cứu...">
                 <Search size={18} aria-hidden="true" />
                 Tra cứu
-              </Button>
+              </SubmitButton>
             </form>
           </CardContent>
         </Card>

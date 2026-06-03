@@ -1,139 +1,139 @@
-# Hướng dẫn setup máy mới và database
+﻿# HÆ°á»›ng dáº«n setup mÃ¡y má»›i vÃ  database
 
-## Mục tiêu
+## Má»¥c tiÃªu
 
-Tài liệu này dùng để dựng môi trường chạy phần mềm trên máy mới mà không cần cài thủ công quá nhiều bước nhớ tay.
+TÃ i liá»‡u nÃ y dÃ¹ng Ä‘á»ƒ dá»±ng mÃ´i trÆ°á»ng cháº¡y pháº§n má»m trÃªn mÃ¡y má»›i mÃ  khÃ´ng cáº§n cÃ i thá»§ cÃ´ng quÃ¡ nhiá»u bÆ°á»›c nhá»› tay.
 
-Phần mềm hiện tại cần tối thiểu:
+Pháº§n má»m hiá»‡n táº¡i cáº§n tá»‘i thiá»ƒu:
 
 - Node.js + npm
 - PostgreSQL
 - Prisma Client
 
-Phần mềm khuyến nghị để quản lý database bằng giao diện:
+Pháº§n má»m khuyáº¿n nghá»‹ Ä‘á»ƒ quáº£n lÃ½ database báº±ng giao diá»‡n:
 
 - DBeaver Community
 
-## Có nên đồng bộ luôn database qua Git không?
+## CÃ³ nÃªn Ä‘á»“ng bá»™ luÃ´n database qua Git khÃ´ng?
 
-Có thể, nếu:
+CÃ³ thá»ƒ, náº¿u:
 
-- tất cả máy đều là máy cá nhân của anh
-- repo đang để private
-- dữ liệu hiện tại chỉ là dữ liệu dev / thử nghiệm
+- táº¥t cáº£ mÃ¡y Ä‘á»u lÃ  mÃ¡y cÃ¡ nhÃ¢n cá»§a anh
+- repo Ä‘ang Ä‘á»ƒ private
+- dá»¯ liá»‡u hiá»‡n táº¡i chá»‰ lÃ  dá»¯ liá»‡u dev / thá»­ nghiá»‡m
 
-Nhưng không nên commit cả thư mục `postgres-data`.
+NhÆ°ng khÃ´ng nÃªn commit cáº£ thÆ° má»¥c `postgres-data`.
 
-### Cách nên dùng
+### CÃ¡ch nÃªn dÃ¹ng
 
-Dùng **logical snapshot** của database và commit snapshot đó vào repo.
+DÃ¹ng **logical snapshot** cá»§a database vÃ  commit snapshot Ä‘Ã³ vÃ o repo.
 
-Project đã có sẵn cơ chế này:
+Project Ä‘Ã£ cÃ³ sáºµn cÆ¡ cháº¿ nÃ y:
 
-- thư mục snapshot: `db-sync/`
+- thÆ° má»¥c snapshot: `db-sync/`
 - script backup:
   - `scripts/setup/backup-db-to-repo.sh`
 - script restore:
   - `scripts/setup/restore-db-from-repo.sh`
 
-### Vì sao cách này tốt hơn commit `postgres-data`
+### VÃ¬ sao cÃ¡ch nÃ y tá»‘t hÆ¡n commit `postgres-data`
 
-- nhẹ hơn nhiều
-- dễ pull / restore trên máy khác
-- ít rủi ro hỏng repo
-- không phụ thuộc đường dẫn nội bộ của PostgreSQL
-- ít gây lỗi push hơn so với commit data directory
+- nháº¹ hÆ¡n nhiá»u
+- dá»… pull / restore trÃªn mÃ¡y khÃ¡c
+- Ã­t rá»§i ro há»ng repo
+- khÃ´ng phá»¥ thuá»™c Ä‘Æ°á»ng dáº«n ná»™i bá»™ cá»§a PostgreSQL
+- Ã­t gÃ¢y lá»—i push hÆ¡n so vá»›i commit data directory
 
-### Khi nào nên dùng snapshot DB
+### Khi nÃ o nÃªn dÃ¹ng snapshot DB
 
-- muốn đồng bộ môi trường dev giữa các máy cá nhân
-- muốn giữ nguyên dataset thử nghiệm đã import
-- muốn máy khác mở lên là có đúng dữ liệu đang test
+- muá»‘n Ä‘á»“ng bá»™ mÃ´i trÆ°á»ng dev giá»¯a cÃ¡c mÃ¡y cÃ¡ nhÃ¢n
+- muá»‘n giá»¯ nguyÃªn dataset thá»­ nghiá»‡m Ä‘Ã£ import
+- muá»‘n mÃ¡y khÃ¡c má»Ÿ lÃªn lÃ  cÃ³ Ä‘Ãºng dá»¯ liá»‡u Ä‘ang test
 
-### Khi nào không nên dùng snapshot DB
+### Khi nÃ o khÃ´ng nÃªn dÃ¹ng snapshot DB
 
-- dữ liệu production
-- dữ liệu nhạy cảm
-- database quá lớn
+- dá»¯ liá»‡u production
+- dá»¯ liá»‡u nháº¡y cáº£m
+- database quÃ¡ lá»›n
 
-Trong các trường hợp đó nên:
+Trong cÃ¡c trÆ°á»ng há»£p Ä‘Ã³ nÃªn:
 
-- chỉ commit schema + migrations
-- rồi import lại từ file nguồn
+- chá»‰ commit schema + migrations
+- rá»“i import láº¡i tá»« file nguá»“n
 
-## Có cần cài đầy đủ trên máy mới không?
+## CÃ³ cáº§n cÃ i Ä‘áº§y Ä‘á»§ trÃªn mÃ¡y má»›i khÃ´ng?
 
-Có.
+CÃ³.
 
-Nếu máy mới muốn:
+Náº¿u mÃ¡y má»›i muá»‘n:
 
-- chạy backend
-- chạy migration
-- import dữ liệu Excel/PDF
-- lưu dữ liệu vào database thật
+- cháº¡y backend
+- cháº¡y migration
+- import dá»¯ liá»‡u Excel/PDF
+- lÆ°u dá»¯ liá»‡u vÃ o database tháº­t
 
-thì bắt buộc phải có:
+thÃ¬ báº¯t buá»™c pháº£i cÃ³:
 
 1. Node.js
 2. PostgreSQL
-3. biến môi trường `.env`
+3. biáº¿n mÃ´i trÆ°á»ng `.env`
 
-Không cần cài thêm một tool riêng để import Excel. App sẽ tự làm phần đó khi backend hoàn thiện.
+KhÃ´ng cáº§n cÃ i thÃªm má»™t tool riÃªng Ä‘á»ƒ import Excel. App sáº½ tá»± lÃ m pháº§n Ä‘Ã³ khi backend hoÃ n thiá»‡n.
 
-Nên cài thêm DBeaver nếu muốn:
+NÃªn cÃ i thÃªm DBeaver náº¿u muá»‘n:
 
-- xem bảng giống SQL Server Management Studio
-- chạy SQL kiểm tra dữ liệu
-- kiểm tra schema, index, relation
-- export/import dữ liệu thủ công khi cần debug
+- xem báº£ng giá»‘ng SQL Server Management Studio
+- cháº¡y SQL kiá»ƒm tra dá»¯ liá»‡u
+- kiá»ƒm tra schema, index, relation
+- export/import dá»¯ liá»‡u thá»§ cÃ´ng khi cáº§n debug
 
-## Tại sao không đưa bộ cài binary vào repo?
+## Táº¡i sao khÃ´ng Ä‘Æ°a bá»™ cÃ i binary vÃ o repo?
 
-Không nên commit các file dạng:
+KhÃ´ng nÃªn commit cÃ¡c file dáº¡ng:
 
 - `.dmg`
 - `.zip`
-- binary nặng
+- binary náº·ng
 
-vào GitHub vì:
+vÃ o GitHub vÃ¬:
 
-- repo sẽ phình to rất nhanh
-- dễ gây lỗi push
-- khó quản lý version
+- repo sáº½ phÃ¬nh to ráº¥t nhanh
+- dá»… gÃ¢y lá»—i push
+- khÃ³ quáº£n lÃ½ version
 
-Thay vào đó, project chỉ giữ:
+Thay vÃ o Ä‘Ã³, project chá»‰ giá»¯:
 
-- script tải installer từ nguồn chính thức
-- script khởi động database local
-- tài liệu setup
+- script táº£i installer tá»« nguá»“n chÃ­nh thá»©c
+- script khá»Ÿi Ä‘á»™ng database local
+- tÃ i liá»‡u setup
 
 ## DBeaver Community
 
-DBeaver là công cụ GUI khuyến nghị để kiểm tra PostgreSQL của project.
+DBeaver lÃ  cÃ´ng cá»¥ GUI khuyáº¿n nghá»‹ Ä‘á»ƒ kiá»ƒm tra PostgreSQL cá»§a project.
 
-### Cài trên Windows
+### CÃ i trÃªn Windows
 
-Khuyến nghị cài bằng `winget`:
+Khuyáº¿n nghá»‹ cÃ i báº±ng `winget`:
 
 ```powershell
 winget install --id DBeaver.DBeaver.Community --source winget --accept-package-agreements --accept-source-agreements
 ```
 
-Trên máy hiện tại đã cài:
+TrÃªn mÃ¡y hiá»‡n táº¡i Ä‘Ã£ cÃ i:
 
 - package id: `DBeaver.DBeaver.Community`
-- version: `26.0.5` bản full qua `winget`
-- còn thấy bản `26.0.4 (current user)` từ lần cài trước
+- version: `26.0.5` báº£n full qua `winget`
+- cÃ²n tháº¥y báº£n `26.0.4 (current user)` tá»« láº§n cÃ i trÆ°á»›c
 
-Có thể kiểm tra bằng:
+CÃ³ thá»ƒ kiá»ƒm tra báº±ng:
 
 ```powershell
 winget list --id DBeaver.DBeaver.Community
 ```
 
-### Kết nối database project trong DBeaver
+### Káº¿t ná»‘i database project trong DBeaver
 
-Tạo connection mới:
+Táº¡o connection má»›i:
 
 - Database type: `PostgreSQL`
 - Host: `localhost`
@@ -143,7 +143,7 @@ Tạo connection mới:
 - Password: `postgres`
 - Schema: `public`
 
-Các bảng nên mở kiểm tra trước:
+CÃ¡c báº£ng nÃªn má»Ÿ kiá»ƒm tra trÆ°á»›c:
 
 - `can_ho`
 - `ung_vien_lien_he_can_ho`
@@ -152,7 +152,7 @@ Các bảng nên mở kiểm tra trước:
 - `lo_nhap_du_lieu`
 - `dong_du_lieu_quan_ly_tho`
 
-SQL kiểm tra nhanh:
+SQL kiá»ƒm tra nhanh:
 
 ```sql
 select count(*) from can_ho;
@@ -162,41 +162,41 @@ select ten_dang_nhap, vai_tro, trang_thai from tai_khoan_quan_tri;
 select loai_can, ma_phi, so_tien from quy_tac_phi;
 ```
 
-Kỳ vọng DB dev V2 hiện tại:
+Ká»³ vá»ng DB dev V2 hiá»‡n táº¡i:
 
 - `can_ho = 934`
 - `CHUNG_CU = 884`
 - `LIEN_KE = 50`
 - `ung_vien_lien_he_can_ho = 1977`
-- có user `admin` role `SUPER_ADMIN`
+- cÃ³ user `admin` role `SUPER_ADMIN`
 
-### Nếu DBeaver báo `Connection refused`
+### Náº¿u DBeaver bÃ¡o `Connection refused`
 
-Lỗi này thường có nghĩa là PostgreSQL local chưa chạy trên `localhost:5432`.
+Lá»—i nÃ y thÆ°á»ng cÃ³ nghÄ©a lÃ  PostgreSQL local chÆ°a cháº¡y trÃªn `localhost:5432`.
 
-Trên Windows, chạy trong thư mục project:
+TrÃªn Windows, cháº¡y trong thÆ° má»¥c project:
 
 ```powershell
 npm run db:start:windows
 ```
 
-Sau đó bấm `Retry` trong DBeaver hoặc reconnect lại connection.
+Sau Ä‘Ã³ báº¥m `Retry` trong DBeaver hoáº·c reconnect láº¡i connection.
 
-Kiểm tra nhanh port:
+Kiá»ƒm tra nhanh port:
 
 ```powershell
 Get-NetTCPConnection -LocalPort 5432 -State Listen
 ```
 
-Nếu muốn dừng DB local:
+Náº¿u muá»‘n dá»«ng DB local:
 
 ```powershell
 npm run db:stop:windows
 ```
 
-## Cấu trúc script setup
+## Cáº¥u trÃºc script setup
 
-Các script nằm ở:
+CÃ¡c script náº±m á»Ÿ:
 
 - `scripts/setup/start-postgres-local.ps1`
 - `scripts/setup/stop-postgres-local.ps1`
@@ -207,49 +207,49 @@ Các script nằm ở:
 - `scripts/setup/backup-db-to-repo.sh`
 - `scripts/setup/restore-db-from-repo.sh`
 
-Các script này:
+CÃ¡c script nÃ y:
 
-- không tạo file nặng trong repo
-- cài `Postgres.app` vào `~/Applications`
-- tạo data directory ở `~/.local/share/apartment-fee-reviewer`
-- không ảnh hưởng commit Git
+- khÃ´ng táº¡o file náº·ng trong repo
+- cÃ i `Postgres.app` vÃ o `~/Applications`
+- táº¡o data directory á»Ÿ `~/.local/share/apartment-fee-reviewer`
+- khÃ´ng áº£nh hÆ°á»Ÿng commit Git
 
-## Quy trình setup trên máy mới
+## Quy trÃ¬nh setup trÃªn mÃ¡y má»›i
 
-### Windows hiện tại
+### Windows hiá»‡n táº¡i
 
-Trên máy Windows hiện tại, project đã chuyển sang dùng bản cài full:
+TrÃªn mÃ¡y Windows hiá»‡n táº¡i, project Ä‘Ã£ chuyá»ƒn sang dÃ¹ng báº£n cÃ i full:
 
 - Node.js LTS full: `OpenJS.NodeJS.LTS`, version `24.16.0`
 - PostgreSQL full: `PostgreSQL.PostgreSQL.17`, version `17.10-1`
 - PostgreSQL service: `postgresql-x64-17`
-- service đang để `Automatic`, tự chạy cùng Windows
+- service Ä‘ang Ä‘á»ƒ `Automatic`, tá»± cháº¡y cÃ¹ng Windows
 - database dev: `apartment_fee_reviewer`
 - user/password local: `postgres` / `postgres`
 
-Các bản portable còn tồn tại để làm fallback/backup, không còn là môi trường chính:
+CÃ¡c báº£n portable cÃ²n tá»“n táº¡i Ä‘á»ƒ lÃ m fallback/backup, khÃ´ng cÃ²n lÃ  mÃ´i trÆ°á»ng chÃ­nh:
 
 - Node portable trong `.tools/`
 - PostgreSQL portable trong `.tools/`
-- PostgreSQL portable runtime ngoài repo ở `C:\Users\IceCrow\apartment_fee_reviewer_runtime`
+- PostgreSQL portable runtime ngoÃ i repo á»Ÿ `C:\Users\IceCrow\apartment_fee_reviewer_runtime`
 
-Không xóa các thư mục portable nếu chưa có backup rõ ràng, vì có thể cần dùng lại để đối chiếu dữ liệu cũ.
+KhÃ´ng xÃ³a cÃ¡c thÆ° má»¥c portable náº¿u chÆ°a cÃ³ backup rÃµ rÃ ng, vÃ¬ cÃ³ thá»ƒ cáº§n dÃ¹ng láº¡i Ä‘á»ƒ Ä‘á»‘i chiáº¿u dá»¯ liá»‡u cÅ©.
 
-Khởi động PostgreSQL trên Windows:
+Khá»Ÿi Ä‘á»™ng PostgreSQL trÃªn Windows:
 
 ```powershell
 npm run db:start:windows
 ```
 
-Dừng PostgreSQL trên Windows:
+Dá»«ng PostgreSQL trÃªn Windows:
 
 ```powershell
 npm run db:stop:windows
 ```
 
-Script PowerShell sẽ ưu tiên service `postgresql-x64-17`; nếu máy không có service này mới fallback về PostgreSQL portable.
+Script PowerShell sáº½ Æ°u tiÃªn service `postgresql-x64-17`; náº¿u mÃ¡y khÃ´ng cÃ³ service nÃ y má»›i fallback vá» PostgreSQL portable.
 
-Kiểm tra công cụ full:
+Kiá»ƒm tra cÃ´ng cá»¥ full:
 
 ```powershell
 node -v
@@ -258,87 +258,87 @@ psql --version
 Get-Service postgresql-x64-17
 ```
 
-Nếu terminal cũ chưa nhận `node`, `npm` hoặc `psql`, đóng terminal/VS Code rồi mở lại để nhận PATH mới.
+Náº¿u terminal cÅ© chÆ°a nháº­n `node`, `npm` hoáº·c `psql`, Ä‘Ã³ng terminal/VS Code rá»“i má»Ÿ láº¡i Ä‘á»ƒ nháº­n PATH má»›i.
 
-### Mac/Linux hoặc máy khác
+### Mac/Linux hoáº·c mÃ¡y khÃ¡c
 
-Phần dưới đây là quy trình nền. Trên Mac có thể dùng các script `Postgres.app` bên dưới.
+Pháº§n dÆ°á»›i Ä‘Ã¢y lÃ  quy trÃ¬nh ná»n. TrÃªn Mac cÃ³ thá»ƒ dÃ¹ng cÃ¡c script `Postgres.app` bÃªn dÆ°á»›i.
 
-### Bước 1. Cài Node.js
+### BÆ°á»›c 1. CÃ i Node.js
 
-Khuyến nghị dùng `nvm`.
+Khuyáº¿n nghá»‹ dÃ¹ng `nvm`.
 
-Sau khi cài xong, kiểm tra:
+Sau khi cÃ i xong, kiá»ƒm tra:
 
 ```bash
 node -v
 npm -v
 ```
 
-### Bước 2. Cài Postgres.app bằng script
+### BÆ°á»›c 2. CÃ i Postgres.app báº±ng script
 
-Trong thư mục project:
+Trong thÆ° má»¥c project:
 
 ```bash
 bash scripts/setup/install-postgres-app-local.sh
 ```
 
-Mặc định script sẽ cài:
+Máº·c Ä‘á»‹nh script sáº½ cÃ i:
 
 - `Postgres.app` version `v2.9.4`
 - PostgreSQL major `17`
 
-### Bước 3. Khởi động PostgreSQL local
+### BÆ°á»›c 3. Khá»Ÿi Ä‘á»™ng PostgreSQL local
 
 ```bash
 bash scripts/setup/start-postgres-local.sh
 ```
 
-### Bước 4. Tạo database dev
+### BÆ°á»›c 4. Táº¡o database dev
 
 ```bash
 bash scripts/setup/create-dev-db.sh
 ```
 
-Database mặc định:
+Database máº·c Ä‘á»‹nh:
 
 - `apartment_fee_reviewer`
 
-### Bước 5. Tạo file `.env`
+### BÆ°á»›c 5. Táº¡o file `.env`
 
-Nếu chưa có:
+Náº¿u chÆ°a cÃ³:
 
 ```bash
 cp .env.example .env
 ```
 
-Giá trị hiện tại:
+GiÃ¡ trá»‹ hiá»‡n táº¡i:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/apartment_fee_reviewer?schema=public"
 ```
 
-### Bước 6. Generate Prisma client
+### BÆ°á»›c 6. Generate Prisma client
 
 ```bash
 npm run prisma:generate
 ```
 
-### Bước 7. Chạy migration
+### BÆ°á»›c 7. Cháº¡y migration
 
 ```bash
 npx prisma migrate dev --name init
 ```
 
-## Đồng bộ database giữa các máy qua Git
+## Äá»“ng bá»™ database giá»¯a cÃ¡c mÃ¡y qua Git
 
-### Backup DB hiện tại vào repo
+### Backup DB hiá»‡n táº¡i vÃ o repo
 
 ```bash
 npm run db:backup:repo
 ```
 
-Sau đó commit:
+Sau Ä‘Ã³ commit:
 
 ```bash
 git add db-sync
@@ -346,66 +346,66 @@ git commit -m "Cap nhat snapshot database dev"
 git push
 ```
 
-### Restore DB từ repo trên máy khác
+### Restore DB tá»« repo trÃªn mÃ¡y khÃ¡c
 
-Sau khi pull code mới nhất:
+Sau khi pull code má»›i nháº¥t:
 
 ```bash
 npm run db:restore:repo
 ```
 
-### File snapshot hiện tại
+### File snapshot hiá»‡n táº¡i
 
-Thư mục:
+ThÆ° má»¥c:
 
 - `db-sync/`
 
-File chính:
+File chÃ­nh:
 
 - `apartment_fee_reviewer.latest.sql`
 - `apartment_fee_reviewer.latest.meta.json`
 
-### Lưu ý
+### LÆ°u Ã½
 
-- chỉ nên giữ **1 snapshot mới nhất**
-- không commit `.env`
-- không commit `postgres-data`
-- nếu snapshot quá lớn, quay lại phương án:
-  - migrations + import lại từ file mẫu
+- chá»‰ nÃªn giá»¯ **1 snapshot má»›i nháº¥t**
+- khÃ´ng commit `.env`
+- khÃ´ng commit `postgres-data`
+- náº¿u snapshot quÃ¡ lá»›n, quay láº¡i phÆ°Æ¡ng Ã¡n:
+  - migrations + import láº¡i tá»« file máº«u
 
-## Các lệnh kiểm tra nhanh
+## CÃ¡c lá»‡nh kiá»ƒm tra nhanh
 
-### Kiểm tra postgres đang chạy chưa trên Windows
+### Kiá»ƒm tra postgres Ä‘ang cháº¡y chÆ°a trÃªn Windows
 
 ```powershell
 Get-NetTCPConnection -LocalPort 5432 -State Listen
 ```
 
-### Kiểm tra database đã có chưa trên Windows
+### Kiá»ƒm tra database Ä‘Ã£ cÃ³ chÆ°a trÃªn Windows
 
 ```powershell
 psql -h localhost -p 5432 -U postgres -d apartment_fee_reviewer -c "\dt"
 ```
 
-### Kiểm tra postgres đang chạy chưa trên Mac/Linux
+### Kiá»ƒm tra postgres Ä‘ang cháº¡y chÆ°a trÃªn Mac/Linux
 
 ```bash
 lsof -nP -iTCP:5432 -sTCP:LISTEN
 ```
 
-### Kiểm tra database đã có chưa
+### Kiá»ƒm tra database Ä‘Ã£ cÃ³ chÆ°a
 
 ```bash
 $HOME/Applications/Postgres.app/Contents/Versions/17/bin/psql -h localhost -p 5432 -U postgres -lqt
 ```
 
-### Kiểm tra bảng sau migration
+### Kiá»ƒm tra báº£ng sau migration
 
 ```bash
 $HOME/Applications/Postgres.app/Contents/Versions/17/bin/psql -h localhost -p 5432 -U postgres -d apartment_fee_reviewer -c "\\dt"
 ```
 
-## Dừng database local
+## Dá»«ng database local
 
 Windows:
 
@@ -419,34 +419,35 @@ Mac/Linux:
 bash scripts/setup/stop-postgres-local.sh
 ```
 
-## Trạng thái hiện tại của project
+## Tráº¡ng thÃ¡i hiá»‡n táº¡i cá»§a project
 
-Đến thời điểm tài liệu này được tạo:
+Äáº¿n thá»i Ä‘iá»ƒm tÃ i liá»‡u nÃ y Ä‘Æ°á»£c táº¡o:
 
-- schema V2 Prisma đã validate
-- Prisma Client đã generate theo `prisma/schema-v2.prisma`
-- DB dev đã migrate/reset sang V2
-- migration V2 hiện tại: `20260515000100_v2_public_web`
-- PostgreSQL local trên máy Windows hiện tại đã chuyển sang bản full, chạy bằng Windows service `postgresql-x64-17`
-- Node.js trên máy Windows hiện tại đã chuyển sang bản full `OpenJS.NodeJS.LTS`
-- PostgreSQL portable ở `C:\Users\IceCrow\apartment_fee_reviewer_runtime` chỉ còn là fallback/backup
-- DBeaver Community đã được cài để kiểm tra database bằng giao diện
+- schema hiện hành Prisma Ä‘Ã£ validate
+- Prisma Client Ä‘Ã£ generate theo `prisma/schema.prisma`
+- DB dev Ä‘Ã£ migrate/reset sang V2
+- migration V2 hiá»‡n táº¡i: `20260515000100_v2_public_web`
+- PostgreSQL local trÃªn mÃ¡y Windows hiá»‡n táº¡i Ä‘Ã£ chuyá»ƒn sang báº£n full, cháº¡y báº±ng Windows service `postgresql-x64-17`
+- Node.js trÃªn mÃ¡y Windows hiá»‡n táº¡i Ä‘Ã£ chuyá»ƒn sang báº£n full `OpenJS.NodeJS.LTS`
+- PostgreSQL portable á»Ÿ `C:\Users\IceCrow\apartment_fee_reviewer_runtime` chá»‰ cÃ²n lÃ  fallback/backup
+- DBeaver Community Ä‘Ã£ Ä‘Æ°á»£c cÃ i Ä‘á»ƒ kiá»ƒm tra database báº±ng giao diá»‡n
 
-## Kết luận
+## Káº¿t luáº­n
 
-Máy mới cần setup database thật nếu muốn chạy backend đúng nghĩa.
+MÃ¡y má»›i cáº§n setup database tháº­t náº¿u muá»‘n cháº¡y backend Ä‘Ãºng nghÄ©a.
 
-Nhưng không cần tạo tool import riêng hoặc nhập tay dữ liệu master, vì hướng triển khai của project là:
+NhÆ°ng khÃ´ng cáº§n táº¡o tool import riÃªng hoáº·c nháº­p tay dá»¯ liá»‡u master, vÃ¬ hÆ°á»›ng triá»ƒn khai cá»§a project lÃ :
 
-- nhập Excel vào bảng raw
-- transform sang bảng business
-- review trên app
+- nháº­p Excel vÃ o báº£ng raw
+- transform sang báº£ng business
+- review trÃªn app
 
-Toàn bộ bước này sẽ nằm trong chính phần mềm.
+ToÃ n bá»™ bÆ°á»›c nÃ y sáº½ náº±m trong chÃ­nh pháº§n má»m.
 
-Nếu muốn nhiều máy cá nhân cùng phát triển trên cùng dataset dev, phương án hiện tại được khuyến nghị là:
+Náº¿u muá»‘n nhiá»u mÃ¡y cÃ¡ nhÃ¢n cÃ¹ng phÃ¡t triá»ƒn trÃªn cÃ¹ng dataset dev, phÆ°Æ¡ng Ã¡n hiá»‡n táº¡i Ä‘Æ°á»£c khuyáº¿n nghá»‹ lÃ :
 
 - commit `schema + migrations + scripts`
-- và khi thật sự cần thì commit thêm `db-sync/apartment_fee_reviewer.latest.sql`
+- vÃ  khi tháº­t sá»± cáº§n thÃ¬ commit thÃªm `db-sync/apartment_fee_reviewer.latest.sql`
 
-Không dùng Git để sync trực tiếp thư mục data của PostgreSQL.
+KhÃ´ng dÃ¹ng Git Ä‘á»ƒ sync trá»±c tiáº¿p thÆ° má»¥c data cá»§a PostgreSQL.
+

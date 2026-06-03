@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { logoutAction } from "@/app/admin/actions";
 import { AdminDesktopSidebar, AdminMobileMenu, type AdminNavigationKey } from "@/components/admin/admin-navigation";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 type AdminFrameProps = {
   activeKey: AdminNavigationKey;
@@ -35,10 +35,10 @@ export function AdminFrame({ activeKey, badge, children, description, headerActi
             <div className="flex shrink-0 items-center gap-2">
               {headerActions}
               <form action={logoutAction}>
-                <Button variant="ghost" size="sm" type="submit">
+                <SubmitButton variant="ghost" size="sm" pendingText="Đang thoát...">
                   <LogOut size={16} aria-hidden="true" />
                   <span className="hidden sm:inline">Đăng xuất</span>
-                </Button>
+                </SubmitButton>
               </form>
             </div>
           </header>

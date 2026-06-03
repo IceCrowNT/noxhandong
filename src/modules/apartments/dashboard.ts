@@ -248,6 +248,8 @@ export async function getApartmentDashboardData(rawQuery: string) {
     approvedContactCount,
     currentBatch,
     latestImports,
+    transactionReviewStats,
+    transactionParseStats,
   ] = await Promise.all([
     prisma.canHo.count(),
     prisma.canHo.groupBy({
@@ -284,6 +286,15 @@ export async function getApartmentDashboardData(rawQuery: string) {
         trang_thai: true,
         thoi_diem_nhap: true,
       },
+    }),
+    prisma.giaoDichNganHang.groupBy({
+      by: ["trang_thai_duyet"],
+      _count: { _all: true },
+    }),
+    prisma.giaoDichNganHang.groupBy({
+      by: ["trang_thai_khop"],
+      _count: { _all: true },
+      where: { trang_thai_khop: { not: null } },
     }),
   ]);
 
@@ -340,6 +351,14 @@ export async function getApartmentDashboardData(rawQuery: string) {
           }
         : null,
       feeOverview,
+      transactionReviewStats: transactionReviewStats.map((item) => ({
+        status: item.trang_thai_duyet,
+        count: item._count._all,
+      })),
+      transactionParseStats: transactionParseStats.map((item) => ({
+        status: item.trang_thai_khop || "CHUA_CO_KET_QUA_PARSE",
+        count: item._count._all,
+      })),
     },
     latestImports: latestImports.map((item) => ({
       ...item,
@@ -411,6 +430,49 @@ async function getApartmentDetail(apartmentId: number) {
           },
         },
       },
+      lich_su_dong_phi: {
+        orderBy: { ngay_tao: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          ky_du_lieu: true,
+          thang_ap_dung: true,
+          so_tien: true,
+          loai_nguon: true,
+          ghi_chu: true,
+          ngay_tao: true,
+          batch_phi_public_id: true,
+          giao_dich_ngan_hang: {
+            select: {
+              id: true,
+              ngay_giao_dich: true,
+              so_tien: true,
+              noi_dung_goc: true,
+              tham_chieu_ngan_hang: true,
+              ten_nguoi_chuyen: true,
+              lo_nhap_du_lieu: {
+                select: {
+                  id: true,
+                  ten_file: true,
+                  loai_nguon: true,
+                },
+              },
+              chung_tu_doi_soat: {
+                orderBy: { ngay_tao: "desc" },
+                take: 3,
+                select: {
+                  id: true,
+                  loai_chung_tu: true,
+                  duong_dan_file: true,
+                  ten_file_goc: true,
+                  ghi_chu: true,
+                  ngay_tao: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -451,6 +513,7 @@ async function getApartmentDetail(apartmentId: number) {
     ...apartment,
     dien_tich_m2: formatDecimal(apartment.dien_tich_m2),
     trang_thai_phi_public: undefined,
+    lich_su_dong_phi: undefined,
     currentFeeStatus: feeStatus
       ? {
           ma_can: feeStatus.ma_can,
@@ -468,6 +531,27 @@ async function getApartmentDetail(apartmentId: number) {
           },
         }
       : null,
+    latestPaymentHistory: apartment.lich_su_dong_phi.map((history) => ({
+      id: history.id,
+      ky_du_lieu: history.ky_du_lieu,
+      thang_ap_dung: history.thang_ap_dung,
+      so_tien: formatDecimal(history.so_tien),
+      loai_nguon: history.loai_nguon,
+      ghi_chu: history.ghi_chu,
+      ngay_tao: formatDate(history.ngay_tao),
+      batch_phi_public_id: history.batch_phi_public_id,
+      giao_dich_ngan_hang: history.giao_dich_ngan_hang
+        ? {
+            ...history.giao_dich_ngan_hang,
+            ngay_giao_dich: formatDate(history.giao_dich_ngan_hang.ngay_giao_dich),
+            so_tien: formatDecimal(history.giao_dich_ngan_hang.so_tien),
+            chung_tu_doi_soat: history.giao_dich_ngan_hang.chung_tu_doi_soat.map((item) => ({
+              ...item,
+              ngay_tao: formatDate(item.ngay_tao),
+            })),
+          }
+        : null,
+    })),
     contactCandidates: candidates.map((candidate) => ({
       ...candidate,
       flags: jsonArray(candidate.flags_json),

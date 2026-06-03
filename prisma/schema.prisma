@@ -6,413 +6,686 @@ datasource db {
   provider = "postgresql"
 }
 
-enum ApartmentType {
+enum LoaiCan {
   CHUNG_CU
   LIEN_KE
 }
 
-enum ApartmentStatus {
+enum TrangThaiCan {
   DANG_O
   TRONG
   KHOA
 }
 
-enum OccupancyRole {
+enum LoaiNguonNhap {
+  WORKBOOK_QUAN_LY
+  WORKBOOK_THEO_DOI_THU_PHI
+  SAO_KE_NGAN_HANG
+  CHUNG_TU
+}
+
+enum TrangThaiLoNhap {
+  CHO_XU_LY
+  HOAN_TAT
+  THAT_BAI
+}
+
+enum LoaiDongQuanLyTho {
+  DANH_SACH_KHACH_HANG
+  LICH_SU_DONG_PHI
+  KHAC
+}
+
+enum TrangThaiDuyetUngVien {
+  CHUA_DUYET
+  DA_DUYET
+  TU_CHOI
+}
+
+enum TrangThaiKhop {
+  KHOP_TRUC_TIEP
+  KHOP_SAU_CHUAN_HOA
+  NHIEU_CAN
+  MA_CAN_KHONG_HOP_LE
+  CHUA_NHAN_DIEN_DUOC_CAN
+  KHONG_LIEN_QUAN_CAN_HO
+  CAN_RA_SOAT
+  SUA_TAY
+  DA_DUYET
+}
+
+enum TrangThaiDuyetGiaoDich {
+  CHUA_DUYET
+  DA_RA_SOAT
+  DA_DUYET
+  TU_CHOI
+}
+
+enum CachPhanBo {
+  MOT_CAN
+  NHIEU_CAN_DUNG_CHUAN
+  NHIEU_CAN_THEO_TY_TRONG
+  CHINH_TAY
+}
+
+enum VaiTroQuanTri {
+  SUPER_ADMIN
+  MANAGER
+  TECHNICIAN
+}
+
+enum TrangThaiTaiKhoan {
+  DANG_HOAT_DONG
+  BI_KHOA
+}
+
+enum VaiTroLienHe {
   CHU_HO
-  THUE_CHINH
-  THANH_VIEN
+  CHU_MOI
+  CHU_CU
+  KHACH_THUE
+  NGUOI_THAN
+  NGUOI_NHAN_THONG_BAO
+  DONG_HO
+  MOI_GIOI
+  KHAC
 }
 
-enum ImportSourceType {
-  MANAGEMENT_WORKBOOK
-  BANK_STATEMENT
-  RECEIPT_IMPORT
+enum TrangThaiLienHe {
+  DANG_DUNG
+  CU
+  CAN_XAC_MINH
 }
 
-enum ImportBatchStatus {
-  PENDING
-  COMPLETED
-  FAILED
+enum TrangThaiBatchPhiPublic {
+  NHAP
+  DA_KIEM_TRA
+  DA_PUBLIC
+  HUY
 }
 
-enum RawManagementRowType {
-  CUSTOMER
-  FEE_HISTORY
-  OTHER
+enum TrangThaiSoChotThang {
+  NHAP
+  DOI_SOAT
+  DA_CHOT
+  HUY
 }
 
-enum MatchStatus {
-  EXACT_MATCH
-  NORMALIZED_MATCH
-  MULTI_MATCH
-  INVALID_CODE
-  UNPARSED
-  IGNORED_INTERNAL
-  NEED_REVIEW
-  MANUAL_FIXED
-  APPROVED
+enum NguonSoChotCanHo {
+  EXCEL_CHOT
+  SAO_KE_DA_DUYET
+  DIEU_CHINH_THU_CONG
 }
 
-enum ReviewDecisionStatus {
-  PENDING
-  REVIEWED
-  APPROVED
-  REJECTED
+model CanHo {
+  id             Int      @id @default(autoincrement())
+  ma_can         String   @unique
+  loai_can       LoaiCan
+  ma_lo          String
+  ma_so          String
+  dien_tich_m2   Decimal? @db.Decimal(10, 2)
+  toa_lo_goc      String?
+  loai_hinh_goc   String?
+  chu_ho_ten_goc  String?
+  trang_thai_su_dung_goc String?
+  tinh_trang_goc  String?
+  trang_thai     TrangThaiCan @default(DANG_O)
+  ghi_chu        String?
+  ngay_tao       DateTime @default(now())
+  ngay_cap_nhat  DateTime @updatedAt
+
+  lien_he        LienHeCanHo[]
+  trang_thai_phi_public TrangThaiPhiCanHoPublic[]
+  phan_bo_giao_dich PhanBoGiaoDich[]
+  ngoai_le_giao_dich NgoaiLeGiaoDich[]
+  chung_tu_doi_soat ChungTuDoiSoat[]
+  lich_su_dong_phi LichSuDongPhiCanHo[]
+  so_chot_can_ho SoChotCanHo[]
+
+  @@map("can_ho")
 }
 
-enum AllocationMethod {
-  SINGLE
-  MULTI_EXACT
-  MULTI_PRORATED
-  MANUAL
+model LienHeCanHo {
+  id                  Int      @id @default(autoincrement())
+  can_ho_id           Int
+  ten_hien_thi        String
+  so_dien_thoai       String?
+  la_lien_he_chinh    Boolean  @default(false)
+  nhan_thong_bao      Boolean  @default(true)
+  zalo_link           String?
+  vai_tro_lien_he     VaiTroLienHe?
+  trang_thai_lien_he  TrangThaiLienHe @default(DANG_DUNG)
+  thu_tu_uu_tien      Int?
+  nguon_du_lieu       String?
+  nguon_dong_du_lieu_tho_id Int?
+  co_can_ra_soat      Boolean  @default(false)
+  ghi_chu             String?
+  ngay_tao            DateTime @default(now())
+  ngay_cap_nhat       DateTime @updatedAt
+
+  can_ho              CanHo    @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
+  nguon_dong_du_lieu_tho DongDuLieuQuanLyTho? @relation(fields: [nguon_dong_du_lieu_tho_id], references: [id], onDelete: SetNull)
+
+  @@index([can_ho_id])
+  @@index([so_dien_thoai])
+  @@index([nguon_dong_du_lieu_tho_id])
+  @@map("lien_he_can_ho")
 }
 
-enum ExceptionType {
-  AN_DIEN
-  CK_NHAM
-  NOP_HO
-  GHI_SAI_MA_CAN
-  THIEU_TIEN
-  THUA_TIEN
-  KHONG_RO_CAN
-  NOI_BO
+model QuyTacPhi {
+  id                  Int      @id @default(autoincrement())
+  loai_can            LoaiCan
+  ma_phi              String
+  so_tien             Decimal  @db.Decimal(14, 2)
+  hieu_luc_tu_ngay    DateTime
+  hieu_luc_den_ngay   DateTime?
+  dang_ap_dung        Boolean  @default(true)
+  ghi_chu             String?
+  ngay_tao            DateTime @default(now())
+  ngay_cap_nhat       DateTime @updatedAt
+
+  @@index([loai_can, ma_phi, hieu_luc_tu_ngay])
+  @@map("quy_tac_phi")
 }
 
-enum ExceptionStatus {
-  OPEN
-  IN_PROGRESS
-  RESOLVED
-  CANCELLED
+model LoNhapDuLieu {
+  id                  Int      @id @default(autoincrement())
+  loai_nguon          LoaiNguonNhap
+  ten_file            String
+  ma_bam_file         String?
+  so_dong             Int?
+  trang_thai          TrangThaiLoNhap @default(CHO_XU_LY)
+  tong_quan_loi       String?
+  metadata_json       Json?
+  nguoi_nhap_id       Int?
+  thoi_diem_nhap      DateTime @default(now())
+
+  nguoi_nhap               TaiKhoanQuanTri? @relation("NguoiNhapDuLieu", fields: [nguoi_nhap_id], references: [id], onDelete: SetNull)
+  dong_du_lieu_quan_ly_tho DongDuLieuQuanLyTho[]
+  ung_vien_lien_he_can_ho  UngVienLienHeCanHo[]
+  dong_sao_ke_tho          DongSaoKeTho[]
+  giao_dich_sao_ke_tho_chuan GiaoDichSaoKeThoChuan[]
+  giao_dich_ngan_hang      GiaoDichNganHang[]
+  dong_theo_doi_thu_phi_tho DongTheoDoiThuPhiTho[]
+  batch_trang_thai_phi_public BatchTrangThaiPhiPublic[]
+  so_chot_thang_excel      SoChotThang[] @relation("LoExcelChotThang")
+  so_chot_thang_sao_ke     SoChotThang[] @relation("LoSaoKeChotThang")
+
+  @@index([nguoi_nhap_id])
+  @@map("lo_nhap_du_lieu")
 }
 
-enum BillingPeriodStatus {
-  OPEN
-  CLOSED
-  LOCKED
+model DongDuLieuQuanLyTho {
+  id                  Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id  Int
+  ten_sheet           String
+  so_dong_nguon       Int
+  loai_dong           LoaiDongQuanLyTho
+  header_values_json  Json?
+  values_json         Json
+  mapped_row_json     Json?
+  payload_json        Json?
+  ngay_tao            DateTime @default(now())
+
+  lo_nhap_du_lieu     LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Cascade)
+  ung_vien_lien_he_can_ho UngVienLienHeCanHo[]
+  lien_he_can_ho_nguon LienHeCanHo[]
+
+  @@index([lo_nhap_du_lieu_id, ten_sheet, so_dong_nguon])
+  @@map("dong_du_lieu_quan_ly_tho")
 }
 
-enum InvoiceStatus {
-  DRAFT
-  OPEN
-  PARTIAL
-  PAID
-  OVERPAID
-  VOID
+model UngVienLienHeCanHo {
+  id                        Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id        Int
+  dong_du_lieu_tho_id       Int
+  ma_can                    String?
+  ten_chu_ho_goc            String?
+  thong_tin_cu_dan_goc      String?
+  thu_tu_nguon              Int?
+  ten_nguoi_su_dung_goc     String?
+  so_dien_thoai_goc         String?
+  thong_tin_phu_goc         String?
+  trang_thai_su_dung_goc    String?
+  tinh_trang_goc            String?
+  ghi_chu_goc               String?
+  ten_hien_thi_parse        String?
+  so_dien_thoai_parse       String?
+  la_lien_he_chinh_du_doan  Boolean  @default(false)
+  vai_tro_du_doan           VaiTroLienHe?
+  nhan_thong_bao_du_doan    Boolean?
+  co_can_ra_soat            Boolean  @default(false)
+  ly_do_ra_soat             String?
+  flags_json                Json?
+  ghi_chu_nghiep_vu         String?
+  payload_parse_json        Json?
+  payload_duyet_json        Json?
+  trang_thai_duyet          TrangThaiDuyetUngVien @default(CHUA_DUYET)
+  ghi_chu_duyet             String?
+  ngay_tao                  DateTime @default(now())
+  ngay_cap_nhat             DateTime @updatedAt
+
+  lo_nhap_du_lieu           LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Cascade)
+  dong_du_lieu_tho          DongDuLieuQuanLyTho @relation(fields: [dong_du_lieu_tho_id], references: [id], onDelete: Cascade)
+
+  @@index([lo_nhap_du_lieu_id])
+  @@index([ma_can])
+  @@map("ung_vien_lien_he_can_ho")
 }
 
-model Apartment {
-  id              String                  @id @default(cuid())
-  code            String                  @unique
-  apartmentType   ApartmentType
-  blockCode       String
-  roomCode        String
-  areaM2          Decimal?                @db.Decimal(10, 2)
-  status          ApartmentStatus         @default(DANG_O)
-  note            String?
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
+model DongSaoKeTho {
+  id                  Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id  Int
+  so_dong_nguon       Int
+  header_values_json  Json?
+  values_json         Json
+  mapped_row_json     Json?
+  payload_json        Json?
+  ngay_tao            DateTime @default(now())
 
-  occupancies     Occupancy[]
-  invoices        Invoice[]
-  allocations     TransactionAllocation[]
-  exceptionCases  ExceptionCase[]
-  documents       Document[]
+  lo_nhap_du_lieu     LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Cascade)
+
+  @@index([lo_nhap_du_lieu_id, so_dong_nguon])
+  @@map("dong_sao_ke_tho")
 }
 
-model Resident {
-  id              String       @id @default(cuid())
-  fullName        String
-  phoneNumber     String?
-  zaloLink        String?
-  note            String?
-  isActive        Boolean      @default(true)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+model GiaoDichSaoKeThoChuan {
+  id                     Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id     Int
+  ma_bam_file            String?
+  so_dong_nguon          Int?
+  van_tay_giao_dich      String   @unique
+  tham_chieu_ngan_hang   String?  @unique
+  ngay_giao_dich         DateTime?
+  so_tien                Decimal  @db.Decimal(14, 2)
+  la_giao_dich_thu       Boolean  @default(true)
+  noi_dung_goc           String
+  noi_dung_chuan_hoa     String?
+  ten_nguoi_chuyen       String?
+  tai_khoan_nguoi_chuyen String?
+  ma_giao_dich_text      String?
+  header_values_json     Json?
+  values_json            Json?
+  mapped_row_json        Json?
+  payload_goc_json       Json?
+  ngay_tao               DateTime @default(now())
+  ngay_cap_nhat          DateTime @updatedAt
 
-  occupancies     Occupancy[]
+  lo_nhap_du_lieu        LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Restrict)
+
+  @@index([lo_nhap_du_lieu_id])
+  @@index([ngay_giao_dich])
+  @@index([la_giao_dich_thu])
+  @@map("giao_dich_sao_ke_tho_chuan")
 }
 
-model Occupancy {
-  id                    String        @id @default(cuid())
-  apartmentId           String
-  residentId            String
-  role                  OccupancyRole
-  receiveNotifications  Boolean       @default(true)
-  effectiveFrom         DateTime?
-  effectiveTo           DateTime?
-  isCurrent             Boolean       @default(true)
-  note                  String?
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+model GiaoDichNganHang {
+  id                     Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id     Int
+  van_tay_giao_dich      String   @unique
+  tham_chieu_ngan_hang   String?  @unique
+  ngay_giao_dich         DateTime?
+  so_tien                Decimal  @db.Decimal(14, 2)
+  noi_dung_goc           String
+  noi_dung_chuan_hoa     String?
+  ten_nguoi_chuyen       String?
+  tai_khoan_nguoi_chuyen String?
+  ma_giao_dich_text      String?
+  payload_goc_json       Json?
+  phien_ban_parser       String?
+  ma_can_parse           String?
+  trang_thai_khop        TrangThaiKhop?
+  ly_do_khop             String?
+  do_tin_cay             Decimal? @db.Decimal(5, 2)
+  la_giao_dich_noi_bo    Boolean  @default(false)
+  ung_vien_khop_json     Json?
+  trang_thai_duyet       TrangThaiDuyetGiaoDich @default(CHUA_DUYET)
+  ma_can_duoc_chon       String?
+  ghi_chu_duyet          String?
+  nguoi_duyet            String?
+  ngay_duyet             DateTime?
+  ngay_tao               DateTime @default(now())
+  ngay_cap_nhat          DateTime @updatedAt
 
-  apartment             Apartment     @relation(fields: [apartmentId], references: [id], onDelete: Restrict)
-  resident              Resident      @relation(fields: [residentId], references: [id], onDelete: Restrict)
+  lo_nhap_du_lieu        LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Restrict)
+  ket_qua_parse          KetQuaParseGiaoDich?
+  duyet_giao_dich        DuyetGiaoDich[]
+  phan_bo_giao_dich      PhanBoGiaoDich[]
+  ngoai_le_giao_dich     NgoaiLeGiaoDich[]
+  chung_tu_doi_soat      ChungTuDoiSoat[]
+  lich_su_dong_phi       LichSuDongPhiCanHo[]
 
-  @@index([apartmentId])
-  @@index([residentId])
+  @@index([lo_nhap_du_lieu_id])
+  @@index([ngay_giao_dich])
+  @@index([trang_thai_duyet])
+  @@index([trang_thai_khop])
+  @@index([ma_can_parse])
+  @@map("giao_dich_ngan_hang")
 }
 
-model FeeRule {
-  id              String          @id @default(cuid())
-  apartmentType   ApartmentType
-  feeCode         String
-  amount          Decimal         @db.Decimal(14, 2)
-  effectiveFrom   DateTime
-  effectiveTo     DateTime?
-  isActive        Boolean         @default(true)
-  note            String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+model KetQuaParseGiaoDich {
+  id                      Int      @id @default(autoincrement())
+  giao_dich_ngan_hang_id  Int      @unique
+  phien_ban_parser        String?
+  ma_can_parse            String?
+  trang_thai_khop         TrangThaiKhop
+  ly_do_khop              String
+  do_tin_cay              Decimal? @db.Decimal(5, 2)
+  la_giao_dich_noi_bo     Boolean  @default(false)
+  ngay_tao                DateTime @default(now())
+  ngay_cap_nhat           DateTime @updatedAt
 
-  invoiceLines    InvoiceLine[]
+  giao_dich_ngan_hang     GiaoDichNganHang @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: Cascade)
+  ung_vien_khop           UngVienKhopGiaoDich[]
 
-  @@index([apartmentType, feeCode, effectiveFrom])
+  @@map("ket_qua_parse_giao_dich")
 }
 
-model ImportBatch {
-  id                  String               @id @default(cuid())
-  sourceType          ImportSourceType
-  fileName            String
-  fileHash            String?
-  mimeType            String?
-  rowCount            Int?
-  status              ImportBatchStatus    @default(PENDING)
-  errorSummary        String?
-  metadata            Json?
-  importedAt          DateTime             @default(now())
+model UngVienKhopGiaoDich {
+  id                          Int      @id @default(autoincrement())
+  ket_qua_parse_giao_dich_id  Int
+  ma_can                      String
+  diem                        Decimal  @db.Decimal(5, 2)
+  ly_do                       String
+  thu_hang                    Int
+  ngay_tao                    DateTime @default(now())
 
-  rawManagementRows   RawManagementRow[]
-  rawBankRows         RawBankStatementRow[]
-  bankTransactions    BankTransaction[]
+  ket_qua_parse_giao_dich     KetQuaParseGiaoDich @relation(fields: [ket_qua_parse_giao_dich_id], references: [id], onDelete: Cascade)
 
-  @@index([sourceType, importedAt])
+  @@index([ket_qua_parse_giao_dich_id, thu_hang])
+  @@map("ung_vien_khop_giao_dich")
 }
 
-model RawManagementRow {
-  id          String                @id @default(cuid())
-  batchId     String
-  sheetName   String
-  rowIndex    Int
-  rowType     RawManagementRowType
-  payload     Json
-  createdAt   DateTime              @default(now())
+model DuyetGiaoDich {
+  id                      Int      @id @default(autoincrement())
+  giao_dich_ngan_hang_id  Int
+  trang_thai_duyet        TrangThaiDuyetGiaoDich @default(CHUA_DUYET)
+  ma_can_duoc_chon        String?
+  ghi_chu_duyet           String?
+  nguoi_duyet             String?
+  ngay_duyet              DateTime?
 
-  batch       ImportBatch           @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  giao_dich_ngan_hang     GiaoDichNganHang @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: Cascade)
 
-  @@index([batchId, sheetName, rowIndex])
+  @@index([giao_dich_ngan_hang_id])
+  @@map("duyet_giao_dich")
 }
 
-model RawBankStatementRow {
-  id          String        @id @default(cuid())
-  batchId     String
-  rowIndex    Int
-  payload     Json
-  createdAt   DateTime      @default(now())
+model PhanBoGiaoDich {
+  id                      Int      @id @default(autoincrement())
+  giao_dich_ngan_hang_id  Int
+  can_ho_id               Int
+  so_tien_phan_bo         Decimal  @db.Decimal(14, 2)
+  cach_phan_bo            CachPhanBo
+  ghi_chu                 String?
+  ngay_tao                DateTime @default(now())
 
-  batch       ImportBatch   @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  giao_dich_ngan_hang     GiaoDichNganHang @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: Cascade)
+  can_ho                  CanHo            @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
+  lich_su_dong_phi        LichSuDongPhiCanHo[]
 
-  @@index([batchId, rowIndex])
+  @@index([giao_dich_ngan_hang_id])
+  @@index([can_ho_id])
+  @@map("phan_bo_giao_dich")
 }
 
-model BankTransaction {
-  id                    String                    @id @default(cuid())
-  batchId               String
-  transactionFingerprint String                   @unique
-  bankReference         String?                   @unique
-  transactionDate       DateTime?
-  amount                Decimal                   @db.Decimal(14, 2)
-  descriptionRaw        String
-  descriptionNormalized String?
-  senderName            String?
-  senderAccount         String?
-  transactionIdText     String?
-  rawPayload            Json?
-  createdAt             DateTime                  @default(now())
-  updatedAt             DateTime                  @updatedAt
+model NgoaiLeGiaoDich {
+  id                      Int      @id @default(autoincrement())
+  giao_dich_ngan_hang_id  Int
+  can_ho_id               Int?
+  loai_ngoai_le           String
+  trang_thai              String
+  ghi_chu                 String?
+  nguoi_xu_ly             String?
+  ngay_tao                DateTime @default(now())
+  ngay_cap_nhat           DateTime @updatedAt
 
-  batch                 ImportBatch               @relation(fields: [batchId], references: [id], onDelete: Restrict)
-  parseResult           TransactionParseResult?
-  reviews               TransactionReview[]
-  allocations           TransactionAllocation[]
-  exceptionCases        ExceptionCase[]
-  documents             Document[]
+  giao_dich_ngan_hang     GiaoDichNganHang @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: Cascade)
+  can_ho                  CanHo?           @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
 
-  @@index([batchId])
-  @@index([transactionDate])
+  @@index([giao_dich_ngan_hang_id])
+  @@index([can_ho_id])
+  @@map("ngoai_le_giao_dich")
 }
 
-model TransactionParseResult {
-  id                    String             @id @default(cuid())
-  transactionId         String             @unique
-  parserVersion         String?
-  parsedApartmentCode   String?
-  matchStatus           MatchStatus
-  matchReason           String
-  matchConfidence       Decimal?           @db.Decimal(5, 2)
-  isInternalTransaction Boolean            @default(false)
-  createdAt             DateTime           @default(now())
-  updatedAt             DateTime           @updatedAt
+model ChungTuDoiSoat {
+  id                      Int      @id @default(autoincrement())
+  giao_dich_ngan_hang_id  Int?
+  can_ho_id               Int?
+  loai_chung_tu           String
+  duong_dan_file          String?
+  ten_file_goc            String?
+  mime_type               String?
+  kich_thuoc_byte         Int?
+  ngay_giao_dich          DateTime?
+  so_tien                 Decimal? @db.Decimal(14, 2)
+  ma_tham_chieu_ngan_hang String?
+  ghi_chu                 String?
+  nguoi_tao_id            Int?
+  ngay_tao                DateTime @default(now())
 
-  transaction           BankTransaction    @relation(fields: [transactionId], references: [id], onDelete: Cascade)
-  candidates            TransactionCandidate[]
+  giao_dich_ngan_hang     GiaoDichNganHang? @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: Cascade)
+  can_ho                  CanHo?            @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
+  nguoi_tao               TaiKhoanQuanTri?  @relation("NguoiTaoChungTuDoiSoat", fields: [nguoi_tao_id], references: [id], onDelete: SetNull)
+
+  @@index([giao_dich_ngan_hang_id])
+  @@index([can_ho_id])
+  @@index([nguoi_tao_id])
+  @@map("chung_tu_doi_soat")
 }
 
-model TransactionCandidate {
-  id              String                  @id @default(cuid())
-  parseResultId   String
-  apartmentCode   String
-  score           Decimal                 @db.Decimal(5, 2)
-  reason          String
-  rankOrder       Int
-  createdAt       DateTime                @default(now())
+model SoChotThang {
+  id                      Int      @id @default(autoincrement())
+  ky_du_lieu              String
+  tu_ngay                 DateTime?
+  den_ngay                DateTime?
+  lo_excel_chot_id        Int?
+  lo_sao_ke_id            Int?
+  ten_file_excel_chot     String?
+  tong_tien_excel         Decimal? @db.Decimal(14, 2)
+  tong_tien_sao_ke        Decimal? @db.Decimal(14, 2)
+  chenhlech_tien          Decimal? @db.Decimal(14, 2)
+  tong_so_can             Int?
+  so_can_khop             Int?
+  so_can_can_ra_soat      Int?
+  trang_thai              TrangThaiSoChotThang @default(NHAP)
+  ghi_chu                 String?
+  metadata_json           Json?
+  nguoi_chot_id           Int?
+  ngay_chot               DateTime?
+  ngay_tao                DateTime @default(now())
+  ngay_cap_nhat           DateTime @updatedAt
 
-  parseResult     TransactionParseResult  @relation(fields: [parseResultId], references: [id], onDelete: Cascade)
+  lo_excel_chot           LoNhapDuLieu? @relation("LoExcelChotThang", fields: [lo_excel_chot_id], references: [id], onDelete: SetNull)
+  lo_sao_ke               LoNhapDuLieu? @relation("LoSaoKeChotThang", fields: [lo_sao_ke_id], references: [id], onDelete: SetNull)
+  nguoi_chot              TaiKhoanQuanTri? @relation("NguoiChotSoThang", fields: [nguoi_chot_id], references: [id], onDelete: SetNull)
+  chi_tiet_can_ho         SoChotCanHo[]
+  batch_public            BatchTrangThaiPhiPublic[]
 
-  @@index([parseResultId, rankOrder])
+  @@index([ky_du_lieu, trang_thai])
+  @@index([lo_excel_chot_id])
+  @@index([lo_sao_ke_id])
+  @@index([nguoi_chot_id])
+  @@map("so_chot_thang")
 }
 
-model TransactionReview {
-  id                    String                @id @default(cuid())
-  transactionId         String
-  decisionStatus        ReviewDecisionStatus  @default(PENDING)
-  selectedApartmentCode String?
-  reviewNote            String?
-  reviewedBy            String?
-  reviewedAt            DateTime?
-  payload               Json?
-  createdAt             DateTime              @default(now())
-  updatedAt             DateTime              @updatedAt
+model SoChotCanHo {
+  id                              Int      @id @default(autoincrement())
+  so_chot_thang_id                Int
+  can_ho_id                       Int
+  ma_can                          String
+  thang_da_dong_den_hien_tai      String?
+  so_tien_thang                   Decimal? @db.Decimal(14, 2)
+  nguon                           NguonSoChotCanHo @default(EXCEL_CHOT)
+  co_can_ra_soat                  Boolean  @default(false)
+  ghi_chu                         String?
+  payload_json                    Json?
+  ngay_tao                        DateTime @default(now())
+  ngay_cap_nhat                   DateTime @updatedAt
 
-  transaction           BankTransaction       @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  so_chot_thang                   SoChotThang @relation(fields: [so_chot_thang_id], references: [id], onDelete: Cascade)
+  can_ho                          CanHo @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
 
-  @@index([transactionId, createdAt])
+  @@unique([so_chot_thang_id, can_ho_id])
+  @@index([can_ho_id])
+  @@index([ma_can])
+  @@map("so_chot_can_ho")
 }
 
-model TransactionAllocation {
-  id                String             @id @default(cuid())
-  transactionId     String
-  apartmentId       String?
-  allocatedAmount   Decimal            @db.Decimal(14, 2)
-  allocationMethod  AllocationMethod
-  allocationNote    String?
-  sequenceNo        Int                @default(1)
-  isConfirmed       Boolean            @default(false)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+model LichSuDongPhiCanHo {
+  id                      Int      @id @default(autoincrement())
+  can_ho_id               Int
+  ky_du_lieu              String
+  thang_ap_dung           String?
+  so_tien                 Decimal  @db.Decimal(14, 2)
+  loai_nguon              String
+  giao_dich_ngan_hang_id  Int?
+  phan_bo_giao_dich_id    Int?
+  batch_phi_public_id     Int?
+  ghi_chu                 String?
+  nguoi_tao_id            Int?
+  ngay_tao                DateTime @default(now())
 
-  transaction       BankTransaction    @relation(fields: [transactionId], references: [id], onDelete: Cascade)
-  apartment         Apartment?         @relation(fields: [apartmentId], references: [id], onDelete: Restrict)
-  paymentApplications PaymentApplication[]
+  can_ho                  CanHo @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
+  giao_dich_ngan_hang     GiaoDichNganHang? @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: SetNull)
+  phan_bo_giao_dich       PhanBoGiaoDich? @relation(fields: [phan_bo_giao_dich_id], references: [id], onDelete: SetNull)
+  batch_phi_public        BatchTrangThaiPhiPublic? @relation(fields: [batch_phi_public_id], references: [id], onDelete: SetNull)
+  nguoi_tao               TaiKhoanQuanTri? @relation("NguoiTaoLichSuDongPhi", fields: [nguoi_tao_id], references: [id], onDelete: SetNull)
 
-  @@index([transactionId, sequenceNo])
-  @@index([apartmentId])
+  @@index([can_ho_id, ky_du_lieu])
+  @@index([giao_dich_ngan_hang_id])
+  @@index([phan_bo_giao_dich_id])
+  @@index([batch_phi_public_id])
+  @@index([nguoi_tao_id])
+  @@map("lich_su_dong_phi_can_ho")
 }
 
-model ExceptionCase {
-  id                String            @id @default(cuid())
-  transactionId     String
-  apartmentId       String?
-  exceptionType     ExceptionType
-  amount            Decimal           @db.Decimal(14, 2)
-  status            ExceptionStatus   @default(OPEN)
-  resolutionNote    String?
-  resolvedAt        DateTime?
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+model TaiKhoanQuanTri {
+  id                  Int      @id @default(autoincrement())
+  ten_dang_nhap       String   @unique
+  so_dien_thoai       String?  @unique
+  email               String?  @unique
+  mat_khau_hash       String
+  vai_tro             VaiTroQuanTri
+  trang_thai          TrangThaiTaiKhoan @default(DANG_HOAT_DONG)
+  ten_hien_thi        String?
+  lan_dang_nhap_cuoi  DateTime?
+  ngay_tao            DateTime @default(now())
+  ngay_cap_nhat       DateTime @updatedAt
 
-  transaction       BankTransaction   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
-  apartment         Apartment?        @relation(fields: [apartmentId], references: [id], onDelete: Restrict)
+  lo_nhap_du_lieu     LoNhapDuLieu[] @relation("NguoiNhapDuLieu")
+  batch_phi_da_public BatchTrangThaiPhiPublic[] @relation("NguoiPublicBatchPhi")
+  so_chot_thang_da_chot SoChotThang[] @relation("NguoiChotSoThang")
+  nhat_ky_dang_nhap   NhatKyDangNhapQuanTri[]
+  chung_tu_doi_soat_da_tao ChungTuDoiSoat[] @relation("NguoiTaoChungTuDoiSoat")
+  lich_su_dong_phi_da_tao LichSuDongPhiCanHo[] @relation("NguoiTaoLichSuDongPhi")
+  thong_bao_da_tao    ThongBaoCongKhai[] @relation("NguoiTaoThongBao")
 
-  @@index([transactionId])
-  @@index([apartmentId])
+  @@map("tai_khoan_quan_tri")
 }
 
-model BillingPeriod {
-  id              String               @id @default(cuid())
-  periodKey       String               @unique
-  month           Int
-  year            Int
-  startDate       DateTime?
-  endDate         DateTime?
-  status          BillingPeriodStatus  @default(OPEN)
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
+model NhatKyDangNhapQuanTri {
+  id                  Int      @id @default(autoincrement())
+  tai_khoan_id        Int?
+  dinh_danh_dang_nhap String?
+  thanh_cong          Boolean
+  ip                  String?
+  user_agent          String?
+  ghi_chu             String?
+  thoi_diem           DateTime @default(now())
 
-  invoices        Invoice[]
+  tai_khoan           TaiKhoanQuanTri? @relation(fields: [tai_khoan_id], references: [id], onDelete: SetNull)
 
-  @@index([year, month])
+  @@index([tai_khoan_id, thoi_diem])
+  @@map("nhat_ky_dang_nhap_quan_tri")
 }
 
-model Invoice {
-  id                String                 @id @default(cuid())
-  apartmentId       String
-  billingPeriodId   String
-  carryOverAmount   Decimal                @default(0) @db.Decimal(14, 2)
-  totalCharge       Decimal                @default(0) @db.Decimal(14, 2)
-  totalPaid         Decimal                @default(0) @db.Decimal(14, 2)
-  balanceAmount     Decimal                @default(0) @db.Decimal(14, 2)
-  status            InvoiceStatus          @default(DRAFT)
-  note              String?
-  createdAt         DateTime               @default(now())
-  updatedAt         DateTime               @updatedAt
+model DongTheoDoiThuPhiTho {
+  id                  Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id  Int
+  ten_sheet           String
+  so_dong_nguon       Int
+  header_values_json  Json?
+  values_json         Json
+  mapped_row_json     Json?
+  ma_can              String?
+  thang_da_dong_den_hien_tai String?
+  payload_json        Json?
+  ngay_tao            DateTime @default(now())
 
-  apartment         Apartment              @relation(fields: [apartmentId], references: [id], onDelete: Restrict)
-  billingPeriod     BillingPeriod          @relation(fields: [billingPeriodId], references: [id], onDelete: Restrict)
-  lines             InvoiceLine[]
-  paymentApplications PaymentApplication[]
+  lo_nhap_du_lieu     LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Cascade)
 
-  @@unique([apartmentId, billingPeriodId])
-  @@index([billingPeriodId])
+  @@index([lo_nhap_du_lieu_id, ten_sheet, so_dong_nguon])
+  @@index([ma_can])
+  @@map("dong_theo_doi_thu_phi_tho")
 }
 
-model InvoiceLine {
-  id              String        @id @default(cuid())
-  invoiceId       String
-  feeCode         String
-  description     String?
-  quantity        Decimal       @default(1) @db.Decimal(10, 2)
-  unitPrice       Decimal       @default(0) @db.Decimal(14, 2)
-  amount          Decimal       @default(0) @db.Decimal(14, 2)
-  sourceRuleId    String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+model BatchTrangThaiPhiPublic {
+  id                  Int      @id @default(autoincrement())
+  lo_nhap_du_lieu_id  Int?
+  so_chot_thang_id    Int?
+  ky_du_lieu          String
+  ten_file_nguon      String?
+  trang_thai          TrangThaiBatchPhiPublic @default(NHAP)
+  la_batch_public_hien_hanh Boolean @default(false)
+  tong_so_can         Int?
+  tong_quan_loi       String?
+  metadata_json       Json?
+  nguoi_public_id     Int?
+  public_luc          DateTime?
+  ngay_tao            DateTime @default(now())
+  ngay_cap_nhat       DateTime @updatedAt
 
-  invoice         Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  sourceRule      FeeRule?      @relation(fields: [sourceRuleId], references: [id], onDelete: SetNull)
+  lo_nhap_du_lieu     LoNhapDuLieu? @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: SetNull)
+  so_chot_thang       SoChotThang? @relation(fields: [so_chot_thang_id], references: [id], onDelete: SetNull)
+  nguoi_public        TaiKhoanQuanTri? @relation("NguoiPublicBatchPhi", fields: [nguoi_public_id], references: [id], onDelete: SetNull)
+  trang_thai_phi      TrangThaiPhiCanHoPublic[]
+  lich_su_dong_phi    LichSuDongPhiCanHo[]
 
-  @@index([invoiceId])
+  @@index([trang_thai, la_batch_public_hien_hanh])
+  @@index([lo_nhap_du_lieu_id])
+  @@index([so_chot_thang_id])
+  @@index([nguoi_public_id])
+  @@map("batch_trang_thai_phi_public")
 }
 
-model PaymentApplication {
-  id              String                @id @default(cuid())
-  allocationId    String
-  invoiceId       String
-  appliedAmount   Decimal               @db.Decimal(14, 2)
-  appliedAt       DateTime              @default(now())
-  note            String?
+model TrangThaiPhiCanHoPublic {
+  id                  Int      @id @default(autoincrement())
+  batch_id            Int
+  can_ho_id           Int
+  ma_can              String
+  thang_da_dong_den_hien_tai String?
+  ky_du_lieu          String
+  ghi_chu_public      String?
+  payload_public_json Json?
+  ngay_tao            DateTime @default(now())
 
-  allocation      TransactionAllocation @relation(fields: [allocationId], references: [id], onDelete: Cascade)
-  invoice         Invoice               @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  batch               BatchTrangThaiPhiPublic @relation(fields: [batch_id], references: [id], onDelete: Cascade)
+  can_ho              CanHo @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
 
-  @@index([allocationId])
-  @@index([invoiceId])
+  @@unique([batch_id, can_ho_id])
+  @@index([ma_can])
+  @@index([can_ho_id])
+  @@map("trang_thai_phi_can_ho_public")
 }
 
-model Document {
-  id                String            @id @default(cuid())
-  apartmentId       String?
-  transactionId     String?
-  documentType      String
-  storagePath       String
-  originalFileName  String?
-  documentDate      DateTime?
-  note              String?
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+model ThongBaoCongKhai {
+  id                  Int      @id @default(autoincrement())
+  tieu_de             String
+  mo_ta_ngan          String?
+  ten_file_goc        String?
+  duong_dan_file      String?
+  mime_type           String?
+  kich_thuoc_byte     Int?
+  trang_thai          String   @default("NHAP")
+  ngay_cong_khai      DateTime?
+  nguoi_tao_id        Int?
+  ngay_tao            DateTime @default(now())
+  ngay_cap_nhat       DateTime @updatedAt
 
-  apartment         Apartment?        @relation(fields: [apartmentId], references: [id], onDelete: Restrict)
-  transaction       BankTransaction?  @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  nguoi_tao           TaiKhoanQuanTri? @relation("NguoiTaoThongBao", fields: [nguoi_tao_id], references: [id], onDelete: SetNull)
 
-  @@index([apartmentId])
-  @@index([transactionId])
+  @@index([trang_thai, ngay_cong_khai])
+  @@index([nguoi_tao_id])
+  @@map("thong_bao_cong_khai")
 }

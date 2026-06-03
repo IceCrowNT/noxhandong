@@ -15,6 +15,7 @@ import { AdminFrame } from "@/components/admin/admin-frame";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireAdmin } from "@/src/modules/auth/current-user";
@@ -28,8 +29,11 @@ import {
   importSourceLabel,
   importStatusLabel,
   publicBatchStatusLabel,
-  reviewFlagLabel
+  reviewFlagLabel,
+  transactionMatchStatusLabel,
+  transactionReviewStatusLabel
 } from "@/src/modules/shared/labels";
+import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
 
 type DashboardPageProps = {
   searchParams?: Promise<{
@@ -38,11 +42,18 @@ type DashboardPageProps = {
 };
 
 function formatDateTime(value: string | null) {
-  return value ? new Date(value).toLocaleString("vi-VN") : "-";
+  return formatVietnamDateTime(value);
 }
 
 function formatNumber(value: number | null | undefined) {
   return typeof value === "number" ? value.toLocaleString("vi-VN") : "-";
+}
+
+function formatMoney(value: string | number | null | undefined) {
+  const amount = Number(value || 0);
+  return Number.isFinite(amount)
+    ? amount.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " đ"
+    : "-";
 }
 
 function compactText(value: string | null | undefined) {
@@ -450,6 +461,169 @@ function MobileImportHistoryCards({
   );
 }
 
+function LatestPaymentHistoryCard({
+  items,
+  compact = false,
+}: {
+  compact?: boolean;
+  items: Array<{
+    id: number;
+    ky_du_lieu: string;
+    thang_ap_dung: string | null;
+    so_tien: string | null;
+    loai_nguon: string;
+    ghi_chu: string | null;
+    ngay_tao: string | null;
+    batch_phi_public_id: number | null;
+    giao_dich_ngan_hang: {
+      id: number;
+      ngay_giao_dich: string | null;
+      so_tien: string | null;
+      noi_dung_goc: string;
+      tham_chieu_ngan_hang: string | null;
+      ten_nguoi_chuyen: string | null;
+      lo_nhap_du_lieu: {
+        id: number;
+        ten_file: string;
+        loai_nguon: string;
+      };
+      chung_tu_doi_soat: Array<{
+        id: number;
+        loai_chung_tu: string;
+        duong_dan_file: string | null;
+        ten_file_goc: string | null;
+        ghi_chu: string | null;
+        ngay_tao: string | null;
+      }>;
+    } | null;
+  }>;
+}) {
+  const latest = items[0] || null;
+
+  if (!latest) {
+    return (
+      <div className="rounded-xl border border-dashed border-[var(--line)] bg-white/80 p-4 text-sm leading-6 text-[var(--muted)]">
+        Chưa có giao dịch đã duyệt trong Phase 2 cho căn này. Dữ liệu hiện tại vẫn dựa trên batch public đã chốt từ file
+        theo dõi thu phí.
+      </div>
+    );
+  }
+
+  const transaction = latest.giao_dich_ngan_hang;
+  const evidenceCount = transaction?.chung_tu_doi_soat.length || 0;
+  const rows = [
+    ["Ngày giao dịch", formatDateTime(transaction?.ngay_giao_dich || latest.ngay_tao)],
+    ["Số tiền", formatMoney(transaction?.so_tien || latest.so_tien)],
+    ["Người chuyển", compactText(transaction?.ten_nguoi_chuyen)],
+    ["Mã tham chiếu", compactText(transaction?.tham_chieu_ngan_hang)],
+    ["File nguồn", compactText(transaction?.lo_nhap_du_lieu.ten_file)],
+    ["Bằng chứng", evidenceCount ? `${evidenceCount} file/ghi chú` : "Chưa có"],
+  ];
+
+  return (
+    <div className="grid gap-3">
+      <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <span className="text-xs font-semibold uppercase text-[var(--muted)]">Giao dịch gần nhất đã duyệt</span>
+            <strong className="mt-1 block text-xl">{formatMoney(transaction?.so_tien || latest.so_tien)}</strong>
+          </div>
+          <span className="rounded-md bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]">
+            {latest.batch_phi_public_id ? "Đã public" : "Chờ public"}
+          </span>
+        </div>
+
+        <div className={compact ? "mt-3 grid gap-2 text-sm" : "mt-4 grid gap-2 text-sm md:grid-cols-2"}>
+          {rows.map(([label, value]) => (
+            <div key={label} className="rounded-lg border border-[var(--line)] bg-[#fbfcfb] p-3">
+              <span className="block text-[11px] font-semibold uppercase text-[var(--muted)]">{label}</span>
+              <strong className="mt-1 block min-w-0 truncate leading-5" title={value}>
+                {value}
+              </strong>
+            </div>
+          ))}
+        </div>
+
+        {transaction?.noi_dung_goc ? (
+          <div className="mt-3 rounded-lg border border-[var(--line)] bg-[#fbfcfb] p-3 text-sm leading-6 text-[var(--muted)]">
+            <b className="text-[var(--text)]">Nội dung CK:</b> {transaction.noi_dung_goc}
+          </div>
+        ) : null}
+      </div>
+
+      {!compact && items.length > 1 ? (
+        <div className="grid gap-2">
+          {items.slice(1, 4).map((item) => (
+            <div key={item.id} className="flex items-center justify-between gap-3 rounded-lg border border-[var(--line)] bg-white p-3 text-sm">
+              <span className="min-w-0 truncate">{formatDateTime(item.giao_dich_ngan_hang?.ngay_giao_dich || item.ngay_tao)}</span>
+              <strong>{formatMoney(item.giao_dich_ngan_hang?.so_tien || item.so_tien)}</strong>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function TransactionQualityStats({
+  reviewStats,
+  parseStats,
+}: {
+  reviewStats: Array<{ status: string; count: number }>;
+  parseStats: Array<{ status: string; count: number }>;
+}) {
+  const reviewTotal = reviewStats.reduce((sum, item) => sum + item.count, 0);
+  const parseTotal = parseStats.reduce((sum, item) => sum + item.count, 0);
+  const importantParse = ["KHOP_TRUC_TIEP", "KHOP_SAU_CHUAN_HOA", "NHIEU_CAN", "CHUA_NHAN_DIEN_DUOC_CAN", "MA_CAN_KHONG_HOP_LE"];
+  const importantReview = ["CHUA_DUYET", "DA_RA_SOAT", "DA_DUYET", "TU_CHOI"];
+  const parseByStatus = new Map(parseStats.map((item) => [item.status, item.count]));
+  const reviewByStatus = new Map(reviewStats.map((item) => [item.status, item.count]));
+
+  const rows = [
+    ...importantReview.map((status) => ({
+      label: transactionReviewStatusLabel(status),
+      count: reviewByStatus.get(status) || 0,
+      total: reviewTotal,
+    })),
+    ...importantParse.map((status) => ({
+      label: transactionMatchStatusLabel(status),
+      count: parseByStatus.get(status) || 0,
+      total: parseTotal,
+    })),
+  ].filter((item) => item.count > 0 || item.label === "Chưa duyệt");
+
+  return (
+    <div className="grid gap-3">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+          <span className="text-[11px] font-semibold uppercase text-[var(--muted)]">Dòng duyệt</span>
+          <strong className="mt-1 block text-xl">{formatNumber(reviewTotal)}</strong>
+        </div>
+        <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+          <span className="text-[11px] font-semibold uppercase text-[var(--muted)]">Dòng parser</span>
+          <strong className="mt-1 block text-xl">{formatNumber(parseTotal)}</strong>
+        </div>
+      </div>
+      <div className="grid gap-2">
+        {rows.slice(0, 8).map((item) => {
+          const percent = item.total ? Math.round((item.count / item.total) * 100) : 0;
+          return (
+            <div key={item.label} className="grid gap-1 text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <span className="truncate font-semibold">{item.label}</span>
+                <span className="shrink-0">{formatNumber(item.count)} · {percent}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-[var(--accent-soft)]">
+                <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${Math.max(2, percent)}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default async function AdminDashboardPage({ searchParams }: DashboardPageProps) {
   const account = await requireAdmin();
   const params = await searchParams;
@@ -570,10 +744,10 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
               <CardContent>
                 <form className="grid gap-3" action="/admin/dashboard">
                   <Input defaultValue={data.search.query} maxLength={80} name="ma_can" placeholder="Ví dụ: L1.112" />
-                  <Button type="submit">
+                  <SubmitButton pendingText="Đang tìm...">
                     <Search size={17} aria-hidden="true" />
                     Tìm
-                  </Button>
+                  </SubmitButton>
                 </form>
               </CardContent>
             </Card>
@@ -597,6 +771,16 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                     <span>Mã căn: <b>{selected.ma_can}</b></span>
                     <span>Kỳ dữ liệu: <b>{selected.currentFeeStatus?.ky_du_lieu || "-"}</b></span>
                     <span>Nguồn: batch #{selected.currentFeeStatus?.batch.id || "-"}</span>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white/90">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-xl">Giao dịch gần nhất</CardTitle>
+                    <CardDescription>Bằng chứng đối chiếu từ sao kê đã duyệt.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <LatestPaymentHistoryCard items={selected.latestPaymentHistory} compact />
                   </CardContent>
                 </Card>
 
@@ -697,6 +881,19 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                   ))}
                 </div>
                 <MobileImportHistoryCards items={data.latestImports} />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">Chất lượng sao kê</CardTitle>
+                <CardDescription>Tỷ lệ parser và trạng thái duyệt hiện tại.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TransactionQualityStats
+                  reviewStats={data.summary.transactionReviewStats}
+                  parseStats={data.summary.transactionParseStats}
+                />
               </CardContent>
             </Card>
 
@@ -837,10 +1034,10 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             </div>
             <form className="flex w-full flex-col gap-2 md:w-[480px] md:flex-row" action="/admin/dashboard">
               <Input defaultValue={data.search.query} maxLength={80} name="ma_can" placeholder="Nhập mã căn" />
-              <Button type="submit">
+              <SubmitButton pendingText="Đang tìm...">
                 <Search size={17} aria-hidden="true" />
                 Tìm
-              </Button>
+              </SubmitButton>
             </form>
           </CardHeader>
           <CardContent>
@@ -987,6 +1184,18 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
           </Card>
           <Card className="bg-white/90">
             <CardHeader>
+              <CardTitle>Chất lượng sao kê</CardTitle>
+              <CardDescription>Tổng hợp parser và trạng thái duyệt giao dịch.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TransactionQualityStats
+                reviewStats={data.summary.transactionReviewStats}
+                parseStats={data.summary.transactionParseStats}
+              />
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90">
+            <CardHeader>
               <CardTitle>Cơ cấu căn hộ</CardTitle>
             </CardHeader>
             <CardContent>
@@ -1029,6 +1238,17 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                   ))}
                 </CardContent>
               ) : null}
+            </Card>
+
+            <Card className="bg-white/90">
+              <CardHeader>
+                <p className="eyebrow">Đối chiếu sao kê</p>
+                <CardTitle>Giao dịch gần nhất đã duyệt</CardTitle>
+                <CardDescription>Dùng làm bằng chứng nhanh khi quản lý/kỹ thuật cần kiểm tra tại hiện trường.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <LatestPaymentHistoryCard items={selected.latestPaymentHistory} />
+              </CardContent>
             </Card>
           </div>
 

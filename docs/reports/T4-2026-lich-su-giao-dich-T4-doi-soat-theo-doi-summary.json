@@ -1,0 +1,31 @@
+{
+  "period": "T4-2026",
+  "monthColumn": "T4",
+  "trackingFile": "Theo dõi thu phí T5.xlsx",
+  "statementFile": "lich-su-giao-dich T4.xls",
+  "trackingRows": 934,
+  "rawStatementRows": 208,
+  "incomeStatementRows": 187,
+  "skippedExpenseRows": 21,
+  "trackingMonthAmount": 166086270,
+  "allocatedStatementAmount": 142830000,
+  "parsedIncomeAmount": 142830000,
+  "matchedApartments": 180,
+  "issueApartments": 23,
+  "manualEvidenceRows": 20,
+  "multiAllocatedTransactions": 5,
+  "unresolvedMultiTransactions": 2,
+  "manualInputTransactions": 18,
+  "apartmentStatusCounts": {
+    "KHONG_PHAT_SINH": 731,
+    "KHOP": 180,
+    "LECH_TIEN": 2,
+    "CO_THEO_DOI_CHUA_THAY_SAO_KE": 21
+  },
+  "transactionStatusCounts": {
+    "DA_PHAN_BO_MOT_CAN": 162,
+    "CAN_RA_SOAT_NHIEU_CAN": 2,
+    "CAN_NHAP_TAY": 18,
+    "DA_PHAN_BO_NHIEU_CAN": 5
+  }
+}

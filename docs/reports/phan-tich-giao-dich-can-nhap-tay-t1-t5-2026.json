@@ -1,0 +1,59 @@
+{
+  "totalRows": 174,
+  "byCategory": {
+    "NHIEU_CAN_LECH_TIEN": 10,
+    "TEN_NGUOI_CHUYEN_CHUNG_CHUNG": 15,
+    "NOI_BO_TRA_LAI": 5,
+    "ZALO_CAN_BANG_CHUNG": 54,
+    "CO_MAU_CAN_CAN_XEM_LAI": 15,
+    "KHONG_RO_CAN": 73,
+    "TIEN_NHO_NOI_BO_KHAC": 2
+  },
+  "byPeriod": {
+    "T1-2026": {
+      "NHIEU_CAN_LECH_TIEN": 3,
+      "TEN_NGUOI_CHUYEN_CHUNG_CHUNG": 3,
+      "NOI_BO_TRA_LAI": 1,
+      "ZALO_CAN_BANG_CHUNG": 11,
+      "CO_MAU_CAN_CAN_XEM_LAI": 5,
+      "KHONG_RO_CAN": 23
+    },
+    "T2-2026": {
+      "TEN_NGUOI_CHUYEN_CHUNG_CHUNG": 5,
+      "ZALO_CAN_BANG_CHUNG": 6,
+      "CO_MAU_CAN_CAN_XEM_LAI": 1,
+      "NOI_BO_TRA_LAI": 2,
+      "KHONG_RO_CAN": 14,
+      "NHIEU_CAN_LECH_TIEN": 2,
+      "TIEN_NHO_NOI_BO_KHAC": 1
+    },
+    "T3-2026": {
+      "NOI_BO_TRA_LAI": 1,
+      "KHONG_RO_CAN": 16,
+      "ZALO_CAN_BANG_CHUNG": 10,
+      "TEN_NGUOI_CHUYEN_CHUNG_CHUNG": 3,
+      "CO_MAU_CAN_CAN_XEM_LAI": 4
+    },
+    "T4-2026": {
+      "NHIEU_CAN_LECH_TIEN": 2,
+      "NOI_BO_TRA_LAI": 1,
+      "ZALO_CAN_BANG_CHUNG": 10,
+      "CO_MAU_CAN_CAN_XEM_LAI": 2,
+      "KHONG_RO_CAN": 4,
+      "TEN_NGUOI_CHUYEN_CHUNG_CHUNG": 1
+    },
+    "T5-2026": {
+      "TEN_NGUOI_CHUYEN_CHUNG_CHUNG": 3,
+      "ZALO_CAN_BANG_CHUNG": 17,
+      "CO_MAU_CAN_CAN_XEM_LAI": 3,
+      "NHIEU_CAN_LECH_TIEN": 3,
+      "KHONG_RO_CAN": 16,
+      "TIEN_NHO_NOI_BO_KHAC": 1
+    }
+  },
+  "outputs": {
+    "xlsx": "docs\\reports\\phan-tich-giao-dich-can-nhap-tay-t1-t5-2026.xlsx",
+    "json": "docs\\reports\\phan-tich-giao-dich-can-nhap-tay-t1-t5-2026.json",
+    "csv": "docs\\reports\\phan-tich-giao-dich-can-nhap-tay-t1-t5-2026.csv"
+  }
+}

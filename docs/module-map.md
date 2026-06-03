@@ -1,34 +1,34 @@
-# Sơ đồ module project
+﻿# SÆ¡ Ä‘á»“ module project
 
-## Vai trò file này
+## Vai trÃ² file nÃ y
 
-`docs/module-map.md` là file xương sống về cấu trúc thư mục và ranh giới module.
+`docs/module-map.md` lÃ  file xÆ°Æ¡ng sá»‘ng vá» cáº¥u trÃºc thÆ° má»¥c vÃ  ranh giá»›i module.
 
-File này trả lời:
+File nÃ y tráº£ lá»i:
 
-- code mới nên đặt ở đâu
-- module nào sở hữu phần nghiệp vụ nào
-- `app/`, `src/modules/`, `lib/`, `scripts/`, `prisma/`, `docs/` khác nhau như thế nào
-- phụ thuộc giữa các module đi theo chiều nào
+- code má»›i nÃªn Ä‘áº·t á»Ÿ Ä‘Ã¢u
+- module nÃ o sá»Ÿ há»¯u pháº§n nghiá»‡p vá»¥ nÃ o
+- `app/`, `src/modules/`, `lib/`, `scripts/`, `prisma/`, `docs/` khÃ¡c nhau nhÆ° tháº¿ nÃ o
+- phá»¥ thuá»™c giá»¯a cÃ¡c module Ä‘i theo chiá»u nÃ o
 
-File này không thay thế roadmap sản phẩm. Roadmap nằm ở [roadmap.md](roadmap.md).
+File nÃ y khÃ´ng thay tháº¿ roadmap sáº£n pháº©m. Roadmap náº±m á»Ÿ [roadmap.md](roadmap.md).
 
-Module map phải làm hai việc cùng lúc:
+Module map pháº£i lÃ m hai viá»‡c cÃ¹ng lÃºc:
 
-- phản ánh cấu trúc thực tế hiện tại
-- định trước cấu trúc tối thiểu khi hoàn tất roadmap hiện tại và các chức năng đã chốt/thảo luận
+- pháº£n Ã¡nh cáº¥u trÃºc thá»±c táº¿ hiá»‡n táº¡i
+- Ä‘á»‹nh trÆ°á»›c cáº¥u trÃºc tá»‘i thiá»ƒu khi hoÃ n táº¥t roadmap hiá»‡n táº¡i vÃ  cÃ¡c chá»©c nÄƒng Ä‘Ã£ chá»‘t/tháº£o luáº­n
 
-## Nguyên tắc chung
+## NguyÃªn táº¯c chung
 
-- `src/modules/` là nơi đặt logic nghiệp vụ mới.
-- `app/` là route/UI shell của Next.js, chỉ nên gọi vào `src/modules/`.
-- `lib/` là lớp tương thích cũ của MVP, chưa xóa vì còn test và import cũ.
-- `components/` chỉ giữ component cũ hoặc component rất chung.
-- `scripts/` là entrypoint vận hành/import/report chạy bằng CLI.
-- `prisma/` sở hữu schema/migration, không chứa nghiệp vụ UI.
-- `docs/` sở hữu tài liệu xương sống, rule, báo cáo dữ liệu thật.
+- `src/modules/` lÃ  nÆ¡i Ä‘áº·t logic nghiá»‡p vá»¥ má»›i.
+- `app/` lÃ  route/UI shell cá»§a Next.js, chá»‰ nÃªn gá»i vÃ o `src/modules/`.
+- `lib/` lÃ  lá»›p tÆ°Æ¡ng thÃ­ch cÅ© cá»§a MVP, chÆ°a xÃ³a vÃ¬ cÃ²n test vÃ  import cÅ©.
+- `components/` chá»‰ giá»¯ component cÅ© hoáº·c component ráº¥t chung.
+- `scripts/` lÃ  entrypoint váº­n hÃ nh/import/report cháº¡y báº±ng CLI.
+- `prisma/` sá»Ÿ há»¯u schema/migration, khÃ´ng chá»©a nghiá»‡p vá»¥ UI.
+- `docs/` sá»Ÿ há»¯u tÃ i liá»‡u xÆ°Æ¡ng sá»‘ng, rule, bÃ¡o cÃ¡o dá»¯ liá»‡u tháº­t.
 
-## Cấu trúc thực tế hiện tại
+## Cáº¥u trÃºc thá»±c táº¿ hiá»‡n táº¡i
 
 ```text
 app/
@@ -69,7 +69,6 @@ scripts/
 prisma/
   migrations/
   schema.prisma
-  schema-v2.prisma
 
 docs/
   reports/
@@ -78,9 +77,9 @@ docs/
   preview-theo-doi-thu-phi/
 ```
 
-## Cấu trúc mục tiêu khi hoàn tất roadmap
+## Cáº¥u trÃºc má»¥c tiÃªu khi hoÃ n táº¥t roadmap
 
-Đây là cấu trúc định hướng. Không cần tạo hết file ngay, nhưng khi phát triển Task K/L/M/N và các chức năng đã thảo luận thì phải bám theo sơ đồ này.
+ÄÃ¢y lÃ  cáº¥u trÃºc Ä‘á»‹nh hÆ°á»›ng. KhÃ´ng cáº§n táº¡o háº¿t file ngay, nhÆ°ng khi phÃ¡t triá»ƒn Task K/L/M/N vÃ  cÃ¡c chá»©c nÄƒng Ä‘Ã£ tháº£o luáº­n thÃ¬ pháº£i bÃ¡m theo sÆ¡ Ä‘á»“ nÃ y.
 
 ```text
 app/
@@ -188,257 +187,257 @@ scripts/
   setup/
 ```
 
-Ghi chú:
+Ghi chÃº:
 
-- `contacts/` là module mục tiêu rõ hơn cho liên hệ cư dân. `residents/` hiện có thể giữ tạm, nhưng khi làm mới nên ưu tiên tên `contacts/` nếu code chủ yếu xử lý liên hệ/số điện thoại.
-- `notifications/` chỉ tạo khi thật sự có chức năng gửi thông báo/SMS/email/Zalo hoặc template nhắc phí. Hiện chưa cần build.
-- `reports/` trong `src/modules/` là generator/exporter chạy code. `docs/reports/` là nơi lưu kết quả báo cáo đã sinh.
-- `documents/` dùng cho template, chứng từ, file xuất, thông báo Word/PDF nếu sau này quản lý trong app.
+- `contacts/` lÃ  module má»¥c tiÃªu rÃµ hÆ¡n cho liÃªn há»‡ cÆ° dÃ¢n. `residents/` hiá»‡n cÃ³ thá»ƒ giá»¯ táº¡m, nhÆ°ng khi lÃ m má»›i nÃªn Æ°u tiÃªn tÃªn `contacts/` náº¿u code chá»§ yáº¿u xá»­ lÃ½ liÃªn há»‡/sá»‘ Ä‘iá»‡n thoáº¡i.
+- `notifications/` chá»‰ táº¡o khi tháº­t sá»± cÃ³ chá»©c nÄƒng gá»­i thÃ´ng bÃ¡o/SMS/email/Zalo hoáº·c template nháº¯c phÃ­. Hiá»‡n chÆ°a cáº§n build.
+- `reports/` trong `src/modules/` lÃ  generator/exporter cháº¡y code. `docs/reports/` lÃ  nÆ¡i lÆ°u káº¿t quáº£ bÃ¡o cÃ¡o Ä‘Ã£ sinh.
+- `documents/` dÃ¹ng cho template, chá»©ng tá»«, file xuáº¥t, thÃ´ng bÃ¡o Word/PDF náº¿u sau nÃ y quáº£n lÃ½ trong app.
 
-## Bản đồ task sang module
+## Báº£n Ä‘á»“ task sang module
 
-| Task/chức năng | Route/UI | Module chính | Module phụ |
+| Task/chá»©c nÄƒng | Route/UI | Module chÃ­nh | Module phá»¥ |
 | --- | --- | --- | --- |
-| Public cư dân tra cứu phí | `app/tra-cuu-phi` | `billing/public-status` | `transactions/parser`, `shared/security` |
+| Public cÆ° dÃ¢n tra cá»©u phÃ­ | `app/tra-cuu-phi` | `billing/public-status` | `transactions/parser`, `shared/security` |
 | Admin login/session | `app/admin/login` | `auth` | `database` |
-| Quản lý tài khoản manager | `app/admin/accounts` | `auth` | `database` |
-| Task K dashboard quản lý | `app/admin/dashboard`, `app/admin/apartments` | `apartments` | `billing`, `contacts`, `auth` |
-| Tìm căn và xem hồ sơ căn | `app/admin/apartments/[maCan]` | `apartments` | `contacts`, `billing`, `transactions` |
+| Quáº£n lÃ½ tÃ i khoáº£n manager | `app/admin/accounts` | `auth` | `database` |
+| Task K dashboard quáº£n lÃ½ | `app/admin/dashboard`, `app/admin/apartments` | `apartments` | `billing`, `contacts`, `auth` |
+| TÃ¬m cÄƒn vÃ  xem há»“ sÆ¡ cÄƒn | `app/admin/apartments/[maCan]` | `apartments` | `contacts`, `billing`, `transactions` |
 | Task L review contact | `app/admin/contacts/review` | `contacts/review` | `imports`, `auth` |
-| Import file theo dõi thu phí | `app/admin/imports/fee-tracking` | `billing/fee-tracking` | `imports/excel`, `documents` |
-| Chốt batch public | `app/admin/imports/fee-tracking` | `billing/public-status` | `auth` |
-| Task M import sao kê | `app/admin/imports/statements` | `transactions` | `imports/excel`, `imports/pdf` |
-| Review giao dịch | `app/admin/transactions/review` | `transactions/review` | `exceptions`, `apartments` |
-| Allocation nhiều căn | `app/admin/transactions/review` | `transactions/allocation` | `billing` |
-| Ngoại lệ ck nhầm/nộp hộ/không rõ căn | `app/admin/transactions/review` | `exceptions` | `transactions` |
-| Báo cáo/preview dữ liệu | route admin hoặc CLI | `reports` | `documents`, `imports` |
-| Deploy/production ops | không phải app route | `scripts/setup`, docs setup | `database`, `auth` |
+| Import file theo dÃµi thu phÃ­ | `app/admin/imports/fee-tracking` | `billing/fee-tracking` | `imports/excel`, `documents` |
+| Chá»‘t batch public | `app/admin/imports/fee-tracking` | `billing/public-status` | `auth` |
+| Task M import sao kÃª | `app/admin/imports/statements` | `transactions` | `imports/excel`, `imports/pdf` |
+| Review giao dá»‹ch | `app/admin/transactions/review` | `transactions/review` | `exceptions`, `apartments` |
+| Allocation nhiá»u cÄƒn | `app/admin/transactions/review` | `transactions/allocation` | `billing` |
+| Ngoáº¡i lá»‡ ck nháº§m/ná»™p há»™/khÃ´ng rÃµ cÄƒn | `app/admin/transactions/review` | `exceptions` | `transactions` |
+| BÃ¡o cÃ¡o/preview dá»¯ liá»‡u | route admin hoáº·c CLI | `reports` | `documents`, `imports` |
+| Deploy/production ops | khÃ´ng pháº£i app route | `scripts/setup`, docs setup | `database`, `auth` |
 
-## Vai trò từng vùng
+## Vai trÃ² tá»«ng vÃ¹ng
 
 ### `app/`
 
-Chứa route/page/action của Next.js.
+Chá»©a route/page/action cá»§a Next.js.
 
-Đang có:
+Äang cÃ³:
 
-- `app/admin/login`: đăng nhập quản trị
-- `app/admin`: trang quản trị nội bộ
-- `app/admin/accounts`: quản lý tài khoản, chỉ `SUPER_ADMIN`
-- `app/admin/import`: vùng import/chốt dữ liệu, chỉ `SUPER_ADMIN`
-- `app/tra-cuu-phi`: trang public cư dân tra cứu phí
-- `app/api/analyze`, `app/api/export`: API MVP cũ còn dùng memory flow
+- `app/admin/login`: Ä‘Äƒng nháº­p quáº£n trá»‹
+- `app/admin`: trang quáº£n trá»‹ ná»™i bá»™
+- `app/admin/accounts`: quáº£n lÃ½ tÃ i khoáº£n, chá»‰ `SUPER_ADMIN`
+- `app/admin/import`: vÃ¹ng import/chá»‘t dá»¯ liá»‡u, chá»‰ `SUPER_ADMIN`
+- `app/tra-cuu-phi`: trang public cÆ° dÃ¢n tra cá»©u phÃ­
+- `app/api/analyze`, `app/api/export`: API MVP cÅ© cÃ²n dÃ¹ng memory flow
 
-Quy tắc:
+Quy táº¯c:
 
-- route mới chỉ điều phối request, auth, render UI
-- logic nghiệp vụ đặt trong `src/modules/`
-- không đặt parser, matcher, repository dài trực tiếp trong `app/`
+- route má»›i chá»‰ Ä‘iá»u phá»‘i request, auth, render UI
+- logic nghiá»‡p vá»¥ Ä‘áº·t trong `src/modules/`
+- khÃ´ng Ä‘áº·t parser, matcher, repository dÃ i trá»±c tiáº¿p trong `app/`
 
 ### `src/modules/shared`
 
-Chứa phần dùng chung toàn app:
+Chá»©a pháº§n dÃ¹ng chung toÃ n app:
 
-- hằng số
-- kiểu dữ liệu chung
-- rule lọc chung
+- háº±ng sá»‘
+- kiá»ƒu dá»¯ liá»‡u chung
+- rule lá»c chung
 - helper normalize text
 
-Quy tắc:
+Quy táº¯c:
 
-- `shared` không được import ngược domain module như `billing`, `auth`, `transactions`
-- chỉ chứa logic thật sự dùng chung
+- `shared` khÃ´ng Ä‘Æ°á»£c import ngÆ°á»£c domain module nhÆ° `billing`, `auth`, `transactions`
+- chá»‰ chá»©a logic tháº­t sá»± dÃ¹ng chung
 
 ### `src/modules/database`
 
-Chứa kết nối database và Prisma client.
+Chá»©a káº¿t ná»‘i database vÃ  Prisma client.
 
-Đang có:
+Äang cÃ³:
 
 - `prisma.ts`
 - `index.ts`
 
-Quy tắc:
+Quy táº¯c:
 
-- Prisma client dùng chung đặt ở đây
-- repository hoặc query chuyên biệt nên đặt gần domain nếu phình to
-- không đặt UI logic trong module này
+- Prisma client dÃ¹ng chung Ä‘áº·t á»Ÿ Ä‘Ã¢y
+- repository hoáº·c query chuyÃªn biá»‡t nÃªn Ä‘áº·t gáº§n domain náº¿u phÃ¬nh to
+- khÃ´ng Ä‘áº·t UI logic trong module nÃ y
 
 ### `src/modules/auth`
 
-Chứa auth quản trị:
+Chá»©a auth quáº£n trá»‹:
 
-- lấy user hiện tại
+- láº¥y user hiá»‡n táº¡i
 - hash/verify password
-- session cookie HTTP-only có chữ ký
-- kiểm quyền `SUPER_ADMIN` / `MANAGER`
+- session cookie HTTP-only cÃ³ chá»¯ kÃ½
+- kiá»ƒm quyá»n `SUPER_ADMIN` / `MANAGER`
 
-Quy tắc:
+Quy táº¯c:
 
-- mọi route admin phải đi qua auth/session
-- logic role guard đặt ở đây hoặc helper gần đây
-- không để route tự kiểm role bằng string rời rạc lặp lại nhiều nơi
+- má»i route admin pháº£i Ä‘i qua auth/session
+- logic role guard Ä‘áº·t á»Ÿ Ä‘Ã¢y hoáº·c helper gáº§n Ä‘Ã¢y
+- khÃ´ng Ä‘á»ƒ route tá»± kiá»ƒm role báº±ng string rá»i ráº¡c láº·p láº¡i nhiá»u nÆ¡i
 
 ### `src/modules/billing`
 
-Chứa nghiệp vụ phí/public fee lookup.
+Chá»©a nghiá»‡p vá»¥ phÃ­/public fee lookup.
 
-Đang có:
+Äang cÃ³:
 
-- `fee-status.ts`: parse input public lookup và lấy trạng thái phí public
+- `fee-status.ts`: parse input public lookup vÃ  láº¥y tráº¡ng thÃ¡i phÃ­ public
 
-Quy tắc:
+Quy táº¯c:
 
-- chỉ đọc snapshot public đã chốt khi phục vụ cư dân
-- không trả phone/contact/ghi chú nội bộ ra public
-- nếu cần rule tháng phí, đặt tại đây hoặc module con của billing
+- chá»‰ Ä‘á»c snapshot public Ä‘Ã£ chá»‘t khi phá»¥c vá»¥ cÆ° dÃ¢n
+- khÃ´ng tráº£ phone/contact/ghi chÃº ná»™i bá»™ ra public
+- náº¿u cáº§n rule thÃ¡ng phÃ­, Ä‘áº·t táº¡i Ä‘Ã¢y hoáº·c module con cá»§a billing
 
 ### `src/modules/imports`
 
-Chứa luồng nhập liệu từ file:
+Chá»©a luá»“ng nháº­p liá»‡u tá»« file:
 
-- đọc Excel quản lý
-- đọc sao kê Excel
-- đọc sao kê PDF
-- export workbook kết quả
+- Ä‘á»c Excel quáº£n lÃ½
+- Ä‘á»c sao kÃª Excel
+- Ä‘á»c sao kÃª PDF
+- export workbook káº¿t quáº£
 
-Quy tắc:
+Quy táº¯c:
 
-- parser đọc file chỉ biến file thành record thô hoặc record chuẩn hóa
-- không tự quyết định duyệt nghiệp vụ
-- import DB dài nên có script entrypoint trong `scripts/`, logic chính đặt ở `src/modules/imports`
+- parser Ä‘á»c file chá»‰ biáº¿n file thÃ nh record thÃ´ hoáº·c record chuáº©n hÃ³a
+- khÃ´ng tá»± quyáº¿t Ä‘á»‹nh duyá»‡t nghiá»‡p vá»¥
+- import DB dÃ i nÃªn cÃ³ script entrypoint trong `scripts/`, logic chÃ­nh Ä‘áº·t á»Ÿ `src/modules/imports`
 
 ### `src/modules/transactions`
 
-Chứa logic xoay quanh giao dịch sao kê:
+Chá»©a logic xoay quanh giao dá»‹ch sao kÃª:
 
 - matcher
-- parser mã căn
-- phân loại trạng thái
+- parser mÃ£ cÄƒn
+- phÃ¢n loáº¡i tráº¡ng thÃ¡i
 - summary
-- allocation nhiều căn
-- UI review cũ
+- allocation nhiá»u cÄƒn
+- UI review cÅ©
 
-Parser mã căn là thuật toán lõi dùng chung cho sao kê, matcher và public lookup. Tài liệu điều phối rule/case/backlog nằm tại [parser-ma-can-ho.md](parser-ma-can-ho.md).
+Parser mÃ£ cÄƒn lÃ  thuáº­t toÃ¡n lÃµi dÃ¹ng chung cho sao kÃª, matcher vÃ  public lookup. TÃ i liá»‡u Ä‘iá»u phá»‘i rule/case/backlog náº±m táº¡i [parser-ma-can-ho.md](parser-ma-can-ho.md).
 
-Contract kỳ vọng của parser mã căn:
+Contract ká»³ vá»ng cá»§a parser mÃ£ cÄƒn:
 
-- nhận input text thô
-- trả mã căn/candidate đã chuẩn hóa
-- trả lý do match (`matchReason`) và độ tin cậy nếu có
-- không tự query DB
-- không tự ghi DB master
-- không tự quyết định public dữ liệu
+- nháº­n input text thÃ´
+- tráº£ mÃ£ cÄƒn/candidate Ä‘Ã£ chuáº©n hÃ³a
+- tráº£ lÃ½ do match (`matchReason`) vÃ  Ä‘á»™ tin cáº­y náº¿u cÃ³
+- khÃ´ng tá»± query DB
+- khÃ´ng tá»± ghi DB master
+- khÃ´ng tá»± quyáº¿t Ä‘á»‹nh public dá»¯ liá»‡u
 
 ### `src/modules/apartments`
 
-Module dành cho nghiệp vụ căn hộ.
+Module dÃ nh cho nghiá»‡p vá»¥ cÄƒn há»™.
 
-Hiện mới có README giữ chỗ. Khi làm Task K dashboard, đây là nơi hợp lý để đặt:
+Hiá»‡n má»›i cÃ³ README giá»¯ chá»—. Khi lÃ m Task K dashboard, Ä‘Ã¢y lÃ  nÆ¡i há»£p lÃ½ Ä‘á»ƒ Ä‘áº·t:
 
-- query tìm căn theo mã
-- view model thông tin căn
-- repository hoặc service liên quan `can_ho`
+- query tÃ¬m cÄƒn theo mÃ£
+- view model thÃ´ng tin cÄƒn
+- repository hoáº·c service liÃªn quan `can_ho`
 
 ### `src/modules/residents`
 
-Module chuyển tiếp dành cho cư dân/contact.
+Module chuyá»ƒn tiáº¿p dÃ nh cho cÆ° dÃ¢n/contact.
 
-Hiện mới có README giữ chỗ. Task L đã dùng module mục tiêu `src/modules/contacts` cho review contact, nên không thêm logic contact mới vào `residents`.
+Hiá»‡n má»›i cÃ³ README giá»¯ chá»—. Task L Ä‘Ã£ dÃ¹ng module má»¥c tiÃªu `src/modules/contacts` cho review contact, nÃªn khÃ´ng thÃªm logic contact má»›i vÃ o `residents`.
 
-Ghi chú định hướng:
+Ghi chÃº Ä‘á»‹nh hÆ°á»›ng:
 
-- nếu code mới chủ yếu xử lý liên hệ/số điện thoại/ghi chú, nên tách sang module mục tiêu `src/modules/contacts`
-- `residents` chỉ nên dùng khi sau này quản lý hồ sơ cư dân như một thực thể rộng hơn contact
+- náº¿u code má»›i chá»§ yáº¿u xá»­ lÃ½ liÃªn há»‡/sá»‘ Ä‘iá»‡n thoáº¡i/ghi chÃº, nÃªn tÃ¡ch sang module má»¥c tiÃªu `src/modules/contacts`
+- `residents` chá»‰ nÃªn dÃ¹ng khi sau nÃ y quáº£n lÃ½ há»“ sÆ¡ cÆ° dÃ¢n nhÆ° má»™t thá»±c thá»ƒ rá»™ng hÆ¡n contact
 
 ### `src/modules/contacts`
 
-Module mục tiêu cho liên hệ căn hộ và review contact.
+Module má»¥c tiÃªu cho liÃªn há»‡ cÄƒn há»™ vÃ  review contact.
 
-Đang có nền review contact nội bộ từ Task L.
+Äang cÃ³ ná»n review contact ná»™i bá»™ tá»« Task L.
 
-Sở hữu:
+Sá»Ÿ há»¯u:
 
-- parser contact từ file master
+- parser contact tá»« file master
 - staging contact candidate
 - approve/reject contact
-- tạo/sửa `lien_he_can_ho`
-- quy tắc dữ liệu nhạy cảm trong admin
-- view model cho manager xem contact/ghi chú gốc
+- táº¡o/sá»­a `lien_he_can_ho`
+- quy táº¯c dá»¯ liá»‡u nháº¡y cáº£m trong admin
+- view model cho manager xem contact/ghi chÃº gá»‘c
 
-Không sở hữu:
+KhÃ´ng sá»Ÿ há»¯u:
 
 - public fee lookup
-- parser mã căn trong sao kê
+- parser mÃ£ cÄƒn trong sao kÃª
 - auth/role
 
 ### `src/modules/exceptions`
 
-Module dành cho ngoại lệ nghiệp vụ:
+Module dÃ nh cho ngoáº¡i lá»‡ nghiá»‡p vá»¥:
 
-- chuyển khoản nhầm
-- kế toán/chủ đầu tư chuyển hộ
-- không rõ căn
-- giao dịch cần xử lý tay
+- chuyá»ƒn khoáº£n nháº§m
+- káº¿ toÃ¡n/chá»§ Ä‘áº§u tÆ° chuyá»ƒn há»™
+- khÃ´ng rÃµ cÄƒn
+- giao dá»‹ch cáº§n xá»­ lÃ½ tay
 
-Hiện mới có README giữ chỗ.
+Hiá»‡n má»›i cÃ³ README giá»¯ chá»—.
 
 ### `src/modules/documents`
 
-Module dành cho tài liệu/chứng từ/sao lưu file nếu sau này cần quản lý metadata file.
+Module dÃ nh cho tÃ i liá»‡u/chá»©ng tá»«/sao lÆ°u file náº¿u sau nÃ y cáº§n quáº£n lÃ½ metadata file.
 
-Hiện mới có README giữ chỗ.
+Hiá»‡n má»›i cÃ³ README giá»¯ chá»—.
 
-Khi mở rộng, module này có thể sở hữu:
+Khi má»Ÿ rá»™ng, module nÃ y cÃ³ thá»ƒ sá»Ÿ há»¯u:
 
-- template thông báo phí
-- file xuất Excel/PDF
+- template thÃ´ng bÃ¡o phÃ­
+- file xuáº¥t Excel/PDF
 - metadata file import/export
-- lịch sử file đã phát hành
+- lá»‹ch sá»­ file Ä‘Ã£ phÃ¡t hÃ nh
 
-### `src/modules/notifications` dự kiến
+### `src/modules/notifications` dá»± kiáº¿n
 
-Module chỉ tạo khi có nhu cầu gửi thông báo thật.
+Module chá»‰ táº¡o khi cÃ³ nhu cáº§u gá»­i thÃ´ng bÃ¡o tháº­t.
 
-Có thể sở hữu:
+CÃ³ thá»ƒ sá»Ÿ há»¯u:
 
-- template nội dung nhắc phí
-- queue gửi SMS/email/Zalo nếu sau này tích hợp
-- log gửi thông báo
-- rule chọn contact nhận thông báo
+- template ná»™i dung nháº¯c phÃ­
+- queue gá»­i SMS/email/Zalo náº¿u sau nÃ y tÃ­ch há»£p
+- log gá»­i thÃ´ng bÃ¡o
+- rule chá»n contact nháº­n thÃ´ng bÃ¡o
 
-Không tạo sớm nếu chưa có chức năng gửi thật, để tránh phình project.
+KhÃ´ng táº¡o sá»›m náº¿u chÆ°a cÃ³ chá»©c nÄƒng gá»­i tháº­t, Ä‘á»ƒ trÃ¡nh phÃ¬nh project.
 
-### `src/modules/reports` dự kiến
+### `src/modules/reports` dá»± kiáº¿n
 
-Module code để sinh báo cáo/preview.
+Module code Ä‘á»ƒ sinh bÃ¡o cÃ¡o/preview.
 
-Khác với `docs/reports/`:
+KhÃ¡c vá»›i `docs/reports/`:
 
-- `src/modules/reports` là code generator/exporter
-- `docs/reports` là output tài liệu đã sinh hoặc báo cáo đã chốt
+- `src/modules/reports` lÃ  code generator/exporter
+- `docs/reports` lÃ  output tÃ i liá»‡u Ä‘Ã£ sinh hoáº·c bÃ¡o cÃ¡o Ä‘Ã£ chá»‘t
 
-Nên tạo khi các script report hiện tại bắt đầu lặp logic hoặc cần chạy từ UI admin.
+NÃªn táº¡o khi cÃ¡c script report hiá»‡n táº¡i báº¯t Ä‘áº§u láº·p logic hoáº·c cáº§n cháº¡y tá»« UI admin.
 
-## `lib/` và lớp tương thích cũ
+## `lib/` vÃ  lá»›p tÆ°Æ¡ng thÃ­ch cÅ©
 
-`lib/` hiện vẫn tồn tại vì MVP cũ và test đang dùng:
+`lib/` hiá»‡n váº«n tá»“n táº¡i vÃ¬ MVP cÅ© vÃ  test Ä‘ang dÃ¹ng:
 
 - `lib/parser/apartment-parser.test.ts`
 - `lib/matcher.test.ts`
 - `lib/pdf/statement-pdf-reader.test.ts`
 - `lib/review/allocations.test.ts`
-- các wrapper re-export logic từ `src/modules`
+- cÃ¡c wrapper re-export logic tá»« `src/modules`
 
-Quy tắc:
+Quy táº¯c:
 
-- không thêm nghiệp vụ mới vào `lib/` nếu có thể đặt trong `src/modules/`
-- nếu phải thêm test ở `lib/`, test nên kiểm behavior của module thật
-- chuyển dần import từ `lib/` sang `src/modules/` khi ổn định
+- khÃ´ng thÃªm nghiá»‡p vá»¥ má»›i vÃ o `lib/` náº¿u cÃ³ thá»ƒ Ä‘áº·t trong `src/modules/`
+- náº¿u pháº£i thÃªm test á»Ÿ `lib/`, test nÃªn kiá»ƒm behavior cá»§a module tháº­t
+- chuyá»ƒn dáº§n import tá»« `lib/` sang `src/modules/` khi á»•n Ä‘á»‹nh
 
 ## `scripts/`
 
-`scripts/` là nơi đặt lệnh vận hành:
+`scripts/` lÃ  nÆ¡i Ä‘áº·t lá»‡nh váº­n hÃ nh:
 
 - seed DB
 - import Excel
@@ -447,47 +446,47 @@ Quy tắc:
 - publish batch public
 - backup/restore dev DB
 
-Quy tắc:
+Quy táº¯c:
 
-- script chỉ là entrypoint CLI mỏng
-- logic xử lý dài nên tách về `src/modules/`
-- script phải ghi rõ input/output trong log
-- script import dữ liệu thật phải giữ raw payload để audit
+- script chá»‰ lÃ  entrypoint CLI má»ng
+- logic xá»­ lÃ½ dÃ i nÃªn tÃ¡ch vá» `src/modules/`
+- script pháº£i ghi rÃµ input/output trong log
+- script import dá»¯ liá»‡u tháº­t pháº£i giá»¯ raw payload Ä‘á»ƒ audit
 
 ## `docs/`
 
-`docs/` là nguồn sự thật của tài liệu dự án.
+`docs/` lÃ  nguá»“n sá»± tháº­t cá»§a tÃ i liá»‡u dá»± Ã¡n.
 
-Nhóm xương sống ở gốc `docs/`:
+NhÃ³m xÆ°Æ¡ng sá»‘ng á»Ÿ gá»‘c `docs/`:
 
 - [README.md](README.md)
 - [handoff.md](handoff.md)
 - [roadmap.md](roadmap.md)
 - [checklist-trien-khai-va-nghiem-thu.md](checklist-trien-khai-va-nghiem-thu.md)
-- [database-v2.md](database-v2.md)
+- [database.md](database.md)
 - [module-map.md](module-map.md)
 - [parser-ma-can-ho.md](parser-ma-can-ho.md)
 - [setup-may-moi-va-database.md](setup-may-moi-va-database.md)
 
-Báo cáo dữ liệu thật đã gom vào:
+BÃ¡o cÃ¡o dá»¯ liá»‡u tháº­t Ä‘Ã£ gom vÃ o:
 
 - [reports/README.md](reports/README.md)
 
-Quy tắc:
+Quy táº¯c:
 
-- tài liệu đang điều phối dự án để ở gốc `docs/`
-- báo cáo lịch sử/đối soát để trong `docs/reports/`
-- preview sinh từ script để trong thư mục `preview-*`
-- không dùng lịch sử chat làm nguồn sự thật chính
+- tÃ i liá»‡u Ä‘ang Ä‘iá»u phá»‘i dá»± Ã¡n Ä‘á»ƒ á»Ÿ gá»‘c `docs/`
+- bÃ¡o cÃ¡o lá»‹ch sá»­/Ä‘á»‘i soÃ¡t Ä‘á»ƒ trong `docs/reports/`
+- preview sinh tá»« script Ä‘á»ƒ trong thÆ° má»¥c `preview-*`
+- khÃ´ng dÃ¹ng lá»‹ch sá»­ chat lÃ m nguá»“n sá»± tháº­t chÃ­nh
 
-## Luật phụ thuộc
+## Luáº­t phá»¥ thuá»™c
 
-Chiều phụ thuộc mong muốn:
+Chiá»u phá»¥ thuá»™c mong muá»‘n:
 
 ```text
 app/
   -> src/modules/*
-  -> components/ nếu là UI chung
+  -> components/ náº¿u lÃ  UI chung
 
 scripts/
   -> src/modules/*
@@ -498,68 +497,70 @@ src/modules/<domain>
   -> src/modules/shared
 
 src/modules/shared
-  -> không import domain module
+  -> khÃ´ng import domain module
 
 lib/
-  -> src/modules/* hoặc giữ code cũ tạm thời
+  -> src/modules/* hoáº·c giá»¯ code cÅ© táº¡m thá»i
 ```
 
-Không nên:
+KhÃ´ng nÃªn:
 
-- import từ `app/` vào `src/modules/`
-- để `shared` import `billing`, `auth`, `transactions`
-- để parser gọi DB trực tiếp
-- để route public đọc raw import/contact nội bộ
-- để script chứa toàn bộ nghiệp vụ dài mà không tách module
+- import tá»« `app/` vÃ o `src/modules/`
+- Ä‘á»ƒ `shared` import `billing`, `auth`, `transactions`
+- Ä‘á»ƒ parser gá»i DB trá»±c tiáº¿p
+- Ä‘á»ƒ route public Ä‘á»c raw import/contact ná»™i bá»™
+- Ä‘á»ƒ script chá»©a toÃ n bá»™ nghiá»‡p vá»¥ dÃ i mÃ  khÃ´ng tÃ¡ch module
 
-## Quy tắc đặt file mới
+## Quy táº¯c Ä‘áº·t file má»›i
 
-| Loại việc | Nơi đặt |
+| Loáº¡i viá»‡c | NÆ¡i Ä‘áº·t |
 | --- | --- |
 | Route/page Next.js | `app/...` |
 | Auth/session/role | `src/modules/auth` |
-| Query DB dùng chung | `src/modules/database` hoặc module domain |
-| Dashboard căn hộ | `src/modules/apartments` + `app/admin` |
-| Contact review | `src/modules/contacts` nếu tạo mới, tạm thời có thể dùng `src/modules/residents` |
+| Query DB dÃ¹ng chung | `src/modules/database` hoáº·c module domain |
+| Dashboard cÄƒn há»™ | `src/modules/apartments` + `app/admin` |
+| Contact review | `src/modules/contacts` náº¿u táº¡o má»›i, táº¡m thá»i cÃ³ thá»ƒ dÃ¹ng `src/modules/residents` |
 | Public fee lookup | `src/modules/billing` + `app/tra-cuu-phi` |
-| Parser mã căn | `src/modules/transactions/parser` |
+| Parser mÃ£ cÄƒn | `src/modules/transactions/parser` |
 | Rule parser/documentation | `docs/parser-ma-can-ho.md` |
 | Import Excel/PDF | `src/modules/imports` |
 | CLI import/seed/publish | `scripts/*.cjs` |
-| Báo cáo dữ liệu thật | `docs/reports/` |
-| Code sinh báo cáo | `src/modules/reports` khi cần dùng lại ngoài script |
-| Template thông báo/chứng từ | `src/modules/documents` |
-| Gửi thông báo | `src/modules/notifications` khi có tích hợp thật |
-| Test parser/matcher | test hiện có trong `lib/**.test.ts`, về sau có thể chuyển gần module |
+| BÃ¡o cÃ¡o dá»¯ liá»‡u tháº­t | `docs/reports/` |
+| Code sinh bÃ¡o cÃ¡o | `src/modules/reports` khi cáº§n dÃ¹ng láº¡i ngoÃ i script |
+| Template thÃ´ng bÃ¡o/chá»©ng tá»« | `src/modules/documents` |
+| Gá»­i thÃ´ng bÃ¡o | `src/modules/notifications` khi cÃ³ tÃ­ch há»£p tháº­t |
+| Test parser/matcher | test hiá»‡n cÃ³ trong `lib/**.test.ts`, vá» sau cÃ³ thá»ƒ chuyá»ƒn gáº§n module |
 
-## Cổng kiểm tra khi đổi cấu trúc
+## Cá»•ng kiá»ƒm tra khi Ä‘á»•i cáº¥u trÃºc
 
-Mỗi lần di chuyển module hoặc đổi import:
+Má»—i láº§n di chuyá»ƒn module hoáº·c Ä‘á»•i import:
 
 ```bash
 npm test
 npm run build
 ```
 
-Nếu đổi Prisma/schema:
+Náº¿u Ä‘á»•i Prisma/schema:
 
 ```bash
 npm run prisma:validate
 npm run prisma:generate
 ```
 
-Nếu đổi parser mã căn:
+Náº¿u Ä‘á»•i parser mÃ£ cÄƒn:
 
-- cập nhật [parser-ma-can-ho.md](parser-ma-can-ho.md)
-- thêm golden test
-- chạy `npm test`
+- cáº­p nháº­t [parser-ma-can-ho.md](parser-ma-can-ho.md)
+- thÃªm golden test
+- cháº¡y `npm test`
 
-## Kết luận
+## Káº¿t luáº­n
 
-Từ thời điểm này:
+Tá»« thá»i Ä‘iá»ƒm nÃ y:
 
-- `src/modules/` là cấu trúc chuẩn cho nghiệp vụ mới
-- `app/` chỉ là lớp route/UI của Next.js
-- `lib/` là lớp tương thích cũ, không phải nơi mở rộng chính
-- `scripts/` là entrypoint vận hành, không phải nơi chứa toàn bộ nghiệp vụ dài hạn
-- `docs/module-map.md` là file control cấu trúc thư mục
+- `src/modules/` lÃ  cáº¥u trÃºc chuáº©n cho nghiá»‡p vá»¥ má»›i
+- `app/` chá»‰ lÃ  lá»›p route/UI cá»§a Next.js
+- `lib/` lÃ  lá»›p tÆ°Æ¡ng thÃ­ch cÅ©, khÃ´ng pháº£i nÆ¡i má»Ÿ rá»™ng chÃ­nh
+- `scripts/` lÃ  entrypoint váº­n hÃ nh, khÃ´ng pháº£i nÆ¡i chá»©a toÃ n bá»™ nghiá»‡p vá»¥ dÃ i háº¡n
+- `docs/module-map.md` lÃ  file control cáº¥u trÃºc thÆ° má»¥c
+
+

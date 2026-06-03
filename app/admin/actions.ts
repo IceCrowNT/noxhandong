@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/src/modules/database";
@@ -9,8 +10,8 @@ import { normalizeAdminLoginIdentifier, normalizeVietnamPhone } from "@/src/modu
 import { hashPassword, verifyPassword } from "@/src/modules/auth/password";
 import {
   ADMIN_SESSION_COOKIE,
-  ADMIN_SESSION_MAX_AGE_SECONDS,
   createAdminSessionToken,
+  getAdminSessionMaxAgeSeconds,
 } from "@/src/modules/auth/session";
 
 function getString(formData: FormData, name: string) {
@@ -29,6 +30,7 @@ function getAssignableAdminRole(value: string) {
 }
 
 export async function loginAction(formData: FormData) {
+  const headerStore = await headers();
   const loginIdentifier = getString(formData, "username");
   const password = getString(formData, "password");
 
@@ -51,6 +53,16 @@ export async function loginAction(formData: FormData) {
     account.trang_thai !== "DANG_HOAT_DONG" ||
     !verifyPassword(password, account.mat_khau_hash)
   ) {
+    await prisma.nhatKyDangNhapQuanTri.create({
+      data: {
+        tai_khoan_id: account?.id || null,
+        dinh_danh_dang_nhap: loginIdentifier,
+        thanh_cong: false,
+        ip: headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() || headerStore.get("x-real-ip"),
+        user_agent: headerStore.get("user-agent"),
+        ghi_chu: "Đăng nhập thất bại.",
+      },
+    });
     redirect("/admin/login?error=invalid");
   }
 
@@ -66,15 +78,49 @@ export async function loginAction(formData: FormData) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: ADMIN_SESSION_MAX_AGE_SECONDS,
+    maxAge: getAdminSessionMaxAgeSeconds(),
   });
 
-  await prisma.taiKhoanQuanTri.update({
-    where: { id: account.id },
-    data: { lan_dang_nhap_cuoi: new Date() },
-  });
+  await prisma.$transaction([
+    prisma.taiKhoanQuanTri.update({
+      where: { id: account.id },
+      data: { lan_dang_nhap_cuoi: new Date() },
+    }),
+    prisma.nhatKyDangNhapQuanTri.create({
+      data: {
+        tai_khoan_id: account.id,
+        dinh_danh_dang_nhap: loginIdentifier,
+        thanh_cong: true,
+        ip: headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() || headerStore.get("x-real-ip"),
+        user_agent: headerStore.get("user-agent"),
+        ghi_chu: "Đăng nhập thành công.",
+      },
+    }),
+  ]);
 
   redirect("/admin/dashboard");
+}
+
+export async function resetAccountPasswordAction(formData: FormData) {
+  const currentAccount = await requireAdminRole("SUPER_ADMIN");
+
+  const id = Number(getString(formData, "id"));
+  const newPassword = getString(formData, "newPassword");
+  if (!Number.isInteger(id) || id === currentAccount.id || newPassword.length < 10) {
+    redirect("/admin/accounts?error=invalid");
+  }
+
+  const account = await prisma.taiKhoanQuanTri.findUnique({ where: { id }, select: { id: true } });
+  if (!account) {
+    redirect("/admin/accounts?error=invalid");
+  }
+
+  await prisma.taiKhoanQuanTri.update({
+    where: { id },
+    data: { mat_khau_hash: hashPassword(newPassword) },
+  });
+
+  redirect("/admin/accounts?passwordReset=1");
 }
 
 export async function logoutAction() {

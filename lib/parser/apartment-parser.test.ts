@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseApartmentCode } from "@/lib/parser/apartment-parser";
+import { normalizeApartmentCode } from "@/src/modules/shared/utils/text";
 
 describe("parseApartmentCode", () => {
   const cases: Array<[string, string]> = [
@@ -104,5 +105,60 @@ describe("parseApartmentCode", () => {
     expect(parseApartmentCode("306lohai").parsedApartmentCode).toBe("L2.306");
     expect(parseApartmentCode("lo bon b can 124").parsedApartmentCode).toBe("L4B.124");
     expect(parseApartmentCode("lô tư b căn 124").parsedApartmentCode).toBe("L4B.124");
+  });
+  it("normalizes LKV apartment codes from fee tracking workbooks", () => {
+    expect(normalizeApartmentCode("LKV.47")).toBe("LKV.47");
+    expect(normalizeApartmentCode("lkv47")).toBe("LKV.47");
+  });
+
+  it("parses LKV linked-house codes from bank statements", () => {
+    expect(parseApartmentCode("Hairent - TT phi quan ly Pruksa Hai Phong tu 01.05 - 31.10.26- LKV.47").parsedApartmentCode).toBe("LKV.47");
+    expect(parseApartmentCode("Hairent - TT phi quan ly Pruksa Hai Phong tu 01.05 - 31.10.26- LKV.47").candidates.map((candidate) => candidate.code)).toEqual(["LKV.47"]);
+    expect(parseApartmentCode("Hairent TT phi quan ly LKV 47").parsedApartmentCode).toBe("LKV.47");
+    expect(parseApartmentCode("Hairent TT phi quan ly LKV-47").parsedApartmentCode).toBe("LKV.47");
+    expect(parseApartmentCode("Hairent TT phi quan ly LKV47").parsedApartmentCode).toBe("LKV.47");
+    expect(parseApartmentCode("Hairent TT phi quan ly LK V 47").parsedApartmentCode).toBe("LKV.47");
+    expect(parseApartmentCode("47 LKV phi quan ly").parsedApartmentCode).toBe("LKV.47");
+  });
+
+  it("parses real bank statement variants from six-month statements", () => {
+    expect(parseApartmentCode("L3 P505 dong phi QL T12, T1, T2/2026").parsedApartmentCode).toBe("L3.505");
+    expect(parseApartmentCode("Toa nha L2 _ so can ho 211B_ sdt 0357046014 nop phi QLVH").parsedApartmentCode).toBe("L2.211B");
+    expect(parseApartmentCode("Toa L2. so can 208 0336177271. nop phi QLVH").parsedApartmentCode).toBe("L2.208");
+    expect(parseApartmentCode("L2- P508-phi chung cu").parsedApartmentCode).toBe("L2.508");
+    expect(parseApartmentCode("L 1 , 118 , 0899289266 , nop phi QLVH").parsedApartmentCode).toBe("L1.118");
+    expect(parseApartmentCode("Toa LA4 so 210 nop phi QLVH").parsedApartmentCode).toBe("L4A.210");
+    expect(parseApartmentCode("L4C 506 a tu thang 1 den thang 6 nam 2026").parsedApartmentCode).toBe("L4C.506A");
+    expect(parseApartmentCode("117l4 b . thangs 1.2.3 dt 0563788383").parsedApartmentCode).toBe("L4B.117");
+    expect(parseApartmentCode("phi cc can ho 530 l4 b.0904471356").parsedApartmentCode).toBe("L4B.530");
+    expect(parseApartmentCode("L3p509 0763469636 phi QLVH ki 5-2026 den 10-2026").parsedApartmentCode).toBe("L3.509");
+  });
+
+  it("parses manual-review candidates with explicit apartment signals", () => {
+    expect(parseApartmentCode("L4C_sonha303_0963666694_nopphi QLVN tu 01.05.2026 den 30.10.2026").parsedApartmentCode).toBe("L4C.303");
+    expect(parseApartmentCode("CT DEN:614310746618 303- Lo L4B 0973609092 nop phi QLVH").parsedApartmentCode).toBe("L4B.303");
+    expect(parseApartmentCode("Dao Xan Van L4b-110chuyen phi ccT5-2026").parsedApartmentCode).toBe("L4B.110");
+  });
+
+  it("parses additional May final manual-review patterns", () => {
+    expect(parseApartmentCode("CT DEN:612220678743 CkL4a 318 nop phi QLVH .t4.5.6 -2026 dt0987112519").parsedApartmentCode).toBe("L4A.318");
+    expect(parseApartmentCode("CT DEN:612520611064 Nop phi QLVH Thang 5, 6 .2026 . P205 L4C CCHH An Dong").parsedApartmentCode).toBe("L4C.205");
+    expect(parseApartmentCode("CT DEN:164T2650DSNXSRVK LE THI THU chuyen tien phi cc117l4b. thang 4.5.6 dt : 0563788383").parsedApartmentCode).toBe("L4B.117");
+    expect(parseApartmentCode("CT DEN:612920851187 LK 2 - 1 nop phi QLVH tu 1-5 den 30-10-2026").parsedApartmentCode).toBe("LK2.1");
+    expect(parseApartmentCode("CT DEN:612914931307 sn118L4C sdt0982451303 phiQLVH t5 va t6").parsedApartmentCode).toBe("L4C.118");
+    expect(parseApartmentCode("CT DEN:164T2650FTCBBSGE toa nha L4B4260977817446ki phi QLVH thang 52026 den thang 102026").parsedApartmentCode).toBe("L4B.426");
+    expect(parseApartmentCode("CT DEN:613100616505 can ho 411A toa L4C nop phi QLVH thang 5, 6.2026").parsedApartmentCode).toBe("L4C.411A");
+    expect(parseApartmentCode("CT DEN:613410615125 4B220 0982526706 ky phi QLVH thang 05 2026 den tha").parsedApartmentCode).toBe("L4B.220");
+    expect(parseApartmentCode("CT DEN:164T2650SXQ0RKJZ L4B419ky phi qlvh T51026").parsedApartmentCode).toBe("L4B.419");
+    expect(parseApartmentCode("Nha 435 toa L4B 0768318688 dong phi QLVH tu t5-2026 den t10 -2026").parsedApartmentCode).toBe("L4B.435");
+    expect(parseApartmentCode("CT DEN:164T2650WSGZBVES MBVCB.14285176883.638469.lo 4a so nha 114, thang 4,thang5 nam2026").parsedApartmentCode).toBe("L4A.114");
+    expect(parseApartmentCode("CT DEN:614001162405 shophouse lk 1 35 0936516839 chi phi QLVH t5 2026 den t10 2026").parsedApartmentCode).toBe("LK1.35");
+    expect(parseApartmentCode("CT DEN:164T2650Z5B5TMF 111A L4A nop phi QLVH thang 510").parsedApartmentCode).toBe("L4A.111A");
+    expect(parseApartmentCode("CT DEN:614207718825 L4A_541 0779602958 nop phi QL tu thang 5 den thang 10/2025").parsedApartmentCode).toBe("L4A.541");
+    expect(parseApartmentCode("Toa LA4 so 210nop phi QLVH tu thang 6 -2026 den thang 12-2026").parsedApartmentCode).toBe("L4A.210");
+  });
+
+  it("does not infer missing block from separated L and room code", () => {
+    expect(parseApartmentCode("ck can ho L 111B nop phi 012026 062026").parsedApartmentCode).toBeUndefined();
   });
 });

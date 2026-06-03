@@ -1,0 +1,17 @@
+{
+  "sourceFile": "docs/resources/lich-su-giao-dich T12_2025.xls",
+  "parserVersion": "apartment-code-parser-v0.4-canonical",
+  "currentFeeBatchId": 12,
+  "currentFeePeriod": "T5-2026",
+  "rawRows": 266,
+  "skippedExpenseRows": 15,
+  "totalRows": 251,
+  "incomeRows": 251,
+  "parsedValidRows": 224,
+  "multiCandidateRows": 4,
+  "invalidApartmentRows": 0,
+  "unparsedRows": 23,
+  "uniqueParsedApartments": 217,
+  "totalParsedIncomeAmount": 225249992,
+  "needsVisualReviewRows": 102
+}

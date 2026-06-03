@@ -1,0 +1,21 @@
+{
+  "totalRows": 1,
+  "summaryRows": [
+    {
+      "Kỳ": "T3-2026",
+      "Dòng sao kê": 53,
+      "Ngày": "2026-03-26",
+      "Số tiền": 1500000,
+      "Người chuyển": "LE THI LIEU",
+      "Tài khoản chuyển": "0975348495",
+      "Mã giao dịch": "164T26317CA8LDA8",
+      "Nội dung": "CT DEN:164T26317CA8LDA8 ck can ho  L 111B  nop phi  012026 062026",
+      "Số căn thiếu lô": "111B",
+      "Số ứng viên": 6,
+      "Ứng viên mạnh nhất": "L1.111B",
+      "Điểm mạnh nhất": 10,
+      "Kết luận": "CHI_LIET_KE_UNG_VIEN_KHONG_TU_CHON",
+      "Lý do": "Trùng một token tên: LE"
+    }
+  ]
+}

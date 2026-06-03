@@ -5,6 +5,8 @@ import { loginAction } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Notice } from "@/components/ui/notice";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 type LoginPageProps = {
   searchParams?: Promise<{
@@ -41,7 +43,7 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
           <CardDescription>Dành cho tài khoản quản trị đã được cấp quyền.</CardDescription>
         </CardHeader>
         <CardContent>
-          {errorMessage ? <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-medium text-red-800">{errorMessage}</div> : null}
+          {errorMessage ? <Notice tone="error">{errorMessage}</Notice> : null}
 
           <form action={loginAction} className="grid gap-4">
             <label className="grid gap-2 text-sm font-semibold">
@@ -58,9 +60,9 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
               Mật khẩu
               <Input name="password" type="password" autoComplete="current-password" required />
             </label>
-            <Button type="submit" size="lg">
+            <SubmitButton size="lg" pendingText="Đang đăng nhập...">
               Đăng nhập
-            </Button>
+            </SubmitButton>
           </form>
         </CardContent>
       </Card>

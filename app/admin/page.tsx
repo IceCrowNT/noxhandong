@@ -5,6 +5,7 @@ import { Database, FileSpreadsheet, Search, Users } from "lucide-react";
 import { AdminFrame } from "@/components/admin/admin-frame";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Notice } from "@/components/ui/notice";
 import { requireAdmin } from "@/src/modules/auth/current-user";
 import { adminRoleLabel } from "@/src/modules/shared/labels";
 
@@ -66,9 +67,7 @@ export default async function AdminHomePage({ searchParams }: AdminHomeProps) {
       }
     >
       {params?.denied === "1" ? (
-        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-medium text-red-800">
-          Tài khoản hiện tại không có quyền vào chức năng này.
-        </div>
+        <Notice tone="error">Tài khoản hiện tại không có quyền vào chức năng này.</Notice>
       ) : null}
 
       <section className="grid gap-3 md:hidden">

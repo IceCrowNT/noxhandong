@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Database, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
+import { Bell, Database, FileSearch, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,8 @@ import {
 export const adminNavigation = [
   { key: "dashboard", href: "/admin/dashboard", label: "Tra cứu nội bộ", icon: LayoutDashboard },
   { key: "import", href: "/admin/import", label: "Nhập dữ liệu", icon: Upload },
+  { key: "transactions", href: "/admin/transactions/review", label: "Duyệt sao kê", icon: FileSearch },
+  { key: "announcements", href: "/admin/announcements", label: "Thông báo", icon: Bell },
   { key: "contacts", href: "/admin/contacts/review", label: "Liên hệ cư dân", icon: Users },
   { key: "accounts", href: "/admin/accounts", label: "Tài khoản", icon: ShieldCheck },
   { key: "profile", href: "/admin/profile", label: "Tài khoản của tôi", icon: UserCircle },

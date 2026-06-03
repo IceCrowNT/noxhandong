@@ -56,6 +56,11 @@ async function main() {
     throw new Error(`Batch ${batch.id} has no apartment fee snapshots`);
   }
 
+  const metadata = batch.metadata_json && typeof batch.metadata_json === "object" ? batch.metadata_json : {};
+  const historyRecordIds = Array.isArray(metadata.historyRecordIds)
+    ? metadata.historyRecordIds.filter((id) => Number.isInteger(id) && id > 0)
+    : [];
+
   const published = await prisma.$transaction(async (tx) => {
     await tx.batchTrangThaiPhiPublic.updateMany({
       where: {
@@ -67,7 +72,7 @@ async function main() {
       },
     });
 
-    return tx.batchTrangThaiPhiPublic.update({
+    const nextBatch = await tx.batchTrangThaiPhiPublic.update({
       where: { id: batch.id },
       data: {
         trang_thai: "DA_PUBLIC",
@@ -76,6 +81,20 @@ async function main() {
         public_luc: new Date(),
       },
     });
+
+    if (historyRecordIds.length) {
+      await tx.lichSuDongPhiCanHo.updateMany({
+        where: {
+          id: { in: historyRecordIds },
+          batch_phi_public_id: null,
+        },
+        data: {
+          batch_phi_public_id: batch.id,
+        },
+      });
+    }
+
+    return nextBatch;
   });
 
   const currentPublicBatchCount = await prisma.batchTrangThaiPhiPublic.count({
@@ -91,6 +110,7 @@ async function main() {
         publicBy: admin.ten_dang_nhap,
         publicAt: published.public_luc,
         snapshotCount,
+        historyRowsLinked: historyRecordIds.length,
         currentPublicBatchCount,
       },
       null,

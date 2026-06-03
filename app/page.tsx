@@ -1,13 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Bell, CalendarDays, FileText, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { PUBLIC_LOOKUP_MAX_LENGTH } from "@/src/modules/billing/fee-status";
+import { prisma } from "@/src/modules/database";
+import { formatVietnamDate } from "@/src/modules/shared/utils/date-time";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const announcements = await prisma.thongBaoCongKhai.findMany({
+    where: { trang_thai: "CONG_KHAI" },
+    orderBy: [{ ngay_cong_khai: "desc" }, { id: "desc" }],
+    take: 3,
+    select: {
+      id: true,
+      tieu_de: true,
+      mo_ta_ngan: true,
+      duong_dan_file: true,
+      ngay_cong_khai: true,
+    },
+  });
+
   return (
     <main className="relative isolate grid min-h-screen grid-rows-[auto_1fr] overflow-hidden bg-[#edf3ef] px-4 pb-8 text-[var(--text)]">
       <div className="pointer-events-none fixed inset-0 z-0">
@@ -71,13 +87,73 @@ export default function HomePage() {
                   placeholder="Nhập mã căn, ví dụ L1.115"
                 />
               </label>
-              <Button type="submit" size="lg">
+              <SubmitButton size="lg" pendingText="Đang tra cứu...">
                 <Search size={18} aria-hidden="true" />
                 Tra cứu
-              </Button>
+              </SubmitButton>
             </form>
           </CardContent>
         </Card>
+
+        {announcements.length ? (
+          <section className="mt-5 w-full rounded-2xl border border-[rgba(0,75,70,0.14)] bg-white/88 p-3 shadow-[0_16px_48px_rgba(25,28,28,0.10)] backdrop-blur md:p-4">
+            <div className="mb-3 flex items-center justify-between gap-3 px-1">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
+                  <Bell size={18} aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="truncate text-[17px] font-bold leading-6 text-[var(--accent)]">Thông báo từ BQT</h2>
+                  <p className="text-[13px] font-medium leading-5 text-[var(--muted)]">Tài liệu công khai cho cư dân</p>
+                </div>
+              </div>
+              <span className="hidden rounded-full border border-[var(--line)] bg-white px-3 py-1 text-xs font-semibold text-[var(--muted)] sm:block">
+                {announcements.length} tin mới
+              </span>
+            </div>
+
+            <div className="grid gap-2">
+              {announcements.map((item, index) => {
+                const isPrimary = index === 0;
+                return (
+                  <a
+                    key={item.id}
+                    href={item.duong_dan_file || "#"}
+                    target={item.duong_dan_file ? "_blank" : undefined}
+                    rel={item.duong_dan_file ? "noreferrer" : undefined}
+                    className={
+                      isPrimary
+                        ? "group grid gap-3 rounded-xl border border-[rgba(0,75,70,0.20)] bg-[rgba(232,245,238,0.82)] p-4 text-left transition hover:border-[var(--accent)] hover:bg-[rgba(232,245,238,0.96)] sm:grid-cols-[1fr_auto] sm:items-center"
+                        : "group grid gap-2 rounded-xl border border-[var(--line)] bg-white/88 p-3 text-left transition hover:border-[var(--accent)] sm:grid-cols-[1fr_auto] sm:items-center"
+                    }
+                  >
+                    <div className="min-w-0">
+                      <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
+                        <FileText size={15} aria-hidden="true" />
+                        {isPrimary ? "Thông báo mới nhất" : "PDF công khai"}
+                      </div>
+                      <strong className={isPrimary ? "block text-lg leading-snug text-[var(--text)]" : "block truncate text-sm text-[var(--text)]"}>
+                        {item.tieu_de}
+                      </strong>
+                      {item.mo_ta_ngan ? (
+                        <p className={isPrimary ? "mt-2 line-clamp-2 text-sm leading-6 text-[var(--muted)]" : "mt-1 line-clamp-1 text-sm text-[var(--muted)]"}>
+                          {item.mo_ta_ngan}
+                        </p>
+                      ) : null}
+                      <div className="mt-2 flex items-center gap-1 text-xs text-[var(--muted)]">
+                        <CalendarDays size={14} aria-hidden="true" />
+                        {formatVietnamDate(item.ngay_cong_khai)}
+                      </div>
+                    </div>
+                    <span className="inline-flex h-9 items-center justify-center rounded-lg bg-[var(--accent)] px-3 text-sm font-bold text-white transition group-hover:brightness-110">
+                      Má»Ÿ PDF
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
       </section>
     </main>
   );
