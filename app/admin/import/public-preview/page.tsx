@@ -5,7 +5,8 @@ import {
   cancelPreparedPublicBatchAction,
   publishPreparedPublicBatchAction,
 } from "@/app/admin/import/actions";
-import { AdminFrame, ScrollPanel } from "@/components/admin/admin-frame";
+import { AdminFrame } from "@/components/admin/admin-frame";
+import { EvidencePreviewDialog } from "@/components/admin/evidence-preview-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,8 +16,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { requireAdminRole } from "@/src/modules/auth/current-user";
 import { publicFeeDisplayText } from "@/src/modules/billing/fee-status";
 import { prisma } from "@/src/modules/database";
-import { publicBatchStatusLabel } from "@/src/modules/shared/labels";
+import { evidenceTypeLabel, publicBatchStatusLabel } from "@/src/modules/shared/labels";
 import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
+import { findApartmentMentionRanges } from "@/src/modules/transactions/parser/apartment-parser";
 
 type PublicPreviewPageProps = {
   searchParams?: Promise<{
@@ -36,6 +38,24 @@ type PreviewRow = {
   remainderAmount: number;
   historyCount: number;
   changed: boolean;
+  hasNewPayment: boolean;
+  transactions: Array<{
+    id: number;
+    content: string;
+    parsedApartment: string | null;
+    selectedApartment: string | null;
+    sender: string | null;
+    reference: string | null;
+    transactionAt: string;
+    evidence: Array<{
+      id: number;
+      type: string;
+      filePath: string | null;
+      fileName: string | null;
+      mimeType: string | null;
+      note: string | null;
+    }>;
+  }>;
 };
 
 function formatDateTime(value: Date | null | undefined) {
@@ -70,6 +90,46 @@ function payloadArrayLength(payload: unknown, key: string) {
   return arrayValue(recordValue(payload)?.[key]).length;
 }
 
+function payloadHistoryIds(payload: unknown) {
+  return arrayValue(recordValue(payload)?.includedHistoryIds)
+    .map(Number)
+    .filter((id) => Number.isInteger(id) && id > 0);
+}
+
+function HighlightApartmentMentions({ content, apartmentCodes }: { content: string; apartmentCodes: string[] }) {
+  const ranges = findApartmentMentionRanges(content, apartmentCodes);
+  if (!ranges.length) return <>{content}</>;
+
+  const parts: Array<{ text: string; highlighted: boolean }> = [];
+  let cursor = 0;
+  for (const range of ranges) {
+    if (range.start < cursor) continue;
+    if (range.start > cursor) {
+      parts.push({ text: content.slice(cursor, range.start), highlighted: false });
+    }
+    parts.push({ text: content.slice(range.start, range.end), highlighted: true });
+    cursor = range.end;
+  }
+  if (cursor < content.length) {
+    parts.push({ text: content.slice(cursor), highlighted: false });
+  }
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.highlighted) {
+          return (
+            <strong key={`${part.text}-${index}`} className="rounded bg-emerald-100 px-0.5 text-sm font-bold text-emerald-950">
+              {part.text}
+            </strong>
+          );
+        }
+        return <span key={`${part.text}-${index}`}>{part.text}</span>;
+      })}
+    </>
+  );
+}
+
 function buildPreviewRows(
   currentRows: Array<{
     id: number;
@@ -83,6 +143,28 @@ function buildPreviewRows(
     thang_da_dong_den_hien_tai: string | null;
     payload_public_json: unknown;
   }>,
+  historiesById: Map<
+    number,
+    {
+      giao_dich_ngan_hang: {
+        id: number;
+        noi_dung_goc: string;
+        ma_can_parse: string | null;
+        ma_can_duoc_chon: string | null;
+        ten_nguoi_chuyen: string | null;
+        tham_chieu_ngan_hang: string | null;
+        ngay_giao_dich: Date | null;
+        chung_tu_doi_soat: Array<{
+          id: number;
+          loai_chung_tu: string;
+          duong_dan_file: string | null;
+          ten_file_goc: string | null;
+          mime_type: string | null;
+          ghi_chu: string | null;
+        }>;
+      } | null;
+    }
+  >,
 ) {
   const previousByApartmentId = new Map(previousRows.map((row) => [row.can_ho_id, row]));
 
@@ -96,6 +178,28 @@ function buildPreviewRows(
     const approvedPaymentAmount = payloadNumber(row.payload_public_json, "approvedPaymentAmount");
     const remainderAmount = payloadNumber(row.payload_public_json, "remainderAmount");
     const historyCount = payloadArrayLength(row.payload_public_json, "includedHistoryIds");
+    const transactionMap = new Map<number, PreviewRow["transactions"][number]>();
+    for (const historyId of payloadHistoryIds(row.payload_public_json)) {
+      const transaction = historiesById.get(historyId)?.giao_dich_ngan_hang;
+      if (!transaction || transactionMap.has(transaction.id)) continue;
+      transactionMap.set(transaction.id, {
+        id: transaction.id,
+        content: transaction.noi_dung_goc,
+        parsedApartment: transaction.ma_can_parse,
+        selectedApartment: transaction.ma_can_duoc_chon,
+        sender: transaction.ten_nguoi_chuyen,
+        reference: transaction.tham_chieu_ngan_hang,
+        transactionAt: formatDateTime(transaction.ngay_giao_dich),
+        evidence: (transaction.chung_tu_doi_soat || []).map((item) => ({
+          id: item.id,
+          type: item.loai_chung_tu,
+          filePath: item.duong_dan_file,
+          fileName: item.ten_file_goc,
+          mimeType: item.mime_type,
+          note: item.ghi_chu,
+        })),
+      });
+    }
 
     return {
       id: row.id,
@@ -106,7 +210,9 @@ function buildPreviewRows(
       approvedPaymentAmount,
       remainderAmount,
       historyCount,
-      changed: previousDisplay !== currentDisplay || addedMonths > 0 || approvedPaymentAmount > 0,
+      changed: previousDisplay !== currentDisplay || addedMonths > 0,
+      hasNewPayment: approvedPaymentAmount > 0,
+      transactions: [...transactionMap.values()],
     };
   });
 }
@@ -169,13 +275,66 @@ export default async function PublicPreviewPage({ searchParams }: PublicPreviewP
         },
       })
     : [];
+  const includedHistoryIds = batch
+    ? batch.trang_thai_phi.flatMap((row) => payloadHistoryIds(row.payload_public_json))
+    : [];
+  const includedHistories = includedHistoryIds.length
+    ? await prisma.lichSuDongPhiCanHo.findMany({
+        where: { id: { in: includedHistoryIds } },
+        select: {
+          id: true,
+          giao_dich_ngan_hang: {
+            select: {
+              id: true,
+              noi_dung_goc: true,
+              ma_can_parse: true,
+              ma_can_duoc_chon: true,
+              ten_nguoi_chuyen: true,
+              tham_chieu_ngan_hang: true,
+              ngay_giao_dich: true,
+              chung_tu_doi_soat: {
+                orderBy: { id: "desc" },
+                select: {
+                  id: true,
+                  loai_chung_tu: true,
+                  duong_dan_file: true,
+                  ten_file_goc: true,
+                  mime_type: true,
+                  ghi_chu: true,
+                },
+              },
+            },
+          },
+        },
+      })
+    : [];
+  const historiesById = new Map(includedHistories.map((history) => [history.id, history]));
 
-  const rows = batch ? buildPreviewRows(batch.trang_thai_phi, previousRows) : [];
+  const rows = batch ? buildPreviewRows(batch.trang_thai_phi, previousRows, historiesById) : [];
   const changedRows = rows.filter((row) => row.changed);
   const remainderRows = rows.filter((row) => row.remainderAmount > 0);
+  const paymentRows = rows.filter((row) => row.hasNewPayment);
   const totalApprovedAmount = rows.reduce((sum, row) => sum + row.approvedPaymentAmount, 0);
-  const rowsForView = (view === "all" ? rows : view === "remainder" ? remainderRows : changedRows).filter((row) =>
-    q ? row.ma_can.includes(q) || row.previousDisplay.toUpperCase().includes(q) || row.currentDisplay.toUpperCase().includes(q) : true,
+  const rowsForView = (
+    view === "all"
+      ? rows
+      : view === "remainder"
+        ? remainderRows
+        : view === "payment"
+          ? paymentRows
+          : changedRows
+  ).filter((row) =>
+    q
+      ? row.ma_can.includes(q) ||
+        row.previousDisplay.toUpperCase().includes(q) ||
+        row.currentDisplay.toUpperCase().includes(q) ||
+        row.transactions.some(
+          (transaction) =>
+            transaction.content.toUpperCase().includes(q) ||
+            transaction.parsedApartment?.toUpperCase().includes(q) ||
+            transaction.selectedApartment?.toUpperCase().includes(q),
+        )
+      : true,
   );
 
   return (
@@ -239,7 +398,7 @@ export default async function PublicPreviewPage({ searchParams }: PublicPreviewP
           <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <Metric label="Tổng snapshot" value={formatNumber(rows.length)} />
             <Metric label="Căn thay đổi" value={formatNumber(changedRows.length)} />
-            <Metric label="Có tiền lẻ" value={formatNumber(remainderRows.length)} />
+            <Metric label="Số dư chuyển kỳ" value={formatNumber(remainderRows.length)} />
             <Metric label="Tổng tiền duyệt" value={formatMoney(totalApprovedAmount)} />
             <Metric label="Dòng lịch sử" value={formatNumber(rows.reduce((sum, row) => sum + row.historyCount, 0))} />
           </section>
@@ -257,16 +416,19 @@ export default async function PublicPreviewPage({ searchParams }: PublicPreviewP
             <CardHeader className="gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <CardTitle>Danh sách căn trong preview</CardTitle>
-                <CardDescription>Ưu tiên xem các căn thay đổi và các căn có phần tiền lẻ.</CardDescription>
+                <CardDescription>Đối chiếu nhanh mã căn parser với nội dung chuyển khoản gốc trước khi chốt.</CardDescription>
               </div>
-              <form className="grid gap-2 sm:grid-cols-[minmax(180px,1fr)_auto_auto_auto]">
+              <form className="grid gap-2 sm:grid-cols-[minmax(180px,1fr)_auto_auto_auto_auto]">
                 <input type="hidden" name="batchId" value={batch.id} />
                 <Input name="q" defaultValue={q} placeholder="Tìm mã căn hoặc nội dung..." />
                 <SubmitButton name="view" value="changed" variant={view === "changed" ? "default" : "secondary"} pendingText="Đang lọc...">
-                  Thay đổi
+                  Mốc phí thay đổi
+                </SubmitButton>
+                <SubmitButton name="view" value="payment" variant={view === "payment" ? "default" : "secondary"} pendingText="Đang lọc...">
+                  Có giao dịch
                 </SubmitButton>
                 <SubmitButton name="view" value="remainder" variant={view === "remainder" ? "default" : "secondary"} pendingText="Đang lọc...">
-                  Tiền lẻ
+                  Số dư
                 </SubmitButton>
                 <SubmitButton name="view" value="all" variant={view === "all" ? "default" : "secondary"} pendingText="Đang lọc...">
                   Tất cả
@@ -281,34 +443,40 @@ export default async function PublicPreviewPage({ searchParams }: PublicPreviewP
               </div>
 
               <div className="hidden md:block">
-                <ScrollPanel minWidth={1120}>
-                  <Table className="text-sm">
+                <div className="overflow-hidden rounded-lg border border-[var(--line)]">
+                  <Table className="w-full table-fixed text-sm">
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[110px]">Mã căn</TableHead>
-                        <TableHead>Trước chốt</TableHead>
-                        <TableHead>Sau preview</TableHead>
-                        <TableHead className="w-[100px] text-right">+ Tháng</TableHead>
-                        <TableHead className="w-[150px] text-right">Tiền duyệt</TableHead>
-                        <TableHead className="w-[140px] text-right">Tiền lẻ</TableHead>
-                        <TableHead className="w-[110px] text-right">Lịch sử</TableHead>
+                        <TableHead className="w-[12%]">Mã căn</TableHead>
+                        <TableHead className="w-[27%]">Nội dung chuyển khoản</TableHead>
+                        <TableHead className="w-[9%]">Bằng chứng</TableHead>
+                        <TableHead className="w-[16%]">Trước chốt</TableHead>
+                        <TableHead className="w-[16%]">Sau preview</TableHead>
+                        <TableHead className="w-[8%] text-right">+ Tháng</TableHead>
+                        <TableHead className="w-[12%] text-right">Tiền duyệt</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {rowsForView.map((row) => (
                         <TableRow key={row.id}>
-                          <TableCell className="font-semibold">{row.ma_can}</TableCell>
-                          <TableCell>{row.previousDisplay}</TableCell>
-                          <TableCell>{row.currentDisplay}</TableCell>
+                          <TableCell className="align-top">
+                            <strong>{row.ma_can}</strong>
+                          </TableCell>
+                          <TableCell className="align-top">
+                            <TransactionContentCell row={row} />
+                          </TableCell>
+                          <TableCell className="align-top">
+                            <EvidenceCell row={row} />
+                          </TableCell>
+                          <TableCell className="align-top">{row.previousDisplay}</TableCell>
+                          <TableCell className="align-top">{row.currentDisplay}</TableCell>
                           <TableCell className="text-right">{formatNumber(row.addedMonths)}</TableCell>
                           <TableCell className="text-right">{formatMoney(row.approvedPaymentAmount)}</TableCell>
-                          <TableCell className="text-right">{formatMoney(row.remainderAmount)}</TableCell>
-                          <TableCell className="text-right">{formatNumber(row.historyCount)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
-                </ScrollPanel>
+                </div>
               </div>
 
               {!rowsForView.length ? (
@@ -342,6 +510,12 @@ function PreviewCard({ row }: { row: PreviewRow }) {
         <strong className="text-lg">{row.ma_can}</strong>
         <Badge variant={row.changed ? "success" : "secondary"}>{row.changed ? "Có thay đổi" : "Không đổi"}</Badge>
       </div>
+      <div className="mt-3">
+        <TransactionContentCell row={row} />
+      </div>
+      <div className="mt-3">
+        <EvidenceCell row={row} />
+      </div>
       <div className="mt-3 grid gap-2 text-sm leading-6">
         <span>
           <b>Trước:</b> {row.previousDisplay}
@@ -352,15 +526,61 @@ function PreviewCard({ row }: { row: PreviewRow }) {
         <span>
           <b>Tiền duyệt:</b> {formatMoney(row.approvedPaymentAmount)}
         </span>
-        <span>
-          <b>Tiền lẻ:</b> {formatMoney(row.remainderAmount)}
-        </span>
       </div>
-      {row.remainderAmount > 0 ? (
-        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs leading-5 text-amber-900">
-          Có phần tiền lẻ không đủ một tháng, được giữ để audit.
+    </div>
+  );
+}
+
+function EvidenceCell({ row }: { row: PreviewRow }) {
+  const evidence = row.transactions.flatMap((transaction) => transaction.evidence);
+  if (!evidence.length) {
+    return <span className="text-xs text-[var(--muted)]">Không có</span>;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {evidence.map((item, index) =>
+        item.filePath ? (
+          <EvidencePreviewDialog
+            key={item.id}
+            filePath={item.filePath}
+            fileName={item.fileName}
+            mimeType={item.mimeType}
+            evidenceType={evidenceTypeLabel(item.type)}
+            note={item.note}
+          />
+        ) : (
+          <Badge key={item.id} variant="secondary">
+            Ghi chú {index + 1}
+          </Badge>
+        ),
+      )}
+    </div>
+  );
+}
+
+function TransactionContentCell({ row }: { row: PreviewRow }) {
+  if (!row.transactions.length) {
+    return <span className="text-xs text-[var(--muted)]">Không có giao dịch nguồn trong preview này.</span>;
+  }
+
+  return (
+    <div className="grid gap-2">
+      {row.transactions.map((transaction) => (
+        <div key={transaction.id} className="min-w-0 rounded-lg border border-[var(--line)] bg-[#fbfcfb] p-2.5">
+          <p className="m-0 whitespace-normal break-all text-xs font-normal leading-5 text-[var(--muted)]">
+            <HighlightApartmentMentions
+              content={transaction.content}
+              apartmentCodes={[row.ma_can, transaction.selectedApartment || "", transaction.parsedApartment || ""].filter(Boolean)}
+            />
+          </p>
+          <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[10px] leading-4 text-[var(--muted)]">
+            <span>{transaction.sender || "Không rõ người chuyển"}</span>
+            <span>{transaction.transactionAt}</span>
+            <span>Tham chiếu: {transaction.reference || "-"}</span>
+          </div>
         </div>
-      ) : null}
+      ))}
     </div>
   );
 }

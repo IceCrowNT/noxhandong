@@ -4,8 +4,7 @@ import {
   ADMIN_SESSION_COOKIE,
   verifyAdminSessionToken,
 } from "@/src/modules/auth/session";
-
-const superAdminOnlyPrefixes = ["/admin/accounts", "/admin/import"];
+import { hasPermission, permissionForAdminPath } from "@/src/modules/auth/permissions";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -29,10 +28,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (
-    superAdminOnlyPrefixes.some((prefix) => pathname.startsWith(prefix)) &&
-    session.role !== "SUPER_ADMIN"
-  ) {
+  const requiredPermission = permissionForAdminPath(pathname);
+  if (requiredPermission && !hasPermission(session.role, requiredPermission)) {
     return NextResponse.redirect(new URL("/admin?denied=1", request.url));
   }
 

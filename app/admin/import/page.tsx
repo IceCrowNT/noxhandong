@@ -3,8 +3,6 @@ import { CheckCircle2, FileSpreadsheet, Upload } from "lucide-react";
 import {
   importBankStatementAction,
   importFeeTrackingWorkbookAction,
-  prepareApprovedPaymentHistoryPublicBatchAction,
-  publishPreparedPublicBatchAction,
 } from "@/app/admin/import/actions";
 import { AdminFrame, ScrollPanel } from "@/components/admin/admin-frame";
 import { Button } from "@/components/ui/button";
@@ -212,7 +210,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
   const message = statusMessage(params);
   const isError = Boolean(params?.error || params?.statementError || params?.historyPublishError);
 
-  const [imports, publicBatches, pendingApprovedPayments, latestClosingsWithCutoff] = await Promise.all([
+  const [imports, publicBatches, latestClosingsWithCutoff] = await Promise.all([
     prisma.loNhapDuLieu.findMany({
       orderBy: { thoi_diem_nhap: "desc" },
       take: 8,
@@ -236,12 +234,6 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
         la_batch_public_hien_hanh: true,
         tong_so_can: true,
         public_luc: true,
-      },
-    }),
-    prisma.lichSuDongPhiCanHo.count({
-      where: {
-        loai_nguon: "GIAO_DICH_DA_DUYET",
-        batch_phi_public_id: null,
       },
     }),
     prisma.soChotThang.findMany({
@@ -302,7 +294,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
       activeKey="import"
       badge="Quản trị cao nhất"
       title="Nhập dữ liệu phí"
-      description="Luồng chính là nhập sao kê ngân hàng, duyệt giao dịch, rồi chốt public từ dữ liệu đã đối soát."
+      description="Luồng chính là upload sao kê/Excel vào hệ thống. Duyệt giao dịch và chốt public nằm ở màn Duyệt sao kê."
     >
       {message ? (
         <Notice tone={isError ? "error" : "success"}>{message}</Notice>
@@ -311,37 +303,45 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
       <ImportResultSummary params={params} />
       <StatementResultSummary params={params} />
 
-      <section className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <section className="mb-5 grid items-stretch gap-3 md:grid-cols-2 xl:grid-cols-4">
         <Card className="bg-white/90">
-          <CardContent className="p-4">
+          <CardContent className="flex h-full min-h-[118px] flex-col justify-between p-4">
             <span className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Public hiện hành</span>
-            <strong className="mt-2 block text-xl">{currentPublicBatch?.ky_du_lieu || "-"}</strong>
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              {currentPublicBatch ? `Batch #${currentPublicBatch.id} · ${formatNumber(currentPublicBatch.tong_so_can)} căn` : "Chưa có batch public"}
-            </p>
+            <div>
+              <strong className="mt-2 block text-xl">{currentPublicBatch?.ky_du_lieu || "-"}</strong>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                {currentPublicBatch ? `Batch #${currentPublicBatch.id} · ${formatNumber(currentPublicBatch.tong_so_can)} căn` : "Chưa có batch public"}
+              </p>
+            </div>
           </CardContent>
         </Card>
         <Card className="bg-white/90">
-          <CardContent className="p-4">
+          <CardContent className="flex h-full min-h-[118px] flex-col justify-between p-4">
             <span className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Mốc Excel chuẩn</span>
-            <strong className="mt-2 block text-xl">{latestClosingWithCutoff?.ky_du_lieu || "-"}</strong>
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              {hasValidClosingCutoff ? formatDateTime(closingCutoff) : "Chưa có cutoff"}
-            </p>
+            <div>
+              <strong className="mt-2 block text-xl">{latestClosingWithCutoff?.ky_du_lieu || "-"}</strong>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                {hasValidClosingCutoff ? formatDateTime(closingCutoff) : "Chưa có cutoff"}
+              </p>
+            </div>
           </CardContent>
         </Card>
         <Card className="bg-white/90">
-          <CardContent className="p-4">
+          <CardContent className="flex h-full min-h-[118px] flex-col justify-between p-4">
             <span className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Chờ duyệt sau mốc chốt</span>
-            <strong className="mt-2 block text-xl">{formatNumber(pendingReviewCount)}</strong>
-            <p className="mt-1 text-sm text-[var(--muted)]">chỉ tính phát sinh sau Excel chuẩn</p>
+            <div>
+              <strong className="mt-2 block text-xl">{formatNumber(pendingReviewCount)}</strong>
+              <p className="mt-1 text-sm text-[var(--muted)]">chỉ tính phát sinh sau Excel chuẩn</p>
+            </div>
           </CardContent>
         </Card>
         <Card className="bg-white/90">
-          <CardContent className="p-4">
+          <CardContent className="flex h-full min-h-[118px] flex-col justify-between p-4">
             <span className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Sao kê phát sinh</span>
-            <strong className="mt-2 block text-xl">{formatNumber(rawStatementAfterClosingCount)}</strong>
-            <p className="mt-1 text-sm text-[var(--muted)]">dòng thu sau mốc Excel chuẩn</p>
+            <div>
+              <strong className="mt-2 block text-xl">{formatNumber(rawStatementAfterClosingCount)}</strong>
+              <p className="mt-1 text-sm text-[var(--muted)]">dòng thu sau mốc Excel chuẩn</p>
+            </div>
           </CardContent>
         </Card>
       </section>
@@ -426,71 +426,6 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
             Chốt từ Excel sẽ ghi public trực tiếp. Cần nhập đúng <strong>CHOT_EXCEL</strong> để tránh bấm nhầm.
           </div>
-        </CardContent>
-      </Card>
-
-      <Card className="mb-5 bg-white/90">
-        <CardHeader>
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]">
-            <CheckCircle2 size={20} aria-hidden="true" />
-          </div>
-          <CardTitle>Chốt public từ giao dịch đã duyệt</CardTitle>
-          <CardDescription>
-            Dùng cuối kỳ sau khi đã duyệt sao kê. Tạo preview trước, xác nhận sau.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border border-[var(--line)] bg-white p-4">
-              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Chờ công khai</span>
-              <strong className="mt-1 block text-2xl">{formatNumber(pendingApprovedPayments)}</strong>
-              <span className="text-sm text-[var(--muted)]">dòng lịch sử phí</span>
-            </div>
-            <div className="rounded-lg border border-[var(--line)] bg-white p-4 sm:col-span-2">
-              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Nguyên tắc</span>
-              <strong className="mt-1 block text-lg">Preview trước, public sau</strong>
-              <span className="text-sm text-[var(--muted)]">không đọc trực tiếp staging hoặc raw sao kê</span>
-            </div>
-          </div>
-
-          {params?.historyPreviewed === "1" && params.publicBatchId ? (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <strong className="block text-emerald-950">Preview batch #{params.publicBatchId} đã sẵn sàng</strong>
-                  <p className="mt-1 text-sm leading-6 text-emerald-900">
-                    Snapshot có {params.rows || "0"} căn, {params.changedApartmentCount || "0"} căn thay đổi.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <Button asChild variant="secondary">
-                    <a href={`/admin/import/public-preview?batchId=${params.publicBatchId}`}>Xem preview</a>
-                  </Button>
-                  <form action={publishPreparedPublicBatchAction}>
-                    <input type="hidden" name="publicBatchId" value={params.publicBatchId} />
-                    <SubmitButton pendingText="Đang chốt batch...">
-                      <CheckCircle2 size={17} aria-hidden="true" />
-                      Xác nhận public
-                    </SubmitButton>
-                  </form>
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          <form action={prepareApprovedPaymentHistoryPublicBatchAction} className="grid gap-3 md:grid-cols-[220px_1fr_auto] md:items-end">
-            <Label className="grid gap-2">
-              Kỳ dữ liệu
-              <Input name="period" defaultValue="T6-2026" maxLength={16} placeholder="T6-2026" />
-            </Label>
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-900">
-              Bước này chỉ tạo preview. Cư dân chưa thấy dữ liệu mới cho tới khi Super Admin xác nhận public.
-            </div>
-            <SubmitButton disabled={pendingApprovedPayments <= 0} pendingText="Đang tạo preview...">
-              <CheckCircle2 size={17} aria-hidden="true" />
-              Tạo preview public
-            </SubmitButton>
-          </form>
         </CardContent>
       </Card>
 

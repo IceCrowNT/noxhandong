@@ -5,7 +5,7 @@ import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { requireAdminRole } from "@/src/modules/auth/current-user";
+import { requirePermission } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
@@ -21,7 +21,7 @@ function safeFileName(value: string) {
 }
 
 export async function createAnnouncementAction(formData: FormData) {
-  const account = await requireAdminRole("SUPER_ADMIN");
+  const account = await requirePermission("MANAGE_ANNOUNCEMENTS");
   const title = getString(formData, "title");
   const description = getString(formData, "description");
   const status = getString(formData, "status") === "CONG_KHAI" ? "CONG_KHAI" : "NHAP";
@@ -65,7 +65,7 @@ export async function createAnnouncementAction(formData: FormData) {
 }
 
 export async function updateAnnouncementStatusAction(formData: FormData) {
-  await requireAdminRole("SUPER_ADMIN");
+  await requirePermission("MANAGE_ANNOUNCEMENTS");
   const id = Number(getString(formData, "id"));
   const status = getString(formData, "status");
 

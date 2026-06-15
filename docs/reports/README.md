@@ -15,6 +15,7 @@ Các file ở đây là tài liệu lịch sử hoặc dữ liệu kiểm chứn
 
 | File | Vai trò |
 | --- | --- |
+| [bao-cao-ra-soat-trung-lap-code-va-phan-khu.md](bao-cao-ra-soat-trung-lap-code-va-phan-khu.md) | Rà soát code trùng, wrapper tương thích, luồng legacy và đề xuất phân khu theo `module-map.md` |
 | [de-xuat-mo-hinh-db-va-tinh-huong-cu-dan.md](de-xuat-mo-hinh-db-va-tinh-huong-cu-dan.md) | Đề xuất mô hình DB sau khi rà soát 934 căn và 24 tình huống cư dân |
 | [bao-cao-ra-soat-934-can-ho-db.md](bao-cao-ra-soat-934-can-ho-db.md) | Báo cáo rà soát bảng `can_ho` hiện tại trong DB |
 | [danh-gia-danh-sach-can-ho-master.md](danh-gia-danh-sach-can-ho-master.md) | Đánh giá file `Danh_Sach_Can_Ho_Master.xlsx`, xác nhận `934/934` mã căn |

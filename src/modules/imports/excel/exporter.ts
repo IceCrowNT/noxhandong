@@ -22,7 +22,7 @@ function reviewedSheetRows(rows: ReviewRow[]) {
       "Hạng mục": getCategoryLabel(getRowCategory(row)),
       "Trạng thái xử lý": getStatusLabel(row.matchStatus),
       "Ghi chú xử lý": row.reviewNote || "",
-      "Người dùng đã duyệt": row.approved ? "ĐÃ DUYỆT" : "CHƯA DUYỆT"
+      "Người dùng đã duyệt": row.approved ? "ĐÃ DUYỆT" : "CHƯA DUYỆT",
     }));
 }
 
@@ -31,7 +31,7 @@ function needReviewRows(rows: ReviewRow[]) {
     .filter(
       (row) =>
         !row.approved ||
-        ["UNPARSED", "INVALID_CODE", "MULTI_MATCH", "NEED_REVIEW"].includes(row.matchStatus)
+        ["UNPARSED", "INVALID_CODE", "MULTI_MATCH", "NEED_REVIEW"].includes(row.matchStatus),
     )
     .map((row, index) => ({
       STT: index + 1,
@@ -39,13 +39,13 @@ function needReviewRows(rows: ReviewRow[]) {
       "Số tiền": row.amount,
       "Nội dung gốc": row.rawDescription,
       "Mã căn parse": row.parsedApartmentCode || "",
-      "Mã căn đã match": row.matchedApartmentCode || "",
+      "Mã căn đã khớp": row.matchedApartmentCode || "",
       "Hạng mục": getCategoryLabel(getRowCategory(row)),
       "Trạng thái": getStatusLabel(row.matchStatus),
       "Lý do": row.matchReason,
       "Gợi ý": row.suggestions.join(", "),
       "Đã duyệt": row.approved ? "ĐÃ DUYỆT" : "CHƯA DUYỆT",
-      "Ghi chú": row.reviewNote || ""
+      "Ghi chú": row.reviewNote || "",
     }));
 }
 
@@ -58,7 +58,7 @@ function ignoredRows(rows: ReviewRow[]) {
       "Số tiền": row.amount,
       "Nội dung gốc": row.rawDescription,
       "Nội dung chuẩn hóa": row.normalizedDescription,
-      "Lý do": row.matchReason
+      "Lý do": row.matchReason,
     }));
 }
 
@@ -80,7 +80,7 @@ function originalTransactionRows(rows: ReviewRow[]) {
     sender_account: row.senderAccount || "",
     transaction_id: row.transactionId || "",
     approved: row.approved ? "ĐÃ DUYỆT" : "CHƯA DUYỆT",
-    review_note: row.reviewNote || ""
+    review_note: row.reviewNote || "",
   }));
 }
 
@@ -98,7 +98,7 @@ function allocationRows(rows: ReviewRow[]) {
         : item.allocationKind === "MULTI_EXACT"
           ? "Nhiều căn, khớp phí chuẩn"
           : "Nhiều căn, phân bổ theo tỷ trọng",
-    "Mã dòng nguồn": item.sourceRowId
+    "Mã dòng nguồn": item.sourceRowId,
   }));
 }
 
@@ -124,7 +124,7 @@ function summaryRows(rows: ReviewRow[]) {
     { Metric: "Số dòng đã duyệt", Value: summary.approvedCount },
     { Metric: "Tổng số tiền chưa xác nhận", Value: summary.pendingAmount },
     { Metric: "Số dòng phân bổ giao dịch", Value: allocations.length },
-    { Metric: "Tổng tiền đã phân bổ", Value: allocatedAmount }
+    { Metric: "Tổng tiền đã phân bổ", Value: allocatedAmount },
   ];
 }
 
@@ -134,7 +134,7 @@ export function exportReviewWorkbook(rows: ReviewRow[]): Buffer {
   XLSX.utils.book_append_sheet(
     workbook,
     XLSX.utils.json_to_sheet(reviewedSheetRows(rows)),
-    "Lich su dong phi_reviewed"
+    "Lich su dong phi_reviewed",
   );
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(needReviewRows(rows)), "Need_review");
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(ignoredRows(rows)), "Ignored_internal");
@@ -142,7 +142,7 @@ export function exportReviewWorkbook(rows: ReviewRow[]): Buffer {
   XLSX.utils.book_append_sheet(
     workbook,
     XLSX.utils.json_to_sheet(originalTransactionRows(rows)),
-    "Original_transactions"
+    "Original_transactions",
   );
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(summaryRows(rows)), "Summary");
 

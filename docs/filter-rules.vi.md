@@ -1,8 +1,17 @@
 # Bo quy tac loc giao dich
 
-File code chinh dang chay:
-- `lib/filter-rules.ts`
-- `lib/matcher.ts`
+File code chính đang chạy:
+
+- `src/modules/transactions/parser/apartment-parser.ts`
+
+File này là nguồn thuật toán duy nhất cho:
+
+- nhận dạng và chuẩn hóa mã căn;
+- phân loại kết quả khớp;
+- rule lọc giao dịch không liên quan;
+- gợi ý căn khi nội dung thiếu lô.
+
+`src/modules/transactions/matcher.ts` chỉ chuyển kết quả chung sang dữ liệu hiển thị của màn phân tích, không chứa rule riêng.
 
 File nay chi dung de doi chieu nghiep vu. Khong co logic thuc thi o day.
 

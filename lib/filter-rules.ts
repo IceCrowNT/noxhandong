@@ -1,1 +1,0 @@
-export * from "@/src/modules/shared/filter-rules";

@@ -487,3 +487,61 @@ Nếu vừa chạy `npm run build` trong lúc dev server đang mở, phải dừ
   - `leading-6`;
   - có icon theo trạng thái để người dùng nhận biết nhanh thành công/lỗi/cảnh báo.
 - Các trang đã áp dụng: public lookup, login, admin frame/logout, dashboard, import, preview public, duyệt sao kê, duyệt liên hệ, tài khoản, profile, thông báo public.
+
+## Tra cứu nội bộ và xuất sổ FINAL 2026-06-08
+
+- Dashboard tra cứu nội bộ không hiển thị card `Ma trận nhập dữ liệu` và `Chất lượng sao kê`; các thông tin audit này thuộc trang nhập/duyệt dữ liệu.
+- Card `Phân bố tháng đã đóng đến` có bộ chọn kỳ, nhưng chỉ cho chọn các batch đã `DA_PUBLIC`.
+- Kỳ đang chọn điều khiển đồng thời:
+  - thống kê hoàn thành kỳ phí;
+  - phân bố tháng đã đóng đến;
+  - cảnh báo cắt điện;
+  - file Excel FINAL được xuất.
+- Chức năng xuất Excel đặt ngay tại card phân bố trên trang tra cứu nội bộ.
+- Không cung cấp nút xuất DRAFT trên giao diện. File chỉ được xuất khi kỳ dữ liệu đã công khai, tên file có hậu tố `FINAL`.
+- Mobile dashboard chỉ giữ hai tab `Tổng quan` và `Tra cứu`; bỏ tab lịch sử để giảm cuộn và tránh lặp chức năng với trang nhập dữ liệu.
+
+## Preview trước khi công khai 2026-06-09
+
+- Màn preview ưu tiên đối chiếu bằng mắt giữa mã căn đã chốt, mã parser và nội dung chuyển khoản gốc.
+- Cột mã căn giữ kiểu bảng tiêu chuẩn. Trong nội dung chuyển khoản gốc, chỉ đoạn văn bản trực tiếp biểu diễn mã căn/lô được in đậm và tô nền nhẹ để so sánh nhanh với mã căn sau parser.
+- Phần còn lại của nội dung chuyển khoản dùng chữ nhỏ, không in đậm; người chuyển, thời gian và mã tham chiếu là thông tin phụ nhỏ hơn nữa.
+- Bảng desktop không hiển thị cột `Tiền lẻ` và `Lịch sử`; toàn bộ cột quan trọng phải nằm trong một màn hình, không yêu cầu kéo ngang.
+- Mobile chuyển từng dòng thành card nhưng giữ cùng thứ tự đọc: căn/parser, nội dung gốc, trước chốt, sau preview, tiền duyệt.
+
+## Bảng đối soát vận hành 2026-06-11
+
+- Không cắt cứng dữ liệu ở 12 dòng vì dễ tạo hiểu nhầm rằng hệ thống chỉ có từng đó dữ liệu.
+- Với dữ liệu theo tháng dưới khoảng 1.000 dòng:
+  - hiển thị toàn bộ trong vùng cuộn dọc cao tối đa khoảng `480px`;
+  - header bảng phải sticky;
+  - không kéo dài toàn bộ trang theo số dòng.
+- Tiêu đề cột có thể sắp xếp phải thể hiện icon trạng thái:
+  - chưa chọn: hai chiều;
+  - tăng dần: mũi tên lên;
+  - giảm dần: mũi tên xuống.
+- Mặc định bảng giao dịch sắp xếp ngày mới nhất trước.
+- Sort được lưu trong URL để refresh, mở link hoặc quay lại trang không mất trạng thái.
+
+## Form phân bổ nhiều căn 2026-06-11
+
+- Không dùng số ô cố định cho dữ liệu có số lượng không xác định.
+- Form phải hỗ trợ thêm/xóa dòng và dán danh sách mã căn nhiều dòng.
+- Chia đều số tiền chỉ là gợi ý; người dùng được sửa từng dòng.
+- Luôn hiển thị tổng đã phân bổ, số còn thiếu hoặc số vượt.
+- Nút duyệt bị vô hiệu hóa cho đến khi có ít nhất hai căn hợp lệ và tổng tiền khớp giao dịch.
+- Danh sách dài cuộn trong khung riêng, không kéo dài cột thao tác toàn trang.
+
+## Preview public: highlight parser và bằng chứng 2026-06-12
+
+- Highlight mã căn trong nội dung chuyển khoản phải dùng helper thuộc parser trung tâm
+  `src/modules/transactions/parser/apartment-parser.ts`; không tạo regex parser thứ hai trong UI.
+- Tô toàn bộ cụm từ đã cung cấp lô/căn cho parser, gồm cả dạng đảo và có từ nối, ví dụ:
+  - `Tòa nhà L1. Số 506B`;
+  - `Căn hộ 415 tòa nhà L2`;
+  - `303 - Lô L4B`;
+  - `327.L4B`.
+- Không tự tô mã căn vào giao dịch Zalo/phân bổ thủ công nếu nội dung gốc không chứa mã căn.
+- Bảng desktop đặt cột `Bằng chứng` ngay cạnh `Nội dung chuyển khoản`.
+- Bằng chứng ảnh/PDF mở trong dialog để đối chiếu tại chỗ; dialog có nút mở tệp gốc.
+- Mobile giữ bằng chứng ngay dưới nội dung chuyển khoản trong card, không tạo bảng cuộn ngang.

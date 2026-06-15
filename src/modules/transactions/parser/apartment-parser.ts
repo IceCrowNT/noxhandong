@@ -1,7 +1,89 @@
 import { ApartmentParseCandidate, ApartmentParseResult } from "@/src/modules/shared/types";
-import { normalizeApartmentCode, normalizeFreeText } from "@/src/modules/shared/utils/text";
+import {
+  normalizeApartmentCode,
+  normalizeFreeText,
+  removeVietnameseDiacritics,
+} from "@/src/modules/shared/utils/text";
 
-export const APARTMENT_CODE_PARSER_VERSION = "apartment-code-parser-v0.5-lkv";
+export const APARTMENT_CODE_PARSER_VERSION = "apartment-code-parser-v0.8-unified";
+
+export const APARTMENT_TRANSACTION_FILTER_RULES = {
+  hardInternalKeywords: [
+    "TRA LAI TAI KHOAN",
+    "DDA",
+    "BHXH",
+    "BHYT",
+    "BHTN",
+    "LUONG",
+    "THU LAO"
+  ],
+  softInternalKeywords: ["BQT", "NOXH", "BAN QUAN TRI"],
+  genericNonApartmentKeywords: [
+    "CHUYEN KHOAN NHANH",
+    "QUA ZALO",
+    "CHUYEN KHOAN",
+    "CK NHANH",
+    "NHANH QUA",
+    "NAP TIEN",
+    "HOAN TIEN"
+  ],
+  apartmentContextKeywords: [
+    "CAN",
+    "CAN HO",
+    "PHI",
+    "QLVH",
+    "QLCC",
+    "DONG",
+    "NOP",
+    "THANG",
+    "CHUNG CU",
+    "CC"
+  ],
+  residentPaymentKeywords: [
+    "PHI",
+    "QLVH",
+    "QLCC",
+    "PQLCC",
+    "CAN HO",
+    "CHUNG CU",
+    "NOP PHI",
+    "DONG PHI",
+    "TU THANG",
+    "DEN THANG"
+  ],
+  minimumResidentAmount: 100000
+} as const;
+
+export type ApartmentTransactionStatus =
+  | "KHOP_TRUC_TIEP"
+  | "KHOP_SAU_CHUAN_HOA"
+  | "NHIEU_CAN"
+  | "MA_CAN_KHONG_HOP_LE"
+  | "KHONG_LIEN_QUAN_CAN_HO"
+  | "CHUA_NHAN_DIEN_DUOC_CAN";
+
+export interface ApartmentTransactionClassification {
+  status: ApartmentTransactionStatus;
+  confidence: number;
+  matchedCode: string | null;
+  reason: string;
+  suggestions: string[];
+}
+
+interface ApartmentTransactionInput {
+  description: string;
+  amount: number;
+}
+
+interface ApartmentSuggestionSource {
+  ma_can: string;
+}
+
+export interface ApartmentMentionRange {
+  start: number;
+  end: number;
+  apartmentCode: string;
+}
 
 const BLOCK_CAPTURE = "([1-9][A-C]?)";
 const ROOM_CAPTURE = "([1-9]\\d{2}[A-Z]?)";
@@ -25,6 +107,107 @@ const BLOCK_WORD_VALUES: Record<string, string> = {
   TAM: "8",
   CHIN: "9",
 };
+
+function normalizeTextWithSourceMap(value: string) {
+  let normalized = "";
+  const sourceStarts: number[] = [];
+  const sourceEnds: number[] = [];
+
+  for (let index = 0; index < value.length; ) {
+    const codePoint = value.codePointAt(index);
+    const character = String.fromCodePoint(codePoint ?? 0);
+    const nextIndex = index + character.length;
+    const normalizedCharacter = removeVietnameseDiacritics(character)
+      .replace(/[Đđ]/g, "D")
+      .toUpperCase();
+
+    for (const item of normalizedCharacter) {
+      normalized += /[A-Z0-9]/.test(item) ? item : " ";
+      sourceStarts.push(index);
+      sourceEnds.push(nextIndex);
+    }
+
+    index = nextIndex;
+  }
+
+  return { normalized, sourceStarts, sourceEnds };
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function apartmentMentionPatterns(apartmentCode: string) {
+  const normalizedCode = normalizeApartmentCode(apartmentCode);
+  if (!normalizedCode) return [];
+
+  const [block, room] = normalizedCode.split(".");
+  const separator = "[^A-Z0-9]*";
+  const contextWord = "(?:CAN|HO|TOA|NHA|LO|SO|PHONG|BLOCK|BLK|P)";
+  const context = `(?:${contextWord}${separator})`;
+  const optionalContext = `(?:${context}){0,5}`;
+  const blockPattern = block
+    .split("")
+    .map(escapeRegex)
+    .join(separator);
+  const roomPattern = room
+    .split("")
+    .map(escapeRegex)
+    .join(separator);
+
+  return [
+    new RegExp(`\\b${optionalContext}${blockPattern}${separator}${optionalContext}${roomPattern}\\b`, "g"),
+    new RegExp(`(?<![0-9])${optionalContext}${roomPattern}${separator}${optionalContext}${blockPattern}\\b`, "g"),
+  ];
+}
+
+/**
+ * Locates the original text fragments that identify an apartment.
+ * The patterns intentionally live beside the parser so preview/highlight logic
+ * cannot drift into a second apartment-code algorithm.
+ */
+export function findApartmentMentionRanges(
+  content: string,
+  apartmentCodes: readonly string[],
+): ApartmentMentionRange[] {
+  if (!content || !apartmentCodes.length) return [];
+
+  const { normalized, sourceStarts, sourceEnds } = normalizeTextWithSourceMap(content);
+  const ranges: ApartmentMentionRange[] = [];
+
+  for (const rawCode of apartmentCodes) {
+    const apartmentCode = normalizeApartmentCode(rawCode);
+    if (!apartmentCode) continue;
+
+    for (const pattern of apartmentMentionPatterns(apartmentCode)) {
+      for (const match of normalized.matchAll(pattern)) {
+        const normalizedStart = match.index ?? -1;
+        const normalizedEnd = normalizedStart + match[0].length;
+        if (normalizedStart < 0 || normalizedEnd <= normalizedStart) continue;
+
+        let firstMeaningful = normalizedStart;
+        let lastMeaningful = normalizedEnd - 1;
+        while (firstMeaningful < normalizedEnd && normalized[firstMeaningful] === " ") firstMeaningful += 1;
+        while (lastMeaningful >= firstMeaningful && normalized[lastMeaningful] === " ") lastMeaningful -= 1;
+        if (firstMeaningful > lastMeaningful) continue;
+
+        ranges.push({
+          start: sourceStarts[firstMeaningful],
+          end: sourceEnds[lastMeaningful],
+          apartmentCode,
+        });
+      }
+    }
+  }
+
+  return ranges
+    .sort((left, right) => left.start - right.start || right.end - left.end)
+    .filter((range, index, allRanges) => {
+      return !allRanges
+        .slice(0, index)
+        .some((existing) => existing.start <= range.start && existing.end >= range.end);
+    });
+}
 
 function normalizeBlockAlias(block: string, suffix = "") {
   const normalizedBlock = BLOCK_WORD_VALUES[block] || block;
@@ -183,6 +366,22 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
   const roomThenBlockPattern = new RegExp(`\\b${ROOM_CAPTURE}\\s+L${BLOCK_CAPTURE}(?=\\b|[^A-Z])`, "g");
   for (const match of normalizedDescription.matchAll(roomThenBlockPattern)) {
     push(buildCandidate(match[2], match[1], "ROOM_BLOCK_SPACED", 0.95));
+  }
+
+  const apartmentRoomThenTowerBuildingPattern = new RegExp(
+    `\\b(?:CAN\\s+HO|CANHO)\\s+${ROOM_CAPTURE}\\s+(?:TOA\\s+NHA|TOANHA|TOA|LO)\\s+L?\\s*${BLOCK_CAPTURE}(?=\\b|[^A-Z])`,
+    "g",
+  );
+  for (const match of normalizedDescription.matchAll(apartmentRoomThenTowerBuildingPattern)) {
+    push(buildCandidate(match[2], match[1], "APARTMENT_ROOM_TOWER_BUILDING", 0.99));
+  }
+
+  const paymentWordRoomThenBlockPattern = new RegExp(
+    `\\b(?:TIEN|PHI|CAN|CANHO|PHONG|SO|NHA)${ROOM_CAPTURE}\\s+L${BLOCK_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(paymentWordRoomThenBlockPattern)) {
+    push(buildCandidate(match[2], match[1], "PAYMENT_WORD_ROOM_BLOCK_SPACED", 0.95));
   }
 
   const prefixedRoomThenBlockPattern = new RegExp(`\\b(?:CC|CAN|CANHO|P|PHONG|SO|SN|NHA)?\\s*${ROOM_CAPTURE}\\s+L\\s*([1-9])\\s*([A-C])?(?=\\b|[^A-Z])`, "g");
@@ -484,4 +683,159 @@ export function parseApartmentCode(rawDescription: string): ApartmentParseResult
     candidates,
     matchReason: `Multiple candidates: ${candidates.map((item) => item.code).join(", ")}`
   };
+}
+
+function hasApartmentContext(parseResult: ApartmentParseResult): boolean {
+  const content = parseResult.normalizedDescription;
+  return (
+    parseResult.candidates.length > 0 ||
+    /\bL[1-9][A-C]?\b/.test(content) ||
+    APARTMENT_TRANSACTION_FILTER_RULES.apartmentContextKeywords.some((keyword) => content.includes(keyword))
+  );
+}
+
+function hasResidentPaymentSignal(
+  transaction: ApartmentTransactionInput,
+  parseResult: ApartmentParseResult,
+  hasValidApartmentCode: boolean
+): boolean {
+  const content = `${transaction.description} ${parseResult.normalizedDescription}`.toUpperCase();
+  return (
+    (parseResult.candidates.length > 0 || hasValidApartmentCode) &&
+    APARTMENT_TRANSACTION_FILTER_RULES.residentPaymentKeywords.some((keyword) => content.includes(keyword))
+  );
+}
+
+function detectInternalReason(
+  transaction: ApartmentTransactionInput,
+  parseResult: ApartmentParseResult,
+  hasValidApartmentCode: boolean
+): string | undefined {
+  if (transaction.amount <= 0) {
+    return "Bị lọc vì số tiền nhỏ hơn hoặc bằng 0.";
+  }
+
+  const rules = APARTMENT_TRANSACTION_FILTER_RULES;
+  const content = `${transaction.description} ${parseResult.normalizedDescription}`.toUpperCase();
+  const hasResidentSignal = hasResidentPaymentSignal(transaction, parseResult, hasValidApartmentCode);
+  const hardKeyword = rules.hardInternalKeywords.find((keyword) => content.includes(keyword));
+
+  if (hardKeyword) {
+    return `Bị lọc vì chứa từ khóa nội bộ cứng: ${hardKeyword}.`;
+  }
+  if (!hasResidentSignal && transaction.amount < rules.minimumResidentAmount) {
+    return `Bị lọc vì số tiền nhỏ hơn ngưỡng tối thiểu ${rules.minimumResidentAmount.toLocaleString("vi-VN")} và không có tín hiệu cư dân đóng phí.`;
+  }
+
+  const softKeyword = rules.softInternalKeywords.find((keyword) => content.includes(keyword));
+  if (!hasResidentSignal && softKeyword) {
+    return `Bị lọc vì chứa từ khóa nội bộ mềm: ${softKeyword}, trong khi không có tín hiệu cư dân đóng phí.`;
+  }
+
+  const genericKeyword = rules.genericNonApartmentKeywords.find((keyword) => content.includes(keyword));
+  if (!hasResidentSignal && !hasApartmentContext(parseResult) && genericKeyword) {
+    return `Bị lọc vì là giao dịch chuyển khoản chung chung (${genericKeyword}) và không có ngữ cảnh căn hộ.`;
+  }
+
+  return undefined;
+}
+
+export function classifyApartmentTransaction(
+  transaction: ApartmentTransactionInput,
+  validCodes: ReadonlySet<string>,
+  existingParseResult?: ApartmentParseResult
+): ApartmentTransactionClassification {
+  const parseResult = existingParseResult ?? parseApartmentCode(transaction.description);
+  const suggestions = [...new Set(parseResult.candidates.map((candidate) => candidate.code))];
+  const parsedCode = parseResult.parsedApartmentCode
+    ? normalizeApartmentCode(parseResult.parsedApartmentCode)
+    : undefined;
+  const hasValidCode = parsedCode ? validCodes.has(parsedCode) : false;
+
+  if (suggestions.length > 1) {
+    return {
+      status: "NHIEU_CAN",
+      confidence: 0.45,
+      matchedCode: null,
+      reason: parseResult.matchReason,
+      suggestions
+    };
+  }
+
+  if (parsedCode) {
+    if (!hasValidCode) {
+      return {
+        status: "MA_CAN_KHONG_HOP_LE",
+        confidence: 0.4,
+        matchedCode: parsedCode,
+        reason: `Parsed apartment code ${parsedCode} does not exist in apartment list`,
+        suggestions
+      };
+    }
+
+    const normalizedRaw = normalizeFreeText(transaction.description);
+    const isDirect =
+      normalizedRaw.includes(parsedCode) ||
+      normalizedRaw.includes(parsedCode.replace(".", " "));
+    return {
+      status: isDirect ? "KHOP_TRUC_TIEP" : "KHOP_SAU_CHUAN_HOA",
+      confidence: isDirect ? 0.99 : 0.9,
+      matchedCode: parsedCode,
+      reason: parseResult.matchReason,
+      suggestions
+    };
+  }
+
+  const internalReason = detectInternalReason(transaction, parseResult, hasValidCode);
+  if (internalReason) {
+    return {
+      status: "KHONG_LIEN_QUAN_CAN_HO",
+      confidence: 0.05,
+      matchedCode: null,
+      reason: internalReason,
+      suggestions
+    };
+  }
+
+  return {
+    status: "CHUA_NHAN_DIEN_DUOC_CAN",
+    confidence: 0.1,
+    matchedCode: null,
+    reason: parseResult.matchReason,
+    suggestions
+  };
+}
+
+export function suggestPartialApartmentCandidates(
+  description: string,
+  validApartments: readonly ApartmentSuggestionSource[]
+) {
+  const normalized = normalizeFreeText(description);
+  const roomMatches = new Set<string>();
+  const patterns = [
+    /\bL\s+(\d{3}[A-C]?)\b/g,
+    /\bCAN\s+(\d{3}[A-C]?)\b/g,
+    /\bPHONG\s+(\d{3}[A-C]?)\b/g
+  ];
+
+  for (const pattern of patterns) {
+    for (const match of normalized.matchAll(pattern)) {
+      if (match[1]) roomMatches.add(match[1]);
+    }
+  }
+
+  if (!roomMatches.size) return [];
+
+  return validApartments
+    .filter((apartment) => {
+      const suffix = apartment.ma_can.split(".").pop();
+      return suffix && roomMatches.has(suffix);
+    })
+    .slice(0, 20)
+    .map((apartment, index) => ({
+      code: apartment.ma_can,
+      score: 10,
+      reason: `Gợi ý yếu: nội dung chỉ có số căn ${apartment.ma_can.split(".").pop()}, thiếu lô. Cần admin duyệt.`,
+      rank: index + 1
+    }));
 }

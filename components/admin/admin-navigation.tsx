@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, Database, FileSearch, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
+import { Bell, FileSearch, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { hasPermission, type Permission } from "@/src/modules/auth/permissions";
+import type { AdminRole } from "@/src/modules/auth/session";
 import {
   Sheet,
   SheetClose,
@@ -16,14 +18,13 @@ import {
 } from "@/components/ui/sheet";
 
 export const adminNavigation = [
-  { key: "dashboard", href: "/admin/dashboard", label: "Tra cứu nội bộ", icon: LayoutDashboard },
-  { key: "import", href: "/admin/import", label: "Nhập dữ liệu", icon: Upload },
-  { key: "transactions", href: "/admin/transactions/review", label: "Duyệt sao kê", icon: FileSearch },
-  { key: "announcements", href: "/admin/announcements", label: "Thông báo", icon: Bell },
-  { key: "contacts", href: "/admin/contacts/review", label: "Liên hệ cư dân", icon: Users },
-  { key: "accounts", href: "/admin/accounts", label: "Tài khoản", icon: ShieldCheck },
-  { key: "profile", href: "/admin/profile", label: "Tài khoản của tôi", icon: UserCircle },
-  { key: "database", href: "/admin#database", label: "Cơ sở dữ liệu", icon: Database },
+  { key: "dashboard", href: "/admin/dashboard", label: "Tra cứu nội bộ", icon: LayoutDashboard, permission: "VIEW_DASHBOARD" },
+  { key: "contacts", href: "/admin/contacts/review", label: "Liên hệ cư dân", icon: Users, permission: "VIEW_CONTACTS" },
+  { key: "import", href: "/admin/import", label: "Nhập dữ liệu", icon: Upload, permission: "IMPORT_DATA" },
+  { key: "transactions", href: "/admin/transactions/review", label: "Duyệt sao kê", icon: FileSearch, permission: "REVIEW_TRANSACTIONS" },
+  { key: "announcements", href: "/admin/announcements", label: "Thông báo", icon: Bell, permission: "MANAGE_ANNOUNCEMENTS" },
+  { key: "accounts", href: "/admin/accounts", label: "Tài khoản quản trị", icon: ShieldCheck, permission: "MANAGE_ACCOUNTS" },
+  { key: "profile", href: "/admin/profile", label: "Tài khoản của tôi", icon: UserCircle, permission: "VIEW_PROFILE" },
 ] as const;
 
 export type AdminNavigationKey = (typeof adminNavigation)[number]["key"];
@@ -48,10 +49,19 @@ function AdminBrand() {
   );
 }
 
-function NavigationLinks({ activeKey, closeOnClick = false }: { activeKey: AdminNavigationKey; closeOnClick?: boolean }) {
+function NavigationLinks({
+  activeKey,
+  role,
+  closeOnClick = false,
+}: {
+  activeKey: AdminNavigationKey;
+  role: AdminRole;
+  closeOnClick?: boolean;
+}) {
+  const visibleItems = adminNavigation.filter((item) => hasPermission(role, item.permission as Permission));
   return (
     <nav className="grid gap-1 p-2">
-      {adminNavigation.map((item) => {
+      {visibleItems.map((item) => {
         const Icon = item.icon;
         const active = activeKey === item.key;
         const link = (
@@ -80,18 +90,18 @@ function NavigationLinks({ activeKey, closeOnClick = false }: { activeKey: Admin
   );
 }
 
-export function AdminDesktopSidebar({ activeKey }: { activeKey: AdminNavigationKey }) {
+export function AdminDesktopSidebar({ activeKey, role }: { activeKey: AdminNavigationKey; role: AdminRole }) {
   return (
     <aside className="hidden border-r border-[var(--line)] bg-white lg:sticky lg:top-0 lg:block lg:h-screen">
       <div className="flex h-14 items-center border-b border-[var(--line)] px-4">
         <AdminBrand />
       </div>
-      <NavigationLinks activeKey={activeKey} />
+      <NavigationLinks activeKey={activeKey} role={role} />
     </aside>
   );
 }
 
-export function AdminMobileMenu({ activeKey }: { activeKey: AdminNavigationKey }) {
+export function AdminMobileMenu({ activeKey, role }: { activeKey: AdminNavigationKey; role: AdminRole }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -114,7 +124,7 @@ export function AdminMobileMenu({ activeKey }: { activeKey: AdminNavigationKey }
         <div className="border-b border-[var(--line)] p-4">
           <AdminBrand />
         </div>
-        <NavigationLinks activeKey={activeKey} closeOnClick />
+        <NavigationLinks activeKey={activeKey} role={role} closeOnClick />
       </SheetContent>
     </Sheet>
   );

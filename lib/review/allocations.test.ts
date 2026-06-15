@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildTransactionAllocations } from "@/lib/review/allocations";
+import { buildTransactionAllocations, suggestTransactionAllocations } from "@/lib/review/allocations";
 import { ReviewRow } from "@/lib/types";
 
 function makeRow(overrides: Partial<ReviewRow>): ReviewRow {
@@ -19,6 +19,49 @@ function makeRow(overrides: Partial<ReviewRow>): ReviewRow {
 }
 
 describe("buildTransactionAllocations", () => {
+  it("suggests all 15 apartments without truncating the allocation form", () => {
+    const codes = [
+      "L1.217",
+      "L1.415",
+      "L1.420",
+      "L1.422",
+      "L1.502",
+      "L3.303",
+      "L3.315",
+      "L4A.211A",
+      "L4A.309",
+      "L4A.402",
+      "L4B.202",
+      "L4B.211B",
+      "L4B.408",
+      "L4C.211A",
+      "L4B.305",
+    ];
+
+    const feeByApartmentCode = new Map(codes.map((code) => [code, 250000]));
+    const allocations = suggestTransactionAllocations(codes, 3750000, feeByApartmentCode);
+
+    expect(allocations).toHaveLength(15);
+    expect(allocations.every((item) => item.amount === 250000)).toBe(true);
+    expect(allocations.reduce((sum, item) => sum + item.amount, 0)).toBe(3750000);
+  });
+
+  it("uses configured DB fee weights instead of inferring fees from apartment codes", () => {
+    const allocations = suggestTransactionAllocations(
+      ["L2.212", "LK2.24"],
+      450000,
+      new Map([
+        ["L2.212", 250000],
+        ["LK2.24", 200000],
+      ]),
+    );
+
+    expect(allocations).toEqual([
+      { code: "L2.212", amount: 250000 },
+      { code: "LK2.24", amount: 200000 },
+    ]);
+  });
+
   it("allocates one-month standard apartment fees exactly across many apartments", () => {
     const rows: ReviewRow[] = [
       makeRow({
@@ -29,7 +72,15 @@ describe("buildTransactionAllocations", () => {
       })
     ];
 
-    const allocations = buildTransactionAllocations(rows);
+    const allocations = buildTransactionAllocations(
+      rows,
+      new Map([
+        ["L4C.305", 250000],
+        ["L4A.401", 250000],
+        ["L4A.325", 250000],
+        ["L1.423", 250000],
+      ]),
+    );
 
     expect(allocations.map((item) => [item.apartmentCode, item.amount])).toEqual([
       ["L4C.305", 250000],
@@ -50,7 +101,13 @@ describe("buildTransactionAllocations", () => {
       })
     ];
 
-    const allocations = buildTransactionAllocations(rows);
+    const allocations = buildTransactionAllocations(
+      rows,
+      new Map([
+        ["L2.212", 250000],
+        ["LK2.24", 200000],
+      ]),
+    );
 
     expect(allocations.map((item) => item.apartmentCode)).toEqual(["L2.212", "LK2.24"]);
     expect(allocations.reduce((sum, item) => sum + item.amount, 0)).toBe(430000);

@@ -25,6 +25,19 @@ describe("buildReviewRows", () => {
     expect(row.matchedApartmentCode).toBe("L4B.519");
   });
 
+  it("does not ignore a resident payment when the room is glued to the payment word", () => {
+    const description =
+      "CT DEN:164T2660EZNKK4KS MBVCB.14602563142.072494.LE THI PHUONG chuyen tien327.L4b " +
+      "phicot5,6,7,8,9,10/2026.CT tu 1016824424 LE THI PHUONG toi 116002961023 " +
+      "BQT KHU NHA O XA HOI TAI XA AN DONG tai VIETINBANK";
+    const customers: CustomerRecord[] = [{ apartmentCode: "L4B.327", ownerName: "Le Thi Phuong", rawRow: {} }];
+
+    const [row] = buildReviewRows([makeTransaction(description, 1500000)], [parseApartmentCode(description)], customers);
+
+    expect(row.matchStatus).toBe("NORMALIZED_MATCH");
+    expect(row.matchedApartmentCode).toBe("L4B.327");
+  });
+
   it("keeps generic fast-transfer rows without apartment context in ignored bucket", () => {
     const description = "Mai Anh Vu chuyen khoan nhanh qua Zalo";
     const [row] = buildReviewRows([makeTransaction(description, 250000)], [parseApartmentCode(description)], []);

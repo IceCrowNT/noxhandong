@@ -198,9 +198,9 @@ Phase 1 Ä‘Ã£ cÃ³ pipeline ná»n import sao kÃª vÃ o DB, nhÆ°ng c
 Báº£ng liÃªn quan:
 
 - `dong_sao_ke_tho`
+- `giao_dich_sao_ke_tho_chuan`
 - `giao_dich_ngan_hang`
-- `ket_qua_parse_giao_dich`
-- `duyet_giao_dich`
+- `ung_vien_khop_giao_dich`
 - `phan_bo_giao_dich`
 
 Má»¥c tiÃªu Phase 2:

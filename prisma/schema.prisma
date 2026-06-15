@@ -58,6 +58,7 @@ enum TrangThaiDuyetGiaoDich {
   CHUA_DUYET
   DA_RA_SOAT
   DA_DUYET
+  BAO_LUU
   TU_CHOI
 }
 
@@ -137,7 +138,6 @@ model CanHo {
   lien_he        LienHeCanHo[]
   trang_thai_phi_public TrangThaiPhiCanHoPublic[]
   phan_bo_giao_dich PhanBoGiaoDich[]
-  ngoai_le_giao_dich NgoaiLeGiaoDich[]
   chung_tu_doi_soat ChungTuDoiSoat[]
   lich_su_dong_phi LichSuDongPhiCanHo[]
   so_chot_can_ho SoChotCanHo[]
@@ -338,7 +338,6 @@ model GiaoDichNganHang {
   ly_do_khop             String?
   do_tin_cay             Decimal? @db.Decimal(5, 2)
   la_giao_dich_noi_bo    Boolean  @default(false)
-  ung_vien_khop_json     Json?
   trang_thai_duyet       TrangThaiDuyetGiaoDich @default(CHUA_DUYET)
   ma_can_duoc_chon       String?
   ghi_chu_duyet          String?
@@ -348,10 +347,8 @@ model GiaoDichNganHang {
   ngay_cap_nhat          DateTime @updatedAt
 
   lo_nhap_du_lieu        LoNhapDuLieu @relation(fields: [lo_nhap_du_lieu_id], references: [id], onDelete: Restrict)
-  ket_qua_parse          KetQuaParseGiaoDich?
-  duyet_giao_dich        DuyetGiaoDich[]
+  ung_vien_khop          UngVienKhopGiaoDich[]
   phan_bo_giao_dich      PhanBoGiaoDich[]
-  ngoai_le_giao_dich     NgoaiLeGiaoDich[]
   chung_tu_doi_soat      ChungTuDoiSoat[]
   lich_su_dong_phi       LichSuDongPhiCanHo[]
 
@@ -363,52 +360,20 @@ model GiaoDichNganHang {
   @@map("giao_dich_ngan_hang")
 }
 
-model KetQuaParseGiaoDich {
-  id                      Int      @id @default(autoincrement())
-  giao_dich_ngan_hang_id  Int      @unique
-  phien_ban_parser        String?
-  ma_can_parse            String?
-  trang_thai_khop         TrangThaiKhop
-  ly_do_khop              String
-  do_tin_cay              Decimal? @db.Decimal(5, 2)
-  la_giao_dich_noi_bo     Boolean  @default(false)
-  ngay_tao                DateTime @default(now())
-  ngay_cap_nhat           DateTime @updatedAt
-
-  giao_dich_ngan_hang     GiaoDichNganHang @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: Cascade)
-  ung_vien_khop           UngVienKhopGiaoDich[]
-
-  @@map("ket_qua_parse_giao_dich")
-}
-
 model UngVienKhopGiaoDich {
-  id                          Int      @id @default(autoincrement())
-  ket_qua_parse_giao_dich_id  Int
-  ma_can                      String
-  diem                        Decimal  @db.Decimal(5, 2)
-  ly_do                       String
-  thu_hang                    Int
-  ngay_tao                    DateTime @default(now())
-
-  ket_qua_parse_giao_dich     KetQuaParseGiaoDich @relation(fields: [ket_qua_parse_giao_dich_id], references: [id], onDelete: Cascade)
-
-  @@index([ket_qua_parse_giao_dich_id, thu_hang])
-  @@map("ung_vien_khop_giao_dich")
-}
-
-model DuyetGiaoDich {
   id                      Int      @id @default(autoincrement())
   giao_dich_ngan_hang_id  Int
-  trang_thai_duyet        TrangThaiDuyetGiaoDich @default(CHUA_DUYET)
-  ma_can_duoc_chon        String?
-  ghi_chu_duyet           String?
-  nguoi_duyet             String?
-  ngay_duyet              DateTime?
+  ma_can                  String
+  diem                    Decimal  @db.Decimal(5, 2)
+  ly_do                   String
+  thu_hang                Int
+  ngay_tao                DateTime @default(now())
 
   giao_dich_ngan_hang     GiaoDichNganHang @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: Cascade)
 
-  @@index([giao_dich_ngan_hang_id])
-  @@map("duyet_giao_dich")
+  @@index([giao_dich_ngan_hang_id, thu_hang])
+  @@index([ma_can])
+  @@map("ung_vien_khop_giao_dich")
 }
 
 model PhanBoGiaoDich {
@@ -426,26 +391,8 @@ model PhanBoGiaoDich {
 
   @@index([giao_dich_ngan_hang_id])
   @@index([can_ho_id])
+  @@unique([giao_dich_ngan_hang_id, can_ho_id])
   @@map("phan_bo_giao_dich")
-}
-
-model NgoaiLeGiaoDich {
-  id                      Int      @id @default(autoincrement())
-  giao_dich_ngan_hang_id  Int
-  can_ho_id               Int?
-  loai_ngoai_le           String
-  trang_thai              String
-  ghi_chu                 String?
-  nguoi_xu_ly             String?
-  ngay_tao                DateTime @default(now())
-  ngay_cap_nhat           DateTime @updatedAt
-
-  giao_dich_ngan_hang     GiaoDichNganHang @relation(fields: [giao_dich_ngan_hang_id], references: [id], onDelete: Cascade)
-  can_ho                  CanHo?           @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
-
-  @@index([giao_dich_ngan_hang_id])
-  @@index([can_ho_id])
-  @@map("ngoai_le_giao_dich")
 }
 
 model ChungTuDoiSoat {
@@ -516,6 +463,7 @@ model SoChotCanHo {
   ma_can                          String
   thang_da_dong_den_hien_tai      String?
   so_tien_thang                   Decimal? @db.Decimal(14, 2)
+  so_du_chua_du_thang             Decimal  @default(0) @db.Decimal(14, 2)
   nguon                           NguonSoChotCanHo @default(EXCEL_CHOT)
   co_can_ra_soat                  Boolean  @default(false)
   ghi_chu                         String?

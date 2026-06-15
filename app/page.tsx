@@ -146,7 +146,7 @@ export default async function HomePage() {
                       </div>
                     </div>
                     <span className="inline-flex h-9 items-center justify-center rounded-lg bg-[var(--accent)] px-3 text-sm font-bold text-white transition group-hover:brightness-110">
-                      Má»Ÿ PDF
+                      Mở PDF
                     </span>
                   </a>
                 );

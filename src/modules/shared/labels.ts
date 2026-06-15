@@ -120,6 +120,7 @@ export function transactionReviewStatusLabel(value: string | null | undefined) {
     CHUA_DUYET: "Chưa duyệt",
     DA_RA_SOAT: "Đã rà soát",
     DA_DUYET: "Đã duyệt",
+    BAO_LUU: "Bảo lưu",
     TU_CHOI: "Từ chối",
   };
   return value ? labels[value] || value : "-";

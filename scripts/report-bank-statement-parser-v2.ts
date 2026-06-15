@@ -12,7 +12,7 @@ import {
   formatMoney,
   readStatementRows,
   resolveExistingInputArg,
-} from "./bank-statement-common";
+} from "../src/modules/transactions/import/bank-statement-common";
 
 if (!process.env.DATABASE_URL) {
   throw new Error("Missing DATABASE_URL in .env");
@@ -92,19 +92,12 @@ function paidThroughInfo(status) {
   return publicPayload(payload.paidThrough);
 }
 
-function feePerMonth(apartmentType) {
-  if (apartmentType === "LIEN_KE") return 200000;
-  if (apartmentType === "CHUNG_CU") return 250000;
-  return null;
-}
-
-function buildCheckNote({ status, apartment, feeStatus, amount }) {
+function buildCheckNote({ status, monthlyFee, feeStatus, amount }) {
   if (status === "KHONG_NHAN_DIEN") return "Không nhận diện được căn từ nội dung.";
   if (status === "NHIEU_CAN") return "Có nhiều căn ứng viên, cần kiểm tra bằng mắt.";
   if (status === "MA_CAN_KHONG_TON_TAI") return "Parser ra mã căn nhưng không có trong bảng căn hộ.";
   if (!feeStatus) return "Có căn parser nhưng chưa có dòng trong lịch sử thu phí công khai hiện hành.";
 
-  const monthlyFee = feePerMonth(apartment?.loai_can);
   const paidInfo = paidThroughInfo(feeStatus);
   const numericMonth = typeof paidInfo.numericMonth === "number" ? paidInfo.numericMonth : null;
   const equivalentMonths = monthlyFee ? amount / monthlyFee : null;
@@ -129,7 +122,7 @@ async function main() {
 
   const statement = readStatementRows(resolvedPath);
   const importCutoff = await resolveImportCutoff(rest);
-  const [apartments, currentBatch] = await Promise.all([
+  const [apartments, currentBatch, activeFeeRules] = await Promise.all([
     prisma.canHo.findMany({
       select: { id: true, ma_can: true, loai_can: true, chu_ho_ten_goc: true },
     }),
@@ -137,6 +130,16 @@ async function main() {
       where: { la_batch_public_hien_hanh: true },
       orderBy: { public_luc: "desc" },
       select: { id: true, ky_du_lieu: true, ten_file_nguon: true },
+    }),
+    prisma.quyTacPhi.findMany({
+      where: {
+        ma_phi: "QLVH",
+        dang_ap_dung: true,
+        hieu_luc_tu_ngay: { lte: new Date() },
+        OR: [{ hieu_luc_den_ngay: null }, { hieu_luc_den_ngay: { gte: new Date() } }],
+      },
+      orderBy: { hieu_luc_tu_ngay: "desc" },
+      select: { loai_can: true, so_tien: true },
     }),
   ]);
 
@@ -153,6 +156,12 @@ async function main() {
 
   const apartmentByCode = new Map(apartments.map((item) => [item.ma_can, item]));
   const feeStatusByCode = new Map(feeStatuses.map((item) => [item.ma_can, item]));
+  const feeByApartmentType = new Map();
+  for (const rule of activeFeeRules) {
+    if (!feeByApartmentType.has(rule.loai_can)) {
+      feeByApartmentType.set(rule.loai_can, Number(rule.so_tien));
+    }
+  }
 
   const detailRows = [];
   const amountByApartment = new Map();
@@ -187,8 +196,8 @@ async function main() {
       publicPayload(feeStatus?.payload_public_json).publicDisplayText ||
       feeStatus?.thang_da_dong_den_hien_tai ||
       "";
-    const checkNote = buildCheckNote({ status, apartment, feeStatus, amount: record.transaction.amount });
-    const monthlyFee = feePerMonth(apartment?.loai_can);
+    const monthlyFee = apartment ? feeByApartmentType.get(apartment.loai_can) || null : null;
+    const checkNote = buildCheckNote({ status, monthlyFee, feeStatus, amount: record.transaction.amount });
     const equivalentMonths = monthlyFee && record.transaction.amount > 0 ? record.transaction.amount / monthlyFee : null;
 
     if (matchedCode && isValid) {

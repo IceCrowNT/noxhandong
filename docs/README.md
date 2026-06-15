@@ -149,3 +149,11 @@ Khi thay Ä‘á»•i UI/UX:
 
 
 
+# Quy tắc archive
+
+- Không xóa ngay file cũ hoặc file nghi ngờ không còn sử dụng.
+- Trước tiên phải kiểm tra import, `package.json`, route/action/API, test và tài liệu vận hành.
+- File code không còn dùng được chuyển vào `../archive/code/`, đổi sang đuôi `.archive` và kèm README ghi lý do cùng file thay thế.
+- Tài liệu cũ được chuyển vào `archive/` bên trong `docs/`.
+- Không dùng file trong archive làm nguồn sự thật hoặc dependency runtime.
+- Chỉ xóa vĩnh viễn sau khi chủ dự án duyệt.

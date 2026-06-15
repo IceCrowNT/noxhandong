@@ -5,6 +5,7 @@ import { logoutAction } from "@/app/admin/actions";
 import { AdminDesktopSidebar, AdminMobileMenu, type AdminNavigationKey } from "@/components/admin/admin-navigation";
 import { Badge } from "@/components/ui/badge";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { requireAdmin } from "@/src/modules/auth/current-user";
 
 type AdminFrameProps = {
   activeKey: AdminNavigationKey;
@@ -15,16 +16,17 @@ type AdminFrameProps = {
   title: string;
 };
 
-export function AdminFrame({ activeKey, badge, children, description, headerActions, title }: AdminFrameProps) {
+export async function AdminFrame({ activeKey, badge, children, description, headerActions, title }: AdminFrameProps) {
+  const account = await requireAdmin();
   return (
     <main className="admin-shell min-h-screen bg-[#f8faf9] text-[var(--text)]">
       <div className="grid min-h-screen lg:grid-cols-[260px_minmax(0,1fr)]">
-        <AdminDesktopSidebar activeKey={activeKey} />
+        <AdminDesktopSidebar activeKey={activeKey} role={account.vai_tro} />
 
         <section className="min-w-0">
           <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-[var(--line)] bg-[#f8faf9]/95 px-4 backdrop-blur md:px-6">
             <div className="flex min-w-0 items-center gap-2">
-              <AdminMobileMenu activeKey={activeKey} />
+              <AdminMobileMenu activeKey={activeKey} role={account.vai_tro} />
               <span className="truncate text-sm font-semibold">{title}</span>
               {badge ? (
                 <Badge variant="outline" className="hidden shrink-0 md:inline-flex">

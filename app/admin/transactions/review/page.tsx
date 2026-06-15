@@ -1,14 +1,21 @@
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, Copy, ShieldAlert, Upload } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, ArrowUpDown, CheckCircle2, Copy, ShieldAlert, Upload } from "lucide-react";
 
+import {
+  prepareApprovedPaymentHistoryPublicBatchAction,
+  publishPreparedPublicBatchAction,
+} from "@/app/admin/import/actions";
 import {
   approveMultiTransactionAction,
   approveTransactionAction,
   approveTransactionWithEvidenceAction,
   markTransactionNeedsEvidenceAction,
   rejectTransactionAction,
+  reserveTransactionAction,
 } from "@/app/admin/transactions/review/actions";
 import { AdminFrame } from "@/components/admin/admin-frame";
+import { MultiAllocationEditor } from "@/components/admin/multi-allocation-editor";
+import { ReviewScrollMemory, ReviewTransactionList } from "@/components/admin/review-scroll-memory";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +34,13 @@ import {
   transactionReviewStatusLabel,
 } from "@/src/modules/shared/labels";
 import { formatVietnamDate, formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
+import { suggestTransactionAllocations } from "@/src/modules/transactions/review/allocations";
+import { getMonthlyReconciliation } from "@/src/modules/transactions/review/monthly-reconciliation";
+import {
+  sortMonthlyReconciliationRows,
+  type MonthlyReconciliationDirection,
+  type MonthlyReconciliationSort,
+} from "@/src/modules/transactions/review/monthly-reconciliation-sort";
 
 type ReviewPageProps = {
   searchParams?: Promise<{
@@ -39,8 +53,20 @@ type ReviewPageProps = {
     approvedWithEvidence?: string;
     multiApproved?: string;
     needsEvidence?: string;
+    reserved?: string;
     rejected?: string;
     error?: string;
+    historyPreviewed?: string;
+    historyPublished?: string;
+    historyPreviewCancelled?: string;
+    publicBatchId?: string;
+    rows?: string;
+    changedApartmentCount?: string;
+    historyRowsLinked?: string;
+    historyPublishError?: string;
+    month?: string;
+    monthSort?: string;
+    monthDir?: string;
   }>;
 };
 
@@ -61,6 +87,33 @@ function parseDateTimeFilter(value: string | undefined) {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getDefaultMonth() {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+  });
+  return formatter.format(now);
+}
+
+function parseMonthFilter(value: string | undefined) {
+  const normalized = typeof value === "string" && /^\d{4}-\d{2}$/.test(value) ? value : getDefaultMonth();
+  const [yearRaw, monthRaw] = normalized.split("-");
+  const year = Number(yearRaw);
+  const month = Number(monthRaw);
+  const from = new Date(`${normalized}-01T00:00:00+07:00`);
+  const nextYear = month === 12 ? year + 1 : year;
+  const nextMonth = month === 12 ? 1 : month + 1;
+  const to = new Date(`${nextYear}-${String(nextMonth).padStart(2, "0")}-01T00:00:00+07:00`);
+  return {
+    value: normalized,
+    label: `T${month}-${year}`,
+    from,
+    to,
+  };
 }
 
 function getClosingCutoffFromMetadata(value: unknown) {
@@ -86,60 +139,11 @@ function confidenceQuality(value: unknown) {
   return { label: "Không đủ dữ liệu", tone: "destructive" as const };
 }
 
-function monthlyFeeForApartment(code: string) {
-  return code.startsWith("LK") ? 200000 : 250000;
-}
-
-function suggestedAllocations(codes: string[], total: unknown) {
-  const uniqueCodes = Array.from(new Set(codes)).slice(0, 6);
-  const amount = Math.round(Number(total || 0));
-  if (!uniqueCodes.length || !amount) return [];
-
-  const standardFees = uniqueCodes.map(monthlyFeeForApartment);
-  const standardTotal = standardFees.reduce((sum, value) => sum + value, 0);
-  if (standardTotal === amount) {
-    return uniqueCodes.map((code, index) => ({ code, amount: standardFees[index] }));
-  }
-
-  const raw = standardFees.map((fee) => (amount * fee) / standardTotal);
-  const rounded = raw.map(Math.floor);
-  let remainder = amount - rounded.reduce((sum, value) => sum + value, 0);
-  raw
-    .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
-    .sort((a, b) => b.fraction - a.fraction)
-    .forEach((item) => {
-      if (remainder > 0) {
-        rounded[item.index] += 1;
-        remainder -= 1;
-      }
-    });
-
-  return uniqueCodes.map((code, index) => ({ code, amount: rounded[index] }));
-}
-
 function statusTone(status?: string | null) {
   if (status === "DA_DUYET" || status === "KHOP_TRUC_TIEP" || status === "KHOP_SAU_CHUAN_HOA") return "success";
   if (status === "TU_CHOI" || status === "KHONG_LIEN_QUAN_CAN_HO") return "destructive";
-  if (status === "NHIEU_CAN" || status === "DA_RA_SOAT") return "warning";
+  if (status === "NHIEU_CAN" || status === "DA_RA_SOAT" || status === "BAO_LUU") return "warning";
   return "secondary";
-}
-
-function parseCandidates(value: unknown) {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((item, index) => {
-      if (!item || typeof item !== "object") return null;
-      const record = item as Record<string, unknown>;
-      const code = typeof record.code === "string" ? record.code : typeof record.ma_can === "string" ? record.ma_can : "";
-      if (!code) return null;
-      return {
-        ma_can: code,
-        diem: Number(record.score ?? record.diem ?? 0),
-        ly_do: String(record.reason ?? record.ly_do ?? ""),
-        thu_hang: Number(record.rank ?? record.thu_hang ?? index + 1),
-      };
-    })
-    .filter((item): item is { ma_can: string; diem: number; ly_do: string; thu_hang: number } => Boolean(item));
 }
 
 function getParseInfo(transaction: {
@@ -148,25 +152,15 @@ function getParseInfo(transaction: {
   trang_thai_khop?: string | null;
   ly_do_khop?: string | null;
   do_tin_cay?: unknown;
-  ung_vien_khop_json?: unknown;
-  ket_qua_parse?: {
-    phien_ban_parser?: string | null;
-    ma_can_parse?: string | null;
-    trang_thai_khop?: string | null;
-    ly_do_khop?: string | null;
-    do_tin_cay?: unknown;
-    ung_vien_khop?: Array<{ ma_can: string; diem: unknown; ly_do: string; thu_hang: number }>;
-  } | null;
+  ung_vien_khop?: Array<{ ma_can: string; diem: unknown; ly_do: string; thu_hang: number }>;
 }) {
-  const legacy = transaction.ket_qua_parse;
-  const mergedCandidates = parseCandidates(transaction.ung_vien_khop_json);
   return {
-    phien_ban_parser: transaction.phien_ban_parser || legacy?.phien_ban_parser || null,
-    ma_can_parse: transaction.ma_can_parse || legacy?.ma_can_parse || null,
-    trang_thai_khop: transaction.trang_thai_khop || legacy?.trang_thai_khop || null,
-    ly_do_khop: transaction.ly_do_khop || legacy?.ly_do_khop || null,
-    do_tin_cay: transaction.do_tin_cay ?? legacy?.do_tin_cay ?? null,
-    ung_vien_khop: mergedCandidates.length ? mergedCandidates : legacy?.ung_vien_khop || [],
+    phien_ban_parser: transaction.phien_ban_parser || null,
+    ma_can_parse: transaction.ma_can_parse || null,
+    trang_thai_khop: transaction.trang_thai_khop || null,
+    ly_do_khop: transaction.ly_do_khop || null,
+    do_tin_cay: transaction.do_tin_cay ?? null,
+    ung_vien_khop: transaction.ung_vien_khop || [],
   };
 }
 
@@ -176,16 +170,8 @@ function getLatestReview(transaction: {
   ghi_chu_duyet?: string | null;
   nguoi_duyet?: string | null;
   ngay_duyet?: Date | null;
-  duyet_giao_dich: Array<{
-    id: number;
-    trang_thai_duyet: string;
-    ma_can_duoc_chon: string | null;
-    ghi_chu_duyet: string | null;
-    nguoi_duyet: string | null;
-    ngay_duyet: Date | null;
-  }>;
 }) {
-  const merged = transaction.trang_thai_duyet
+  return transaction.trang_thai_duyet
     ? {
         id: 0,
         trang_thai_duyet: transaction.trang_thai_duyet,
@@ -195,20 +181,46 @@ function getLatestReview(transaction: {
         ngay_duyet: transaction.ngay_duyet || null,
       }
     : null;
-  return merged || transaction.duyet_giao_dich[0] || null;
+}
+
+function getParserConflict(payload: unknown) {
+  if (!payload || typeof payload !== "object") return null;
+  const conflict = (payload as Record<string, unknown>).parserConflict;
+  if (!conflict || typeof conflict !== "object") return null;
+  const value = conflict as Record<string, unknown>;
+  return {
+    previousApartmentCode:
+      typeof value.previousApartmentCode === "string" ? value.previousApartmentCode : "-",
+    suggestedApartmentCode:
+      typeof value.suggestedApartmentCode === "string" ? value.suggestedApartmentCode : "-",
+  };
 }
 
 function notice(params: Awaited<ReviewPageProps["searchParams"]>) {
+  if (params?.historyPublished === "1") {
+    return `Đã chốt public batch #${params.publicBatchId || "-"} từ lịch sử phí đã duyệt: ${params.rows || "0"} căn, ${params.historyRowsLinked || "0"} dòng lịch sử đã gắn vào batch.`;
+  }
+  if (params?.historyPreviewed === "1") {
+    return `Đã tạo preview batch #${params.publicBatchId || "-"}: ${params.rows || "0"} căn, ${params.changedApartmentCount || "0"} căn có thay đổi. Dữ liệu chưa công khai.`;
+  }
+  if (params?.historyPreviewCancelled === "1") return "Đã hủy preview batch nháp.";
+  if (params?.historyPublishError === "invalid_period") return "Kỳ dữ liệu cần dùng định dạng T6-2026.";
+  if (params?.historyPublishError === "invalid_batch") return "Batch public cần chốt không hợp lệ.";
+  if (params?.historyPublishError === "preview_failed") return "Không tạo được preview batch public từ lịch sử phí đã duyệt.";
+  if (params?.historyPublishError === "publish_failed") return "Không chốt được batch public từ lịch sử phí đã duyệt.";
+  if (params?.historyPublishError === "cancel_failed") return "Không hủy được preview batch nháp.";
   if (params?.approved === "1") return "Đã duyệt giao dịch và ghi lịch sử phí.";
   if (params?.approvedWithEvidence === "1") return "Đã duyệt giao dịch, lưu bằng chứng và ghi lịch sử phí.";
   if (params?.multiApproved === "1") return "Đã duyệt giao dịch, phân bổ nhiều căn và ghi lịch sử phí.";
   if (params?.needsEvidence === "1") return "Đã đánh dấu giao dịch cần bổ sung bằng chứng.";
+  if (params?.reserved === "1") return "Đã chuyển giao dịch sang danh sách bảo lưu.";
   if (params?.rejected === "1") return "Đã đánh dấu giao dịch không liên quan/từ chối.";
   if (params?.error === "invalid_apartment") return "Mã căn không hợp lệ hoặc không tồn tại.";
   if (params?.error === "invalid_allocation") return "Phân bổ nhiều căn cần ít nhất 2 căn hợp lệ.";
   if (params?.error === "duplicate_allocation") return "Danh sách phân bổ có mã căn bị trùng.";
   if (params?.error === "allocation_sum_mismatch") return "Tổng tiền phân bổ phải bằng đúng số tiền giao dịch.";
   if (params?.error === "already_public") return "Giao dịch này đã được đưa vào batch public, không sửa trực tiếp tại màn duyệt.";
+  if (params?.error === "already_reviewed") return "Giao dịch đã hoàn tất xử lý. Hệ thống đã chặn thao tác lặp.";
   if (params?.error === "evidence_too_large") return "File bằng chứng quá lớn. Giới hạn hiện tại 8 MB.";
   if (params?.error) return "Không xử lý được thao tác. Kiểm tra lại dữ liệu nhập.";
   return null;
@@ -222,9 +234,20 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
   const statusFilter = params?.status || "CAN_XU_LY";
   const requestedBatchId = Number(params?.batchId || 0);
   const q = (params?.q || "").trim();
+  const monthFilter = parseMonthFilter(params?.month);
+  const monthlySortOptions: MonthlyReconciliationSort[] = ["apartment", "amount", "payer", "date", "status"];
+  const monthlySort: MonthlyReconciliationSort = monthlySortOptions.includes(params?.monthSort as MonthlyReconciliationSort)
+    ? (params?.monthSort as MonthlyReconciliationSort)
+    : "date";
+  const monthlyDirection: MonthlyReconciliationDirection =
+    params?.monthDir === "asc" || params?.monthDir === "desc"
+      ? params.monthDir
+      : monthlySort === "date"
+        ? "desc"
+        : "asc";
   const message = notice(params);
 
-  const [statementBatches, latestClosings] = await Promise.all([
+  const [statementBatches, latestClosings, pendingApprovedPayments] = await Promise.all([
     prisma.loNhapDuLieu.findMany({
       where: { loai_nguon: "SAO_KE_NGAN_HANG" },
       orderBy: { id: "desc" },
@@ -243,14 +266,18 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
       take: 20,
       select: { id: true, ky_du_lieu: true, metadata_json: true },
     }),
+    prisma.lichSuDongPhiCanHo.count({
+      where: {
+        loai_nguon: "GIAO_DICH_DA_DUYET",
+        batch_phi_public_id: null,
+      },
+    }),
   ]);
   const latestClosing = latestClosings.find((closing) => getClosingCutoffFromMetadata(closing.metadata_json));
   const importBatchesWithTransactions = statementBatches.filter((batch) => batch._count.giao_dich_ngan_hang > 0);
   const requestedBatch = statementBatches.find((batch) => batch.id === requestedBatchId) || null;
   const selectedBatch =
-    (requestedBatch && requestedBatch._count.giao_dich_ngan_hang > 0 ? requestedBatch : null) ||
-    importBatchesWithTransactions[0] ||
-    null;
+    requestedBatch && requestedBatch._count.giao_dich_ngan_hang > 0 ? requestedBatch : null;
   const defaultFrom = getClosingCutoffFromMetadata(latestClosing?.metadata_json);
   const from = typeof params?.from === "string" ? params.from.trim() : defaultFrom;
   const fromDate = parseDateTimeFilter(from);
@@ -273,6 +300,14 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
       { ten_nguoi_chuyen: { contains: q, mode: "insensitive" } },
       { tham_chieu_ngan_hang: { contains: q, mode: "insensitive" } },
       { ma_giao_dich_text: { contains: q, mode: "insensitive" } },
+      { ma_can_parse: { contains: q, mode: "insensitive" } },
+      { ma_can_duoc_chon: { contains: q, mode: "insensitive" } },
+      { ung_vien_khop: { some: { ma_can: { contains: q, mode: "insensitive" } } } },
+      {
+        phan_bo_giao_dich: {
+          some: { can_ho: { ma_can: { contains: q, mode: "insensitive" } } },
+        },
+      },
     ];
   }
 
@@ -280,7 +315,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
     where.trang_thai_duyet = statusFilter;
   }
 
-  const [summary, transactions] = await Promise.all([
+  const [summary, transactions, monthlyReconciliation] = await Promise.all([
     prisma.giaoDichNganHang.groupBy({
       by: ["trang_thai_duyet"],
       _count: { _all: true },
@@ -296,16 +331,12 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
       take: 120,
       include: {
         lo_nhap_du_lieu: { select: { id: true, ten_file: true, thoi_diem_nhap: true } },
-        ket_qua_parse: {
-          include: {
-            ung_vien_khop: { orderBy: { thu_hang: "asc" }, take: 12 },
-          },
-        },
-        duyet_giao_dich: { orderBy: { id: "desc" }, take: 1 },
+        ung_vien_khop: { orderBy: { thu_hang: "asc" } },
         phan_bo_giao_dich: { include: { can_ho: { select: { ma_can: true } } } },
         chung_tu_doi_soat: { orderBy: { id: "desc" }, take: 5 },
       },
     }),
+    getMonthlyReconciliation(monthFilter.from, monthFilter.to),
   ]);
 
   const visibleTransactions =
@@ -318,25 +349,29 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
 
   const selected =
     visibleTransactions.find((item) => item.id === selectedId) ||
-    transactions.find((item) => item.id === selectedId) ||
+    (statusFilter !== "CAN_XU_LY" ? transactions.find((item) => item.id === selectedId) : null) ||
     visibleTransactions[0] ||
-    transactions[0] ||
+    (statusFilter !== "CAN_XU_LY" ? transactions[0] : null) ||
     null;
 
   const candidateCodes = Array.from(
     new Set(
       [
         selected ? getParseInfo(selected).ma_can_parse : null,
-        getLatestReview(selected || ({ duyet_giao_dich: [] } as never))?.ma_can_duoc_chon,
+        ...(getLatestReview(selected || ({} as never))
+          ?.ma_can_duoc_chon?.split(",")
+          .map((code) => code.trim())
+          .filter(Boolean) || []),
         ...(selected ? getParseInfo(selected).ung_vien_khop.map((candidate) => candidate.ma_can) : []),
         ...(selected?.phan_bo_giao_dich.map((allocation) => allocation.can_ho.ma_can) || []),
       ].filter((value): value is string => Boolean(value)),
     ),
   );
 
-  const [candidateApartments, candidateContacts] = candidateCodes.length
-    ? await Promise.all([
-        prisma.canHo.findMany({
+  const feeEffectiveAt = selected?.ngay_giao_dich || new Date();
+  const [candidateApartments, candidateContacts, activeFeeRules] = await Promise.all([
+    candidateCodes.length
+      ? prisma.canHo.findMany({
           where: { ma_can: { in: candidateCodes } },
           include: {
             lien_he: {
@@ -344,8 +379,10 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
               take: 3,
             },
           },
-        }),
-        prisma.ungVienLienHeCanHo.findMany({
+        })
+      : Promise.resolve([]),
+    candidateCodes.length
+      ? prisma.ungVienLienHeCanHo.findMany({
           where: { ma_can: { in: candidateCodes } },
           orderBy: [{ trang_thai_duyet: "asc" }, { id: "asc" }],
           take: 40,
@@ -357,9 +394,19 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
             so_dien_thoai_goc: true,
             trang_thai_duyet: true,
           },
-        }),
-      ])
-    : [[], []];
+        })
+      : Promise.resolve([]),
+    prisma.quyTacPhi.findMany({
+      where: {
+        ma_phi: "QLVH",
+        dang_ap_dung: true,
+        hieu_luc_tu_ngay: { lte: feeEffectiveAt },
+        OR: [{ hieu_luc_den_ngay: null }, { hieu_luc_den_ngay: { gte: feeEffectiveAt } }],
+      },
+      orderBy: { hieu_luc_tu_ngay: "desc" },
+      select: { loai_can: true, so_tien: true },
+    }),
+  ]);
 
   const contactByApartment = new Map<string, typeof candidateContacts>();
   for (const contact of candidateContacts) {
@@ -368,13 +415,95 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
   }
 
   const selectedReview = selected ? getLatestReview(selected) : null;
+  const selectedParserConflict = selected ? getParserConflict(selected.payload_goc_json) : null;
+  const canActOnSelected =
+    canReview &&
+    Boolean(selected) &&
+    selected?.trang_thai_duyet !== "DA_DUYET" &&
+    selected?.trang_thai_duyet !== "BAO_LUU" &&
+    selected?.trang_thai_duyet !== "TU_CHOI";
   const selectedParse = selected ? getParseInfo(selected) : null;
   const selectedQuality = selectedParse?.trang_thai_khop
     ? confidenceQuality(selectedParse.do_tin_cay)
     : { label: "Không đủ dữ liệu", tone: "destructive" as const };
-  const allocationSuggestions = selected ? suggestedAllocations(candidateCodes, selected.so_tien) : [];
+  const feeByApartmentType = new Map<string, number>();
+  for (const rule of activeFeeRules) {
+    if (!feeByApartmentType.has(rule.loai_can)) {
+      feeByApartmentType.set(rule.loai_can, Number(rule.so_tien));
+    }
+  }
+  const feeByApartmentCode = new Map(
+    candidateApartments.flatMap((apartment) => {
+      const fee = feeByApartmentType.get(apartment.loai_can);
+      return fee ? [[apartment.ma_can, fee] as const] : [];
+    }),
+  );
+  const allocationSuggestions = selected
+    ? suggestTransactionAllocations(candidateCodes, Number(selected.so_tien), feeByApartmentCode)
+    : [];
 
   const summaryMap = new Map(summary.map((item) => [item.trang_thai_duyet, item._count._all]));
+  const summaryItems = [
+    ["Chưa duyệt", summaryMap.get("CHUA_DUYET") || 0],
+    ["Đã rà soát", summaryMap.get("DA_RA_SOAT") || 0],
+    ["Đã duyệt", summaryMap.get("DA_DUYET") || 0],
+    ["Bảo lưu", summaryMap.get("BAO_LUU") || 0],
+    ["Từ chối", summaryMap.get("TU_CHOI") || 0],
+  ] as const;
+
+  const monthlyRows = monthlyReconciliation.rows;
+  const monthlyApartmentCount = monthlyReconciliation.apartmentCount;
+  const monthlyTotalAmount = monthlyReconciliation.totalAmount;
+  const monthlyUnpublishedCount = monthlyReconciliation.unpublishedCount;
+  const monthlyVisibleRows = sortMonthlyReconciliationRows(monthlyRows, monthlySort, monthlyDirection);
+  const reviewQuery = new URLSearchParams({
+    batchId: selectedBatch ? String(selectedBatch.id) : "",
+    status: statusFilter,
+    from,
+    q,
+    month: monthFilter.value,
+    monthSort: monthlySort,
+    monthDir: monthlyDirection,
+  });
+  const selectedIndex = visibleTransactions.findIndex((transaction) => transaction.id === selected?.id);
+  const nextTransaction =
+    visibleTransactions[selectedIndex + 1] ||
+    visibleTransactions.find((transaction) => transaction.id !== selected?.id) ||
+    null;
+  if (nextTransaction) {
+    reviewQuery.set("transactionId", String(nextTransaction.id));
+  } else {
+    reviewQuery.delete("transactionId");
+  }
+  const returnToAfterAction = `/admin/transactions/review?${reviewQuery.toString()}`;
+  const monthlySortHref = (sort: MonthlyReconciliationSort) => {
+    const query = new URLSearchParams({
+      transactionId: selected?.id ? String(selected.id) : "",
+      batchId: selectedBatch?.id ? String(selectedBatch.id) : "",
+      status: statusFilter,
+      from,
+      q,
+      month: monthFilter.value,
+      monthSort: sort,
+      monthDir:
+        monthlySort === sort
+          ? monthlyDirection === "asc"
+            ? "desc"
+            : "asc"
+          : sort === "date"
+            ? "desc"
+            : "asc",
+    });
+    return `/admin/transactions/review?${query.toString()}`;
+  };
+  const monthlySortIcon = (sort: MonthlyReconciliationSort) =>
+    monthlySort !== sort ? (
+      <ArrowUpDown size={13} aria-hidden="true" />
+    ) : monthlyDirection === "asc" ? (
+      <ArrowUp size={13} aria-hidden="true" />
+    ) : (
+      <ArrowDown size={13} aria-hidden="true" />
+    );
 
   return (
     <AdminFrame
@@ -388,85 +517,265 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
         </Button>
       }
     >
+      <ReviewScrollMemory />
       {message ? (
         <Notice tone={params?.error ? "error" : "success"}>{message}</Notice>
       ) : null}
 
-      <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-[var(--line)] bg-white/90 p-3 text-sm text-[var(--muted)]">
-        <span className="rounded-md bg-[var(--accent-soft)] px-2 py-1 font-semibold text-[var(--accent)]">Bộ lọc hiện tại</span>
-        {selectedBatch ? (
-          <span>Lô #{selectedBatch.id} · {selectedBatch._count.giao_dich_ngan_hang.toLocaleString("vi-VN")} giao dịch thu</span>
-        ) : null}
-        {fromDate ? (
-          <span>Phát sinh sau {formatDateTime(fromDate)}{latestClosing ? ` · sổ #${latestClosing.id} ${latestClosing.ky_du_lieu}` : ""}</span>
-        ) : null}
-      </div>
+      <form className="mb-4 grid gap-3 rounded-xl border border-[var(--line)] bg-white/90 p-3 xl:grid-cols-[minmax(240px,0.8fr)_minmax(420px,1.2fr)_auto] xl:items-center">
+        <div className="min-w-0 text-sm leading-6 text-[var(--muted)]">
+          <div className="font-semibold text-[var(--text)]">Giao dịch cần duyệt</div>
+          <div className="truncate">
+            {selectedBatch
+              ? `Lô #${selectedBatch.id} · ${selectedBatch._count.giao_dich_ngan_hang.toLocaleString("vi-VN")} giao dịch thu`
+              : `${importBatchesWithTransactions.length.toLocaleString("vi-VN")} lô · tất cả giao dịch sau mốc chốt`}
+          </div>
+          {fromDate ? (
+            <div className="truncate">
+              Sau {formatDateTime(fromDate)}{latestClosing ? ` · sổ #${latestClosing.id} ${latestClosing.ky_du_lieu}` : ""}
+            </div>
+          ) : null}
+        </div>
 
-      <section className="mb-3 grid gap-2 md:grid-cols-4">
-        {[
-          ["Chưa duyệt", summaryMap.get("CHUA_DUYET") || 0],
-          ["Đã rà soát", summaryMap.get("DA_RA_SOAT") || 0],
-          ["Đã duyệt", summaryMap.get("DA_DUYET") || 0],
-          ["Từ chối", summaryMap.get("TU_CHOI") || 0],
-        ].map(([label, value]) => (
-          <Card key={label} className="bg-white/90">
-            <CardContent className="flex items-center justify-between gap-3 p-3">
-              <div className="text-sm text-[var(--muted)]">{label}</div>
-              <div className="text-xl font-semibold">{formatMoney(value)}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
+        <div className="grid gap-2 md:grid-cols-[170px_minmax(260px,1fr)_auto]">
+          <input type="hidden" name="month" value={monthFilter.value} />
+          <input type="hidden" name="monthSort" value={monthlySort} />
+          <input type="hidden" name="monthDir" value={monthlyDirection} />
+          <Select name="status" defaultValue={statusFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Trạng thái" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="CAN_XU_LY">Cần xử lý</SelectItem>
+              <SelectItem value="CHUA_DUYET">Chưa duyệt</SelectItem>
+              <SelectItem value="DA_RA_SOAT">Đã rà soát</SelectItem>
+              <SelectItem value="DA_DUYET">Đã duyệt</SelectItem>
+              <SelectItem value="BAO_LUU">Bảo lưu</SelectItem>
+              <SelectItem value="TU_CHOI">Từ chối</SelectItem>
+              <SelectItem value="TAT_CA">Tất cả</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            name="q"
+            defaultValue={q}
+            placeholder="Tìm mã căn, nội dung, người chuyển, tham chiếu..."
+          />
+          <SubmitButton pendingText="Đang lọc...">Lọc</SubmitButton>
+        </div>
 
-      <form className="mb-4 grid gap-2 rounded-xl border border-[var(--line)] bg-white/90 p-3 md:grid-cols-[240px_180px_210px_minmax(0,1fr)_auto]">
-        <Select name="batchId" defaultValue={selectedBatch ? String(selectedBatch.id) : "0"}>
-          <SelectTrigger>
-            <SelectValue placeholder="Lô sao kê" />
-          </SelectTrigger>
-          <SelectContent>
-            {statementBatches.length ? (
-              statementBatches.map((batch) => (
-                <SelectItem key={batch.id} value={String(batch.id)}>
-                  #{batch.id} · {formatDateTime(batch.thoi_diem_nhap)}
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="0">Chưa có lô sao kê</SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-        <Select name="status" defaultValue={statusFilter}>
-          <SelectTrigger>
-            <SelectValue placeholder="Trạng thái" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="CAN_XU_LY">Cần xử lý</SelectItem>
-            <SelectItem value="CHUA_DUYET">Chưa duyệt</SelectItem>
-            <SelectItem value="DA_RA_SOAT">Đã rà soát</SelectItem>
-            <SelectItem value="DA_DUYET">Đã duyệt</SelectItem>
-            <SelectItem value="TU_CHOI">Từ chối</SelectItem>
-            <SelectItem value="TAT_CA">Tất cả</SelectItem>
-          </SelectContent>
-        </Select>
-        <Input name="from" type="datetime-local" defaultValue={from} title="Chỉ hiện giao dịch từ thời điểm này" />
-        <Input name="q" defaultValue={q} placeholder="Tìm theo nội dung, người chuyển, mã tham chiếu..." />
-        <SubmitButton pendingText="Đang lọc...">Lọc</SubmitButton>
+        <div className="flex flex-wrap gap-2 2xl:justify-end">
+          {summaryItems.map(([label, value]) => (
+            <span key={label} className="rounded-md border border-[var(--line)] bg-white px-2.5 py-1 text-xs font-semibold text-[var(--muted)]">
+              {label}: <b className="text-[var(--text)]">{formatMoney(value)}</b>
+            </span>
+          ))}
+        </div>
+        <details className="rounded-lg border border-dashed border-[var(--line)] bg-white/70 p-3 xl:col-span-3">
+          <summary className="cursor-pointer text-sm font-semibold text-[var(--muted)]">
+            Lọc nâng cao khi cần mở lại lô cũ hoặc kiểm tra mốc chốt
+          </summary>
+          <div className="mt-3 grid gap-2 md:grid-cols-[minmax(220px,1fr)_220px_auto]">
+            <Select name="batchId" defaultValue={selectedBatch ? String(selectedBatch.id) : "0"}>
+              <SelectTrigger>
+                <SelectValue placeholder="Lô sao kê" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Tất cả giao dịch sau mốc chốt</SelectItem>
+                {statementBatches.length
+                  ? statementBatches.map((batch) => (
+                    <SelectItem key={batch.id} value={String(batch.id)}>
+                      #{batch.id} · {formatDateTime(batch.thoi_diem_nhap)}
+                    </SelectItem>
+                  ))
+                  : null}
+              </SelectContent>
+            </Select>
+            <Input name="from" type="datetime-local" defaultValue={from} title="Chỉ hiện giao dịch từ thời điểm này" />
+            <SubmitButton variant="secondary" pendingText="Đang lọc...">Áp dụng nâng cao</SubmitButton>
+          </div>
+        </details>
       </form>
+
+      <details open={Boolean(params?.monthSort)} className="mb-4 rounded-xl border border-[var(--line)] bg-white/90">
+        <summary className="flex cursor-pointer items-center justify-between gap-3 px-6 py-4">
+          <span>
+            <span className="block text-lg font-semibold">Đối soát theo tháng</span>
+            <span className="mt-1 block text-sm text-[var(--muted)]">
+              Dùng khi cần tổng hợp tháng hoặc so sánh với bảng theo dõi thu phí.
+            </span>
+          </span>
+          <span className="rounded-md border border-[var(--line)] bg-white px-2.5 py-1 text-xs font-semibold text-[var(--muted)]">
+            {monthFilter.label} · {monthlyApartmentCount.toLocaleString("vi-VN")} căn
+          </span>
+        </summary>
+        <div className="border-t border-[var(--line)]">
+        <CardHeader className="pb-3">
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+            <div>
+              <CardTitle className="text-lg">Đối soát theo tháng</CardTitle>
+              <CardDescription>
+                Lọc các căn đã có giao dịch được duyệt trong tháng để so sánh với sao kê hoặc bảng theo dõi thu phí.
+              </CardDescription>
+            </div>
+            <form className="flex w-full gap-2 sm:w-auto">
+              <input type="hidden" name="transactionId" value={selected?.id || ""} />
+              <input type="hidden" name="batchId" value={selectedBatch?.id || ""} />
+              <input type="hidden" name="status" value={statusFilter} />
+              <input type="hidden" name="from" value={from} />
+              <input type="hidden" name="q" value={q} />
+              <input type="hidden" name="monthSort" value={monthlySort} />
+              <input type="hidden" name="monthDir" value={monthlyDirection} />
+              <Input className="w-full sm:w-[170px]" name="month" type="month" defaultValue={monthFilter.value} />
+              <SubmitButton variant="secondary" pendingText="Đang lọc...">Xem tháng</SubmitButton>
+            </form>
+          </div>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid items-stretch gap-3 md:grid-cols-4">
+            <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
+              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Kỳ đang xem</span>
+              <strong className="mt-1 block text-xl">{monthFilter.label}</strong>
+            </div>
+            <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
+              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Căn khác nhau đã ghi nhận</span>
+              <strong className="mt-1 block text-xl">{monthlyApartmentCount.toLocaleString("vi-VN")}</strong>
+              <span className="text-xs text-[var(--muted)]">
+                {monthlyRows.length.toLocaleString("vi-VN")} dòng phí từ {monthlyReconciliation.transactionCount.toLocaleString("vi-VN")} giao dịch
+              </span>
+            </div>
+            <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
+              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Tổng tiền đã duyệt</span>
+              <strong className="mt-1 block text-xl">{formatMoney(monthlyTotalAmount)}</strong>
+            </div>
+            <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
+              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Chưa public</span>
+              <strong className="mt-1 block text-xl">{monthlyUnpublishedCount.toLocaleString("vi-VN")}</strong>
+            </div>
+          </div>
+
+          <div
+            data-testid="monthly-reconciliation-scroll"
+            className="max-h-[480px] overflow-auto rounded-xl border border-[var(--line)] bg-white"
+          >
+            <div className="min-w-[820px]">
+              <div className="sticky top-0 z-10 grid grid-cols-[110px_120px_minmax(0,1fr)_140px_120px] gap-3 border-b border-[var(--line)] bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--muted)] shadow-sm">
+                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("apartment")} scroll={false}>
+                  Căn {monthlySortIcon("apartment")}
+                </Link>
+                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("amount")} scroll={false}>
+                  Số tiền {monthlySortIcon("amount")}
+                </Link>
+                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("payer")} scroll={false}>
+                  Người chuyển / tham chiếu {monthlySortIcon("payer")}
+                </Link>
+                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("date")} scroll={false}>
+                  Ngày {monthlySortIcon("date")}
+                </Link>
+                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("status")} scroll={false}>
+                  Trạng thái {monthlySortIcon("status")}
+                </Link>
+              </div>
+              {monthlyVisibleRows.length ? (
+                monthlyVisibleRows.map((row) => (
+                  <Link
+                    key={row.id}
+                    href={`/admin/transactions/review?transactionId=${row.transactionId}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
+                    scroll={false}
+                    className="grid grid-cols-[110px_120px_minmax(0,1fr)_140px_120px] gap-3 border-b border-[var(--line)] px-3 py-2 text-sm last:border-b-0 hover:bg-[var(--accent-soft)]"
+                  >
+                    <span className="font-semibold">{row.maCan}</span>
+                    <span>{formatMoney(row.soTien)}</span>
+                    <span className="min-w-0 truncate">
+                      {row.nguoiChuyen} · {row.thamChieu}
+                    </span>
+                    <span>{formatDate(row.ngayGiaoDich)}</span>
+                    <span>
+                      <Badge variant={row.daPublic ? "success" : "secondary"}>{row.daPublic ? "Đã public" : "Chưa public"}</Badge>
+                    </span>
+                  </Link>
+                ))
+              ) : (
+                <div className="px-3 py-4 text-sm text-[var(--muted)]">
+                  Chưa có lịch sử phí được duyệt trong {monthFilter.label}. Hãy duyệt sao kê trước, sau đó quay lại lọc tháng.
+                </div>
+              )}
+            </div>
+          </div>
+          <p className="text-xs text-[var(--muted)]">
+            Hiển thị toàn bộ {monthlyRows.length.toLocaleString("vi-VN")} dòng trong khung cuộn. Bấm tiêu đề cột để đổi thứ tự.
+          </p>
+        </CardContent>
+        </div>
+      </details>
+
+      {canReview ? (
+        <Card className="mb-4 bg-white/90">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Công khai dữ liệu sau duyệt</CardTitle>
+            <CardDescription>
+              Dùng cuối kỳ sau khi đã duyệt xong sao kê. Hệ thống tạo preview trước, cư dân chỉ thấy dữ liệu mới sau khi xác nhận public.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 xl:grid-cols-[220px_minmax(0,1fr)_auto] xl:items-end">
+            <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Chờ công khai</span>
+              <strong className="mt-1 block text-2xl">{pendingApprovedPayments.toLocaleString("vi-VN")}</strong>
+              <span className="text-sm text-[var(--muted)]">dòng lịch sử phí đã duyệt</span>
+            </div>
+
+            {params?.historyPreviewed === "1" && params.publicBatchId ? (
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm leading-6 text-emerald-900">
+                <strong className="block text-emerald-950">Preview batch #{params.publicBatchId} đã sẵn sàng</strong>
+                Snapshot có {params.rows || "0"} căn, {params.changedApartmentCount || "0"} căn thay đổi.
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Button asChild variant="secondary" size="sm">
+                    <a href={`/admin/import/public-preview?batchId=${params.publicBatchId}`}>Xem preview</a>
+                  </Button>
+                  <form action={publishPreparedPublicBatchAction}>
+                    <input type="hidden" name="publicBatchId" value={params.publicBatchId} />
+                    <SubmitButton size="sm" pendingText="Đang chốt...">
+                      <CheckCircle2 size={16} aria-hidden="true" />
+                      Xác nhận public
+                    </SubmitButton>
+                  </form>
+                </div>
+              </div>
+            ) : (
+              <form action={prepareApprovedPaymentHistoryPublicBatchAction} className="grid gap-2 md:grid-cols-[180px_minmax(0,1fr)_auto] md:items-end">
+                <Label className="grid gap-2">
+                  Kỳ dữ liệu
+                  <Input name="period" defaultValue="T6-2026" maxLength={16} placeholder="T6-2026" />
+                </Label>
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-900">
+                  Tạo preview trước để kiểm tra thay đổi từng căn. Chưa public ngay.
+                </div>
+                <SubmitButton disabled={pendingApprovedPayments <= 0} pendingText="Đang tạo preview...">
+                  <CheckCircle2 size={17} aria-hidden="true" />
+                  Tạo preview
+                </SubmitButton>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      ) : null}
 
       {!selected ? (
         <Card className="bg-white/90">
           <CardContent className="p-6 text-sm text-[var(--muted)]">
-            Chưa có giao dịch sao kê để duyệt. Hãy nhập file sao kê tại trang nhập dữ liệu.
+            {statusFilter === "CAN_XU_LY"
+              ? "Không còn giao dịch cần xử lý trong bộ lọc hiện tại."
+              : "Chưa có giao dịch sao kê phù hợp với bộ lọc hiện tại."}
           </CardContent>
         </Card>
       ) : (
-        <section className="grid gap-4 xl:grid-cols-[360px_minmax(0,1fr)_440px]">
-          <Card className="bg-white/90">
+        <section className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)] 2xl:grid-cols-[340px_minmax(0,1fr)_360px]">
+          <Card className="bg-white/90 lg:sticky lg:top-20 lg:self-start">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Danh sách giao dịch</CardTitle>
               <CardDescription>{visibleTransactions.length} giao dịch trong bộ lọc hiện tại.</CardDescription>
             </CardHeader>
-            <CardContent className="max-h-[calc(100vh-290px)] space-y-2 overflow-y-auto pr-1">
+            <CardContent>
+              <ReviewTransactionList>
               {visibleTransactions.map((transaction) => {
                 const latest = getLatestReview(transaction);
                 const parseInfo = getParseInfo(transaction);
@@ -474,7 +783,9 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                 return (
                   <Link
                     key={transaction.id}
-                    href={`/admin/transactions/review?transactionId=${transaction.id}&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
+                    data-testid={`review-transaction-${transaction.id}`}
+                    href={`/admin/transactions/review?transactionId=${transaction.id}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
+                    scroll={false}
                     className={
                       active
                         ? "block rounded-xl border border-[var(--accent)] bg-[var(--accent-soft)] p-3"
@@ -503,6 +814,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                   </Link>
                 );
               })}
+              </ReviewTransactionList>
             </CardContent>
           </Card>
 
@@ -518,6 +830,13 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                 </div>
               </CardHeader>
               <CardContent className="grid gap-4">
+                {selectedParserConflict ? (
+                  <Notice tone="warning">
+                    Parser hiện tại gợi ý {selectedParserConflict.suggestedApartmentCode}, khác với kết quả đã lưu{" "}
+                    {selectedParserConflict.previousApartmentCode}. Hệ thống giữ nguyên quyết định cũ để tránh tự
+                    thay đổi dữ liệu đã rà soát.
+                  </Notice>
+                ) : null}
                 <div className="grid gap-3 md:grid-cols-2">
                   <Info label="Số tiền" value={formatMoney(selected.so_tien)} strong />
                   <Info label="Ngày giao dịch" value={formatDateTime(selected.ngay_giao_dich)} />
@@ -550,6 +869,51 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                   </div>
                 </div>
 
+                <div className="rounded-xl border border-[var(--line)] bg-white p-4">
+                  <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <h2 className="text-sm font-semibold">Gợi ý căn hộ</h2>
+                      <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                        Đối chiếu parser, chủ hộ và dữ liệu Excel trước khi duyệt.
+                      </p>
+                    </div>
+                    <Badge variant={candidateApartments.length ? "secondary" : "destructive"}>
+                      {candidateApartments.length ? `${candidateApartments.length} ứng viên` : "Không có gợi ý"}
+                    </Badge>
+                  </div>
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {candidateApartments.length ? (
+                      candidateApartments.map((apartment) => {
+                        const parserCandidate = selectedParse?.ung_vien_khop.find((item) => item.ma_can === apartment.ma_can);
+                        const firstContact = apartment.lien_he[0];
+                        const excelContact = contactByApartment.get(apartment.ma_can)?.[0];
+                        return (
+                          <div key={apartment.id} className="rounded-lg border border-[var(--line)] bg-white p-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <strong className="text-base">{apartment.ma_can}</strong>
+                                <p className="truncate text-sm text-[var(--muted)]">
+                                  {apartment.chu_ho_ten_goc || firstContact?.ten_hien_thi || excelContact?.ten_hien_thi_parse || "-"}
+                                </p>
+                              </div>
+                              <Badge variant={Number(parserCandidate?.diem || 0) >= 70 ? "success" : "warning"}>
+                                {parserCandidate ? `${parserCandidate.diem}/100` : "Đã chọn"}
+                              </Badge>
+                            </div>
+                            <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--muted)]">
+                              {parserCandidate?.ly_do || "Căn đã được chọn/đã phân bổ trước đó."}
+                            </p>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="rounded-lg border border-dashed border-[var(--line)] p-3 text-sm text-[var(--muted)] md:col-span-2">
+                        Không có căn gợi ý. Cần nhập tay mã căn hoặc duyệt kèm bằng chứng.
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <Card className="bg-white">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base">Bằng chứng đã lưu</CardTitle>
@@ -579,68 +943,55 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
             </Card>
           </div>
 
-          <div className="grid min-w-0 gap-4">
-            <Card className="bg-white/90">
-              <CardHeader className="pb-3">
-                <CardTitle>Gợi ý căn hộ</CardTitle>
-                <CardDescription>Dùng để đối chiếu nhanh trước khi nhập mã căn xác nhận.</CardDescription>
-              </CardHeader>
-              <CardContent className="max-h-72 space-y-2 overflow-y-auto pr-1">
-                {candidateApartments.length ? (
-                  candidateApartments.map((apartment) => {
-                    const parserCandidate = selectedParse?.ung_vien_khop.find((item) => item.ma_can === apartment.ma_can);
-                    const firstContact = apartment.lien_he[0];
-                    const excelContact = contactByApartment.get(apartment.ma_can)?.[0];
-                    return (
-                      <div key={apartment.id} className="rounded-lg border border-[var(--line)] bg-white p-3">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="min-w-0">
-                            <strong className="text-base">{apartment.ma_can}</strong>
-                            <p className="truncate text-sm text-[var(--muted)]">
-                              {apartment.chu_ho_ten_goc || firstContact?.ten_hien_thi || excelContact?.ten_hien_thi_parse || "-"}
-                            </p>
-                          </div>
-                          <Badge variant={Number(parserCandidate?.diem || 0) >= 70 ? "success" : "warning"}>
-                            {parserCandidate ? `${parserCandidate.diem}/100` : "Đã chọn"}
-                          </Badge>
-                        </div>
-                        <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--muted)]">
-                          {parserCandidate?.ly_do || "Căn đã được chọn/đã phân bổ trước đó."}
-                        </p>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="rounded-xl border border-dashed border-[var(--line)] p-4 text-sm text-[var(--muted)]">
-                    Không có căn gợi ý. Cần nhập tay mã căn hoặc bổ sung bằng chứng.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
+          <div className="grid min-w-0 gap-4 lg:col-start-2 2xl:col-start-auto 2xl:sticky 2xl:top-20 2xl:self-start">
             <Card className="bg-white/90">
               <CardHeader className="pb-3">
                 <CardTitle>Thao tác duyệt</CardTitle>
                 <CardDescription>
-                  {canReview ? "Chọn thao tác phù hợp với giao dịch đang mở." : "Tài khoản hiện tại chỉ được xem."}
+                  {canActOnSelected
+                    ? "Chọn thao tác phù hợp với giao dịch đang mở."
+                    : selected?.trang_thai_duyet === "DA_DUYET" ||
+                        selected?.trang_thai_duyet === "BAO_LUU" ||
+                        selected?.trang_thai_duyet === "TU_CHOI"
+                      ? "Giao dịch đã hoàn tất xử lý và chỉ còn ở chế độ xem."
+                      : "Tài khoản hiện tại chỉ được xem."}
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3">
-                {canReview ? (
+                {canActOnSelected ? (
                   <>
-                    <form action={approveTransactionWithEvidenceAction} className="grid gap-3 rounded-xl border border-[var(--accent)] bg-[var(--accent-soft)] p-3">
+                    <form action={approveTransactionAction} className="grid gap-3 rounded-xl border border-[var(--accent)] bg-[var(--accent-soft)] p-3">
                       <input type="hidden" name="transactionId" value={selected.id} />
-                      <h3 className="text-sm font-semibold">Duyệt kèm bằng chứng</h3>
-                      <Label className="grid gap-2">
-                        Mã căn xác nhận
+                      <input type="hidden" name="returnTo" value={returnToAfterAction} />
+                      <h3 className="text-sm font-semibold">Duyệt nhanh</h3>
+                      <div className="grid gap-2">
                         <Input
-                          key={`evidence-apartment-${selected.id}`}
+                          key={`quick-apartment-${selected.id}`}
                           name="apartmentCode"
                           defaultValue={selectedReview?.ma_can_duoc_chon || selectedParse?.ma_can_parse || ""}
                           placeholder="Ví dụ L4B.303"
                         />
-                      </Label>
-                      <div className="grid gap-2 md:grid-cols-2">
+                        <SubmitButton pendingText="Đang duyệt...">
+                          <CheckCircle2 size={16} aria-hidden="true" />
+                          Duyệt
+                        </SubmitButton>
+                      </div>
+                    </form>
+
+                    <details className="rounded-xl border border-[var(--line)] bg-white p-3">
+                      <summary className="cursor-pointer text-sm font-semibold">Duyệt kèm bằng chứng</summary>
+                      <form action={approveTransactionWithEvidenceAction} className="mt-3 grid gap-3">
+                        <input type="hidden" name="transactionId" value={selected.id} />
+                        <input type="hidden" name="returnTo" value={returnToAfterAction} />
+                        <Label className="grid gap-2">
+                          Mã căn xác nhận
+                          <Input
+                            key={`evidence-apartment-${selected.id}`}
+                            name="apartmentCode"
+                            defaultValue={selectedReview?.ma_can_duoc_chon || selectedParse?.ma_can_parse || ""}
+                            placeholder="Ví dụ L4B.303"
+                          />
+                        </Label>
                         <Label className="grid gap-2">
                           Loại bằng chứng
                           <Select name="evidenceType" defaultValue="ZALO">
@@ -659,84 +1010,76 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                           File bằng chứng
                           <Input name="evidenceFile" type="file" accept="image/*,.pdf" />
                         </Label>
-                      </div>
-                      <Textarea name="evidenceNote" placeholder="Ghi chú xác minh, ví dụ: cư dân xác nhận qua Zalo ngày..." rows={2} />
-                      <SubmitButton pendingText="Đang duyệt...">
-                        <Upload size={16} aria-hidden="true" />
-                        Duyệt và lưu bằng chứng
-                      </SubmitButton>
-                    </form>
-
-                    <form action={approveTransactionAction} className="grid gap-2 rounded-xl border border-[var(--line)] p-3">
-                      <input type="hidden" name="transactionId" value={selected.id} />
-                      <h3 className="text-sm font-semibold">Duyệt nhanh</h3>
-                      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
-                        <Input
-                          key={`quick-apartment-${selected.id}`}
-                          name="apartmentCode"
-                          defaultValue={selectedReview?.ma_can_duoc_chon || selectedParse?.ma_can_parse || ""}
-                          placeholder="Ví dụ L4B.303"
-                        />
-                        <SubmitButton variant="secondary" pendingText="Đang duyệt...">
-                          <CheckCircle2 size={16} aria-hidden="true" />
-                          Duyệt
+                        <Textarea name="evidenceNote" placeholder="Ghi chú xác minh, ví dụ: cư dân xác nhận qua Zalo ngày..." rows={2} />
+                        <SubmitButton pendingText="Đang duyệt...">
+                          <Upload size={16} aria-hidden="true" />
+                          Duyệt và lưu bằng chứng
                         </SubmitButton>
-                      </div>
-                    </form>
+                      </form>
+                    </details>
 
-                    <form action={markTransactionNeedsEvidenceAction} className="grid gap-2 rounded-xl border border-[var(--line)] p-3">
-                      <input type="hidden" name="transactionId" value={selected.id} />
-                      <h3 className="text-sm font-semibold">Chưa đủ căn cứ</h3>
-                      <Textarea name="note" placeholder="Lý do cần bổ sung" rows={2} />
-                      <SubmitButton variant="secondary" pendingText="Đang đánh dấu...">
-                        <ShieldAlert size={16} aria-hidden="true" />
-                        Cần bổ sung bằng chứng
-                      </SubmitButton>
-                    </form>
-
-                    <form action={rejectTransactionAction} className="grid gap-2 rounded-xl border border-[var(--line)] p-3">
-                      <input type="hidden" name="transactionId" value={selected.id} />
-                      <Textarea name="note" placeholder="Lý do từ chối" rows={2} />
-                      <SubmitButton variant="destructive" pendingText="Đang xử lý...">
-                        <AlertTriangle size={16} aria-hidden="true" />
-                        Đánh dấu không liên quan
-                      </SubmitButton>
-                    </form>
-
-                    <form action={approveMultiTransactionAction} className="grid gap-3 rounded-xl border border-[var(--line)] p-3">
-                      <input type="hidden" name="transactionId" value={selected.id} />
-                      <div>
-                        <h3 className="text-sm font-semibold">Phân bổ nhiều căn</h3>
-                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                    <details className="rounded-xl border border-[var(--line)] bg-white p-3">
+                      <summary className="cursor-pointer text-sm font-semibold">Phân bổ nhiều căn</summary>
+                      <form action={approveMultiTransactionAction} className="mt-3 grid gap-3" data-testid="multi-allocation-form">
+                        <input type="hidden" name="transactionId" value={selected.id} />
+                        <input type="hidden" name="returnTo" value={returnToAfterAction} />
+                        <p className="text-xs leading-5 text-[var(--muted)]">
                           Chỉ dùng khi một giao dịch trả cho nhiều căn. Tổng phải đúng {formatMoney(selected.so_tien)}.
                         </p>
-                      </div>
-                      <div className="grid gap-2">
-                        {(allocationSuggestions.length
-                          ? allocationSuggestions
-                          : [
-                              { code: "", amount: "" },
-                              { code: "", amount: "" },
-                              { code: "", amount: "" },
-                              { code: "", amount: "" },
-                            ]).map((item, index) => (
-                          <div key={`${item.code}-${index}`} className="grid grid-cols-[minmax(0,1fr)_130px] gap-2">
-                            <Input name="allocationCode" defaultValue={item.code} placeholder={`Mã căn ${index + 1}`} />
-                            <Input
-                              name="allocationAmount"
-                              defaultValue={item.amount ? String(item.amount) : ""}
-                              inputMode="numeric"
-                              placeholder="Số tiền"
-                            />
+                        {allocationSuggestions.length ? (
+                          <div className="flex items-center justify-between rounded-lg bg-[var(--accent-soft)] px-3 py-2 text-xs">
+                            <span>{allocationSuggestions.length} căn đã được nhận diện</span>
+                            <strong>
+                              Tổng gợi ý: {formatMoney(allocationSuggestions.reduce((sum, item) => sum + item.amount, 0))}
+                            </strong>
                           </div>
-                        ))}
+                        ) : null}
+                        <MultiAllocationEditor
+                          key={`multi-allocation-${selected.id}`}
+                          totalAmount={Math.round(Number(selected.so_tien))}
+                          initialRows={allocationSuggestions}
+                        />
+                      </form>
+                    </details>
+
+                    <details className="rounded-xl border border-[var(--line)] bg-white p-3">
+                      <summary className="cursor-pointer text-sm font-semibold">Cần bổ sung / từ chối</summary>
+                      <div className="mt-3 grid gap-3">
+                        <form action={markTransactionNeedsEvidenceAction} className="grid gap-2">
+                          <input type="hidden" name="transactionId" value={selected.id} />
+                          <input type="hidden" name="returnTo" value={returnToAfterAction} />
+                          <Textarea name="note" placeholder="Lý do cần bổ sung" rows={2} />
+                          <SubmitButton variant="secondary" pendingText="Đang đánh dấu...">
+                            <ShieldAlert size={16} aria-hidden="true" />
+                            Cần bổ sung bằng chứng
+                          </SubmitButton>
+                        </form>
+
+                        <form action={reserveTransactionAction} className="grid gap-2 border-t border-[var(--line)] pt-3">
+                          <input type="hidden" name="transactionId" value={selected.id} />
+                          <input type="hidden" name="returnTo" value={returnToAfterAction} />
+                          <Textarea
+                            name="note"
+                            placeholder="Lý do bảo lưu, ví dụ: khoản ủng hộ hoặc chưa xác định được căn"
+                            rows={2}
+                          />
+                          <SubmitButton variant="secondary" pendingText="Đang bảo lưu...">
+                            <ShieldAlert size={16} aria-hidden="true" />
+                            Bảo lưu để đối chiếu sau
+                          </SubmitButton>
+                        </form>
+
+                        <form action={rejectTransactionAction} className="grid gap-2 border-t border-[var(--line)] pt-3">
+                          <input type="hidden" name="transactionId" value={selected.id} />
+                          <input type="hidden" name="returnTo" value={returnToAfterAction} />
+                          <Textarea name="note" placeholder="Lý do từ chối" rows={2} />
+                          <SubmitButton variant="destructive" pendingText="Đang xử lý...">
+                            <AlertTriangle size={16} aria-hidden="true" />
+                            Đánh dấu không liên quan
+                          </SubmitButton>
+                        </form>
                       </div>
-                      <Textarea name="note" placeholder="Ghi chú phân bổ nhiều căn" rows={2} />
-                      <SubmitButton variant="secondary" pendingText="Đang phân bổ...">
-                        <CheckCircle2 size={16} aria-hidden="true" />
-                        Duyệt phân bổ nhiều căn
-                      </SubmitButton>
-                    </form>
+                    </details>
                   </>
                 ) : (
                   <p className="text-sm text-[var(--muted)]">Manager/Kỹ thuật có thể xem thông tin nhưng không được duyệt, từ chối hoặc upload bằng chứng.</p>

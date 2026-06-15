@@ -564,3 +564,41 @@ Tá»« thá»i Ä‘iá»ƒm nÃ y:
 - `docs/module-map.md` lÃ  file control cáº¥u trÃºc thÆ° má»¥c
 
 
+# Quy tắc archive file cũ
+
+- File cũ hoặc không còn sử dụng không được xóa ngay.
+- Trước khi archive phải xác nhận không còn import, route, script trong `package.json`, test hoặc tài liệu vận hành phụ thuộc.
+- Code cũ được chuyển vào `../archive/code/`, đổi sang đuôi `.archive` để Next.js, TypeScript và test runner không biên dịch.
+- Mỗi nhóm archive phải có README ghi ngày chuyển, lý do và file thay thế.
+- Không được import hoặc chạy runtime từ `archive/`.
+- Chỉ xóa vĩnh viễn sau khi chủ dự án duyệt rõ ràng.
+
+## Nợ cấu trúc đang theo dõi
+
+Báo cáo hiện hành:
+
+- [reports/bao-cao-ra-soat-trung-lap-code-va-phan-khu.md](reports/bao-cao-ra-soat-trung-lap-code-va-phan-khu.md)
+
+Các điểm cần giữ khi tiếp tục phát triển:
+
+- Parser mã căn chỉ có một nguồn chuẩn tại
+  `src/modules/transactions/parser/apartment-parser.ts`.
+- Wrapper trong `lib/` chỉ dùng cho tương thích, không thêm nghiệp vụ mới.
+- Quy tắc "tháng đã đóng đến" đã gom về
+  `src/modules/billing/paid-through.ts`; không tạo thêm bản sao thuật toán.
+- Reader/import sao kê dùng chung đã chuyển về
+  `src/modules/transactions/import/bank-statement-common.ts`.
+- `app/admin/import/actions.ts` chỉ nên điều phối form và quyền; nghiệp vụ import,
+  public và sổ chốt phải thuộc module billing/imports.
+- Cụm `ReviewDashboard` memory-flow cũ đã chuyển vào
+  `../archive/code/legacy-review-dashboard/` ngày 10/06/2026.
+
+## Module mới sau đợt chuẩn hóa 10/06/2026
+
+- `src/modules/auth/permissions.ts`: nguồn phân quyền duy nhất.
+- `src/modules/billing/paid-through.ts`: parse mốc phí, quy đổi tháng và số dư
+  chuyển kỳ.
+- `src/modules/imports/script-runner.ts`: chạy CLI bất đồng bộ từ web.
+- `src/modules/imports/monthly-closing.ts`: tạo sổ chốt từ batch public.
+- `src/modules/transactions/review/monthly-reconciliation.ts`: tổng hợp giao
+  dịch đã duyệt theo tháng.

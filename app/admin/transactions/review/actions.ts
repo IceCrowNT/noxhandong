@@ -4,9 +4,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 
-import { requireAdminRole } from "@/src/modules/auth/current-user";
+import { requirePermission } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
+import { normalizeApartmentCode } from "@/src/modules/shared/utils/text";
 
 const EVIDENCE_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "evidence");
 const MAX_EVIDENCE_BYTES = 8 * 1024 * 1024;
@@ -21,8 +23,25 @@ function getId(formData: FormData, name: string) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
+function getReturnTo(formData: FormData, fallback: string) {
+  const value = getString(formData, "returnTo");
+  return value.startsWith("/admin/transactions/review") && !value.startsWith("//") ? value : fallback;
+}
+
+function withResult(pathname: string, key: string) {
+  const url = new URL(pathname, "http://localhost");
+  url.searchParams.set(key, "1");
+  return `${url.pathname}?${url.searchParams.toString()}`;
+}
+
+function ensureReviewableStatus(status: string) {
+  if (status === "DA_DUYET" || status === "BAO_LUU" || status === "TU_CHOI") {
+    redirect("/admin/transactions/review?error=already_reviewed");
+  }
+}
+
 function parseMoney(value: FormDataEntryValue | null) {
-  const normalized = String(value || "").replace(/[^\d.-]/g, "");
+  const normalized = String(value || "").replace(/\D/g, "");
   const amount = Number(normalized);
   return Number.isFinite(amount) && amount > 0 ? Math.round(amount) : null;
 }
@@ -61,38 +80,13 @@ async function storeEvidenceFile(file: FormDataEntryValue | null, transactionId:
   };
 }
 
-async function upsertLatestReview(transactionId: number, data: {
-  status: "CHUA_DUYET" | "DA_RA_SOAT" | "DA_DUYET" | "TU_CHOI";
+async function upsertLatestReview(client: Prisma.TransactionClient | typeof prisma, transactionId: number, data: {
+  status: "CHUA_DUYET" | "DA_RA_SOAT" | "DA_DUYET" | "BAO_LUU" | "TU_CHOI";
   apartmentCode?: string | null;
   note?: string | null;
   reviewer: string;
 }) {
-  const latest = await prisma.duyetGiaoDich.findFirst({
-    where: { giao_dich_ngan_hang_id: transactionId },
-    orderBy: { id: "desc" },
-    select: { id: true },
-  });
-
-  const payload = {
-    trang_thai_duyet: data.status,
-    ma_can_duoc_chon: data.apartmentCode || null,
-    ghi_chu_duyet: data.note || null,
-    nguoi_duyet: data.reviewer,
-    ngay_duyet: new Date(),
-  };
-
-  if (latest) {
-    await prisma.duyetGiaoDich.update({ where: { id: latest.id }, data: payload });
-  } else {
-    await prisma.duyetGiaoDich.create({
-      data: {
-        giao_dich_ngan_hang_id: transactionId,
-        ...payload,
-      },
-    });
-  }
-
-  await prisma.giaoDichNganHang.update({
+  await client.giaoDichNganHang.update({
     where: { id: transactionId },
     data: {
       trang_thai_duyet: data.status,
@@ -105,7 +99,7 @@ async function upsertLatestReview(transactionId: number, data: {
 }
 
 export async function approveTransactionAction(formData: FormData) {
-  const account = await requireAdminRole("SUPER_ADMIN");
+  const account = await requirePermission("REVIEW_TRANSACTIONS");
   const transactionId = getId(formData, "transactionId");
   const apartmentCode = getString(formData, "apartmentCode").toUpperCase();
   const note = getString(formData, "note");
@@ -115,13 +109,17 @@ export async function approveTransactionAction(formData: FormData) {
   }
 
   const [transaction, apartment] = await Promise.all([
-    prisma.giaoDichNganHang.findUnique({ where: { id: transactionId }, select: { id: true, so_tien: true } }),
+    prisma.giaoDichNganHang.findUnique({
+      where: { id: transactionId },
+      select: { id: true, so_tien: true, trang_thai_duyet: true },
+    }),
     prisma.canHo.findUnique({ where: { ma_can: apartmentCode }, select: { id: true, ma_can: true } }),
   ]);
 
   if (!transaction || !apartment) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=invalid_apartment`);
   }
+  ensureReviewableStatus(transaction.trang_thai_duyet);
 
   const publishedHistoryCount = await prisma.lichSuDongPhiCanHo.count({
     where: {
@@ -163,21 +161,20 @@ export async function approveTransactionAction(formData: FormData) {
         nguoi_tao_id: account.id,
       },
     });
-  });
-
-  await upsertLatestReview(transactionId, {
-    status: "DA_DUYET",
-    apartmentCode: apartment.ma_can,
-    note: note || "Đã duyệt và ghi lịch sử phí.",
-    reviewer: account.ten_dang_nhap,
+    await upsertLatestReview(tx, transactionId, {
+      status: "DA_DUYET",
+      apartmentCode: apartment.ma_can,
+      note: note || "Đã duyệt và ghi lịch sử phí.",
+      reviewer: account.ten_dang_nhap,
+    });
   });
 
   revalidatePath("/admin/transactions/review");
-  redirect(`/admin/transactions/review?transactionId=${transactionId}&approved=1`);
+  redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "approved"));
 }
 
 export async function approveTransactionWithEvidenceAction(formData: FormData) {
-  const account = await requireAdminRole("SUPER_ADMIN");
+  const account = await requirePermission("REVIEW_TRANSACTIONS");
   const transactionId = getId(formData, "transactionId");
   const apartmentCode = getString(formData, "apartmentCode").toUpperCase();
   const note = getString(formData, "note");
@@ -192,7 +189,7 @@ export async function approveTransactionWithEvidenceAction(formData: FormData) {
   const [transaction, apartment, publishedHistoryCount] = await Promise.all([
     prisma.giaoDichNganHang.findUnique({
       where: { id: transactionId },
-      select: { id: true, ngay_giao_dich: true, so_tien: true, tham_chieu_ngan_hang: true },
+      select: { id: true, ngay_giao_dich: true, so_tien: true, tham_chieu_ngan_hang: true, trang_thai_duyet: true },
     }),
     prisma.canHo.findUnique({ where: { ma_can: apartmentCode }, select: { id: true, ma_can: true } }),
     prisma.lichSuDongPhiCanHo.count({
@@ -206,6 +203,7 @@ export async function approveTransactionWithEvidenceAction(formData: FormData) {
   if (!transaction || !apartment) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=invalid_apartment`);
   }
+  ensureReviewableStatus(transaction.trang_thai_duyet);
   if (publishedHistoryCount > 0) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=already_public`);
   }
@@ -263,24 +261,25 @@ export async function approveTransactionWithEvidenceAction(formData: FormData) {
         },
       });
     }
-  });
-
-  await upsertLatestReview(transactionId, {
-    status: "DA_DUYET",
-    apartmentCode: apartment.ma_can,
-    note: note || evidenceNote || "Đã duyệt, ghi lịch sử phí và lưu bằng chứng.",
-    reviewer: account.ten_dang_nhap,
+    await upsertLatestReview(tx, transactionId, {
+      status: "DA_DUYET",
+      apartmentCode: apartment.ma_can,
+      note: note || evidenceNote || "Đã duyệt, ghi lịch sử phí và lưu bằng chứng.",
+      reviewer: account.ten_dang_nhap,
+    });
   });
 
   revalidatePath("/admin/transactions/review");
-  redirect(`/admin/transactions/review?transactionId=${transactionId}&approvedWithEvidence=1`);
+  redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "approvedWithEvidence"));
 }
 
 export async function approveMultiTransactionAction(formData: FormData) {
-  const account = await requireAdminRole("SUPER_ADMIN");
+  const account = await requirePermission("REVIEW_TRANSACTIONS");
   const transactionId = getId(formData, "transactionId");
   const note = getString(formData, "note");
-  const codes = formData.getAll("allocationCode").map((value) => String(value || "").trim().toUpperCase());
+  const codes = formData
+    .getAll("allocationCode")
+    .map((value) => normalizeApartmentCode(String(value || "")) || String(value || "").trim().toUpperCase());
   const amounts = formData.getAll("allocationAmount").map(parseMoney);
 
   if (!transactionId) {
@@ -301,7 +300,10 @@ export async function approveMultiTransactionAction(formData: FormData) {
   }
 
   const [transaction, apartments, publishedHistoryCount] = await Promise.all([
-    prisma.giaoDichNganHang.findUnique({ where: { id: transactionId }, select: { id: true, so_tien: true } }),
+    prisma.giaoDichNganHang.findUnique({
+      where: { id: transactionId },
+      select: { id: true, so_tien: true, trang_thai_duyet: true },
+    }),
     prisma.canHo.findMany({
       where: { ma_can: { in: drafts.map((item) => item.code) } },
       select: { id: true, ma_can: true },
@@ -317,6 +319,7 @@ export async function approveMultiTransactionAction(formData: FormData) {
   if (!transaction) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=invalid`);
   }
+  ensureReviewableStatus(transaction.trang_thai_duyet);
   if (publishedHistoryCount > 0) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=already_public`);
   }
@@ -367,53 +370,97 @@ export async function approveMultiTransactionAction(formData: FormData) {
         },
       });
     }
-  });
-
-  await upsertLatestReview(transactionId, {
-    status: "DA_DUYET",
-    apartmentCode: drafts.map((item) => item.code).join(", "),
-    note: note || "Đã duyệt và phân bổ nhiều căn.",
-    reviewer: account.ten_dang_nhap,
+    await upsertLatestReview(tx, transactionId, {
+      status: "DA_DUYET",
+      apartmentCode: drafts.map((item) => item.code).join(", "),
+      note: note || "Đã duyệt và phân bổ nhiều căn.",
+      reviewer: account.ten_dang_nhap,
+    });
   });
 
   revalidatePath("/admin/transactions/review");
-  redirect(`/admin/transactions/review?transactionId=${transactionId}&multiApproved=1`);
+  redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "multiApproved"));
 }
 
 export async function markTransactionNeedsEvidenceAction(formData: FormData) {
-  const account = await requireAdminRole("SUPER_ADMIN");
+  const account = await requirePermission("REVIEW_TRANSACTIONS");
   const transactionId = getId(formData, "transactionId");
   const note = getString(formData, "note") || "Cần bổ sung bằng chứng.";
   if (!transactionId) redirect("/admin/transactions/review?error=invalid");
 
-  await upsertLatestReview(transactionId, {
+  const transaction = await prisma.giaoDichNganHang.findUnique({
+    where: { id: transactionId },
+    select: { trang_thai_duyet: true },
+  });
+  if (!transaction) redirect("/admin/transactions/review?error=invalid");
+  ensureReviewableStatus(transaction.trang_thai_duyet);
+
+  await upsertLatestReview(prisma, transactionId, {
     status: "DA_RA_SOAT",
     note,
     reviewer: account.ten_dang_nhap,
   });
 
   revalidatePath("/admin/transactions/review");
-  redirect(`/admin/transactions/review?transactionId=${transactionId}&needsEvidence=1`);
+  redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "needsEvidence"));
+}
+
+export async function reserveTransactionAction(formData: FormData) {
+  const account = await requirePermission("REVIEW_TRANSACTIONS");
+  const transactionId = getId(formData, "transactionId");
+  const note =
+    getString(formData, "note") ||
+    "Bảo lưu để đối chiếu sau; không đưa vào lịch sử đóng phí và không tính vào hàng chờ chính.";
+  if (!transactionId) redirect("/admin/transactions/review?error=invalid");
+
+  const transaction = await prisma.giaoDichNganHang.findUnique({
+    where: { id: transactionId },
+    select: { trang_thai_duyet: true },
+  });
+  if (!transaction) redirect("/admin/transactions/review?error=invalid");
+  ensureReviewableStatus(transaction.trang_thai_duyet);
+
+  await prisma.$transaction(async (tx) => {
+    await tx.lichSuDongPhiCanHo.deleteMany({
+      where: { giao_dich_ngan_hang_id: transactionId, batch_phi_public_id: null },
+    });
+    await tx.phanBoGiaoDich.deleteMany({ where: { giao_dich_ngan_hang_id: transactionId } });
+    await upsertLatestReview(tx, transactionId, {
+      status: "BAO_LUU",
+      note,
+      reviewer: account.ten_dang_nhap,
+    });
+  });
+
+  revalidatePath("/admin/transactions/review");
+  redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "reserved"));
 }
 
 export async function rejectTransactionAction(formData: FormData) {
-  const account = await requireAdminRole("SUPER_ADMIN");
+  const account = await requirePermission("REVIEW_TRANSACTIONS");
   const transactionId = getId(formData, "transactionId");
   const note = getString(formData, "note") || "Đánh dấu không liên quan/cần loại khỏi đối soát phí.";
   if (!transactionId) redirect("/admin/transactions/review?error=invalid");
 
-  await upsertLatestReview(transactionId, {
+  const transaction = await prisma.giaoDichNganHang.findUnique({
+    where: { id: transactionId },
+    select: { trang_thai_duyet: true },
+  });
+  if (!transaction) redirect("/admin/transactions/review?error=invalid");
+  ensureReviewableStatus(transaction.trang_thai_duyet);
+
+  await upsertLatestReview(prisma, transactionId, {
     status: "TU_CHOI",
     note,
     reviewer: account.ten_dang_nhap,
   });
 
   revalidatePath("/admin/transactions/review");
-  redirect(`/admin/transactions/review?transactionId=${transactionId}&rejected=1`);
+  redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "rejected"));
 }
 
 export async function addEvidenceAction(formData: FormData) {
-  const account = await requireAdminRole("SUPER_ADMIN");
+  const account = await requirePermission("REVIEW_TRANSACTIONS");
   const transactionId = getId(formData, "transactionId");
   const apartmentCode = getString(formData, "apartmentCode").toUpperCase();
   const evidenceType = getString(formData, "evidenceType") || "GHI_CHU_THU_CONG";

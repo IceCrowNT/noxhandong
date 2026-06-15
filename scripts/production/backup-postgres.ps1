@@ -74,6 +74,7 @@ if (-not $pgDump) {
 
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $outputFile = Join-Path $OutputDir "apartment_fee_reviewer-$timestamp.dump"
+$temporaryFile = Join-Path $env:TEMP "apartment_fee_reviewer-$timestamp.dump"
 $pgDumpDatabaseUrl = $env:DATABASE_URL `
   -replace "([?&])schema=[^&]+&?", '$1' `
   -replace "[?&]$", ""
@@ -82,7 +83,13 @@ $pgDumpDatabaseUrl = $env:DATABASE_URL `
   --format=custom `
   --no-owner `
   --no-privileges `
-  --file=$outputFile
+  --file=$temporaryFile
+
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $temporaryFile)) {
+  Write-Error "pg_dump failed; backup file was not created."
+}
+
+Move-Item -LiteralPath $temporaryFile -Destination $outputFile -Force
 
 Write-Host "PostgreSQL backup written to: $outputFile"
 Write-Host "Restore test command:"

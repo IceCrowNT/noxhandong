@@ -7,6 +7,7 @@ import {
   type AdminRole,
   verifyAdminSessionToken,
 } from "@/src/modules/auth/session";
+import { hasPermission, type Permission } from "@/src/modules/auth/permissions";
 
 export async function getCurrentAdmin() {
   const cookieStore = await cookies();
@@ -46,6 +47,14 @@ export async function requireAdmin() {
 export async function requireAdminRole(role: AdminRole) {
   const account = await requireAdmin();
   if (account.vai_tro !== role) {
+    redirect("/admin?denied=1");
+  }
+  return account;
+}
+
+export async function requirePermission(permission: Permission) {
+  const account = await requireAdmin();
+  if (!hasPermission(account.vai_tro, permission)) {
     redirect("/admin?denied=1");
   }
   return account;

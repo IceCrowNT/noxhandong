@@ -38,6 +38,7 @@
     "report:reconcile:partial-apartment": "tsx scripts/suggest-partial-apartment-candidates.ts",
     "db:cleanup:test-imports": "tsx scripts/cleanup-test-import-data.ts",
     "export:operations:xlsx": "node scripts/export-operations-excel-v2.cjs",
+    "export:monthly-fee-ledger": "tsx scripts/export-monthly-fee-ledger.ts",
     "prod:backup:postgres": "bash scripts/production/backup-postgres.sh",
     "prod:backup:postgres:windows": "powershell -ExecutionPolicy Bypass -File scripts/production/backup-postgres.ps1",
     "db:backup:repo": "bash scripts/setup/backup-db-to-repo.sh",

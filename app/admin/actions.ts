@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/src/modules/database";
-import { requireAdmin, requireAdminRole } from "@/src/modules/auth/current-user";
+import { requireAdmin, requirePermission } from "@/src/modules/auth/current-user";
 import { normalizeAdminLoginIdentifier, normalizeVietnamPhone } from "@/src/modules/auth/identity";
 import { hashPassword, verifyPassword } from "@/src/modules/auth/password";
 import {
@@ -102,7 +102,7 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function resetAccountPasswordAction(formData: FormData) {
-  const currentAccount = await requireAdminRole("SUPER_ADMIN");
+  const currentAccount = await requirePermission("MANAGE_ACCOUNTS");
 
   const id = Number(getString(formData, "id"));
   const newPassword = getString(formData, "newPassword");
@@ -130,7 +130,7 @@ export async function logoutAction() {
 }
 
 export async function createManagerAction(formData: FormData) {
-  await requireAdminRole("SUPER_ADMIN");
+  await requirePermission("MANAGE_ACCOUNTS");
 
   const username = getString(formData, "username");
   const phoneNumber = normalizeVietnamPhone(getString(formData, "phoneNumber"));
@@ -163,7 +163,7 @@ export async function createManagerAction(formData: FormData) {
 }
 
 export async function lockAccountAction(formData: FormData) {
-  const currentAccount = await requireAdminRole("SUPER_ADMIN");
+  const currentAccount = await requirePermission("MANAGE_ACCOUNTS");
 
   const id = Number(getString(formData, "id"));
   if (!Number.isInteger(id) || id === currentAccount.id) {
@@ -181,7 +181,7 @@ export async function lockAccountAction(formData: FormData) {
 }
 
 export async function unlockAccountAction(formData: FormData) {
-  await requireAdminRole("SUPER_ADMIN");
+  await requirePermission("MANAGE_ACCOUNTS");
 
   const id = Number(getString(formData, "id"));
   if (!Number.isInteger(id)) {
@@ -199,7 +199,7 @@ export async function unlockAccountAction(formData: FormData) {
 }
 
 export async function updateAccountRoleAction(formData: FormData) {
-  const currentAccount = await requireAdminRole("SUPER_ADMIN");
+  const currentAccount = await requirePermission("MANAGE_ACCOUNTS");
 
   const id = Number(getString(formData, "id"));
   const role = getAssignableAdminRole(getString(formData, "role"));

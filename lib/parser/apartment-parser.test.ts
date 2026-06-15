@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseApartmentCode } from "@/lib/parser/apartment-parser";
+import { findApartmentMentionRanges, parseApartmentCode } from "@/lib/parser/apartment-parser";
 import { normalizeApartmentCode } from "@/src/modules/shared/utils/text";
 
 describe("parseApartmentCode", () => {
@@ -158,7 +158,62 @@ describe("parseApartmentCode", () => {
     expect(parseApartmentCode("Toa LA4 so 210nop phi QLVH tu thang 6 -2026 den thang 12-2026").parsedApartmentCode).toBe("L4A.210");
   });
 
+  it("parses a room number glued to a payment word before the block", () => {
+    const result = parseApartmentCode(
+      "LE THI PHUONG chuyen tien327.L4b phicot5,6,7,8,9,10/2026 toi BQT KHU NHA O XA HOI"
+    );
+
+    expect(result.parsedApartmentCode).toBe("L4B.327");
+    expect(result.candidates).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: "L4B.327",
+          reason: "PAYMENT_WORD_ROOM_BLOCK_SPACED"
+        })
+      ])
+    );
+  });
+
+  it("parses apartment room followed by the full tower-building phrase", () => {
+    const result = parseApartmentCode(
+      "164D60610P2SE2R0 Can ho 415 toa nha L2 sdt 0945395289 dong phi QLVH tu thang 6 den thang 11/2026",
+    );
+
+    expect(result.parsedApartmentCode).toBe("L2.415");
+    expect(result.candidates).toEqual([
+      expect.objectContaining({
+        code: "L2.415",
+        reason: "APARTMENT_ROOM_TOWER_BUILDING",
+      }),
+    ]);
+  });
+
+  it("does not infer an apartment from tower-building text without an apartment context", () => {
+    expect(parseApartmentCode("giao hang 415 toa nha L2 luc 9 gio").parsedApartmentCode).toBeUndefined();
+  });
+
   it("does not infer missing block from separated L and room code", () => {
     expect(parseApartmentCode("ck can ho L 111B nop phi 012026 062026").parsedApartmentCode).toBeUndefined();
+  });
+});
+
+describe("findApartmentMentionRanges", () => {
+  it.each([
+    ["164D60611WZ89Z1B T6 L1 309", "L1.309", "L1 309"],
+    ["Toa nha L1.So 506B ky phi QLVH", "L1.506B", "Toa nha L1.So 506B"],
+    ["Can ho 415 toa nha L2 dong phi", "L2.415", "Can ho 415 toa nha L2"],
+    ["LE THI PHUONG chuyen tien327.L4b phicot", "L4B.327", "327.L4b"],
+    ["CT DEN 303- Lo L4B nop phi", "L4B.303", "303- Lo L4B"],
+    ["L4C_sonha303 nop phi", "L4C.303", "L4C_sonha303"],
+  ])("highlights parser evidence in %s", (content, apartmentCode, expectedText) => {
+    const ranges = findApartmentMentionRanges(content, [apartmentCode]);
+    expect(ranges.length).toBeGreaterThan(0);
+    expect(content.slice(ranges[0].start, ranges[0].end)).toBe(expectedText);
+  });
+
+  it("does not invent a highlight when an apartment was selected only from evidence", () => {
+    expect(
+      findApartmentMentionRanges("Green Land chuyen khoan nhanh qua Zalo", ["L1.515"]),
+    ).toEqual([]);
   });
 });

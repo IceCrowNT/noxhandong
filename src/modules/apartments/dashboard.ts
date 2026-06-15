@@ -3,6 +3,7 @@ import {
   parsePublicLookupInput,
   publicFeeDisplayText,
 } from "@/src/modules/billing/fee-status";
+import { extractNumericPaidThrough, resolveRelativeMonth } from "@/src/modules/billing/paid-through";
 import type { Prisma } from "@prisma/client";
 
 const MAX_SEARCH_LENGTH = 80;
@@ -58,16 +59,26 @@ function internalMonthLabel(monthIndex: number) {
   return `tháng ${month}/${year}`;
 }
 
+function noticePeriodAfterPaidThrough(month: number, year: number) {
+  const startIndex = year * 12 + month;
+  const endIndex = startIndex + 5;
+  const startMonth = (startIndex % 12) + 1;
+  const startYear = Math.floor(startIndex / 12);
+  const endMonth = (endIndex % 12) + 1;
+  const endYear = Math.floor(endIndex / 12);
+  return {
+    label: `T${startMonth}/${startYear} - T${endMonth}/${endYear}`,
+    startMonth,
+    startYear,
+    endMonth,
+    endYear,
+  };
+}
+
 function extractPaidThrough(payload: unknown, fallback: string | null) {
   const payloadRecord = recordValue(payload);
   const paidThrough = recordValue(payloadRecord?.paidThrough);
-  const numericMonth =
-    numericValue(paidThrough?.numericMonth) ??
-    numericValue(payloadRecord?.numericMonth) ??
-    (() => {
-      const match = String(fallback || "").match(/-?\d+(?:[.,]\d+)?/);
-      return match ? Number(match[0].replace(",", ".")) : null;
-    })();
+  const numericMonth = extractNumericPaidThrough(payload, fallback);
 
   const flooredMonth = numericMonth === null ? null : Math.floor(numericMonth);
   const resolvedMonth = numericValue(paidThrough?.resolvedMonth);
@@ -91,8 +102,9 @@ function extractPaidThrough(payload: unknown, fallback: string | null) {
     };
   }
 
-  const monthForLabel = resolvedMonth ?? (((flooredMonth - 1) % 12) + 12) % 12 + 1;
-  const yearForLabel = resolvedYear ?? BASE_YEAR + Math.floor((flooredMonth - 1) / 12);
+  const resolved = resolveRelativeMonth(flooredMonth);
+  const monthForLabel = resolvedMonth ?? resolved.month;
+  const yearForLabel = resolvedYear ?? resolved.year;
 
   return {
     numericMonth,
@@ -106,7 +118,11 @@ function extractPaidThrough(payload: unknown, fallback: string | null) {
   };
 }
 
-async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel: string | null | undefined) {
+async function getFeeOverview(
+  currentBatchId: number | null,
+  currentPeriodLabel: string | null | undefined,
+  requestedPaidThrough?: string,
+) {
   if (!currentBatchId) {
     const currentPeriod = parsePeriod(currentPeriodLabel);
     const powerCutSoonMonth = currentPeriod.month - 4;
@@ -123,6 +139,8 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
       partialRoundedCount: 0,
       completionPercent: 0,
       distribution: [],
+      exactPaidThroughOptions: [],
+      selectedNoticeGroup: null,
       attentionRows: [],
     };
   }
@@ -135,6 +153,12 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
       ma_can: true,
       thang_da_dong_den_hien_tai: true,
       payload_public_json: true,
+      can_ho: {
+        select: {
+          ma_lo: true,
+          toa_lo_goc: true,
+        },
+      },
     },
   });
 
@@ -148,6 +172,16 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
     displayText: string;
     kind: "POWER_CUT" | "POWER_CUT_SOON";
   }> = [];
+  const exactPaidThroughGroups = new Map<
+    string,
+    {
+      key: string;
+      label: string;
+      month: number;
+      year: number;
+      apartments: Array<{ code: string; lot: string }>;
+    }
+  >();
 
   let completedCount = 0;
   let noDataCount = 0;
@@ -169,6 +203,26 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
       sortKey: paidThrough.sortKey,
       isCurrentOrLater: existing?.isCurrentOrLater || isCompleted,
     });
+
+    if (
+      !paidThrough.isPartialPayment &&
+      paidThrough.resolvedMonth !== null &&
+      paidThrough.resolvedYear !== null
+    ) {
+      const exactKey = `${paidThrough.resolvedYear}-${String(paidThrough.resolvedMonth).padStart(2, "0")}`;
+      const exactGroup = exactPaidThroughGroups.get(exactKey) || {
+        key: exactKey,
+        label: paidThrough.label,
+        month: paidThrough.resolvedMonth,
+        year: paidThrough.resolvedYear,
+        apartments: [],
+      };
+      exactGroup.apartments.push({
+        code: row.ma_can,
+        lot: row.can_ho.toa_lo_goc || row.can_ho.ma_lo || "Chưa xác định",
+      });
+      exactPaidThroughGroups.set(exactKey, exactGroup);
+    }
 
     if (monthIndex !== null && monthIndex === powerCutSoonMonth) {
       attentionRows.push({
@@ -192,6 +246,18 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
 
   const total = feeRows.length;
   const notCompletedCount = Math.max(total - completedCount - noDataCount, 0);
+  const exactPaidThroughOptions = [...exactPaidThroughGroups.values()]
+    .sort((a, b) => b.year - a.year || b.month - a.month)
+    .map((group) => ({
+      key: group.key,
+      label: group.label,
+      count: group.apartments.length,
+    }));
+  const selectedExactGroup =
+    exactPaidThroughGroups.get(requestedPaidThrough || "") ||
+    exactPaidThroughGroups.get(`${BASE_YEAR}-05`) ||
+    exactPaidThroughGroups.values().next().value ||
+    null;
 
   return {
     currentPeriod,
@@ -211,6 +277,27 @@ async function getFeeOverview(currentBatchId: number | null, currentPeriodLabel:
         ...item,
         percent: total ? Math.round((item.count / total) * 100) : 0,
       })),
+    exactPaidThroughOptions,
+    selectedNoticeGroup: selectedExactGroup
+      ? {
+          key: selectedExactGroup.key,
+          label: selectedExactGroup.label,
+          count: selectedExactGroup.apartments.length,
+          apartmentGroups: Object.entries(
+            selectedExactGroup.apartments.reduce<Record<string, string[]>>((groups, apartment) => {
+              groups[apartment.lot] ||= [];
+              groups[apartment.lot].push(apartment.code);
+              return groups;
+            }, {}),
+          )
+            .sort(([left], [right]) => left.localeCompare(right, "vi-VN", { numeric: true }))
+            .map(([lot, apartmentCodes]) => ({
+              lot,
+              apartmentCodes: apartmentCodes.sort((a, b) => a.localeCompare(b, "vi-VN", { numeric: true })),
+            })),
+          noticePeriod: noticePeriodAfterPaidThrough(selectedExactGroup.month, selectedExactGroup.year),
+        }
+      : null,
     attentionRows: attentionRows.sort((a, b) => {
       if (a.kind !== b.kind) return a.kind === "POWER_CUT_SOON" ? -1 : 1;
       return a.ma_can.localeCompare(b.ma_can, "vi-VN", { numeric: true });
@@ -238,7 +325,11 @@ function normalizeSearchCandidates(rawQuery: string) {
   };
 }
 
-export async function getApartmentDashboardData(rawQuery: string) {
+export async function getApartmentDashboardData(
+  rawQuery: string,
+  requestedFeePeriod?: string,
+  requestedPaidThrough?: string,
+) {
   const { query, candidates, searchText, parseMessage } = normalizeSearchCandidates(rawQuery);
 
   const [
@@ -247,6 +338,7 @@ export async function getApartmentDashboardData(rawQuery: string) {
     contactReviewCount,
     approvedContactCount,
     currentBatch,
+    publishedFeeBatches,
     latestImports,
     transactionReviewStats,
     transactionParseStats,
@@ -275,6 +367,17 @@ export async function getApartmentDashboardData(rawQuery: string) {
         trang_thai: true,
       },
     }),
+    prisma.batchTrangThaiPhiPublic.findMany({
+      where: { trang_thai: "DA_PUBLIC" },
+      orderBy: [{ public_luc: "desc" }, { id: "desc" }],
+      distinct: ["ky_du_lieu"],
+      select: {
+        id: true,
+        ky_du_lieu: true,
+        public_luc: true,
+        la_batch_public_hien_hanh: true,
+      },
+    }),
     prisma.loNhapDuLieu.findMany({
       orderBy: { thoi_diem_nhap: "desc" },
       take: 8,
@@ -298,7 +401,16 @@ export async function getApartmentDashboardData(rawQuery: string) {
     }),
   ]);
 
-  const feeOverview = await getFeeOverview(currentBatch?.id ?? null, currentBatch?.ky_du_lieu);
+  const selectedFeeBatch =
+    publishedFeeBatches.find((batch) => batch.ky_du_lieu === requestedFeePeriod) ||
+    publishedFeeBatches.find((batch) => batch.la_batch_public_hien_hanh) ||
+    publishedFeeBatches[0] ||
+    null;
+  const feeOverview = await getFeeOverview(
+    selectedFeeBatch?.id ?? null,
+    selectedFeeBatch?.ky_du_lieu,
+    requestedPaidThrough,
+  );
 
   const searchWhere: Prisma.CanHoWhereInput[] = [{ ma_can: { contains: searchText } }];
   if (candidates.length) {
@@ -351,6 +463,13 @@ export async function getApartmentDashboardData(rawQuery: string) {
           }
         : null,
       feeOverview,
+      selectedFeePeriod: selectedFeeBatch?.ky_du_lieu || null,
+      publishedFeePeriods: publishedFeeBatches.map((batch) => ({
+        id: batch.id,
+        period: batch.ky_du_lieu,
+        publicAt: formatDate(batch.public_luc),
+        isCurrent: batch.la_batch_public_hien_hanh,
+      })),
       transactionReviewStats: transactionReviewStats.map((item) => ({
         status: item.trang_thai_duyet,
         count: item._count._all,
@@ -506,6 +625,42 @@ async function getApartmentDetail(apartmentId: number) {
       trang_thai_duyet: true,
     },
   });
+  const evidenceNeededTransactions = await prisma.giaoDichNganHang.findMany({
+    where: {
+      trang_thai_duyet: "DA_RA_SOAT",
+      OR: [
+        { ma_can_duoc_chon: apartment.ma_can },
+        { ma_can_parse: apartment.ma_can },
+        { ung_vien_khop: { some: { ma_can: apartment.ma_can } } },
+      ],
+    },
+    orderBy: [{ ngay_giao_dich: "desc" }, { id: "desc" }],
+    take: 10,
+    select: {
+      id: true,
+      ngay_giao_dich: true,
+      so_tien: true,
+      noi_dung_goc: true,
+      ten_nguoi_chuyen: true,
+      tham_chieu_ngan_hang: true,
+      ma_can_parse: true,
+      ma_can_duoc_chon: true,
+      ghi_chu_duyet: true,
+      do_tin_cay: true,
+      chung_tu_doi_soat: {
+        orderBy: { ngay_tao: "desc" },
+        take: 3,
+        select: {
+          id: true,
+          loai_chung_tu: true,
+          duong_dan_file: true,
+          ten_file_goc: true,
+          ghi_chu: true,
+          ngay_tao: true,
+        },
+      },
+    },
+  });
 
   const feeStatus = apartment.trang_thai_phi_public[0] ?? null;
 
@@ -556,6 +711,16 @@ async function getApartmentDetail(apartmentId: number) {
       ...candidate,
       flags: jsonArray(candidate.flags_json),
       flags_json: undefined,
+    })),
+    evidenceNeededTransactions: evidenceNeededTransactions.map((transaction) => ({
+      ...transaction,
+      ngay_giao_dich: formatDate(transaction.ngay_giao_dich),
+      so_tien: formatDecimal(transaction.so_tien),
+      do_tin_cay: formatDecimal(transaction.do_tin_cay),
+      chung_tu_doi_soat: transaction.chung_tu_doi_soat.map((item) => ({
+        ...item,
+        ngay_tao: formatDate(item.ngay_tao),
+      })),
     })),
   };
 }

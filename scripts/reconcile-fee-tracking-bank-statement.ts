@@ -6,7 +6,12 @@ import "dotenv/config";
 import XLSX from "xlsx";
 import { parseApartmentCode } from "../src/modules/transactions/parser/apartment-parser";
 import { normalizeApartmentCode, normalizeHeader, safeString } from "../src/modules/shared/utils/text";
-import { formatDate, formatMoney, readStatementRows, transactionFingerprint } from "./bank-statement-common";
+import {
+  formatDate,
+  formatMoney,
+  readStatementRows,
+  transactionFingerprint,
+} from "../src/modules/transactions/import/bank-statement-common";
 
 const DEFAULT_TRACKING_HINT = "Theo dõi thu phí T5.xlsx";
 const DEFAULT_STATEMENT_HINT = "lich-su-giao-dich T5(26).xls";

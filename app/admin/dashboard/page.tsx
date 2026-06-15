@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   Building2,
   CheckCircle2,
+  Download,
   FileSpreadsheet,
   Gauge,
   PhoneCall,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { AdminFrame } from "@/components/admin/admin-frame";
+import { DashboardScrollMemory } from "@/components/admin/dashboard-scroll-memory";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,7 +30,6 @@ import {
   contactStatusLabel,
   importSourceLabel,
   importStatusLabel,
-  publicBatchStatusLabel,
   reviewFlagLabel,
   transactionMatchStatusLabel,
   transactionReviewStatusLabel
@@ -38,6 +39,8 @@ import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
 type DashboardPageProps = {
   searchParams?: Promise<{
     ma_can?: string;
+    ky_phi?: string;
+    thang_da_dong?: string;
   }>;
 };
 
@@ -196,6 +199,152 @@ function FeeDistributionBars({
   );
 }
 
+function FeePeriodControls({
+  periods,
+  selectedPeriod,
+  searchQuery,
+}: {
+  periods: Array<{ period: string; isCurrent: boolean }>;
+  selectedPeriod: string | null;
+  searchQuery: string;
+}) {
+  if (!periods.length || !selectedPeriod) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-wrap items-end gap-2">
+      <form action="/admin/dashboard" className="flex flex-wrap items-end gap-2" data-preserve-scroll>
+        {searchQuery ? <input name="ma_can" type="hidden" value={searchQuery} /> : null}
+        <label className="grid gap-1 text-xs font-semibold text-[var(--muted)]">
+          Kỳ dữ liệu đã công khai
+          <select
+            className="h-10 min-w-[150px] rounded-md border border-[var(--line)] bg-white px-3 text-sm font-medium text-[var(--text)]"
+            defaultValue={selectedPeriod}
+            name="ky_phi"
+          >
+            {periods.map((item) => (
+              <option key={item.period} value={item.period}>
+                {item.period}{item.isCurrent ? " · Hiện hành" : ""}
+              </option>
+            ))}
+          </select>
+        </label>
+        <Button type="submit" variant="secondary">
+          Xem kỳ
+        </Button>
+      </form>
+      <Button asChild>
+        <a href={`/api/export/monthly-fee-ledger?period=${encodeURIComponent(selectedPeriod)}`}>
+          <Download size={17} aria-hidden="true" />
+          Xuất Excel FINAL
+        </a>
+      </Button>
+    </div>
+  );
+}
+
+function FeeNoticeList({
+  options,
+  selected,
+  selectedPeriod,
+  searchQuery,
+}: {
+  options: Array<{ key: string; label: string; count: number }>;
+  selected: {
+    key: string;
+    label: string;
+    count: number;
+    apartmentGroups: Array<{ lot: string; apartmentCodes: string[] }>;
+    noticePeriod: { label: string };
+  } | null;
+  selectedPeriod: string | null;
+  searchQuery: string;
+}) {
+  if (!options.length || !selected) return null;
+
+  return (
+    <Card className="bg-white/90">
+      <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <CardTitle>Lập danh sách thông báo thu phí</CardTitle>
+          <CardDescription>
+            Lọc các căn đã đóng chính xác đến một tháng; không gồm căn đóng lẻ hoặc đã đóng vượt mốc.
+          </CardDescription>
+        </div>
+        <form action="/admin/dashboard" className="flex flex-wrap items-end gap-2" data-preserve-scroll>
+          {selectedPeriod ? <input name="ky_phi" type="hidden" value={selectedPeriod} /> : null}
+          {searchQuery ? <input name="ma_can" type="hidden" value={searchQuery} /> : null}
+          <label className="grid gap-1 text-xs font-semibold text-[var(--muted)]">
+            Đã đóng chính xác đến
+            <select
+              className="h-10 min-w-[190px] rounded-md border border-[var(--line)] bg-white px-3 text-sm font-medium"
+              defaultValue={selected.key}
+              name="thang_da_dong"
+            >
+              {options.map((option) => (
+                <option key={option.key} value={option.key}>
+                  {option.label} · {formatNumber(option.count)} căn
+                </option>
+              ))}
+            </select>
+          </label>
+          <Button type="submit" variant="secondary">Lọc danh sách</Button>
+          {selectedPeriod ? (
+            <Button asChild>
+              <a
+                href={`/api/export/fee-notice-list?period=${encodeURIComponent(selectedPeriod)}&paidThrough=${encodeURIComponent(selected.key)}`}
+              >
+                <Download size={17} aria-hidden="true" />
+                Xuất Excel
+              </a>
+            </Button>
+          ) : null}
+        </form>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+            <span className="text-xs font-semibold uppercase text-[var(--muted)]">Mốc đã đóng</span>
+            <strong className="mt-1 block text-lg">{selected.label}</strong>
+          </div>
+          <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+            <span className="text-xs font-semibold uppercase text-[var(--muted)]">Kỳ thông báo 6 tháng</span>
+            <strong className="mt-1 block text-lg text-[var(--accent)]">{selected.noticePeriod.label}</strong>
+          </div>
+          <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+            <span className="text-xs font-semibold uppercase text-[var(--muted)]">Số căn cần thông báo</span>
+            <strong className="mt-1 block text-lg">{formatNumber(selected.count)} căn</strong>
+          </div>
+        </div>
+        <div className="max-h-96 space-y-3 overflow-y-auto overscroll-contain rounded-lg border border-[var(--line)] bg-white p-3">
+          {selected.apartmentGroups.map((group) => (
+            <section className="rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3" key={group.lot}>
+              <div className="mb-3 flex items-center justify-between gap-3 border-b border-[var(--line)] pb-2">
+                <strong className="text-base text-[var(--accent)]">Lô {group.lot}</strong>
+                <span className="text-xs font-semibold text-[var(--muted)]">
+                  {formatNumber(group.apartmentCodes.length)} căn
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10">
+                {group.apartmentCodes.map((code) => (
+                  <Link
+                    className="rounded-md border border-[var(--line)] bg-white px-2 py-2 text-center text-sm font-semibold hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
+                    href={`/admin/dashboard?ma_can=${encodeURIComponent(code)}${selectedPeriod ? `&ky_phi=${encodeURIComponent(selectedPeriod)}` : ""}&thang_da_dong=${encodeURIComponent(selected.key)}`}
+                    key={code}
+                  >
+                    {code}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function AttentionRows({
   items,
 }: {
@@ -223,30 +372,32 @@ function AttentionRows({
       </div>
 
       {items.length ? (
-        items.map((item) => (
-          <div
-            key={`${item.kind}-${item.ma_can}`}
-            className={
-              item.kind === "POWER_CUT"
-                ? "rounded-lg border border-red-200 bg-red-50 p-3 text-sm"
-                : "rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm"
-            }
-          >
-            <div className="flex items-center justify-between gap-3">
-              <strong>{item.ma_can}</strong>
-              <span
-                className={
-                  item.kind === "POWER_CUT"
-                    ? "rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-800"
-                    : "rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800"
-                }
-              >
-                {item.label}
-              </span>
+        <div className="max-h-80 space-y-2 overflow-y-auto overscroll-contain pr-1 sm:max-h-96 lg:max-h-[420px]">
+          {items.map((item) => (
+            <div
+              key={`${item.kind}-${item.ma_can}`}
+              className={
+                item.kind === "POWER_CUT"
+                  ? "rounded-lg border border-red-200 bg-red-50 p-3 text-sm"
+                  : "rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm"
+              }
+            >
+              <div className="flex items-center justify-between gap-3">
+                <strong>{item.ma_can}</strong>
+                <span
+                  className={
+                    item.kind === "POWER_CUT"
+                      ? "rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-800"
+                      : "rounded-md bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800"
+                  }
+                >
+                  {item.label}
+                </span>
+              </div>
+              <p className="mt-2 text-[var(--muted)]">{item.displayText}</p>
             </div>
-            <p className="mt-2 text-[var(--muted)]">{item.displayText}</p>
-          </div>
-        ))
+          ))}
+        </div>
       ) : (
         <div className="rounded-lg border border-dashed border-[var(--line)] bg-white p-4 text-sm text-[var(--muted)]">
           Không có căn trong ngưỡng đã cắt điện hoặc cắt tháng này theo kỳ hiện tại.
@@ -565,6 +716,50 @@ function LatestPaymentHistoryCard({
   );
 }
 
+function EvidenceReviewCard({
+  items,
+  compact = false,
+}: {
+  compact?: boolean;
+  items: Array<{
+    id: number;
+    ngay_giao_dich: string | null;
+    so_tien: string | null;
+    noi_dung_goc: string;
+    ten_nguoi_chuyen: string | null;
+    tham_chieu_ngan_hang: string | null;
+    ghi_chu_duyet: string | null;
+    chung_tu_doi_soat: Array<{ id: number }>;
+  }>;
+}) {
+  if (!items.length) return null;
+
+  return (
+    <div className="grid gap-3">
+      {items.slice(0, compact ? 3 : 6).map((item) => (
+        <div key={item.id} className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <span className="text-xs font-semibold uppercase text-amber-800">Cần bổ sung bằng chứng</span>
+              <strong className="mt-1 block text-lg text-amber-950">{formatMoney(item.so_tien)}</strong>
+            </div>
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/admin/transactions/review?transactionId=${item.id}&status=DA_RA_SOAT&from=`}>
+                Mở giao dịch
+              </Link>
+            </Button>
+          </div>
+          <div className="mt-3 grid gap-1 text-sm text-amber-950/80">
+            <span>{formatDateTime(item.ngay_giao_dich)} · {compactText(item.ten_nguoi_chuyen)}</span>
+            <span className="line-clamp-2">{item.ghi_chu_duyet || item.noi_dung_goc}</span>
+            <span>{item.chung_tu_doi_soat.length ? `${item.chung_tu_doi_soat.length} bằng chứng đã lưu` : "Chưa có bằng chứng"}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function TransactionQualityStats({
   reviewStats,
   parseStats,
@@ -575,7 +770,7 @@ function TransactionQualityStats({
   const reviewTotal = reviewStats.reduce((sum, item) => sum + item.count, 0);
   const parseTotal = parseStats.reduce((sum, item) => sum + item.count, 0);
   const importantParse = ["KHOP_TRUC_TIEP", "KHOP_SAU_CHUAN_HOA", "NHIEU_CAN", "CHUA_NHAN_DIEN_DUOC_CAN", "MA_CAN_KHONG_HOP_LE"];
-  const importantReview = ["CHUA_DUYET", "DA_RA_SOAT", "DA_DUYET", "TU_CHOI"];
+  const importantReview = ["CHUA_DUYET", "DA_RA_SOAT", "DA_DUYET", "BAO_LUU", "TU_CHOI"];
   const parseByStatus = new Map(parseStats.map((item) => [item.status, item.count]));
   const reviewByStatus = new Map(reviewStats.map((item) => [item.status, item.count]));
 
@@ -627,7 +822,7 @@ function TransactionQualityStats({
 export default async function AdminDashboardPage({ searchParams }: DashboardPageProps) {
   const account = await requireAdmin();
   const params = await searchParams;
-  const data = await getApartmentDashboardData(params?.ma_can || "");
+  const data = await getApartmentDashboardData(params?.ma_can || "", params?.ky_phi, params?.thang_da_dong);
   const selected = data.search.selectedApartment;
   const hasSearch = Boolean(data.search.query);
   const feeOverview = data.summary.feeOverview;
@@ -682,12 +877,12 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </>
       }
     >
+      <DashboardScrollMemory />
       <section className="lg:hidden">
         <Tabs defaultValue="lookup" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="overview">Tổng quan</TabsTrigger>
             <TabsTrigger value="lookup">Tra cứu</TabsTrigger>
-            <TabsTrigger value="history">Lịch sử</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="grid gap-4">
@@ -718,12 +913,25 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
 
             <Card className="bg-white/90">
               <CardHeader className="pb-3">
-                <CardTitle className="text-xl">Phân bố tháng phí</CardTitle>
+                <CardTitle className="text-xl">Phân bố tháng đã đóng đến</CardTitle>
+                <CardDescription>Xem lại theo từng kỳ dữ liệu đã công khai.</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="grid gap-4">
+                <FeePeriodControls
+                  periods={data.summary.publishedFeePeriods}
+                  selectedPeriod={data.summary.selectedFeePeriod}
+                  searchQuery={data.search.query}
+                />
                 <FeeDistributionBars items={feeOverview.distribution} />
               </CardContent>
             </Card>
+
+            <FeeNoticeList
+              options={feeOverview.exactPaidThroughOptions}
+              selected={feeOverview.selectedNoticeGroup}
+              selectedPeriod={data.summary.selectedFeePeriod}
+              searchQuery={data.search.query}
+            />
 
             <Card className="bg-white/90">
               <CardHeader className="pb-3">
@@ -742,7 +950,10 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                 <CardDescription>Nhập mã căn để xem phí và liên hệ ngay.</CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="grid gap-3" action="/admin/dashboard">
+                <form className="grid gap-3" action="/admin/dashboard" data-preserve-scroll>
+                  {data.summary.selectedFeePeriod ? (
+                    <input name="ky_phi" type="hidden" value={data.summary.selectedFeePeriod} />
+                  ) : null}
                   <Input defaultValue={data.search.query} maxLength={80} name="ma_can" placeholder="Ví dụ: L1.112" />
                   <SubmitButton pendingText="Đang tìm...">
                     <Search size={17} aria-hidden="true" />
@@ -773,6 +984,18 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                     <span>Nguồn: batch #{selected.currentFeeStatus?.batch.id || "-"}</span>
                   </CardContent>
                 </Card>
+
+                {selected.evidenceNeededTransactions.length ? (
+                  <Card className="bg-white/90">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-xl">Cần bổ sung bằng chứng</CardTitle>
+                      <CardDescription>Các giao dịch đang gắn với căn và cần quản trị viên kiểm tra thêm.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <EvidenceReviewCard items={selected.evidenceNeededTransactions} compact />
+                    </CardContent>
+                  </Card>
+                ) : null}
 
                 <Card className="bg-white/90">
                   <CardHeader className="pb-3">
@@ -861,51 +1084,6 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             )}
           </TabsContent>
 
-          <TabsContent value="history" className="grid gap-4">
-            <Card className="bg-white/90">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl">Ma trận nhập dữ liệu</CardTitle>
-                <CardDescription>Các lô import gần nhất.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-3">
-                <div className="grid grid-cols-3 gap-2 overflow-hidden">
-                  {[
-                    ["Lô", data.latestImports.length],
-                    ["Dòng", data.latestImports.reduce((sum, item) => sum + (item.so_dong || 0), 0)],
-                    ["Hoàn tất", data.latestImports.filter((item) => importStatusLabel(item.trang_thai) === "Hoàn tất").length],
-                  ].map(([label, value]) => (
-                    <div key={label} className="min-w-0 rounded-lg border border-[var(--line)] bg-white p-3 text-center">
-                      <span className="block text-[11px] font-semibold uppercase text-[var(--muted)]">{label}</span>
-                      <strong className="mt-1 block text-lg">{formatNumber(Number(value))}</strong>
-                    </div>
-                  ))}
-                </div>
-                <MobileImportHistoryCards items={data.latestImports} />
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/90">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl">Chất lượng sao kê</CardTitle>
-                <CardDescription>Tỷ lệ parser và trạng thái duyệt hiện tại.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TransactionQualityStats
-                  reviewStats={data.summary.transactionReviewStats}
-                  parseStats={data.summary.transactionParseStats}
-                />
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/90">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl">Cơ cấu căn hộ</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ApartmentTypeBars items={data.summary.apartmentTypes} total={data.summary.totalApartments} />
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </section>
 
@@ -939,8 +1117,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             </div>
           </CardHeader>
           <CardContent className="text-sm leading-6 text-[var(--muted)]">
-            {feeOverview.completionPercent}% trên batch {data.summary.currentBatch?.ky_du_lieu || "-"} ·{" "}
-            {data.summary.currentBatch ? publicBatchStatusLabel(data.summary.currentBatch.trang_thai) : "Chưa có batch"}
+            {feeOverview.completionPercent}% trên kỳ {data.summary.selectedFeePeriod || "-"} · Đã công khai
           </CardContent>
         </Card>
 
@@ -1000,9 +1177,18 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </Card>
 
         <Card className="bg-white/90">
-          <CardHeader>
-            <CardTitle>Phân bố tháng đã đóng đến</CardTitle>
-            <CardDescription>Số lẻ được làm tròn xuống; mốc ngoài năm 2026 giữ đúng tháng/năm thực tế.</CardDescription>
+          <CardHeader className="gap-4">
+            <div>
+              <CardTitle>Phân bố tháng đã đóng đến</CardTitle>
+              <CardDescription>
+                Xem theo từng kỳ đã công khai; số lẻ được làm tròn xuống khi thống kê.
+              </CardDescription>
+            </div>
+            <FeePeriodControls
+              periods={data.summary.publishedFeePeriods}
+              selectedPeriod={data.summary.selectedFeePeriod}
+              searchQuery={data.search.query}
+            />
           </CardHeader>
           <CardContent>
             <FeeDistributionBars items={feeOverview.distribution} />
@@ -1023,7 +1209,16 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </Card>
       </section>
 
-      <section className="order-1 mb-5 grid gap-4 xl:grid-cols-[minmax(0,1.24fr)_minmax(340px,0.76fr)]">
+      <section className="order-4 mb-5">
+        <FeeNoticeList
+          options={feeOverview.exactPaidThroughOptions}
+          selected={feeOverview.selectedNoticeGroup}
+          selectedPeriod={data.summary.selectedFeePeriod}
+          searchQuery={data.search.query}
+        />
+      </section>
+
+      <section className="order-1 mb-5 grid gap-4">
         <Card id="lookup" className="bg-white/90">
           <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
             <div>
@@ -1032,7 +1227,10 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                 Có thể nhập nhiều kiểu mã căn như L1.115, L1 115, căn 124 lô 4B hoặc 124lo4b.
               </CardDescription>
             </div>
-            <form className="flex w-full flex-col gap-2 md:w-[480px] md:flex-row" action="/admin/dashboard">
+            <form className="flex w-full flex-col gap-2 md:w-[480px] md:flex-row" action="/admin/dashboard" data-preserve-scroll>
+              {data.summary.selectedFeePeriod ? (
+                <input name="ky_phi" type="hidden" value={data.summary.selectedFeePeriod} />
+              ) : null}
               <Input defaultValue={data.search.query} maxLength={80} name="ma_can" placeholder="Nhập mã căn" />
               <SubmitButton pendingText="Đang tìm...">
                 <Search size={17} aria-hidden="true" />
@@ -1148,7 +1346,15 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                           </TableCell>
                           <TableCell>
                             <Button asChild variant="secondary" size="sm">
-                              <Link href={`/admin/dashboard?ma_can=${encodeURIComponent(apartment.ma_can)}`}>Xem</Link>
+                              <Link
+                                href={`/admin/dashboard?ma_can=${encodeURIComponent(apartment.ma_can)}${
+                                  data.summary.selectedFeePeriod
+                                    ? `&ky_phi=${encodeURIComponent(data.summary.selectedFeePeriod)}`
+                                    : ""
+                                }`}
+                              >
+                                Xem
+                              </Link>
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -1172,37 +1378,6 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
           </CardContent>
         </Card>
 
-        <div className="grid gap-4">
-          <Card className="bg-white/90">
-            <CardHeader>
-              <CardTitle>Ma trận nhập dữ liệu</CardTitle>
-              <CardDescription>Bảng kiểm soát decor từ các lô import gần nhất.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ImportControlMatrix items={data.latestImports} />
-            </CardContent>
-          </Card>
-          <Card className="bg-white/90">
-            <CardHeader>
-              <CardTitle>Chất lượng sao kê</CardTitle>
-              <CardDescription>Tổng hợp parser và trạng thái duyệt giao dịch.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TransactionQualityStats
-                reviewStats={data.summary.transactionReviewStats}
-                parseStats={data.summary.transactionParseStats}
-              />
-            </CardContent>
-          </Card>
-          <Card className="bg-white/90">
-            <CardHeader>
-              <CardTitle>Cơ cấu căn hộ</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ApartmentTypeBars items={data.summary.apartmentTypes} total={data.summary.totalApartments} />
-            </CardContent>
-          </Card>
-        </div>
       </section>
 
       {selected ? (
@@ -1239,6 +1414,19 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                 </CardContent>
               ) : null}
             </Card>
+
+            {selected.evidenceNeededTransactions.length ? (
+              <Card className="bg-white/90">
+                <CardHeader>
+                  <p className="eyebrow">Cần xử lý</p>
+                  <CardTitle>Giao dịch cần bổ sung bằng chứng</CardTitle>
+                  <CardDescription>Hiển thị trực tiếp theo căn để quản lý có thể mở lại và hoàn tất hồ sơ.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <EvidenceReviewCard items={selected.evidenceNeededTransactions} />
+                </CardContent>
+              </Card>
+            ) : null}
 
             <Card className="bg-white/90">
               <CardHeader>

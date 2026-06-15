@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { prisma } from "@/src/modules/database";
 import {
   parsePublicLookupInput,
   PUBLIC_LOOKUP_MAX_LENGTH,
-  publicFeeDisplayText
+  publicFeeDisplayText,
 } from "@/src/modules/billing/fee-status";
+import { prisma } from "@/src/modules/database";
 
 type FeeLookupPageProps = {
   searchParams?: Promise<{
@@ -39,7 +39,7 @@ function formatDateTime(value: Date | null) {
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
   });
 }
 
@@ -71,7 +71,7 @@ async function checkRateLimit() {
   if (current.count > RATE_LIMIT_MAX_REQUESTS) {
     return {
       limited: true,
-      retryAfterSeconds: Math.ceil((current.resetAt - now) / 1000)
+      retryAfterSeconds: Math.ceil((current.resetAt - now) / 1000),
     };
   }
 
@@ -104,7 +104,7 @@ function PublicBackground() {
 
 function StateCard({
   children,
-  tone = "muted"
+  tone = "muted",
 }: {
   children: React.ReactNode;
   tone?: "muted" | "error";
@@ -133,9 +133,9 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
   const currentBatch = await prisma.batchTrangThaiPhiPublic.findFirst({
     where: {
       trang_thai: "DA_PUBLIC",
-      la_batch_public_hien_hanh: true
+      la_batch_public_hien_hanh: true,
     },
-    orderBy: { public_luc: "desc" }
+    orderBy: { public_luc: "desc" },
   });
 
   const feeStatuses =
@@ -144,9 +144,9 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
           where: {
             batch_id: currentBatch.id,
             ma_can: {
-              in: lookup.candidates
-            }
-          }
+              in: lookup.candidates,
+            },
+          },
         })
       : [];
   const feeStatus =
@@ -270,8 +270,7 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
           <StateCard tone="error">
             <h2 className="text-2xl font-bold text-red-800">Không tìm thấy dữ liệu</h2>
             <p className="mx-auto max-w-xl text-sm leading-6 text-red-800">
-              BQT chưa có dữ liệu tra cứu cho mã căn này hoặc nội dung nhập chưa đúng. Hãy kiểm tra lại mã căn rồi thử
-              lại.
+              BQT chưa có dữ liệu tra cứu cho mã căn này hoặc nội dung nhập chưa đúng. Hãy kiểm tra lại mã căn rồi thử lại.
             </p>
             <Button asChild variant="secondary" className="mx-auto">
               <Link href="/">Quay lại trang chủ</Link>
@@ -341,7 +340,7 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
                 </div>
                 <div className="rounded-lg border border-[var(--line)] bg-white p-4">
                   <span className="mb-2 block text-xs font-bold uppercase text-[var(--muted)]">Nguồn hiển thị</span>
-                  <strong>Dữ liệu chỉ mang tính chất tham khảo - Sẽ được kiểm duyệt mỗi cuối tháng</strong>
+                  <strong>Dữ liệu chỉ mang tính chất tham khảo - sẽ được kiểm duyệt mỗi cuối tháng</strong>
                 </div>
               </div>
 

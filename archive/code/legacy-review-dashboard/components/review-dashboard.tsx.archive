@@ -1,0 +1,2 @@
+// Archived 2026-06-10: replaced by the database-backed admin transaction review flow.
+export { ReviewDashboard } from "@/src/modules/transactions/ui/review-dashboard";

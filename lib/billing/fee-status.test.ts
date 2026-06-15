@@ -111,6 +111,7 @@ describe("parsePublicLookupInput", () => {
     const result = parsePublicLookupInput("L1.115 ".repeat(20));
 
     expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("Expected invalid lookup input.");
     expect(result.error).toBe("TOO_LONG");
     expect(result.sanitizedInput.length).toBe(PUBLIC_LOOKUP_MAX_LENGTH);
   });
@@ -119,6 +120,7 @@ describe("parsePublicLookupInput", () => {
     const result = parsePublicLookupInput("L1.115' OR 1=1 --");
 
     expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("Expected invalid lookup input.");
     expect(result.error).toBe("UNSAFE_CHARACTERS");
   });
 
@@ -126,6 +128,7 @@ describe("parsePublicLookupInput", () => {
     const result = parsePublicLookupInput("toi muon tra cuu phi");
 
     expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("Expected invalid lookup input.");
     expect(result.error).toBe("NO_APARTMENT_CODE");
   });
 });

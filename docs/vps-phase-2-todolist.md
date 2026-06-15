@@ -84,3 +84,17 @@ Node:
 ```powershell
 node -e "console.log(new Date().toString()); console.log(new Date().toISOString()); console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)"
 ```
+
+## Deploy migration Phase 2 ngay 2026-06-10
+
+- [ ] Backup PostgreSQL production truoc migration.
+- [ ] Deploy code moi len VPS.
+- [ ] Chay `npm run prisma:migrate:deploy`.
+- [ ] Xac nhan migration `20260610150000_phase2_integrity_and_reserve` da thanh cong.
+- [ ] Chay `npm run prisma:generate`.
+- [ ] Chay `npm run build`.
+- [ ] Restart service Node/NSSM.
+- [ ] Kiem tra role Super Admin/Manager/Technician.
+- [ ] Kiem tra giao dich `BAO_LUU` khong tao lich su phi.
+- [ ] Kiem tra phan bo nhieu can doc muc phi tu `quy_tac_phi`.
+- [ ] Kiem tra so du dong le duoc chuyen sang batch sau.

@@ -390,6 +390,10 @@ Rule má»›i Ä‘Ã£ thÃªm tá»« dá»¯ liá»‡u tháº­t:
 - `L4C 506 a` -> `L4C.506A`
 - `117l4 b` -> `L4B.117`
 - `can ho 530 l4 b` -> `L4B.530`
+- `Can ho 415 toa nha L2` -> `L2.415`
+  - rule: `APARTMENT_ROOM_TOWER_BUILDING`
+  - bắt buộc có ngữ cảnh `căn hộ` và cụm `tòa nhà/tòa/lô`;
+  - không dùng chỉ riêng chuỗi `<số> tòa nhà <lô>` để tránh nhận nhầm địa chỉ hoặc số khác.
 - `L3p509` -> `L3.509`
 
 Káº¿t quáº£ sau khi nÃ¢ng parser trÃªn 6 file:
@@ -456,3 +460,31 @@ Kiem tra:
 - `npm.cmd test`: 270/270 pass.
 - `npm.cmd run build`: pass.
 
+## Cập nhật 2026-06-10: hợp nhất toàn bộ thuật toán parser
+
+Nguồn thuật toán duy nhất:
+
+`src/modules/transactions/parser/apartment-parser.ts`
+
+File này hiện sở hữu toàn bộ:
+
+- chuẩn hóa nội dung;
+- nhận dạng mã căn và danh sách candidate;
+- phân loại khớp trực tiếp/khớp chuẩn hóa/nhiều căn/mã không hợp lệ;
+- rule loại giao dịch không liên quan;
+- độ tin cậy;
+- gợi ý căn khi chỉ có số căn nhưng thiếu lô;
+- version parser `apartment-code-parser-v0.7-unified`.
+
+`src/modules/transactions/matcher.ts`, script import và script báo cáo chỉ gọi kết quả từ module này, không được tự định nghĩa regex, từ khóa lọc hoặc cách phân loại riêng.
+
+Hai wrapper `lib/filter-rules.ts` và `src/modules/shared/filter-rules.ts` đã ngừng sử dụng, được chuyển vào:
+
+`archive/code/legacy-parser-2026-06-10/`
+
+Quy tắc bảo trì:
+
+1. Mọi rule mới chỉ được sửa trong file parser duy nhất.
+2. Case dữ liệu thật phải có test hồi quy.
+3. Không tạo thêm parser hoặc bộ từ khóa song song trong script.
+4. File cũ không xóa ngay; chuyển vào archive theo quy tắc tại `docs/module-map.md`.

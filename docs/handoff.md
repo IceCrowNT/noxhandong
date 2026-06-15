@@ -1111,3 +1111,68 @@ Náº¿u cÃ³ thay Ä‘á»•i parser mÃ£ cÄƒn:
 
 
 
+## Cap nhat quan trong 2026-06-06
+
+- Da reset DB dev theo phep cua chu du an va replay 8 migration.
+- Migration moi `20260606090000_simplify_transaction_state` da loai bo `ket_qua_parse_giao_dich`, `duyet_giao_dich`, `ngoai_le_giao_dich` va cot JSON ung vien trung lap.
+- `giao_dich_ngan_hang` la nguon trang thai parser/duyet duy nhat; `ung_vien_khop_giao_dich` lien ket truc tiep den giao dich.
+- Baseline dev da dung lai: 934 can, 1.977 contact candidate, current public T5/2026 gom 934 can, 1 so chot T5 cutoff 31/05/2026 23:59 gio Viet Nam.
+- `giao_dich_ngan_hang = 0`, san sang import sao ke moi khong bi trung du lieu test cu.
+- Tra cuu noi bo da hien giao dich dang `DA_RA_SOAT` can bo sung bang chung theo can va co link mo man duyet.
+- Kiem tra: `prisma validate` pass, 272 unit test pass, production build pass, integration test tra cuu bang chung pass.
+- Can sua script backup PostgreSQL tren Windows vi `pg_dump` chua xu ly dung duong dan workspace co Unicode.
+
+## Cap nhat Phase 2 ngay 2026-06-10
+
+- Da them migration `20260610150000_phase2_integrity_and_reserve`:
+  - them trang thai duyet `BAO_LUU`;
+  - unique phan bo theo giao dich/can ho;
+  - luu so du chua du thang trong `so_chot_can_ho`.
+- Import sao ke va thao tac duyet da duoc boc transaction de tranh ghi nua chung.
+- Re-import giu quyet dinh cu va canh bao neu parser moi mau thuan.
+- Quyen admin da gom tai `src/modules/auth/permissions.ts`; menu, middleware,
+  page va server action dung chung mot ma tran.
+- Muc phi phan bo khong con hardcode trong luong duyet/bao cao; doc tu
+  `quy_tac_phi` theo loai can va thoi diem hieu luc.
+- Trang thai `BAO_LUU` khong sinh lich su phi va khong nam trong hang cho chinh.
+- Logic ky phi dung chung tai `src/modules/billing/paid-through.ts`.
+- Code review dashboard in-memory cu da chuyen vao
+  `archive/code/legacy-review-dashboard/`.
+- Kiem tra local:
+  - `prisma validate`: pass;
+  - `tsc --noEmit`: pass;
+  - `npm test`: 282/282 pass.
+
+### Buoc thu cong khi dua len VPS
+
+1. Backup PostgreSQL production.
+2. Pull/copy code moi.
+3. Chay `npm run prisma:migrate:deploy`.
+4. Chay `npm run prisma:generate`.
+5. Build va restart service Node/NSSM.
+6. Dang nhap Super Admin, kiem tra import, bao luu, preview va public bang
+   mot lo test nho truoc khi dung du lieu that.
+
+## Cap nhat nghiem thu UI duyet sao ke 2026-06-11
+
+- Form phan bo nhieu can da chuyen tu 4 dong co dinh sang danh sach dong:
+  - them/xoa tuy y;
+  - dan danh sach ma can;
+  - chia deu tien lam goi y;
+  - chan submit neu tong tien chua khop giao dich.
+- Ma can nhap thu cong duoc chuan hoa tai server truoc khi doi chieu DB.
+- Bang doi soat theo thang:
+  - hien toan bo du lieu trong khung cuon cao co dinh;
+  - header sticky;
+  - sort theo can, so tien, nguoi chuyen, ngay va trang thai;
+  - giu sort trong URL sau refresh.
+- Nghiem thu local:
+  - Prisma validate: pass;
+  - migration status: database up to date, 9 migrations;
+  - unit test: 291/291 pass;
+  - production build: pass;
+  - mobile UI: 40/40 pass;
+  - Playwright review interaction: pass.
+- Dev server dang chay tai `http://localhost:3000`.
+- Phan con lai khong tu dong thuc hien tren production: backup DB VPS, deploy
+  migration/code moi, restart NSSM va smoke test bang tai khoan that.

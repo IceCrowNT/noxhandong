@@ -2,7 +2,9 @@
 
 Ngay lap: 2026-06-02
 
-Trang thai: cho chu du an duyet. Chua xoa bang, chua xoa du lieu theo file nay.
+Trang thai: da duoc chu du an duyet va thuc thi tren DB dev ngay 2026-06-06.
+
+Ket qua hien hanh xem tai [database.md](database.md). Cac row count va de xuat cu ben duoi chi con gia tri lich su tai thoi diem lap file.
 
 ## 1. Nguyen tac
 

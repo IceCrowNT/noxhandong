@@ -1,6 +1,9 @@
 import { test, expect, devices } from "@playwright/test";
+import "dotenv/config";
+import { ADMIN_SESSION_COOKIE, createAdminSessionToken } from "../src/modules/auth/session";
+import { prisma } from "../src/modules/database/prisma";
 
-const baseURL = "http://127.0.0.1:3000";
+const baseURL = "http://localhost:3000";
 
 const mobileDevices = [
   { name: "iPhone SE 3", width: 375, height: 667, deviceScaleFactor: 2, userAgent: devices["iPhone SE"].userAgent },
@@ -12,21 +15,23 @@ const mobileDevices = [
   { name: "Galaxy S9+", width: 320, height: 658, deviceScaleFactor: 4.5, userAgent: devices["Galaxy S9+"].userAgent },
   { name: "Galaxy S24", width: 360, height: 780, deviceScaleFactor: 3, userAgent: devices["Galaxy S24"].userAgent },
   { name: "Galaxy S24 Ultra", width: 384, height: 854, deviceScaleFactor: 3.5, userAgent: devices["Galaxy S24"].userAgent },
-  { name: "Galaxy Z Fold 5 folded", width: 344, height: 882, deviceScaleFactor: 3, userAgent: devices["Galaxy A55"].userAgent }
+  { name: "Galaxy Z Fold 5 folded", width: 344, height: 882, deviceScaleFactor: 3, userAgent: devices["Galaxy A55"].userAgent },
 ] as const;
 
 const publicRoutes = [
   { name: "home", path: "/", requiredText: "Tra cứu" },
   { name: "lookup-result", path: "/tra-cuu-phi?ma_can=L1.115", requiredText: "Tra cứu" },
-  { name: "admin-login", path: "/admin/login", requiredText: "Đăng nhập" }
+  { name: "admin-login", path: "/admin/login", requiredText: "Đăng nhập" },
 ] as const;
 
 const adminRoutes = [
   { name: "admin-dashboard", path: "/admin/dashboard", requiredText: "Tra cứu nội bộ" },
-  { name: "admin-import", path: "/admin/import", requiredText: "Nhập" },
+  { name: "admin-import", path: "/admin/import", requiredText: "Nhập dữ liệu phí" },
+  { name: "admin-transactions", path: "/admin/transactions/review", requiredText: "Duyệt sao kê" },
+  { name: "admin-announcements", path: "/admin/announcements", requiredText: "Thông báo" },
   { name: "admin-contacts", path: "/admin/contacts/review", requiredText: "Liên hệ" },
   { name: "admin-accounts", path: "/admin/accounts", requiredText: "Tài khoản" },
-  { name: "admin-profile", path: "/admin/profile", requiredText: "Tài khoản của tôi" }
+  { name: "admin-profile", path: "/admin/profile", requiredText: "Tài khoản của tôi" },
 ] as const;
 
 function safeName(value: string) {
@@ -40,22 +45,70 @@ async function assertMobileLayout(page: import("@playwright/test").Page, require
   const metrics = await page.evaluate(() => {
     const doc = document.documentElement;
     const body = document.body;
+    const viewportWidth = doc.clientWidth;
+    const overflowElements = Array.from(document.querySelectorAll<HTMLElement>("body *"))
+      .filter((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.right > viewportWidth + 2 || rect.left < -2;
+      })
+      .slice(0, 8)
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        const ancestors: string[] = [];
+        let parent = element.parentElement;
+        while (parent && ancestors.length < 8) {
+          ancestors.push(`${parent.tagName.toLowerCase()}.${parent.className}`);
+          parent = parent.parentElement;
+        }
+        return {
+          tag: element.tagName.toLowerCase(),
+          className: element.className,
+          parentClassName: element.parentElement?.className || "",
+          grandParentClassName: element.parentElement?.parentElement?.className || "",
+          ancestors,
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+        };
+      });
     return {
       clientWidth: doc.clientWidth,
       scrollWidth: Math.max(doc.scrollWidth, body.scrollWidth),
-      bodyTextLength: body.innerText.trim().length
+      bodyTextLength: body.innerText.trim().length,
+      overflowElements,
     };
   });
   expect(metrics.bodyTextLength).toBeGreaterThan(20);
-  expect(metrics.scrollWidth - metrics.clientWidth).toBeLessThanOrEqual(2);
+  expect(
+    metrics.scrollWidth - metrics.clientWidth,
+    `Page overflow elements: ${JSON.stringify(metrics.overflowElements)}`,
+  ).toBeLessThanOrEqual(2);
 }
 
 async function login(page: import("@playwright/test").Page) {
-  await page.goto(`${baseURL}/admin/login`, { waitUntil: "networkidle" });
-  await page.locator('input[name="username"]').fill("admin");
-  await page.locator('input[name="password"]').fill("Admin@123");
-  await page.locator('button[type="submit"]').click();
-  await page.waitForURL(/\/admin(?:\/dashboard)?(?:\?|$)/, { timeout: 15000 });
+  const account = await prisma.taiKhoanQuanTri.findFirst({
+    where: { vai_tro: "SUPER_ADMIN", trang_thai: "DANG_HOAT_DONG" },
+    select: { id: true, ten_dang_nhap: true, vai_tro: true },
+  });
+  if (!account) {
+    throw new Error("Không tìm thấy tài khoản Super Admin đang hoạt động để kiểm tra UI.");
+  }
+
+  const token = await createAdminSessionToken({
+    userId: account.id,
+    username: account.ten_dang_nhap,
+    role: account.vai_tro,
+  });
+  await page.context().addCookies([
+    {
+      name: ADMIN_SESSION_COOKIE,
+      value: token,
+      domain: "localhost",
+      path: "/",
+      httpOnly: true,
+      sameSite: "Lax",
+    },
+  ]);
 }
 
 for (const device of mobileDevices) {
@@ -65,7 +118,7 @@ for (const device of mobileDevices) {
       deviceScaleFactor: device.deviceScaleFactor,
       hasTouch: true,
       isMobile: true,
-      userAgent: device.userAgent
+      userAgent: device.userAgent,
     });
 
     for (const route of publicRoutes) {
@@ -74,7 +127,7 @@ for (const device of mobileDevices) {
         await assertMobileLayout(page, route.requiredText);
         await page.screenshot({
           fullPage: true,
-          path: `.local/mobile-ui-audit/${safeName(device.name)}-${route.name}.png`
+          path: `.local/mobile-ui-audit/${safeName(device.name)}-${route.name}.png`,
         });
         testInfo.annotations.push({ type: "viewport", description: `${device.width}x${device.height}` });
       });
@@ -87,7 +140,7 @@ for (const device of mobileDevices) {
         await assertMobileLayout(page, route.requiredText);
         await page.screenshot({
           fullPage: true,
-          path: `.local/mobile-ui-audit/${safeName(device.name)}-${route.name}.png`
+          path: `.local/mobile-ui-audit/${safeName(device.name)}-${route.name}.png`,
         });
       }
       testInfo.annotations.push({ type: "viewport", description: `${device.width}x${device.height}` });
