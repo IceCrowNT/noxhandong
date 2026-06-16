@@ -142,9 +142,10 @@ function FeeDistributionBars({
 }: {
   items: Array<{ label: string; count: number; percent: number; isCurrentOrLater: boolean }>;
 }) {
-  const total = items.reduce((sum, item) => sum + item.count, 0);
   const max = Math.max(...items.map((item) => item.count), 1);
-  const completed = items.reduce((sum, item) => sum + (item.isCurrentOrLater ? item.count : 0), 0);
+  const completed = items.find((item) => item.isCurrentOrLater)?.count || 0;
+  const notCompleted = items.find((item) => !item.isCurrentOrLater)?.count || 0;
+  const total = completed + notCompleted;
 
   return (
     <div className="grid gap-4">
@@ -826,6 +827,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
   const selected = data.search.selectedApartment;
   const hasSearch = Boolean(data.search.query);
   const feeOverview = data.summary.feeOverview;
+  const latestImport = data.latestImports[0] || null;
 
   const details = selected
     ? [
@@ -1210,6 +1212,30 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
       </section>
 
       <section className="order-4 mb-5">
+        <Card className="bg-white/90">
+          <CardHeader className="gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <CardTitle>Dữ liệu mới nhất</CardTitle>
+              <CardDescription>
+                {data.summary.currentBatch
+                  ? `Public hiện hành: ${data.summary.currentBatch.ky_du_lieu} · ${formatDateTime(data.summary.currentBatch.public_luc)}`
+                  : "Chưa có dữ liệu public hiện hành."}
+              </CardDescription>
+            </div>
+            {latestImport ? (
+              <div className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm">
+                <span className="block text-xs font-semibold uppercase text-[var(--muted)]">Import gần nhất</span>
+                <strong className="mt-1 block max-w-[520px] truncate" title={latestImport.ten_file}>
+                  {latestImport.ten_file}
+                </strong>
+                <span className="text-[var(--muted)]">{formatDateTime(latestImport.thoi_diem_nhap)}</span>
+              </div>
+            ) : null}
+          </CardHeader>
+        </Card>
+      </section>
+
+      <section className="order-4 mb-5">
         <FeeNoticeList
           options={feeOverview.exactPaidThroughOptions}
           selected={feeOverview.selectedNoticeGroup}
@@ -1552,7 +1578,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </section>
       ) : null}
 
-      <Card className="order-5 bg-white/90">
+      <Card className="order-5 hidden bg-white/90">
         <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center gap-2">

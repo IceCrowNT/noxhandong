@@ -162,9 +162,9 @@ async function getFeeOverview(
     },
   });
 
-  const groups = new Map<
-    string,
-    { label: string; count: number; sortKey: number; isCurrentOrLater: boolean }
+  const exactPaidThroughCounts = new Map<
+    number,
+    { label: string; count: number; sortKey: number }
   >();
   const attentionRows: Array<{
     ma_can: string;
@@ -195,14 +195,14 @@ async function getFeeOverview(
     if (monthIndex === null) noDataCount += 1;
     if (paidThrough.isPartialPayment) partialRoundedCount += 1;
 
-    const groupKey = `${paidThrough.sortKey}:${paidThrough.label}`;
-    const existing = groups.get(groupKey);
-    groups.set(groupKey, {
-      label: paidThrough.label,
-      count: (existing?.count || 0) + 1,
-      sortKey: paidThrough.sortKey,
-      isCurrentOrLater: existing?.isCurrentOrLater || isCompleted,
-    });
+    if (monthIndex !== null) {
+      const existing = exactPaidThroughCounts.get(monthIndex);
+      exactPaidThroughCounts.set(monthIndex, {
+        label: paidThrough.label,
+        count: (existing?.count || 0) + 1,
+        sortKey: paidThrough.sortKey,
+      });
+    }
 
     if (
       !paidThrough.isPartialPayment &&
@@ -246,6 +246,49 @@ async function getFeeOverview(
 
   const total = feeRows.length;
   const notCompletedCount = Math.max(total - completedCount - noDataCount, 0);
+  const currentMonthIndex = (currentPeriod.year - BASE_YEAR) * 12 + currentPeriod.month;
+  const distribution: Array<{ label: string; count: number; sortKey: number; isCurrentOrLater: boolean }> = [];
+
+  if (completedCount > 0) {
+    distribution.push({
+      label: `Đã đóng hết ${internalMonthLabel(currentMonthIndex)} trở lên`,
+      count: completedCount,
+      sortKey: 999999,
+      isCurrentOrLater: true,
+    });
+  }
+
+  const monthIndexesBeforeCurrent = [...exactPaidThroughCounts.keys()]
+    .filter((monthIndex) => monthIndex < currentMonthIndex)
+    .sort((a, b) => b - a);
+  const thresholdIndexes = new Set<number>();
+  if (notCompletedCount > 0 || noDataCount > 0) {
+    thresholdIndexes.add(currentMonthIndex - 1);
+  }
+  for (const monthIndex of monthIndexesBeforeCurrent) {
+    thresholdIndexes.add(monthIndex);
+  }
+
+  let previousThresholdCount: number | null = null;
+  [...thresholdIndexes]
+    .sort((a, b) => b - a)
+    .forEach((threshold) => {
+      const count =
+        noDataCount +
+        [...exactPaidThroughCounts.entries()].reduce(
+          (sum, [monthIndex, item]) => (monthIndex <= threshold ? sum + item.count : sum),
+          0,
+        );
+      if (count === 0 || count === previousThresholdCount) return;
+      previousThresholdCount = count;
+      distribution.push({
+        label: `Chưa đóng hết ${internalMonthLabel(threshold)}`,
+        count,
+        sortKey: threshold,
+        isCurrentOrLater: false,
+      });
+    });
+
   const exactPaidThroughOptions = [...exactPaidThroughGroups.values()]
     .sort((a, b) => b.year - a.year || b.month - a.month)
     .map((group) => ({
@@ -271,12 +314,10 @@ async function getFeeOverview(
     noDataCount,
     partialRoundedCount,
     completionPercent: total ? Math.round((completedCount / total) * 100) : 0,
-    distribution: [...groups.values()]
-      .sort((a, b) => b.sortKey - a.sortKey)
-      .map((item) => ({
-        ...item,
-        percent: total ? Math.round((item.count / total) * 100) : 0,
-      })),
+    distribution: distribution.map((item) => ({
+      ...item,
+      percent: total ? Math.round((item.count / total) * 100) : 0,
+    })),
     exactPaidThroughOptions,
     selectedNoticeGroup: selectedExactGroup
       ? {
