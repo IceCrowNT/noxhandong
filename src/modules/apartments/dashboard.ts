@@ -59,6 +59,13 @@ function internalMonthLabel(monthIndex: number) {
   return `tháng ${month}/${year}`;
 }
 
+function monthFromIndex(monthIndex: number) {
+  return {
+    month: (((monthIndex - 1) % 12) + 12) % 12 + 1,
+    year: BASE_YEAR + Math.floor((monthIndex - 1) / 12),
+  };
+}
+
 function noticePeriodAfterPaidThrough(month: number, year: number) {
   const startIndex = year * 12 + month;
   const endIndex = startIndex + 5;
@@ -182,6 +189,11 @@ async function getFeeOverview(
       apartments: Array<{ code: string; lot: string }>;
     }
   >();
+  const parsedFeeRows: Array<{
+    maCan: string;
+    paidThroughMonthIndex: number | null;
+    displayText: string;
+  }> = [];
 
   let completedCount = 0;
   let noDataCount = 0;
@@ -189,7 +201,12 @@ async function getFeeOverview(
   for (const row of feeRows) {
     const paidThrough = extractPaidThrough(row.payload_public_json, row.thang_da_dong_den_hien_tai);
     const monthIndex = paidThrough.flooredMonth;
-    const isCompleted = monthIndex !== null && monthIndex >= currentPeriod.month;
+    const isCompleted = monthIndex !== null && monthIndex >= (currentPeriod.year - BASE_YEAR) * 12 + currentPeriod.month;
+    parsedFeeRows.push({
+      maCan: row.ma_can,
+      paidThroughMonthIndex: monthIndex,
+      displayText: paidThrough.displayText || paidThrough.label,
+    });
 
     if (isCompleted) completedCount += 1;
     if (monthIndex === null) noDataCount += 1;
@@ -247,7 +264,16 @@ async function getFeeOverview(
   const total = feeRows.length;
   const notCompletedCount = Math.max(total - completedCount - noDataCount, 0);
   const currentMonthIndex = (currentPeriod.year - BASE_YEAR) * 12 + currentPeriod.month;
-  const distribution: Array<{ label: string; count: number; sortKey: number; isCurrentOrLater: boolean }> = [];
+  const distribution: Array<{
+    label: string;
+    count?: number;
+    paidLabel?: string;
+    unpaidLabel?: string;
+    completedCount?: number;
+    missingCount?: number;
+    sortKey: number;
+    isCurrentOrLater: boolean;
+  }> = [];
 
   if (completedCount > 0) {
     distribution.push({
@@ -289,6 +315,43 @@ async function getFeeOverview(
       });
     });
 
+  const feeReportDistribution = [currentMonthIndex, ...monthIndexesBeforeCurrent.map((monthIndex) => monthIndex + 1)]
+    .filter((monthIndex, index, array) => array.indexOf(monthIndex) === index)
+    .sort((a, b) => b - a)
+    .map((feeMonthIndex) => {
+      const paid = monthFromIndex(feeMonthIndex);
+      const missingCount =
+        noDataCount +
+        [...exactPaidThroughCounts.entries()].reduce(
+          (sum, [paidThroughMonthIndex, item]) =>
+            paidThroughMonthIndex < feeMonthIndex ? sum + item.count : sum,
+          0,
+        );
+      const completedForFeeMonth = Math.max(total - missingCount, 0);
+      const missingApartments = parsedFeeRows
+        .filter((row) => row.paidThroughMonthIndex === null || row.paidThroughMonthIndex < feeMonthIndex)
+        .sort((a, b) => a.maCan.localeCompare(b.maCan, "vi-VN", { numeric: true }))
+        .map((row) => ({
+          maCan: row.maCan,
+          displayText: row.displayText,
+        }));
+      return {
+        label: `Thu phí tháng ${paid.month}.${paid.year}`,
+        paidLabel: `đã đóng phí T${paid.month}/${paid.year}`,
+        unpaidLabel: `chưa đóng phí T${paid.month}/${paid.year}`,
+        completedCount: completedForFeeMonth,
+        missingCount,
+        missingApartments,
+        sortKey: feeMonthIndex,
+        isCurrentOrLater: feeMonthIndex >= currentMonthIndex,
+      };
+    })
+    .filter((item, index, array) => {
+      if (item.completedCount === 0 && item.missingCount === 0) return false;
+      const previous = array[index - 1];
+      return !previous || previous.completedCount !== item.completedCount || previous.missingCount !== item.missingCount;
+    });
+
   const exactPaidThroughOptions = [...exactPaidThroughGroups.values()]
     .sort((a, b) => b.year - a.year || b.month - a.month)
     .map((group) => ({
@@ -314,9 +377,10 @@ async function getFeeOverview(
     noDataCount,
     partialRoundedCount,
     completionPercent: total ? Math.round((completedCount / total) * 100) : 0,
-    distribution: distribution.map((item) => ({
+    distribution: feeReportDistribution.map((item) => ({
       ...item,
-      percent: total ? Math.round((item.count / total) * 100) : 0,
+      completedPercent: total ? Math.round((item.completedCount / total) * 100) : 0,
+      missingPercent: total ? Math.round((item.missingCount / total) * 100) : 0,
     })),
     exactPaidThroughOptions,
     selectedNoticeGroup: selectedExactGroup
@@ -336,7 +400,10 @@ async function getFeeOverview(
               lot,
               apartmentCodes: apartmentCodes.sort((a, b) => a.localeCompare(b, "vi-VN", { numeric: true })),
             })),
-          noticePeriod: noticePeriodAfterPaidThrough(selectedExactGroup.month, selectedExactGroup.year),
+          noticePeriod: {
+            ...noticePeriodAfterPaidThrough(selectedExactGroup.month, selectedExactGroup.year),
+            paidThrough: `${selectedExactGroup.year}-${String(selectedExactGroup.month).padStart(2, "0")}`,
+          },
         }
       : null,
     attentionRows: attentionRows.sort((a, b) => {

@@ -3,7 +3,7 @@ import {
   AlertTriangle,
   Building2,
   CheckCircle2,
-  Download,
+  FileText,
   FileSpreadsheet,
   Gauge,
   PhoneCall,
@@ -17,6 +17,7 @@ import { DashboardScrollMemory } from "@/components/admin/dashboard-scroll-memor
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -200,6 +201,109 @@ function FeeDistributionBars({
   );
 }
 
+function FeeDistributionReportBars({
+  items,
+}: {
+  items: Array<{
+    label: string;
+    paidLabel: string;
+    unpaidLabel: string;
+    completedCount: number;
+    missingCount: number;
+    missingApartments: Array<{ maCan: string; displayText: string }>;
+    completedPercent: number;
+    missingPercent: number;
+    isCurrentOrLater: boolean;
+  }>;
+}) {
+  const total = Math.max(...items.map((item) => item.completedCount + item.missingCount), 0);
+  const current = items[0];
+
+  return (
+    <div className="grid gap-4">
+      <div className="grid grid-cols-3 gap-2">
+        <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+          <span className="text-[11px] font-semibold uppercase text-[var(--muted)]">Tổng</span>
+          <strong className="mt-1 block text-xl">{formatNumber(total)}</strong>
+        </div>
+        <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+          <span className="text-[11px] font-semibold uppercase text-[var(--muted)]">Đạt kỳ đang xem</span>
+          <strong className="mt-1 block text-xl">{formatNumber(current?.completedCount || 0)}</strong>
+        </div>
+        <div className="rounded-lg border border-[var(--line)] bg-white p-3">
+          <span className="text-[11px] font-semibold uppercase text-[var(--muted)]">Số mốc</span>
+          <strong className="mt-1 block text-xl">{formatNumber(items.length)}</strong>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-[var(--line)] bg-white p-3">
+        <div className="grid gap-3">
+          {items.map((item) => {
+            const completedPercent = total ? (item.completedCount / total) * 100 : 0;
+            const missingPercent = total ? (item.missingCount / total) * 100 : 0;
+            const completedText = completedPercent.toLocaleString("vi-VN", { maximumFractionDigits: 2 });
+            const missingText = missingPercent.toLocaleString("vi-VN", { maximumFractionDigits: 2 });
+
+            return (
+              <div key={item.label} className="grid gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3">
+                <strong className="text-base text-[var(--text)]">{item.label}</strong>
+                <p className="m-0 text-sm leading-6 text-[var(--muted)]">
+                  <b className="text-[var(--accent)]">{formatNumber(item.completedCount)}</b>/{formatNumber(total)} căn {item.paidLabel} chiếm <b>{completedText}%</b>;{" "}
+                  <b className="text-amber-700">{formatNumber(item.missingCount)}</b>/{formatNumber(total)} căn {item.unpaidLabel} chiếm <b>{missingText}%</b>.
+                </p>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button className="w-fit" size="sm" type="button" variant="secondary">
+                      Xem {formatNumber(item.missingCount)} căn chưa đóng
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent className="w-[min(94vw,520px)]">
+                    <SheetHeader className="border-b border-[var(--line)]">
+                      <SheetTitle>{item.unpaidLabel}</SheetTitle>
+                      <SheetDescription>
+                        {formatNumber(item.missingCount)} căn chưa đạt mốc trong tổng {formatNumber(total)} căn.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="flex-1 overflow-y-auto p-4">
+                      {item.missingApartments.length ? (
+                        <div className="grid gap-2">
+                          {item.missingApartments.map((apartment) => (
+                            <Link
+                              className="grid gap-1 rounded-lg border border-[var(--line)] bg-white p-3 transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
+                              href={`/admin/dashboard?ma_can=${encodeURIComponent(apartment.maCan)}`}
+                              key={apartment.maCan}
+                            >
+                              <strong className="text-base text-[var(--accent)]">{apartment.maCan}</strong>
+                              <span className="text-sm text-[var(--muted)]">{apartment.displayText}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-lg border border-[var(--line)] bg-white p-4 text-sm text-[var(--muted)]">
+                          Không có căn nào trong nhóm này.
+                        </div>
+                      )}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+                <div className="h-4 overflow-hidden rounded-full bg-amber-100">
+                  <div
+                    className="h-full rounded-full bg-[var(--accent)]"
+                    style={{ width: `${Math.max(2, Math.round(completedPercent))}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+          <div className="border-t border-[var(--line)] pt-3 text-sm text-[var(--muted)]">
+            Mỗi dòng là một mốc thu phí để đưa vào báo cáo. Thanh xanh là số căn đã đóng đạt mốc; phần còn lại là số căn chưa đạt.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function FeePeriodControls({
   periods,
   selectedPeriod,
@@ -235,12 +339,6 @@ function FeePeriodControls({
           Xem kỳ
         </Button>
       </form>
-      <Button asChild>
-        <a href={`/api/export/monthly-fee-ledger?period=${encodeURIComponent(selectedPeriod)}`}>
-          <Download size={17} aria-hidden="true" />
-          Xuất Excel FINAL
-        </a>
-      </Button>
     </div>
   );
 }
@@ -257,7 +355,7 @@ function FeeNoticeList({
     label: string;
     count: number;
     apartmentGroups: Array<{ lot: string; apartmentCodes: string[] }>;
-    noticePeriod: { label: string };
+    noticePeriod: { label: string; paidThrough: string };
   } | null;
   selectedPeriod: string | null;
   searchQuery: string;
@@ -292,14 +390,28 @@ function FeeNoticeList({
           </label>
           <Button type="submit" variant="secondary">Lọc danh sách</Button>
           {selectedPeriod ? (
-            <Button asChild>
-              <a
-                href={`/api/export/fee-notice-list?period=${encodeURIComponent(selectedPeriod)}&paidThrough=${encodeURIComponent(selected.key)}`}
-              >
-                <Download size={17} aria-hidden="true" />
-                Xuất Excel
-              </a>
-            </Button>
+            <>
+              <Button asChild type="button">
+                <a
+                  href={`/api/export/fee-notice-list?period=${encodeURIComponent(selectedPeriod)}&paidThrough=${encodeURIComponent(
+                    selected.noticePeriod.paidThrough,
+                  )}`}
+                >
+                  <FileSpreadsheet size={16} aria-hidden="true" />
+                  Xuất Excel
+                </a>
+              </Button>
+              <Button asChild type="button" variant="secondary">
+                <a
+                  href={`/api/export/fee-notice-docx?period=${encodeURIComponent(selectedPeriod)}&paidThrough=${encodeURIComponent(
+                    selected.noticePeriod.paidThrough,
+                  )}`}
+                >
+                  <FileText size={16} aria-hidden="true" />
+                  Xuất Word
+                </a>
+              </Button>
+            </>
           ) : null}
         </form>
       </CardHeader>
@@ -924,7 +1036,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                   selectedPeriod={data.summary.selectedFeePeriod}
                   searchQuery={data.search.query}
                 />
-                <FeeDistributionBars items={feeOverview.distribution} />
+                <FeeDistributionReportBars items={feeOverview.distribution} />
               </CardContent>
             </Card>
 
@@ -1193,7 +1305,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             />
           </CardHeader>
           <CardContent>
-            <FeeDistributionBars items={feeOverview.distribution} />
+            <FeeDistributionReportBars items={feeOverview.distribution} />
           </CardContent>
         </Card>
 

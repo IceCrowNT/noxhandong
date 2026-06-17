@@ -1,5 +1,117 @@
 # Runbook deploy VPS production
 
+## Quy trinh deploy hien hanh - Phase 2
+
+Day la quy trinh chinh khi local DB dang la du lieu that/nguon chuan va VPS co the dang cu hon local.
+
+Nguyen tac:
+
+- Chi co 1 runbook deploy chinh: file nay.
+- Local DB la nguon chuan khi dong bo Phase 2 len VPS.
+- Cap nhat code va schema tren VPS truoc, sau do moi restore DB local len VPS.
+- Khong chay seed/import test tren VPS sau khi restore DB local that.
+- Neu DB local co bang chung anh/file upload, phai copy ca `public/uploads/evidence` len VPS. DB chi luu duong dan, khong tu mang file anh theo.
+
+Thu tu deploy Phase 2:
+
+1. Kiem tra local truoc khi dong goi:
+
+```powershell
+git status --short
+npm test
+npm run build
+```
+
+2. Backup DB VPS truoc moi thao tac co rui ro:
+
+```powershell
+# Chay tren VPS, PowerShell admin, trong folder project production
+.\scripts\production\backup-postgres.ps1
+```
+
+Neu script backup khong dung duoc, dung `pg_dump` truc tiep voi connection string production.
+
+3. Cap nhat code len VPS:
+
+```powershell
+# Chay tren VPS trong folder project
+git pull
+npm ci
+npm run prisma:generate
+npm run prisma:migrate:deploy
+npm run build
+```
+
+4. Dung ung dung tren VPS truoc khi restore DB:
+
+```powershell
+Stop-Service noxh-an-dong
+```
+
+Hoac dung ten Windows Service/NSSM service thuc te dang chay tren VPS.
+
+5. Export DB local thanh file dump:
+
+```powershell
+# Chay tren may local trong folder project
+$stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+pg_dump --format=custom --no-owner --file ".\backups\local-authoritative-$stamp.dump" "$env:DATABASE_URL"
+```
+
+Neu `DATABASE_URL` co query string nhu `?schema=public` va `pg_dump` bao loi, tao bien tam chi gom host/user/password/db, khong kem query string.
+
+6. Copy dump local len VPS, vi du:
+
+```powershell
+scp .\backups\local-authoritative-YYYYMMDD-HHMMSS.dump Administrator@64.176.81.118:C:/backups/noxh-an-dong/incoming/
+```
+
+7. Restore DB tren VPS:
+
+```powershell
+# Chay tren VPS, app dang stop
+pg_restore --clean --if-exists --no-owner --dbname "$env:DATABASE_URL" "C:\backups\noxh-an-dong\incoming\local-authoritative-YYYYMMDD-HHMMSS.dump"
+```
+
+Neu restore bao loi do connection dang mo, dung app truoc va dong DBeaver/session DB, sau do chay lai.
+
+8. Copy file upload/bang chung neu co:
+
+```powershell
+# Chay tu local neu co file trong public/uploads/evidence
+scp -r .\public\uploads\evidence Administrator@64.176.81.118:C:/apps/noxh-an-dong/public/uploads/
+```
+
+Duong dan dich can sua theo folder production thuc te tren VPS.
+
+9. Khoi dong lai ung dung:
+
+```powershell
+Start-Service noxh-an-dong
+```
+
+10. Kiem tra sau deploy:
+
+```powershell
+npx prisma db execute --stdin
+```
+
+SQL can kiem tra:
+
+```sql
+select count(*) from can_ho;
+select ky_du_lieu, tong_so_can, la_hien_hanh from batch_trang_thai_phi_public order by id desc limit 3;
+select count(*) from trang_thai_phi_can_ho_public where batch_id = (select id from batch_trang_thai_phi_public where la_hien_hanh = true limit 1);
+```
+
+Ky vong toi thieu:
+
+- `can_ho`: 934.
+- Batch public hien hanh: 934 can.
+- Trang `/`, `/tra-cuu-phi?ma_can=L4A.426`, `/admin/login`, `/admin/dashboard`, `/admin/transactions/review` mo duoc.
+
+Luu y: neu restore DB local len VPS, khong can import lai Excel T5/T6 tren VPS. Import lai co the tao du lieu trung hoac lech voi local.
+
 ## Vai trò
 
 File này là tài liệu xương sống cho việc cài đặt, deploy, vận hành và kiểm tra project trên VPS.
@@ -221,6 +333,8 @@ Sinh secret:
 ```
 
 ## 6. Install, migrate, seed, build
+
+> Luu y Phase 2: neu dang dong bo DB local that len VPS, khong chay `seed:v2`, `sync:*`, `import:*`, `prepare:*` hoac `publish:*` trong muc nay. Hay dung quy trinh "Quy trinh deploy hien hanh - Phase 2" o dau file. Muc nay chi dung khi cai moi mot VPS/DB trang.
 
 Chạy trên VPS:
 
@@ -614,4 +728,3 @@ call npm run export:operations:xlsx
 ```
 
 Nếu không có `call`, batch có thể dừng sau lệnh npm đầu tiên.
-
