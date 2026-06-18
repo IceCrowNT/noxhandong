@@ -8,6 +8,7 @@ Nguyen tac:
 
 - Chi co 1 runbook deploy chinh: file nay.
 - Local DB la nguon chuan khi dong bo Phase 2 len VPS.
+- Khi deploy dong bo Phase 2, DB tren VPS chi giu lai user/quyen truy cap; toan bo du lieu bang cu tren VPS duoc xem la khong con gia tri va se bi ghi de/lam sach truoc khi restore.
 - Cap nhat code va schema tren VPS truoc, sau do moi restore DB local len VPS.
 - Khong chay seed/import test tren VPS sau khi restore DB local that.
 - Neu DB local co bang chung anh/file upload, phai copy ca `public/uploads/evidence` len VPS. DB chi luu duong dan, khong tu mang file anh theo.
@@ -50,7 +51,18 @@ Stop-Service noxh-an-dong
 
 Hoac dung ten Windows Service/NSSM service thuc te dang chay tren VPS.
 
-5. Export DB local thanh file dump:
+5. Lam sach du lieu cu tren VPS theo nguyen tac "giu user, bo du lieu":
+
+- Khong xoa user PostgreSQL app.
+- Khong xoa database neu muon giu nguyen connection string.
+- Chi xoa/ghi de toan bo schema public trong luc `pg_restore --clean --if-exists`.
+
+Ghi chu:
+
+- Neu restore bang `pg_restore --clean --if-exists`, cac bang/cu lieu cu tren VPS se bi thay the boi dump local.
+- Nghia la VPS khong con giu gia tri du lieu rieng; local la nguon su that duy nhat.
+
+6. Export DB local thanh file dump:
 
 ```powershell
 # Chay tren may local trong folder project
@@ -60,13 +72,13 @@ pg_dump --format=custom --no-owner --file ".\backups\local-authoritative-$stamp.
 
 Neu `DATABASE_URL` co query string nhu `?schema=public` va `pg_dump` bao loi, tao bien tam chi gom host/user/password/db, khong kem query string.
 
-6. Copy dump local len VPS, vi du:
+7. Copy dump local len VPS, vi du:
 
 ```powershell
 scp .\backups\local-authoritative-YYYYMMDD-HHMMSS.dump Administrator@64.176.81.118:C:/backups/noxh-an-dong/incoming/
 ```
 
-7. Restore DB tren VPS:
+8. Restore DB tren VPS:
 
 ```powershell
 # Chay tren VPS, app dang stop
@@ -75,7 +87,7 @@ pg_restore --clean --if-exists --no-owner --dbname "$env:DATABASE_URL" "C:\backu
 
 Neu restore bao loi do connection dang mo, dung app truoc va dong DBeaver/session DB, sau do chay lai.
 
-8. Copy file upload/bang chung neu co:
+9. Copy file upload/bang chung neu co:
 
 ```powershell
 # Chay tu local neu co file trong public/uploads/evidence
@@ -84,13 +96,13 @@ scp -r .\public\uploads\evidence Administrator@64.176.81.118:C:/apps/noxh-an-don
 
 Duong dan dich can sua theo folder production thuc te tren VPS.
 
-9. Khoi dong lai ung dung:
+10. Khoi dong lai ung dung:
 
 ```powershell
 Start-Service noxh-an-dong
 ```
 
-10. Kiem tra sau deploy:
+11. Kiem tra sau deploy:
 
 ```powershell
 npx prisma db execute --stdin

@@ -5,18 +5,6 @@ import { prisma } from "@/src/modules/database";
 export const PERIOD_PATTERN = /^T(?:[1-9]|1[0-2])-\d{4}$/;
 export const PAID_THROUGH_PATTERN = /^(\d{4})-(0[1-9]|1[0-2])$/;
 
-type FeeNoticeRowRecord = {
-  ma_can: string;
-  thang_da_dong_den_hien_tai: string | null;
-  payload_public_json: unknown;
-  can_ho: {
-    ma_lo: string;
-    ma_so: string;
-    toa_lo_goc: string | null;
-    loai_can: LoaiCan;
-  };
-};
-
 export type FeeNoticeTargetRow = {
   maCan: string;
   paidThroughText: string | null;
@@ -35,6 +23,8 @@ export type FeeNoticeDataset = {
   paidThroughMonth: number;
   paidThroughYear: number;
   notice: {
+    noticeType: "FEE_NOTICE" | "POWER_CUT";
+    titleText: string;
     startLabel: string;
     endLabel: string;
     fullLabel: string;
@@ -43,6 +33,8 @@ export type FeeNoticeDataset = {
     dueDateText: string;
     documentDateText: string;
     transferContentHint: string;
+    overdueFromText: string;
+    overdueToText: string;
   };
   rows: FeeNoticeTargetRow[];
   lotGroups: Array<{
@@ -77,12 +69,28 @@ function exactPaidThroughKey(payload: unknown, fallback: string | null) {
   return `${year}-${String(month).padStart(2, "0")}`;
 }
 
+function parsePeriod(period: string) {
+  const match = period.match(/^T(1[0-2]|[1-9])-(\d{4})$/);
+  if (!match) {
+    throw new Error("Kỳ dữ liệu không hợp lệ.");
+  }
+
+  return {
+    month: Number(match[1]),
+    year: Number(match[2]),
+  };
+}
+
 function toMonthYear(year: number, month: number, offset: number) {
   const total = year * 12 + (month - 1) + offset;
   return {
     year: Math.floor(total / 12),
     month: (total % 12) + 1,
   };
+}
+
+function monthDistance(fromYear: number, fromMonth: number, toYear: number, toMonth: number) {
+  return toYear * 12 + toMonth - (fromYear * 12 + fromMonth);
 }
 
 function pad2(value: number) {
@@ -106,23 +114,31 @@ function currentDocumentDateText() {
   return `An Hải, ngày ${pad2(now.getDate())} tháng ${pad2(now.getMonth() + 1)} năm ${now.getFullYear()}`;
 }
 
-function buildNoticePeriod(paidThroughYear: number, paidThroughMonth: number) {
+function buildNoticePeriod(
+  paidThroughYear: number,
+  paidThroughMonth: number,
+  currentPeriodYear: number,
+  currentPeriodMonth: number,
+): FeeNoticeDataset["notice"] {
   const start = toMonthYear(paidThroughYear, paidThroughMonth, 1);
   const end = toMonthYear(paidThroughYear, paidThroughMonth, 6);
+  const overdueFrom = toMonthYear(paidThroughYear, paidThroughMonth, 1);
+  const overdueTo = end;
+  const noticeRound = Math.max(1, monthDistance(start.year, start.month, currentPeriodYear, currentPeriodMonth) + 1);
 
   return {
-    startYear: start.year,
-    startMonth: start.month,
-    endYear: end.year,
-    endMonth: end.month,
+    noticeType: noticeRound >= 4 ? "POWER_CUT" : "FEE_NOTICE",
+    titleText: noticeRound <= 1 ? "THÔNG BÁO" : `THÔNG BÁO LẦN ${noticeRound}`,
     startLabel: monthLabel(start.year, start.month),
     endLabel: monthLabel(end.year, end.month),
     fullLabel: `${monthLabel(start.year, start.month)} - ${monthLabel(end.year, end.month)}`,
     startDateText: fullDateText(start.year, start.month, 1),
     endDateText: fullDateText(end.year, end.month, lastDayOfMonth(end.year, end.month)),
-    dueDateText: fullDateText(start.year, start.month, 25),
+    dueDateText: fullDateText(currentPeriodYear, currentPeriodMonth, 25),
     documentDateText: currentDocumentDateText(),
     transferContentHint: `Tòa/lô + số căn hộ + Số điện thoại + nộp phí QLVH từ ${fullDateText(start.year, start.month, 1)} đến ${fullDateText(end.year, end.month, lastDayOfMonth(end.year, end.month))}`,
+    overdueFromText: `${pad2(overdueFrom.month)}/${overdueFrom.year}`,
+    overdueToText: `${pad2(overdueTo.month)}/${overdueTo.year}`,
   };
 }
 
@@ -171,7 +187,13 @@ export async function getFeeNoticeDataset(period: string, paidThrough: string): 
   const feeByType = await getMonthlyFeeMap();
   const paidThroughYear = Number(match[1]);
   const paidThroughMonth = Number(match[2]);
-  const notice = buildNoticePeriod(paidThroughYear, paidThroughMonth);
+  const currentPeriod = parsePeriod(normalizedPeriod);
+  const notice = buildNoticePeriod(
+    paidThroughYear,
+    paidThroughMonth,
+    currentPeriod.year,
+    currentPeriod.month,
+  );
 
   const rows = await prisma.trangThaiPhiCanHoPublic.findMany({
     where: { batch_id: batch.id },

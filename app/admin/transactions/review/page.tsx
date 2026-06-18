@@ -67,6 +67,7 @@ type ReviewPageProps = {
     month?: string;
     monthSort?: string;
     monthDir?: string;
+    showMonthly?: string;
   }>;
 };
 
@@ -235,6 +236,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
   const requestedBatchId = Number(params?.batchId || 0);
   const q = (params?.q || "").trim();
   const monthFilter = parseMonthFilter(params?.month);
+  const showMonthlyPanel = params?.showMonthly === "1";
   const monthlySortOptions: MonthlyReconciliationSort[] = ["apartment", "amount", "payer", "date", "status"];
   const monthlySort: MonthlyReconciliationSort = monthlySortOptions.includes(params?.monthSort as MonthlyReconciliationSort)
     ? (params?.monthSort as MonthlyReconciliationSort)
@@ -465,6 +467,9 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
     monthSort: monthlySort,
     monthDir: monthlyDirection,
   });
+  if (showMonthlyPanel) {
+    reviewQuery.set("showMonthly", "1");
+  }
   const selectedIndex = visibleTransactions.findIndex((transaction) => transaction.id === selected?.id);
   const nextTransaction =
     visibleTransactions[selectedIndex + 1] ||
@@ -485,6 +490,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
       q,
       month: monthFilter.value,
       monthSort: sort,
+      showMonthly: "1",
       monthDir:
         monthlySort === sort
           ? monthlyDirection === "asc"
@@ -541,6 +547,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
           <input type="hidden" name="month" value={monthFilter.value} />
           <input type="hidden" name="monthSort" value={monthlySort} />
           <input type="hidden" name="monthDir" value={monthlyDirection} />
+          {showMonthlyPanel ? <input type="hidden" name="showMonthly" value="1" /> : null}
           <Select name="status" defaultValue={statusFilter}>
             <SelectTrigger>
               <SelectValue placeholder="Trạng thái" />
@@ -596,7 +603,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
         </details>
       </form>
 
-      <details open={Boolean(params?.monthSort)} className="mb-4 rounded-xl border border-[var(--line)] bg-white/90">
+      <details open={showMonthlyPanel} className="mb-4 rounded-xl border border-[var(--line)] bg-white/90">
         <summary className="flex cursor-pointer items-center justify-between gap-3 px-6 py-4">
           <span>
             <span className="block text-lg font-semibold">Đối soát theo tháng</span>
@@ -625,6 +632,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
               <input type="hidden" name="q" value={q} />
               <input type="hidden" name="monthSort" value={monthlySort} />
               <input type="hidden" name="monthDir" value={monthlyDirection} />
+              <input type="hidden" name="showMonthly" value="1" />
               <Input className="w-full sm:w-[170px]" name="month" type="month" defaultValue={monthFilter.value} />
               <SubmitButton variant="secondary" pendingText="Đang lọc...">Xem tháng</SubmitButton>
             </form>
@@ -679,7 +687,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                 monthlyVisibleRows.map((row) => (
                   <Link
                     key={row.id}
-                    href={`/admin/transactions/review?transactionId=${row.transactionId}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
+                    href={`/admin/transactions/review?transactionId=${row.transactionId}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}&showMonthly=1&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
                     scroll={false}
                     className="grid grid-cols-[110px_120px_minmax(0,1fr)_140px_120px] gap-3 border-b border-[var(--line)] px-3 py-2 text-sm last:border-b-0 hover:bg-[var(--accent-soft)]"
                   >
@@ -784,7 +792,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                   <Link
                     key={transaction.id}
                     data-testid={`review-transaction-${transaction.id}`}
-                    href={`/admin/transactions/review?transactionId=${transaction.id}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
+                    href={`/admin/transactions/review?transactionId=${transaction.id}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}${showMonthlyPanel ? "&showMonthly=1" : ""}&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
                     scroll={false}
                     className={
                       active

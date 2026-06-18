@@ -20,6 +20,45 @@ function Add-Record([hashtable]$Map, [string]$Apartment, [string]$Date) {
     $Map[$Apartment].Add($Date)
 }
 
+$fallbackApartmentsByBlock = [ordered]@{
+    "L1" = @(
+        "L1.101", "L1.102", "L1.103", "L1.105", "L1.106A", "L1.106B", "L1.107", "L1.108",
+        "L1.109", "L1.110", "L1.111A", "L1.111B", "L1.112", "L1.114", "L1.115", "L1.116",
+        "L1.117", "L1.118", "L1.119", "L1.120", "L1.121", "L1.122", "L1.123", "L1.124"
+    )
+    "L2" = @(
+        "L2.101", "L2.102", "L2.103", "L2.105", "L2.106A", "L2.106B", "L2.107", "L2.108",
+        "L2.109", "L2.110", "L2.111A", "L2.111B", "L2.112", "L2.114", "L2.115", "L2.116",
+        "L2.117", "L2.118", "L2.119", "L2.120", "L2.121", "L2.122", "L2.123", "L2.124",
+        "L2.125", "L2.126", "L2.127", "L2.128", "L2.129", "L2.130", "L2.131", "L2.132"
+    )
+    "L3" = @(
+        "L3.101", "L3.102", "L3.103", "L3.105", "L3.106A", "L3.106B", "L3.107", "L3.108",
+        "L3.109", "L3.110", "L3.111A", "L3.111B", "L3.112", "L3.114", "L3.115", "L3.116"
+    )
+    "L4A" = @(
+        "L4A.101", "L4A.102", "L4A.103", "L4A.105", "L4A.106A", "L4A.106B", "L4A.107", "L4A.108",
+        "L4A.109", "L4A.110", "L4A.111A", "L4A.111B", "L4A.112", "L4A.114", "L4A.115", "L4A.116",
+        "L4A.117", "L4A.118", "L4A.119", "L4A.120", "L4A.121", "L4A.122", "L4A.123", "L4A.124",
+        "L4A.125", "L4A.126", "L4A.127", "L4A.128", "L4A.129", "L4A.130", "L4A.131", "L4A.132",
+        "L4A.133", "L4A.134", "L4A.135", "L4A.136"
+    )
+    "L4B" = @(
+        "L4B.101", "L4B.102", "L4B.103", "L4B.105", "L4B.106A", "L4B.106B", "L4B.107", "L4B.108",
+        "L4B.109", "L4B.110", "L4B.111A", "L4B.111B", "L4B.112", "L4B.114", "L4B.115", "L4B.116",
+        "L4B.117", "L4B.118", "L4B.119", "L4B.120", "L4B.121", "L4B.122", "L4B.123", "L4B.124",
+        "L4B.125", "L4B.126", "L4B.127", "L4B.128", "L4B.129", "L4B.130", "L4B.131", "L4B.132",
+        "L4B.133", "L4B.134", "L4B.135", "L4B.136"
+    )
+    "L4C" = @(
+        "L4C.101", "L4C.102", "L4C.103", "L4C.105", "L4C.106A", "L4C.106B", "L4C.107", "L4C.108",
+        "L4C.109", "L4C.110", "L4C.111A", "L4C.111B", "L4C.112", "L4C.114", "L4C.115", "L4C.116",
+        "L4C.117", "L4C.118", "L4C.119", "L4C.120", "L4C.121", "L4C.122", "L4C.123", "L4C.124",
+        "L4C.125", "L4C.126", "L4C.127", "L4C.128", "L4C.129", "L4C.130", "L4C.131", "L4C.132",
+        "L4C.133", "L4C.134", "L4C.135", "L4C.136"
+    )
+}
+
 # Ảnh năm 2025-2026: các căn đã đăng ký/làm đơn lắp bạt.
 $registrations = @{}
 Add-Record $registrations "L1.124" "Tháng 04/2026"
@@ -209,19 +248,26 @@ try {
     $word.Visible = $false
     $word.DisplayAlerts = 0
 
-    $sourceDocument = $word.Documents.Open($SourceList, $false, $true)
     $apartmentsByBlock = [ordered]@{}
-    for ($tableIndex = 1; $tableIndex -le $sourceDocument.Tables.Count; $tableIndex += 2) {
-        $sourceTable = $sourceDocument.Tables.Item($tableIndex)
-        $apartments = [System.Collections.Generic.List[string]]::new()
-        for ($row = 2; $row -le $sourceTable.Rows.Count; $row++) {
-            $apartments.Add((Clean-CellText $sourceTable.Cell($row, 2).Range.Text))
+    if (Test-Path -LiteralPath $SourceList) {
+        $sourceDocument = $word.Documents.Open($SourceList, $false, $true)
+        for ($tableIndex = 1; $tableIndex -le $sourceDocument.Tables.Count; $tableIndex += 2) {
+            $sourceTable = $sourceDocument.Tables.Item($tableIndex)
+            $apartments = [System.Collections.Generic.List[string]]::new()
+            for ($row = 2; $row -le $sourceTable.Rows.Count; $row++) {
+                $apartments.Add((Clean-CellText $sourceTable.Cell($row, 2).Range.Text))
+            }
+            $block = ($apartments[0] -split "\.")[0]
+            $apartmentsByBlock[$block] = $apartments.ToArray()
         }
-        $block = ($apartments[0] -split "\.")[0]
-        $apartmentsByBlock[$block] = $apartments.ToArray()
+        $sourceDocument.Close($false)
+        $sourceDocument = $null
     }
-    $sourceDocument.Close($false)
-    $sourceDocument = $null
+    else {
+        foreach ($entry in $fallbackApartmentsByBlock.GetEnumerator()) {
+            $apartmentsByBlock[$entry.Key] = $entry.Value
+        }
+    }
 
     $allApartments = @($apartmentsByBlock.Values | ForEach-Object { $_ })
     $unknown = @(($registrations.Keys + $violations.Keys) | Select-Object -Unique | Where-Object { $_ -notin $allApartments })
