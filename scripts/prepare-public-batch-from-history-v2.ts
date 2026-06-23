@@ -58,7 +58,7 @@ async function main() {
     }),
     prisma.lichSuDongPhiCanHo.findMany({
       where: {
-        loai_nguon: "GIAO_DICH_DA_DUYET",
+        loai_nguon: { in: ["GIAO_DICH_DA_DUYET", "BO_SUNG_QUA_KHU"] },
         batch_phi_public_id: null,
       },
       orderBy: { ngay_tao: "asc" },

@@ -8,10 +8,50 @@ Nguyen tac:
 
 - Chi co 1 runbook deploy chinh: file nay.
 - Local DB la nguon chuan khi dong bo Phase 2 len VPS.
-- Khi deploy dong bo Phase 2, DB tren VPS chi giu lai user/quyen truy cap; toan bo du lieu bang cu tren VPS duoc xem la khong con gia tri va se bi ghi de/lam sach truoc khi restore.
+- Khi deploy dong bo Phase 2, DB tren VPS khong duoc xem la nguon dung hon local. Toan bo du lieu nghiep vu tren VPS duoc xem la ban sao production cua local va se bi ghi de/lam sach truoc khi restore.
 - Cap nhat code va schema tren VPS truoc, sau do moi restore DB local len VPS.
 - Khong chay seed/import test tren VPS sau khi restore DB local that.
 - Neu DB local co bang chung anh/file upload, phai copy ca `public/uploads/evidence` len VPS. DB chi luu duong dan, khong tu mang file anh theo.
+
+## Quy tac dong bo du lieu local -> VPS
+
+Ap dung khi local dang la bo du lieu that va can day len production.
+
+1. Nguon su that:
+
+- Local DB la nguon su that duy nhat cho du lieu nghiep vu.
+- VPS chi la noi chay production, khong phai noi giu du lieu goc de doi chieu nguoc ve local.
+
+2. Bang nao phai khop 100% sau khi restore:
+
+- `tai_khoan_quan_tri`
+- `can_ho`
+- `batch_trang_thai_phi_public`
+- `trang_thai_phi_can_ho_public`
+- `lich_su_dong_phi_can_ho`
+- `giao_dich_ngan_hang`
+- va toan bo cac bang nghiep vu dang duoc app query de van hanh
+
+Noi ngan gon: neu local dang chuan, thi sau deploy/restore, cac bang nghiep vu tren VPS phai giong local. So luong tai khoan tren VPS khong duoc "nhieu hon cho dung hon"; neu nhieu hon local thi do la dau hieu DB dang lech.
+
+3. Bang nao co the lech sau khi app da chay lai:
+
+- `nhat_ky_dang_nhap_quan_tri`
+- cac bang log, session, dau vet runtime, cache hoac phat sinh trong qua trinh production dang chay
+
+Nhung bang nay co the tang them tren VPS sau khi restore vi nguoi dung tiep tuc dang nhap/su dung he thong. Day la lech hop le.
+
+4. Quy tac xu ly khi phat hien VPS lech local:
+
+- Khong sua tay tung dong tren VPS neu local moi la bo du lieu chuan.
+- Khong suy doan "VPS moi hon local" chi vi co them log hoac them user.
+- Tao dump moi tu local, backup VPS, roi restore lai tu local.
+
+5. Quy tac ve tai khoan:
+
+- Neu local la DB chuan thi bang `tai_khoan_quan_tri` tren VPS phai giong local sau restore.
+- Neu production co tai khoan moi ma local chua co, phai quyet dinh ro: hoac nhap nguoc tai khoan do ve local truoc, hoac chap nhan no bi mat khi restore local len VPS.
+- Khong de phat sinh tinh trang local va VPS moi ben giu mot danh sach tai khoan rieng.
 
 Thu tu deploy Phase 2:
 
@@ -32,7 +72,14 @@ npm run build
 
 Neu script backup khong dung duoc, dung `pg_dump` truc tiep voi connection string production.
 
-3. Cap nhat code len VPS:
+3. Cap nhat code len VPS.
+
+Co 2 cach:
+
+- Cach A - neu da commit/push day du: `git pull`.
+- Cach B - neu dang co thay doi local chua commit, hoac muon lap lai quy trinh Phase 1: dong goi source tu `working tree` hien tai roi copy len VPS. Day la cach uu tien khi Git dang bi ket hoac khi can deploy dung ban local da test pass.
+
+Neu dung Cach A:
 
 ```powershell
 # Chay tren VPS trong folder project
@@ -42,6 +89,63 @@ npm run prisma:generate
 npm run prisma:migrate:deploy
 npm run build
 ```
+
+Neu dung Cach B:
+
+```powershell
+# Chay tren may local
+$stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$pkgRoot = ".local\\deploy-working-tree-$stamp"
+$zipPath = ".local\\deploy-working-tree-$stamp.zip"
+
+Remove-Item $pkgRoot -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path $pkgRoot | Out-Null
+
+robocopy . $pkgRoot /MIR `
+  /XD .git node_modules .next .local archive backups tmp .tmp-docx `
+  /XF .env *.dump *.log *.tmp tsconfig.tsbuildinfo
+
+if ($LASTEXITCODE -gt 7) { throw "robocopy failed with code $LASTEXITCODE" }
+
+if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+Compress-Archive -Path "$pkgRoot\\*" -DestinationPath $zipPath
+```
+
+Upload file zip len VPS, giai nen vao `C:\apps\noxh-an-dong`, nhung giu lai `.env` production va folder upload production neu dang co du lieu rieng tren VPS.
+
+Neu muon giam thao tac tay tren VPS, co the dung script:
+
+```powershell
+.\scripts\production\deploy-phase2-from-local-zip.ps1 `
+  -SourceZip "C:\backups\noxh-an-dong\incoming\deploy-working-tree-YYYYMMDD-HHMMSS.zip" `
+  -DatabaseDump "C:\backups\noxh-an-dong\incoming\local-authoritative-YYYYMMDD-HHMMSS.dump"
+```
+
+Script nay se:
+
+- dung service app;
+- giai nen source moi;
+- giu lai `.env`;
+- chay `npm ci`, `prisma generate`, `prisma migrate deploy`, `npm run build`;
+- restore DB local authoritative;
+- start lai service.
+
+Neu muon upload tu may local len VPS va goi deploy bang mot script local, co the dung:
+
+```powershell
+.\scripts\production\push-phase2-to-vps.ps1 `
+  -SourceZip "C:\backups\noxh-local\deploy-working-tree-YYYYMMDD-HHMMSS.zip" `
+  -DatabaseDump "C:\backups\noxh-local\local-authoritative-YYYYMMDD-HHMMSS.dump" `
+  -RunRemoteDeploy
+```
+
+Script local nay se:
+
+- `scp` file source zip len `C:/backups/noxh-an-dong/incoming/`;
+- `scp` file dump DB len cung thu muc;
+- goi SSH sang VPS de chay `deploy-phase2-from-local-zip.ps1`.
+
+Luu y: van can dang nhap SSH hop le tren may local. Neu VPS chua cai khoa SSH, Windows se hoi mat khau `Administrator`.
 
 4. Dung ung dung tren VPS truoc khi restore DB:
 
@@ -293,10 +397,24 @@ git clone <REPO_URL> C:\apps\noxh-an-dong
 cd C:\apps\noxh-an-dong
 ```
 
-Nếu GitHub chưa cấp quyền trên VPS, có thể deploy bằng zip từ máy local:
+Nếu GitHub chưa cấp quyền trên VPS, hoặc local đang có thay đổi chưa commit, có thể deploy bằng zip từ máy local:
 
 ```powershell
-git archive --format=zip -o .local\deploy-source.zip HEAD
+$stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$pkgRoot = ".local\\deploy-working-tree-$stamp"
+$zipPath = ".local\\deploy-working-tree-$stamp.zip"
+
+Remove-Item $pkgRoot -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force -Path $pkgRoot | Out-Null
+
+robocopy . $pkgRoot /MIR `
+  /XD .git node_modules .next .local archive backups tmp .tmp-docx `
+  /XF .env *.dump *.log *.tmp tsconfig.tsbuildinfo
+
+if ($LASTEXITCODE -gt 7) { throw "robocopy failed with code $LASTEXITCODE" }
+
+if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+Compress-Archive -Path "$pkgRoot\\*" -DestinationPath $zipPath
 ```
 
 Upload zip lên VPS rồi giải nén vào:
@@ -638,7 +756,7 @@ Restart-Service noxh-an-dong
 
 Nếu deploy bằng zip:
 
-1. Tạo zip bằng `git archive`.
+1. Tạo zip bằng working tree local hiện tại; không dùng `git archive` nếu source chưa commit.
 2. Upload lên VPS.
 3. Giữ lại `.env`.
 4. Giải nén source mới vào `C:\apps\noxh-an-dong`.

@@ -2,20 +2,20 @@ import { prisma } from "@/src/modules/database";
 import type { MonthlyReconciliationRow } from "@/src/modules/transactions/review/monthly-reconciliation-sort";
 
 export async function getMonthlyReconciliation(from: Date, to: Date) {
-  const transactions = await prisma.giaoDichNganHang.findMany({
+const transactions = await prisma.giaoDichNganHang.findMany({
     where: {
       so_tien: { gt: 0 },
       trang_thai_duyet: "DA_DUYET",
       ngay_giao_dich: { gte: from, lt: to },
       lich_su_dong_phi: {
-        some: { loai_nguon: "GIAO_DICH_DA_DUYET" },
+        some: { loai_nguon: { in: ["GIAO_DICH_DA_DUYET", "BO_SUNG_QUA_KHU"] } },
       },
     },
     orderBy: [{ ngay_giao_dich: "desc" }, { id: "desc" }],
     take: 1000,
     include: {
       lich_su_dong_phi: {
-        where: { loai_nguon: "GIAO_DICH_DA_DUYET" },
+        where: { loai_nguon: { in: ["GIAO_DICH_DA_DUYET", "BO_SUNG_QUA_KHU"] } },
         orderBy: { id: "asc" },
         include: {
           can_ho: { select: { ma_can: true } },

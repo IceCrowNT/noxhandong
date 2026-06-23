@@ -28,6 +28,121 @@ Cap nhat: 2026-06-06
 -> `lich_su_dong_phi_can_ho`
 -> batch public
 
+## Luong 4 bang nghiep vu trung tam
+
+Day la 4 bang can hieu dung khi debug sao ke, duyet giao dich, bo sung qua khu
+va tao public moi:
+
+```text
+giao_dich_ngan_hang
+  -> phan_bo_giao_dich
+    -> lich_su_dong_phi_can_ho
+      -> trang_thai_phi_can_ho_public
+```
+
+### 1. `giao_dich_ngan_hang`
+
+- La giao dich operational sinh ra tu import sao ke.
+- Giu ket qua parser hien tai, trang thai duyet hien tai va thong tin dinh danh
+  giao dich.
+- Mot giao dich co the:
+  - chua duyet;
+  - duoc duyet cho 1 can;
+  - duoc phan bo cho nhieu can;
+  - bi bao luu / tu choi.
+
+Khong nen chen tay cac giao dich qua khu vao bang nay neu chung khong di truc
+tiep tu file sao ke ngan hang.
+
+### 2. `phan_bo_giao_dich`
+
+- La bang noi "mot giao dich duoc tinh cho can nao va bao nhieu tien".
+- Mot giao dich duoc duyet nhanh cho 1 can se sinh 1 dong phan bo.
+- Mot giao dich nhieu can se sinh nhieu dong phan bo.
+- Bang nay khong phai ket qua public cuoi; no chi la buoc trung gian de chuan
+  hoa y nghia nghiep vu cua mot giao dich.
+
+### 3. `lich_su_dong_phi_can_ho`
+
+- La bang "khoan phi da duoc ghi nhan vao lich su cua can ho".
+- Moi dong o day da qua quyet dinh nghiep vu, khac voi giao dich thuan parser.
+- Hien tai bang nay chu yeu duoc sinh tu man Duyet sao ke.
+- Sau khi mot dong lich su duoc dua vao batch public, no se duoc gan
+  `batch_phi_public_id`.
+
+Bang nay hien dong vai tro:
+
+- hang doi lich su phi da duyet nhung chua public;
+- va sau khi public, la dau vet cho biet dong lich su da di vao batch nao.
+
+### 4. `trang_thai_phi_can_ho_public`
+
+- La snapshot ket qua cuoi cung de cu dan va admin tra cuu.
+- Ve ly thuyet moi batch public co toi da 934 dong, ung voi 934 can.
+- Bang nay khong luu logic duyet giao dich chi tiet; no chi luu trang thai sau
+  cung cua moi can tai mot ky public.
+
+## Cach `lich_su_dong_phi_can_ho` dang van hanh hien tai
+
+`lich_su_dong_phi_can_ho` hien khong phai "so cai lich su toan bo tu truoc den
+nay". No dang duoc dung theo huong:
+
+1. Sao ke moi sau moc chot di vao `giao_dich_ngan_hang`.
+2. Admin duyet giao dich va sinh `phan_bo_giao_dich`.
+3. Tu phan bo do, he thong tao `lich_su_dong_phi_can_ho`.
+4. Khi tao preview/public, he thong chi lay cac dong lich su:
+   - da duoc duyet;
+   - chua gan `batch_phi_public_id`.
+5. He thong cong vao opening balance/public batch hien hanh de tao batch moi.
+
+Vi vay:
+
+- bang nay rat quan trong voi luong preview/public;
+- nhung chua phai kho lich su chuan hoa day du cua giai doan truoc T6/2026.
+
+## Nguyen tac cho tinh nang bo sung giao dich qua khu
+
+Case nghiep vu mau:
+
+- thang 3 co giao dich 1.500.000;
+- sao ke co that nhung khong ghi ma can;
+- den thang 6 cu dan moi xac nhan do la can `L2.511A`.
+
+Huong dung:
+
+- khong sua tay truc tiep `thang_da_dong_den_hien_tai` trong batch public;
+- khong chen gia 1 dong vao `giao_dich_ngan_hang` nhu mot sao ke moi;
+- tao mot nguon bo sung rieng, sau do sinh 1 dong vao
+  `lich_su_dong_phi_can_ho`.
+
+Luot du lieu de xay dung:
+
+```text
+bo_sung_giao_dich_qua_khu
+  -> lich_su_dong_phi_can_ho
+    -> preview/public moi
+```
+
+Y nghia:
+
+- `bo_sung_giao_dich_qua_khu`: luu bang chung va xac minh nghiep vu.
+- `lich_su_dong_phi_can_ho`: luu ket qua nghiep vu co hieu luc tinh phi.
+- preview/public batch tiep theo se tu dong phan anh thay doi.
+
+Nguyen tac bat buoc cho luong bo sung:
+
+1. Chi `SUPER_ADMIN` duoc thao tac.
+2. Bat buoc co ghi chu xac minh.
+3. Nen co it nhat 1 bang chung:
+   - anh;
+   - text xac nhan;
+   - ghi chu Zalo/dien thoai.
+4. Khong gia mao la sao ke ngan hang neu do la bo sung muon.
+5. Moi thay doi phai di theo thu tu:
+   - luu chung cu;
+   - sinh lich su phi;
+   - tinh lai snapshot o lan preview/public tiep theo.
+
 ### Bang va vai tro
 
 | Bang | Vai tro duy nhat |

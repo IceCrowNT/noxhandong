@@ -1,6 +1,7 @@
 import { CheckCircle2, FileSpreadsheet, Upload } from "lucide-react";
 
 import {
+  createHistoricalSupplementAction,
   importBankStatementAction,
   importFeeTrackingWorkbookAction,
 } from "@/app/admin/import/actions";
@@ -12,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Notice } from "@/components/ui/notice";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import { requireAdminRole } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 import { importSourceLabel, importStatusLabel, publicBatchStatusLabel } from "@/src/modules/shared/labels";
@@ -50,6 +52,11 @@ type AdminImportPageProps = {
     changedApartmentCount?: string;
     historyRowsLinked?: string;
     historyPublishError?: string;
+    historicalCreated?: string;
+    historicalApartment?: string;
+    historicalHistoryId?: string;
+    historicalSupplementId?: string;
+    historicalError?: string;
   }>;
 };
 
@@ -106,6 +113,14 @@ function statusMessage(params?: SearchParams) {
   if (params?.historyPublishError === "preview_failed") return "Không tạo được preview batch public từ lịch sử phí đã duyệt.";
   if (params?.historyPublishError === "publish_failed") return "Không chốt được batch public từ lịch sử phí đã duyệt.";
   if (params?.historyPublishError === "cancel_failed") return "Không hủy được preview batch nháp.";
+  if (params?.historicalCreated === "1") {
+    return `Đã ghi bổ sung giao dịch quá khứ cho căn ${params.historicalApartment || "-"}, tạo dòng lịch sử phí #${params.historicalHistoryId || "-"}.`;
+  }
+  if (params?.historicalError === "invalid") return "Thiếu mã căn hoặc số tiền bổ sung không hợp lệ.";
+  if (params?.historicalError === "invalid_apartment") return "Mã căn bổ sung quá khứ không tồn tại trong DB.";
+  if (params?.historicalError === "missing_evidence") return "Cần có ít nhất ghi chú xác minh hoặc file bằng chứng cho giao dịch quá khứ.";
+  if (params?.historicalError === "file_too_large") return "File bằng chứng quá lớn. Giới hạn hiện tại là 15 MB.";
+  if (params?.historicalError === "create_failed") return "Không tạo được bổ sung giao dịch quá khứ.";
   return null;
 }
 
@@ -208,9 +223,9 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
   await requireAdminRole("SUPER_ADMIN");
   const params = await searchParams;
   const message = statusMessage(params);
-  const isError = Boolean(params?.error || params?.statementError || params?.historyPublishError);
+  const isError = Boolean(params?.error || params?.statementError || params?.historyPublishError || params?.historicalError);
 
-  const [imports, publicBatches, latestClosingsWithCutoff] = await Promise.all([
+  const [imports, publicBatches, latestClosingsWithCutoff, recentHistoricalSupplements] = await Promise.all([
     prisma.loNhapDuLieu.findMany({
       orderBy: { thoi_diem_nhap: "desc" },
       take: 8,
@@ -246,6 +261,24 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
         id: true,
         ky_du_lieu: true,
         metadata_json: true,
+      },
+    }),
+    prisma.boSungGiaoDichQuaKhu.findMany({
+      orderBy: { id: "desc" },
+      take: 6,
+      select: {
+        id: true,
+        ky_du_lieu: true,
+        thang_ap_dung: true,
+        so_tien: true,
+        ngay_giao_dich_goc: true,
+        loai_bang_chung: true,
+        duong_dan_file: true,
+        noi_dung_xac_minh: true,
+        ngay_tao: true,
+        can_ho: {
+          select: { ma_can: true },
+        },
       },
     }),
   ]);
@@ -383,8 +416,15 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
         </CardContent>
       </Card>
 
-      <Card className="mb-5 bg-white/90">
-        <CardHeader>
+      <details className="mb-5 overflow-hidden rounded-xl border border-[var(--line)] bg-white/90">
+        <summary className="cursor-pointer list-none px-6 py-5">
+          <div className="text-lg font-semibold">Cửa sau: Excel theo dõi thu phí</div>
+          <div className="mt-1 text-sm text-[var(--muted)]">
+            Chỉ dùng khi cần chốt sổ thủ công, tạo opening balance hoặc phục hồi dữ liệu đặc biệt.
+          </div>
+        </summary>
+        <div className="border-t border-[var(--line)] px-6 py-5">
+        <CardHeader className="hidden">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]">
             <Upload size={20} aria-hidden="true" />
           </div>
@@ -427,8 +467,133 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
             Chốt từ Excel sẽ ghi public trực tiếp. Cần nhập đúng <strong>CHOT_EXCEL</strong> để tránh bấm nhầm.
           </div>
         </CardContent>
-      </Card>
+        </div>
+      </details>
 
+      <details className="mb-5 overflow-hidden rounded-xl border border-[var(--line)] bg-white/90">
+        <summary className="cursor-pointer list-none px-6 py-5">
+          <div className="text-lg font-semibold">Bổ sung giao dịch quá khứ</div>
+          <div className="mt-1 text-sm text-[var(--muted)]">
+            Mở khi cần xử lý các giao dịch cũ được cư dân xác nhận bổ sung.
+          </div>
+        </summary>
+        <div className="border-t border-[var(--line)] px-6 py-5">
+        <CardHeader className="hidden">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]">
+            <CheckCircle2 size={20} aria-hidden="true" />
+          </div>
+          <CardTitle>Bổ sung giao dịch quá khứ</CardTitle>
+          <CardDescription>
+            Dùng cho case chuyển khoản cũ không ghi mã căn, sau này cư dân mới xác nhận bằng Zalo hoặc sao kê riêng. Hệ thống sẽ lưu hồ sơ xác minh và sinh dòng lịch sử phí chuẩn để preview/public nhận được.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-5">
+          <form action={createHistoricalSupplementAction} className="grid gap-4 xl:grid-cols-2">
+            <Label className="grid gap-2">
+              Mã căn
+              <Input name="apartmentCode" placeholder="Ví dụ L2.511A" required />
+            </Label>
+            <Label className="grid gap-2">
+              Số tiền
+              <Input name="amount" inputMode="numeric" placeholder="Ví dụ 1500000" required />
+            </Label>
+            <Label className="grid gap-2">
+              Kỳ dữ liệu nguồn
+              <Input name="sourcePeriod" defaultValue="T5-2026" placeholder="Ví dụ T3-2026" />
+            </Label>
+            <Label className="grid gap-2">
+              Tháng áp dụng
+              <Input name="appliedMonth" placeholder="Ví dụ 03/2026" />
+            </Label>
+            <Label className="grid gap-2">
+              Ngày giao dịch gốc
+              <Input name="occurredAt" type="datetime-local" />
+            </Label>
+            <Label className="grid gap-2">
+              Loại bằng chứng
+              <Input name="evidenceType" defaultValue="ZALO" placeholder="ZALO / SAO_KE_CU_DAN / GHI_CHU_THU_CONG" />
+            </Label>
+            <Label className="grid gap-2 xl:col-span-2">
+              File bằng chứng
+              <Input name="evidenceFile" type="file" accept="image/*,.pdf" />
+            </Label>
+            <Label className="grid gap-2 xl:col-span-2">
+              Nội dung xác minh
+              <Textarea
+                name="evidenceNote"
+                placeholder="Ví dụ: cư dân xác nhận qua Zalo ngày..., đây là giao dịch T3 cho căn L2.511A."
+                rows={3}
+              />
+            </Label>
+            <Label className="grid gap-2 xl:col-span-2">
+              Ghi chú nội bộ
+              <Textarea
+                name="internalNote"
+                placeholder="Ghi chú thêm nếu muốn lưu logic xử lý nội bộ."
+                rows={2}
+              />
+            </Label>
+            <div className="xl:col-span-2">
+              <SubmitButton className="w-full sm:w-auto" pendingText="Đang ghi bổ sung giao dịch...">
+                Ghi bổ sung giao dịch quá khứ
+              </SubmitButton>
+            </div>
+          </form>
+
+          <div className="grid gap-2 rounded-lg border border-[var(--border-subtle)] bg-white/70 p-4 text-sm leading-6 text-[var(--muted)]">
+            <span><b>1.</b> Không sinh giao dịch ngân hàng giả.</span>
+            <span><b>2.</b> Lưu hồ sơ xác minh riêng cho case quá khứ.</span>
+            <span><b>3.</b> Sinh thẳng một dòng <code>lich_su_dong_phi_can_ho</code> với nguồn <code>BO_SUNG_QUA_KHU</code>.</span>
+            <span><b>4.</b> Batch preview/public sau đó sẽ cộng nguồn này như lịch sử phí hợp lệ.</span>
+          </div>
+
+          {recentHistoricalSupplements.length ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              {recentHistoricalSupplements.map((item) => (
+                <div key={item.id} className="rounded-xl border border-[var(--line)] bg-white p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <strong className="block text-base">{item.can_ho.ma_can}</strong>
+                      <p className="mt-1 text-sm text-[var(--muted)]">
+                        {item.ky_du_lieu}
+                        {item.thang_ap_dung ? ` · ${item.thang_ap_dung}` : ""}
+                        {` · ${formatNumber(Number(item.so_tien))} đ`}
+                      </p>
+                    </div>
+                    <span className="rounded-md bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]">
+                      {item.loai_bang_chung}
+                    </span>
+                  </div>
+                  <p className="mt-3 line-clamp-3 text-sm text-[var(--muted)]">
+                    {item.noi_dung_xac_minh || "Không có ghi chú xác minh."}
+                  </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-[var(--muted)]">
+                    <span>Tạo lúc: <b className="text-[var(--text)]">{formatDateTime(item.ngay_tao)}</b></span>
+                    {item.ngay_giao_dich_goc ? (
+                      <span>GD gốc: <b className="text-[var(--text)]">{formatDateTime(item.ngay_giao_dich_goc)}</b></span>
+                    ) : null}
+                    {item.duong_dan_file ? (
+                      <a className="font-semibold text-[var(--accent)] underline" href={item.duong_dan_file} target="_blank">
+                        Mở bằng chứng
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </CardContent>
+        </div>
+      </details>
+
+      <details className="overflow-hidden rounded-xl border border-[var(--line)] bg-white/90">
+        <summary className="cursor-pointer list-none px-6 py-5">
+          <div className="text-lg font-semibold">Lịch sử import và public gần đây</div>
+          <div className="mt-1 text-sm text-[var(--muted)]">
+            Mở khi cần xem lại lịch sử lô import, batch public và dữ liệu bổ sung gần nhất.
+          </div>
+        </summary>
+        <div className="border-t border-[var(--line)] p-6">
       <div className="grid gap-5">
         <Card className="bg-white/90">
           <CardHeader>
@@ -557,6 +722,8 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
           </CardContent>
         </Card>
       </div>
+        </div>
+      </details>
     </AdminFrame>
   );
 }

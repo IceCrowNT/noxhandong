@@ -231,6 +231,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
   const account = await requireAdmin();
   const params = await searchParams;
   const canReview = account.vai_tro === "SUPER_ADMIN";
+  const showReserveUi = false;
   const selectedId = Number(params?.transactionId || 0);
   const statusFilter = params?.status || "CAN_XU_LY";
   const requestedBatchId = Number(params?.batchId || 0);
@@ -449,7 +450,6 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
     ["Chưa duyệt", summaryMap.get("CHUA_DUYET") || 0],
     ["Đã rà soát", summaryMap.get("DA_RA_SOAT") || 0],
     ["Đã duyệt", summaryMap.get("DA_DUYET") || 0],
-    ["Bảo lưu", summaryMap.get("BAO_LUU") || 0],
     ["Từ chối", summaryMap.get("TU_CHOI") || 0],
   ] as const;
 
@@ -548,7 +548,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
           <input type="hidden" name="monthSort" value={monthlySort} />
           <input type="hidden" name="monthDir" value={monthlyDirection} />
           {showMonthlyPanel ? <input type="hidden" name="showMonthly" value="1" /> : null}
-          <Select name="status" defaultValue={statusFilter}>
+          <Select name="status" defaultValue={showReserveUi || statusFilter !== "BAO_LUU" ? statusFilter : "CAN_XU_LY"}>
             <SelectTrigger>
               <SelectValue placeholder="Trạng thái" />
             </SelectTrigger>
@@ -557,7 +557,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
               <SelectItem value="CHUA_DUYET">Chưa duyệt</SelectItem>
               <SelectItem value="DA_RA_SOAT">Đã rà soát</SelectItem>
               <SelectItem value="DA_DUYET">Đã duyệt</SelectItem>
-              <SelectItem value="BAO_LUU">Bảo lưu</SelectItem>
+              {showReserveUi ? <SelectItem value="BAO_LUU">Bảo lưu</SelectItem> : null}
               <SelectItem value="TU_CHOI">Từ chối</SelectItem>
               <SelectItem value="TAT_CA">Tất cả</SelectItem>
             </SelectContent>
@@ -1063,19 +1063,21 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                           </SubmitButton>
                         </form>
 
-                        <form action={reserveTransactionAction} className="grid gap-2 border-t border-[var(--line)] pt-3">
-                          <input type="hidden" name="transactionId" value={selected.id} />
-                          <input type="hidden" name="returnTo" value={returnToAfterAction} />
-                          <Textarea
-                            name="note"
-                            placeholder="Lý do bảo lưu, ví dụ: khoản ủng hộ hoặc chưa xác định được căn"
-                            rows={2}
-                          />
-                          <SubmitButton variant="secondary" pendingText="Đang bảo lưu...">
-                            <ShieldAlert size={16} aria-hidden="true" />
-                            Bảo lưu để đối chiếu sau
-                          </SubmitButton>
-                        </form>
+                        {showReserveUi ? (
+                          <form action={reserveTransactionAction} className="grid gap-2 border-t border-[var(--line)] pt-3">
+                            <input type="hidden" name="transactionId" value={selected.id} />
+                            <input type="hidden" name="returnTo" value={returnToAfterAction} />
+                            <Textarea
+                              name="note"
+                              placeholder="Lý do bảo lưu, ví dụ: khoản ủng hộ hoặc chưa xác định được căn"
+                              rows={2}
+                            />
+                            <SubmitButton variant="secondary" pendingText="Đang bảo lưu...">
+                              <ShieldAlert size={16} aria-hidden="true" />
+                              Bảo lưu để đối chiếu sau
+                            </SubmitButton>
+                          </form>
+                        ) : null}
 
                         <form action={rejectTransactionAction} className="grid gap-2 border-t border-[var(--line)] pt-3">
                           <input type="hidden" name="transactionId" value={selected.id} />

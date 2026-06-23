@@ -2,6 +2,7 @@
 
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requirePermission } from "@/src/modules/auth/current-user";
@@ -13,6 +14,7 @@ const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = new Set([".xlsx", ".xls"]);
 const UPLOAD_DIR = path.join(process.cwd(), ".local", "admin-uploads", "fee-tracking");
 const STATEMENT_UPLOAD_DIR = path.join(process.cwd(), ".local", "admin-uploads", "bank-statements");
+const HISTORICAL_EVIDENCE_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "historical-supplements");
 
 function getString(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -33,6 +35,35 @@ function parseDateTimeInput(value: string) {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+async function storeHistoricalEvidenceFile(file: FormDataEntryValue | null) {
+  if (!(file instanceof File) || file.size <= 0) {
+    return {
+      publicPath: null,
+      originalName: null,
+      mimeType: null,
+      fileSize: null,
+    };
+  }
+
+  if (file.size > MAX_UPLOAD_BYTES) {
+    redirect("/admin/import?historicalError=file_too_large");
+  }
+
+  await mkdir(HISTORICAL_EVIDENCE_UPLOAD_DIR, { recursive: true });
+  const originalName = safeFileName(file.name || "historical-evidence");
+  const storedName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${originalName}`;
+  const storedPath = path.join(HISTORICAL_EVIDENCE_UPLOAD_DIR, storedName);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(storedPath, buffer);
+
+  return {
+    publicPath: `/uploads/historical-supplements/${storedName}`,
+    originalName,
+    mimeType: file.type || null,
+    fileSize: file.size,
+  };
 }
 
 function appendImportSummaryParams(params: URLSearchParams, importResult: Record<string, unknown>) {
@@ -295,4 +326,87 @@ export async function cancelPreparedPublicBatchAction(formData: FormData) {
   }
 
   redirect("/admin/transactions/review?historyPreviewCancelled=1");
+}
+
+export async function createHistoricalSupplementAction(formData: FormData) {
+  const account = await requirePermission("IMPORT_DATA");
+  const apartmentCode = getString(formData, "apartmentCode").toUpperCase();
+  const amountRaw = getString(formData, "amount").replace(/\D/g, "");
+  const sourcePeriod = getString(formData, "sourcePeriod") || "T5-2026";
+  const appliedMonth = getString(formData, "appliedMonth");
+  const occurredAt = parseDateTimeInput(getString(formData, "occurredAt"));
+  const evidenceType = getString(formData, "evidenceType") || "GHI_CHU_THU_CONG";
+  const evidenceNote = getString(formData, "evidenceNote");
+  const internalNote = getString(formData, "internalNote");
+  const evidenceFile = formData.get("evidenceFile");
+
+  const amount = Number(amountRaw);
+  if (!apartmentCode || !Number.isFinite(amount) || amount <= 0) {
+    redirect("/admin/import?historicalError=invalid");
+  }
+
+  if (!evidenceNote && (!(evidenceFile instanceof File) || evidenceFile.size <= 0)) {
+    redirect("/admin/import?historicalError=missing_evidence");
+  }
+
+  const apartment = await prisma.canHo.findUnique({
+    where: { ma_can: apartmentCode },
+    select: { id: true, ma_can: true },
+  });
+  if (!apartment) {
+    redirect("/admin/import?historicalError=invalid_apartment");
+  }
+
+  const storedEvidence = await storeHistoricalEvidenceFile(evidenceFile);
+  let redirectUrl = "/admin/import";
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const history = await tx.lichSuDongPhiCanHo.create({
+        data: {
+          can_ho_id: apartment.id,
+          ky_du_lieu: sourcePeriod,
+          thang_ap_dung: appliedMonth || null,
+          so_tien: amount,
+          loai_nguon: "BO_SUNG_QUA_KHU",
+          ghi_chu:
+            internalNote ||
+            evidenceNote ||
+            "Bổ sung giao dịch quá khứ được xác minh thủ công.",
+          nguoi_tao_id: account.id,
+        },
+      });
+
+      const supplement = await tx.boSungGiaoDichQuaKhu.create({
+        data: {
+          can_ho_id: apartment.id,
+          lich_su_dong_phi_id: history.id,
+          so_tien: amount,
+          ky_du_lieu: sourcePeriod,
+          thang_ap_dung: appliedMonth || null,
+          ngay_giao_dich_goc: occurredAt,
+          loai_bang_chung: evidenceType,
+          duong_dan_file: storedEvidence.publicPath,
+          ten_file_goc: storedEvidence.originalName,
+          mime_type: storedEvidence.mimeType,
+          kich_thuoc_file: storedEvidence.fileSize,
+          noi_dung_xac_minh: evidenceNote || null,
+          ghi_chu_noi_bo: internalNote || null,
+          nguoi_tao_id: account.id,
+        },
+      });
+
+      return { historyId: history.id, supplementId: supplement.id };
+    });
+
+    revalidatePath("/admin/import");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/transactions/review");
+    redirectUrl = `/admin/import?historicalCreated=1&historicalApartment=${encodeURIComponent(apartment.ma_can)}&historicalHistoryId=${result.historyId}&historicalSupplementId=${result.supplementId}`;
+  } catch (error) {
+    console.error(error);
+    redirect("/admin/import?historicalError=create_failed");
+  }
+
+  redirect(redirectUrl);
 }

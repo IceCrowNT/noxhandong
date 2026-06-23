@@ -140,6 +140,7 @@ model CanHo {
   phan_bo_giao_dich PhanBoGiaoDich[]
   chung_tu_doi_soat ChungTuDoiSoat[]
   lich_su_dong_phi LichSuDongPhiCanHo[]
+  bo_sung_giao_dich_qua_khu BoSungGiaoDichQuaKhu[]
   so_chot_can_ho SoChotCanHo[]
 
   @@map("can_ho")
@@ -499,6 +500,7 @@ model LichSuDongPhiCanHo {
   phan_bo_giao_dich       PhanBoGiaoDich? @relation(fields: [phan_bo_giao_dich_id], references: [id], onDelete: SetNull)
   batch_phi_public        BatchTrangThaiPhiPublic? @relation(fields: [batch_phi_public_id], references: [id], onDelete: SetNull)
   nguoi_tao               TaiKhoanQuanTri? @relation("NguoiTaoLichSuDongPhi", fields: [nguoi_tao_id], references: [id], onDelete: SetNull)
+  bo_sung_qua_khu         BoSungGiaoDichQuaKhu?
 
   @@index([can_ho_id, ky_du_lieu])
   @@index([giao_dich_ngan_hang_id])
@@ -527,9 +529,38 @@ model TaiKhoanQuanTri {
   nhat_ky_dang_nhap   NhatKyDangNhapQuanTri[]
   chung_tu_doi_soat_da_tao ChungTuDoiSoat[] @relation("NguoiTaoChungTuDoiSoat")
   lich_su_dong_phi_da_tao LichSuDongPhiCanHo[] @relation("NguoiTaoLichSuDongPhi")
+  bo_sung_giao_dich_qua_khu_da_tao BoSungGiaoDichQuaKhu[] @relation("NguoiTaoBoSungQuaKhu")
   thong_bao_da_tao    ThongBaoCongKhai[] @relation("NguoiTaoThongBao")
 
   @@map("tai_khoan_quan_tri")
+}
+
+model BoSungGiaoDichQuaKhu {
+  id                    Int      @id @default(autoincrement())
+  can_ho_id             Int
+  lich_su_dong_phi_id   Int      @unique
+  so_tien               Decimal  @db.Decimal(14, 2)
+  ky_du_lieu            String
+  thang_ap_dung         String?
+  ngay_giao_dich_goc    DateTime?
+  loai_bang_chung       String
+  duong_dan_file        String?
+  ten_file_goc          String?
+  mime_type             String?
+  kich_thuoc_file       Int?
+  noi_dung_xac_minh     String?
+  ghi_chu_noi_bo        String?
+  nguoi_tao_id          Int?
+  ngay_tao              DateTime @default(now())
+
+  can_ho                CanHo @relation(fields: [can_ho_id], references: [id], onDelete: Restrict)
+  lich_su_dong_phi      LichSuDongPhiCanHo @relation(fields: [lich_su_dong_phi_id], references: [id], onDelete: Cascade)
+  nguoi_tao             TaiKhoanQuanTri? @relation("NguoiTaoBoSungQuaKhu", fields: [nguoi_tao_id], references: [id], onDelete: SetNull)
+
+  @@index([can_ho_id, ky_du_lieu])
+  @@index([ngay_giao_dich_goc])
+  @@index([nguoi_tao_id])
+  @@map("bo_sung_giao_dich_qua_khu")
 }
 
 model NhatKyDangNhapQuanTri {
