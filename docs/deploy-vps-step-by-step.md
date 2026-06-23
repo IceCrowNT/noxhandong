@@ -13,6 +13,44 @@ Nguyen tac:
 - Khong chay seed/import test tren VPS sau khi restore DB local that.
 - Neu DB local co bang chung anh/file upload, phai copy ca `public/uploads/evidence` len VPS. DB chi luu duong dan, khong tu mang file anh theo.
 
+## Quy trinh deploy thu cong nhanh (Manual Workflow - Da kiem chung)
+
+Day la cac buoc thao tac tay truc tiep ma user da thuc hien thanh cong de dong bo Local len VPS:
+
+### --- LOCAL ---
+
+1. Xuat DB:
+```powershell
+pg_dump --format=custom --no-owner --file "du-lieu.dump" "postgresql://postgres:postgres@localhost:5432/apartment_fee_reviewer"
+```
+
+2. Nen ZIP source code (Bo qua: `node_modules`, `.next`, `.env`, `*.dump`).
+3. Copy file ZIP va `du-lieu.dump` len VPS.
+
+### --- VPS ---
+
+1. Dung app (Chay PowerShell Admin):
+```powershell
+Stop-Service noxh-an-dong
+taskkill /F /IM node.exe
+```
+
+2. Cap nhat Code:
+- Vao `C:\apps\noxh-an-dong`.
+- Xoa het code cu, CHI GIU LAI: `.env`, `start-app.cmd`, `logs\`, `public\uploads\`
+- Giai nen ZIP de vao day.
+- Chep `du-lieu.dump` vao `C:\apps\noxh-an-dong`.
+
+3. Chay lenh Build & Khoi phuc DB:
+```powershell
+cd C:\apps\noxh-an-dong
+npm ci
+npx prisma generate
+npm run build
+pg_restore --clean --if-exists --no-owner --dbname "postgresql://apartment_app:YGnNB1o3BDzYACVftixcBTabgarNJiecAa1!@localhost:5432/apartment_fee_reviewer" "C:\apps\noxh-an-dong\du-lieu.dump"
+Start-Service noxh-an-dong
+```
+
 ## Quy tac dong bo du lieu local -> VPS
 
 Ap dung khi local dang la bo du lieu that va can day len production.

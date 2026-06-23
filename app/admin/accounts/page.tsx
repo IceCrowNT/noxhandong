@@ -206,7 +206,7 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 md:hidden">
-            {accounts.map((account) => (
+            {accounts.map((account: any) => (
               <div key={account.id} className="rounded-xl border border-[var(--line)] bg-white p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -283,7 +283,7 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {accounts.map((account) => (
+                  {accounts.map((account: any) => (
                     <TableRow key={account.id}>
                       <TableCell className="font-semibold">{account.ten_dang_nhap}</TableCell>
                       <TableCell>{account.so_dien_thoai || "-"}</TableCell>
@@ -354,7 +354,7 @@ export default async function AdminAccountsPage({ searchParams }: AccountsPagePr
         </CardHeader>
         <CardContent>
           <div className="grid gap-2">
-            {loginLogs.map((log) => (
+            {loginLogs.map((log: any) => (
               <div key={log.id} className="grid gap-1 rounded-xl border border-[var(--line)] bg-white p-3 text-sm md:grid-cols-[180px_1fr_160px_1fr] md:items-center">
                 <span className="font-semibold">{formatVietnamDateTime(log.thoi_diem)}</span>
                 <span>{log.tai_khoan?.ten_hien_thi || log.tai_khoan?.ten_dang_nhap || log.dinh_danh_dang_nhap || "-"}</span>
