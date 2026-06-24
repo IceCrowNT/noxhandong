@@ -162,7 +162,7 @@ export function calculatePaidThroughAdvance(input: {
   unitFee: number;
 }) {
   const previousCarryAmount = Math.max(0, input.previousCarryAmount || 0);
-  const newPaymentAmount = Math.max(0, input.newPaymentAmount || 0);
+  const newPaymentAmount = input.newPaymentAmount || 0;
   const availableAmount = previousCarryAmount + newPaymentAmount;
   const addedMonths = input.unitFee > 0 ? Math.floor(availableAmount / input.unitFee) : 0;
   const remainderAmount =

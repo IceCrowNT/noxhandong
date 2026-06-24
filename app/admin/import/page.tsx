@@ -495,7 +495,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
             </Label>
             <Label className="grid gap-2">
               Số tiền
-              <Input name="amount" inputMode="numeric" placeholder="Ví dụ 1500000" required />
+              <Input name="amount" type="text" placeholder="Ví dụ 1500000 hoặc -1500000" required />
             </Label>
             <Label className="grid gap-2">
               Kỳ dữ liệu nguồn

@@ -757,7 +757,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                 <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-900">
                   Tạo preview trước để kiểm tra thay đổi từng căn. Chưa public ngay.
                 </div>
-                <SubmitButton disabled={pendingApprovedPayments <= 0} pendingText="Đang tạo preview...">
+                <SubmitButton pendingText="Đang tạo preview...">
                   <CheckCircle2 size={17} aria-hidden="true" />
                   Tạo preview
                 </SubmitButton>

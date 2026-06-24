@@ -331,7 +331,7 @@ export async function cancelPreparedPublicBatchAction(formData: FormData) {
 export async function createHistoricalSupplementAction(formData: FormData) {
   const account = await requirePermission("IMPORT_DATA");
   const apartmentCode = getString(formData, "apartmentCode").toUpperCase();
-  const amountRaw = getString(formData, "amount").replace(/\D/g, "");
+  const amountRaw = getString(formData, "amount").replace(/[^\d-]/g, "");
   const sourcePeriod = getString(formData, "sourcePeriod") || "T5-2026";
   const appliedMonth = getString(formData, "appliedMonth");
   const occurredAt = parseDateTimeInput(getString(formData, "occurredAt"));
@@ -341,7 +341,7 @@ export async function createHistoricalSupplementAction(formData: FormData) {
   const evidenceFile = formData.get("evidenceFile");
 
   const amount = Number(amountRaw);
-  if (!apartmentCode || !Number.isFinite(amount) || amount <= 0) {
+  if (!apartmentCode || !Number.isFinite(amount) || amount === 0) {
     redirect("/admin/import?historicalError=invalid");
   }
 
