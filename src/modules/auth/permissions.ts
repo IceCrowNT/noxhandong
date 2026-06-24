@@ -23,8 +23,8 @@ const ROLE_PERMISSIONS: Record<AdminRole, ReadonlySet<Permission>> = {
     "MANAGE_ACCOUNTS",
     "VIEW_PROFILE",
   ]),
-  MANAGER: new Set<Permission>(["VIEW_DASHBOARD", "VIEW_CONTACTS", "VIEW_PROFILE"]),
-  TECHNICIAN: new Set<Permission>(["VIEW_DASHBOARD", "VIEW_CONTACTS", "VIEW_PROFILE"]),
+  MANAGER: new Set<Permission>(["VIEW_DASHBOARD", "VIEW_PROFILE", "MANAGE_ANNOUNCEMENTS"]),
+  TECHNICIAN: new Set<Permission>(["VIEW_DASHBOARD", "VIEW_PROFILE"]),
 };
 
 export function hasPermission(role: AdminRole, permission: Permission) {

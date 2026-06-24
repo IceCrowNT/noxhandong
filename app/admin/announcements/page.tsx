@@ -11,7 +11,7 @@ import { Notice } from "@/components/ui/notice";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
-import { requireAdminRole } from "@/src/modules/auth/current-user";
+import { requirePermission } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
 
@@ -39,7 +39,7 @@ function message(params?: Awaited<AnnouncementsPageProps["searchParams"]>) {
 }
 
 export default async function AnnouncementsPage({ searchParams }: AnnouncementsPageProps) {
-  await requireAdminRole("SUPER_ADMIN");
+  await requirePermission("MANAGE_ANNOUNCEMENTS");
   const params = await searchParams;
   const notice = message(params);
   const announcements = await prisma.thongBaoCongKhai.findMany({
