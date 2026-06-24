@@ -16,8 +16,21 @@ function getString(formData: FormData, name: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function safeFileName(value: string) {
-  return path.basename(value || "announcement.pdf").replace(/[<>:"/\\|?*\u0000-\u001f]+/g, "-").replace(/\s+/g, " ").trim();
+function safeUrlFileName(value: string) {
+  const originalBaseName = path.basename(value || "announcement.pdf");
+  const originalExtension = path.extname(originalBaseName).toLowerCase();
+  const extension = originalExtension || ".pdf";
+  const nameWithoutExtension = path.basename(originalBaseName, path.extname(originalBaseName));
+  const slug = nameWithoutExtension
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\u0111/g, "d")
+    .replace(/\u0110/g, "D")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return `${slug || "announcement"}${extension}`;
 }
 
 export async function createAnnouncementAction(formData: FormData) {
@@ -40,8 +53,8 @@ export async function createAnnouncementAction(formData: FormData) {
   }
 
   await mkdir(ANNOUNCEMENT_UPLOAD_DIR, { recursive: true });
-  const originalName = safeFileName(file.name);
-  const storedName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${originalName}`;
+  const originalName = path.basename(file.name || "announcement.pdf").trim() || "announcement.pdf";
+  const storedName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${safeUrlFileName(originalName)}`;
   const storedPath = path.join(ANNOUNCEMENT_UPLOAD_DIR, storedName);
   await writeFile(storedPath, Buffer.from(await file.arrayBuffer()));
 
