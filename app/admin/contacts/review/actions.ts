@@ -4,10 +4,12 @@ import { redirect } from "next/navigation";
 
 import { requirePermission } from "@/src/modules/auth/current-user";
 import {
-  approveContactCandidate,
+  createDirectoryContact,
+  deleteDirectoryContact,
+  isContactDirectoryStatus,
   isContactRole,
-  rejectContactCandidate,
-} from "@/src/modules/contacts/review";
+  updateDirectoryContact,
+} from "@/src/modules/contacts/directory";
 
 function getString(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -18,52 +20,95 @@ function getBoolean(formData: FormData, name: string) {
   return formData.get(name) === "on";
 }
 
-function getCandidateId(formData: FormData) {
-  const id = Number(getString(formData, "candidateId"));
-  if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Candidate id không hợp lệ.");
-  }
-  return id;
+function getNumber(formData: FormData, name: string) {
+  const raw = Number(getString(formData, name));
+  return Number.isInteger(raw) && raw > 0 ? raw : 0;
 }
 
-function redirectWithStatus(status: string) {
-  redirect(`/admin/contacts/review?${status}=1`);
+function buildReturnHref(formData: FormData, status: string, selectedId?: number) {
+  const params = new URLSearchParams();
+  const query = getString(formData, "returnQuery");
+  const filterStatus = getString(formData, "returnStatus");
+  const page = getString(formData, "returnPage");
+
+  if (query) params.set("q", query);
+  if (filterStatus) params.set("status", filterStatus);
+  if (page) params.set("page", page);
+  if (selectedId) params.set("contactId", String(selectedId));
+  params.set(status, "1");
+
+  return `/admin/contacts/review?${params.toString()}`;
 }
 
-export async function approveContactAction(formData: FormData) {
-  const account = await requirePermission("REVIEW_CONTACTS");
-  const roleValue = getString(formData, "role");
+function parseStatus(value: string) {
+  return isContactDirectoryStatus(value) ? value : "DANG_DUNG";
+}
+
+function parseRole(value: string) {
+  return isContactRole(value) ? value : null;
+}
+
+export async function createContactAction(formData: FormData) {
+  await requirePermission("REVIEW_CONTACTS");
 
   try {
-    await approveContactCandidate({
-      candidateId: getCandidateId(formData),
+    const created = await createDirectoryContact({
+      maCan: getString(formData, "maCan"),
       displayName: getString(formData, "displayName"),
       phoneNumber: getString(formData, "phoneNumber"),
-      role: isContactRole(roleValue) ? roleValue : undefined,
       isPrimary: getBoolean(formData, "isPrimary"),
       receivesNotification: getBoolean(formData, "receivesNotification"),
+      zaloLink: getString(formData, "zaloLink"),
+      role: parseRole(getString(formData, "role")),
+      status: parseStatus(getString(formData, "contactStatus")),
       note: getString(formData, "note"),
-      reviewedBy: account.ten_dang_nhap,
     });
-  } catch {
-    redirectWithStatus("error");
-  }
 
-  redirectWithStatus("approved");
+    redirect(buildReturnHref(formData, "created", created.id));
+  } catch {
+    redirect(buildReturnHref(formData, "error_create"));
+  }
 }
 
-export async function rejectContactAction(formData: FormData) {
-  const account = await requirePermission("REVIEW_CONTACTS");
+export async function updateContactAction(formData: FormData) {
+  await requirePermission("REVIEW_CONTACTS");
 
-  try {
-    await rejectContactCandidate({
-      candidateId: getCandidateId(formData),
-      note: getString(formData, "rejectNote"),
-      reviewedBy: account.ten_dang_nhap,
-    });
-  } catch {
-    redirectWithStatus("error");
+  const contactId = getNumber(formData, "contactId");
+  if (!contactId) {
+    redirect(buildReturnHref(formData, "error_update"));
   }
 
-  redirectWithStatus("rejected");
+  try {
+    await updateDirectoryContact({
+      contactId,
+      displayName: getString(formData, "displayName"),
+      phoneNumber: getString(formData, "phoneNumber"),
+      isPrimary: getBoolean(formData, "isPrimary"),
+      receivesNotification: getBoolean(formData, "receivesNotification"),
+      zaloLink: getString(formData, "zaloLink"),
+      role: parseRole(getString(formData, "role")),
+      status: parseStatus(getString(formData, "contactStatus")),
+      note: getString(formData, "note"),
+    });
+
+    redirect(buildReturnHref(formData, "updated", contactId));
+  } catch {
+    redirect(buildReturnHref(formData, "error_update", contactId));
+  }
+}
+
+export async function deleteContactAction(formData: FormData) {
+  await requirePermission("REVIEW_CONTACTS");
+
+  const contactId = getNumber(formData, "contactId");
+  if (!contactId) {
+    redirect(buildReturnHref(formData, "error_delete"));
+  }
+
+  try {
+    await deleteDirectoryContact(contactId);
+    redirect(buildReturnHref(formData, "deleted"));
+  } catch {
+    redirect(buildReturnHref(formData, "error_delete", contactId));
+  }
 }

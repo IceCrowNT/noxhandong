@@ -27,8 +27,8 @@ const adminCards = [
     href: "/admin/contacts/review",
     icon: Users,
     role: "Quản lý",
-    title: "Liên hệ cư dân",
-    description: "Xem liên hệ nháp và dữ liệu gốc; chỉ Super Admin được duyệt vào danh bạ chính thức."
+    title: "Danh bạ cư dân",
+    description: "Tra cứu và quản lý danh bạ cư dân chính thức, phục vụ gọi nhanh và vận hành hằng ngày."
   },
   {
     href: "/admin/import",

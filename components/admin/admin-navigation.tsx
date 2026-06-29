@@ -5,8 +5,6 @@ import Link from "next/link";
 import { Bell, FileSearch, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { hasPermission, type Permission } from "@/src/modules/auth/permissions";
-import type { AdminRole } from "@/src/modules/auth/session";
 import {
   Sheet,
   SheetClose,
@@ -16,15 +14,66 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { hasPermission, type Permission } from "@/src/modules/auth/permissions";
+import type { AdminRole } from "@/src/modules/auth/session";
 
 export const adminNavigation = [
-  { key: "dashboard", href: "/admin/dashboard", label: "Tra cứu nội bộ", icon: LayoutDashboard, permission: "VIEW_DASHBOARD" },
-  { key: "contacts", href: "/admin/contacts/review", label: "Liên hệ cư dân", icon: Users, permission: "VIEW_CONTACTS" },
-  { key: "import", href: "/admin/import", label: "Nhập dữ liệu", icon: Upload, permission: "IMPORT_DATA" },
-  { key: "transactions", href: "/admin/transactions/review", label: "Duyệt sao kê", icon: FileSearch, permission: "REVIEW_TRANSACTIONS" },
-  { key: "announcements", href: "/admin/announcements", label: "Thông báo", icon: Bell, permission: "MANAGE_ANNOUNCEMENTS" },
-  { key: "accounts", href: "/admin/accounts", label: "Tài khoản quản trị", icon: ShieldCheck, permission: "MANAGE_ACCOUNTS" },
-  { key: "profile", href: "/admin/profile", label: "Tài khoản của tôi", icon: UserCircle, permission: "VIEW_PROFILE" },
+  {
+    key: "dashboard",
+    href: "/admin/dashboard",
+    label: "Tra cứu nội bộ",
+    icon: LayoutDashboard,
+    permission: "VIEW_DASHBOARD",
+    group: "Vận hành",
+  },
+  {
+    key: "announcements",
+    href: "/admin/announcements",
+    label: "Thông báo",
+    icon: Bell,
+    permission: "MANAGE_ANNOUNCEMENTS",
+    group: "Vận hành",
+  },
+  {
+    key: "contacts",
+    href: "/admin/contacts/review",
+    label: "Danh bạ cư dân",
+    icon: Users,
+    permission: "VIEW_CONTACTS",
+    group: "Cơ sở dữ liệu",
+  },
+  {
+    key: "import",
+    href: "/admin/import",
+    label: "Nhập dữ liệu",
+    icon: Upload,
+    permission: "IMPORT_DATA",
+    group: "Cơ sở dữ liệu",
+  },
+  {
+    key: "transactions",
+    href: "/admin/transactions/review",
+    label: "Duyệt sao kê",
+    icon: FileSearch,
+    permission: "REVIEW_TRANSACTIONS",
+    group: "Cơ sở dữ liệu",
+  },
+  {
+    key: "accounts",
+    href: "/admin/accounts",
+    label: "Tài khoản quản trị",
+    icon: ShieldCheck,
+    permission: "MANAGE_ACCOUNTS",
+    group: "Cơ sở dữ liệu",
+  },
+  {
+    key: "profile",
+    href: "/admin/profile",
+    label: "Tài khoản của tôi",
+    icon: UserCircle,
+    permission: "VIEW_PROFILE",
+    group: "Cá nhân",
+  },
 ] as const;
 
 export type AdminNavigationKey = (typeof adminNavigation)[number]["key"];
@@ -42,7 +91,7 @@ function AdminBrand() {
         />
       </div>
       <div className="min-w-0">
-        <strong className="block truncate text-sm leading-5">BQT An Đồng</strong>
+        <strong className="block truncate text-sm leading-5">BQT An Đông</strong>
         <span className="block truncate text-xs text-[var(--muted)]">Vùng quản trị</span>
       </div>
     </Link>
@@ -59,11 +108,13 @@ function NavigationLinks({
   closeOnClick?: boolean;
 }) {
   const visibleItems = adminNavigation.filter((item) => hasPermission(role, item.permission as Permission));
+
   return (
     <nav className="grid gap-1 p-2">
-      {visibleItems.map((item) => {
+      {visibleItems.map((item, index) => {
         const Icon = item.icon;
         const active = activeKey === item.key;
+        const previousGroup = index > 0 ? visibleItems[index - 1]?.group : null;
         const link = (
           <Link
             className={
@@ -73,17 +124,20 @@ function NavigationLinks({
             }
             href={item.href}
           >
-            <Icon size={16} aria-hidden="true" />
+            <Icon aria-hidden="true" size={16} />
             {item.label}
           </Link>
         );
 
-        return closeOnClick ? (
-          <SheetClose asChild key={item.key}>
-            {link}
-          </SheetClose>
-        ) : (
-          <div key={item.key}>{link}</div>
+        return (
+          <div key={item.key}>
+            {item.group !== previousGroup ? (
+              <div className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">
+                {item.group}
+              </div>
+            ) : null}
+            {closeOnClick ? <SheetClose asChild>{link}</SheetClose> : link}
+          </div>
         );
       })}
     </nav>
@@ -112,7 +166,7 @@ export function AdminMobileMenu({ activeKey, role }: { activeKey: AdminNavigatio
           size="icon-sm"
           variant="ghost"
         >
-          <Menu size={18} aria-hidden="true" />
+          <Menu aria-hidden="true" size={18} />
           <span className="sr-only">Mở menu quản trị</span>
         </Button>
       </SheetTrigger>

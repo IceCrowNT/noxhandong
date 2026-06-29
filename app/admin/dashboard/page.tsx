@@ -1,8 +1,9 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   AlertTriangle,
   Building2,
   CheckCircle2,
+  Database,
   FileText,
   FileSpreadsheet,
   Gauge,
@@ -957,12 +958,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         ...selected.lien_he.map((contact) => ({
           name: contact.ten_hien_thi,
           phone: normalizePhone(contact.so_dien_thoai),
-          source: "Danh bạ đã duyệt",
-        })),
-        ...selected.contactCandidates.map((candidate) => ({
-          name: candidate.ten_hien_thi_parse || candidate.ten_nguoi_su_dung_goc || candidate.ten_chu_ho_goc || "Liên hệ gốc",
-          phone: normalizePhone(candidate.so_dien_thoai_parse || candidate.so_dien_thoai_goc),
-          source: "Excel chưa duyệt",
+          source: "Danh bạ cư dân",
         })),
       ]
         .filter((item) => item.phone)
@@ -1166,8 +1162,8 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
 
                 <Card className="bg-white/90">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-xl">Dữ liệu gốc Excel</CardTitle>
-                    <CardDescription>Chưa phải danh bạ đã duyệt.</CardDescription>
+                    <CardTitle className="text-xl">Dữ liệu gốc tham khảo</CardTitle>
+                    <CardDescription>Dùng để đối chiếu khi cần, không phải dữ liệu vận hành chính.</CardDescription>
                   </CardHeader>
                   <CardContent className="grid gap-2">
                     {selected.contactCandidates.length ? (
@@ -1321,29 +1317,72 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             <AttentionRows items={feeOverview.attentionRows} />
           </CardContent>
         </Card>
-      </section>
-
-      <section className="order-4 mb-5">
+      </section>      <section className="order-4 mb-5">
         <Card className="bg-white/90">
           <CardHeader className="gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <CardTitle>Dữ liệu mới nhất</CardTitle>
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">
+                <Database size={14} aria-hidden="true" />
+                Cơ sở dữ liệu
+              </div>
+              <CardTitle>Dữ liệu mới nhất và xuất file</CardTitle>
               <CardDescription>
                 {data.summary.currentBatch
                   ? `Public hiện hành: ${data.summary.currentBatch.ky_du_lieu} · ${formatDateTime(data.summary.currentBatch.public_luc)}`
                   : "Chưa có dữ liệu public hiện hành."}
               </CardDescription>
             </div>
-            {latestImport ? (
-              <div className="rounded-lg border border-[var(--line)] bg-white px-4 py-3 text-sm">
-                <span className="block text-xs font-semibold uppercase text-[var(--muted)]">Import gần nhất</span>
-                <strong className="mt-1 block max-w-[520px] truncate" title={latestImport.ten_file}>
-                  {latestImport.ten_file}
+          </CardHeader>
+          <CardContent className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-lg border border-[var(--line)] bg-white p-4 text-sm">
+                <span className="block text-xs font-semibold uppercase text-[var(--muted)]">Public hiện hành</span>
+                <strong className="mt-1 block text-lg">
+                  {data.summary.currentBatch?.ky_du_lieu || data.summary.selectedFeePeriod || "-"}
                 </strong>
-                <span className="text-[var(--muted)]">{formatDateTime(latestImport.thoi_diem_nhap)}</span>
+                <span className="text-[var(--muted)]">
+                  {data.summary.currentBatch?.public_luc
+                    ? formatDateTime(data.summary.currentBatch.public_luc)
+                    : "Chưa công khai"}
+                </span>
+              </div>
+
+              <div className="rounded-lg border border-[var(--line)] bg-white p-4 text-sm">
+                <span className="block text-xs font-semibold uppercase text-[var(--muted)]">Import gần nhất</span>
+                {latestImport ? (
+                  <>
+                    <strong className="mt-1 block max-w-[520px] truncate" title={latestImport.ten_file}>
+                      {latestImport.ten_file}
+                    </strong>
+                    <span className="text-[var(--muted)]">{formatDateTime(latestImport.thoi_diem_nhap)}</span>
+                  </>
+                ) : (
+                  <span className="text-[var(--muted)]">Chưa có lịch sử import.</span>
+                )}
+              </div>
+            </div>
+
+            {data.summary.selectedFeePeriod ? (
+              <div className="flex flex-wrap gap-2 lg:justify-end">
+                <Button asChild type="button" variant="secondary">
+                  <a href={`/api/export/monthly-fee-ledger?period=${encodeURIComponent(data.summary.selectedFeePeriod)}`}>
+                    <FileSpreadsheet size={16} aria-hidden="true" />
+                    Xuất Excel dữ liệu tháng
+                  </a>
+                </Button>
+                <Button asChild type="button">
+                  <a
+                    href={`/api/export/monthly-bank-statement?period=${encodeURIComponent(
+                      data.summary.selectedFeePeriod,
+                    )}`}
+                  >
+                    <FileText size={16} aria-hidden="true" />
+                    Xuất sao kê tháng này
+                  </a>
+                </Button>
               </div>
             ) : null}
-          </CardHeader>
+          </CardContent>
         </Card>
       </section>
 
@@ -1400,13 +1439,13 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                 <div className="rounded-xl border border-[var(--line)] bg-white p-4">
                   <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <span className="text-xs font-bold uppercase text-[var(--muted)]">Liên hệ gốc từ Excel</span>
+                      <span className="text-xs font-bold uppercase text-[var(--muted)]">Danh bạ cư dân</span>
                       <p className="mt-1 text-sm text-[var(--muted)]">
-                        Dữ liệu dưới đây lấy từ bảng <b>ung_vien_lien_he_can_ho</b>, chưa phải danh bạ đã duyệt.
+                        Hiển thị các số điện thoại đang dùng trong danh bạ chuẩn để quản lý và kỹ thuật có thể tra cứu hoặc gọi nhanh.
                       </p>
                     </div>
                     <Button asChild variant="secondary" size="sm">
-                      <Link href={`/admin/contacts/review?ma_can=${encodeURIComponent(selected.ma_can)}`}>Duyệt</Link>
+                      <Link href={`/admin/contacts/review?q=${encodeURIComponent(selected.ma_can)}`}>Mở danh bạ</Link>
                     </Button>
                   </div>
 
@@ -1432,25 +1471,10 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                     </div>
                   ) : null}
 
-                  <div className="grid max-h-[220px] gap-2 overflow-auto pr-1">
-                    {selected.contactCandidates.length ? (
-                      selected.contactCandidates.slice(0, 5).map((candidate) => (
-                        <div key={candidate.id} className="rounded-lg border border-[var(--line)] bg-[#fbfcfb] p-3">
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                            <span><b>Chủ hộ:</b> {compactText(candidate.ten_chu_ho_goc)}</span>
-                            <span><b>Người dùng:</b> {compactText(candidate.ten_nguoi_su_dung_goc)}</span>
-                            <span><b>SĐT:</b> {compactText(candidate.so_dien_thoai_goc || candidate.so_dien_thoai_parse)}</span>
-                          </div>
-                          <div className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                            {compactText(candidate.thong_tin_cu_dan_goc || candidate.thong_tin_phu_goc || candidate.ghi_chu_goc)}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="rounded-lg border border-dashed border-[var(--line)] p-4 text-sm text-[var(--muted)]">
-                        Chưa có dữ liệu liên hệ gốc từ Excel cho căn này.
-                      </div>
-                    )}
+                  <div className="rounded-lg border border-dashed border-[var(--line)] p-4 text-sm text-[var(--muted)]">
+                    {selected.lien_he.length
+                      ? "Danh bạ chuẩn đang được dùng trực tiếp từ cơ sở dữ liệu. Muốn chỉnh sửa hoặc bổ sung, mở màn Danh bạ cư dân."
+                      : "Căn này chưa có liên hệ chính thức trong danh bạ. Có thể mở Danh bạ cư dân để thêm mới."}
                   </div>
                 </div>
               </div>
@@ -1626,8 +1650,11 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
 
             <Card className="bg-white/90">
               <CardHeader>
-                <p className="eyebrow">Liên hệ nháp</p>
-                <CardTitle>Dữ liệu chờ duyệt</CardTitle>
+                <p className="eyebrow">Dữ liệu tham khảo</p>
+                <CardTitle>Thông tin gốc từ nguồn cũ</CardTitle>
+                <CardDescription>
+                  Khu vực này chỉ để đối chiếu khi cần. Danh bạ cư dân chính thức nằm ở màn Danh bạ cư dân.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="max-h-[360px] overflow-auto rounded-xl border border-[var(--line)] bg-white">
@@ -1677,7 +1704,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                       ) : (
                         <TableRow>
                           <TableCell className="py-8 text-center text-[var(--muted)]" colSpan={5}>
-                            Không có liên hệ nháp cho căn này.
+                            Không có dữ liệu tham khảo cho căn này.
                           </TableCell>
                         </TableRow>
                       )}
@@ -1733,3 +1760,4 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
     </AdminFrame>
   );
 }
+
