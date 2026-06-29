@@ -57,9 +57,23 @@ async function main() {
   }
 
   const metadata = batch.metadata_json && typeof batch.metadata_json === "object" ? batch.metadata_json : {};
-  const historyRecordIds = Array.isArray(metadata.historyRecordIds)
+  const historyRecordIdsFromMetadata = Array.isArray(metadata.historyRecordIds)
     ? metadata.historyRecordIds.filter((id) => Number.isInteger(id) && id > 0)
     : [];
+  const snapshotRows = await prisma.trangThaiPhiCanHoPublic.findMany({
+    where: { batch_id: batch.id },
+    select: { payload_public_json: true },
+  });
+  const historyRecordIdsFromSnapshot = snapshotRows.flatMap((row) => {
+    const payload = row.payload_public_json && typeof row.payload_public_json === "object"
+      ? row.payload_public_json
+      : null;
+    const included = payload && Array.isArray(payload.includedHistoryIds)
+      ? payload.includedHistoryIds
+      : [];
+    return included.filter((id) => Number.isInteger(id) && id > 0);
+  });
+  const historyRecordIds = [...new Set([...historyRecordIdsFromMetadata, ...historyRecordIdsFromSnapshot])];
 
   const published = await prisma.$transaction(async (tx) => {
     await tx.batchTrangThaiPhiPublic.updateMany({

@@ -107,9 +107,18 @@ async function main() {
 
     totalApprovedAmount += newPaymentAmount;
     totalCarryAmount += advance.remainderAmount;
-    if (newPaymentAmount > 0) {
-      changedApartmentCodes.push(apartment.ma_can);
+    if (apartmentHistories.length > 0) {
       historyRecordIds.push(...apartmentHistories.map((item) => item.id));
+    }
+
+    const hasSnapshotChange =
+      apartmentHistories.length > 0 &&
+      (advance.nextNumericMonth !== baseNumericMonth ||
+        advance.remainderAmount !== previousCarryAmount ||
+        newPaymentAmount !== 0);
+
+    if (hasSnapshotChange) {
+      changedApartmentCodes.push(apartment.ma_can);
     }
 
     snapshotRows.push({
