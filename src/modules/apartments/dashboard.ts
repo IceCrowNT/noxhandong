@@ -52,6 +52,22 @@ function parsePeriod(period: string | null | undefined) {
     label: `T${Number(match[1])}-${match[2]}`,
   };
 }
+function getOperationalCurrentPeriod() {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+  });
+  const [yearText, monthText] = formatter.format(new Date()).split("-");
+  const year = Number(yearText);
+  const month = Number(monthText);
+
+  return {
+    month,
+    year,
+    label: `T${month}-${year}`,
+  };
+}
 
 function internalMonthLabel(monthIndex: number) {
   const month = (((monthIndex - 1) % 12) + 12) % 12 + 1;
@@ -130,11 +146,14 @@ async function getFeeOverview(
   currentPeriodLabel: string | null | undefined,
   requestedPaidThrough?: string,
 ) {
+  const operationalCurrentPeriod = getOperationalCurrentPeriod();
+
   if (!currentBatchId) {
-    const currentPeriod = parsePeriod(currentPeriodLabel);
+    const currentPeriod = operationalCurrentPeriod;
     const powerCutSoonMonth = currentPeriod.month - 4;
     return {
       currentPeriod,
+      sourcePeriod: parsePeriod(currentPeriodLabel),
       powerCutPolicy: {
         soonPaidThroughLabel: internalMonthLabel(powerCutSoonMonth),
         overdueFromLabel: internalMonthLabel(powerCutSoonMonth + 1),
@@ -152,7 +171,8 @@ async function getFeeOverview(
     };
   }
 
-  const currentPeriod = parsePeriod(currentPeriodLabel);
+  const currentPeriod = operationalCurrentPeriod;
+  const sourcePeriod = parsePeriod(currentPeriodLabel);
   const powerCutSoonMonth = currentPeriod.month - 4;
   const feeRows = await prisma.trangThaiPhiCanHoPublic.findMany({
     where: { batch_id: currentBatchId },
@@ -367,6 +387,7 @@ async function getFeeOverview(
 
   return {
     currentPeriod,
+    sourcePeriod,
     powerCutPolicy: {
       soonPaidThroughLabel: internalMonthLabel(powerCutSoonMonth),
       overdueFromLabel: internalMonthLabel(powerCutSoonMonth + 1),
@@ -515,10 +536,18 @@ export async function getApartmentDashboardData(
     publishedFeeBatches[0] ||
     null;
   const feeOverview = await getFeeOverview(
-    selectedFeeBatch?.id ?? null,
-    selectedFeeBatch?.ky_du_lieu,
+    currentBatch?.id ?? null,
+    currentBatch?.ky_du_lieu,
     requestedPaidThrough,
   );
+  const distributionOverview =
+    selectedFeeBatch?.id === currentBatch?.id
+      ? feeOverview
+      : await getFeeOverview(
+          selectedFeeBatch?.id ?? null,
+          selectedFeeBatch?.ky_du_lieu,
+          requestedPaidThrough,
+        );
 
   const searchWhere: Prisma.CanHoWhereInput[] = [{ ma_can: { contains: searchText } }];
   if (candidates.length) {
@@ -571,6 +600,7 @@ export async function getApartmentDashboardData(
           }
         : null,
       feeOverview,
+      distributionOverview,
       selectedFeePeriod: selectedFeeBatch?.ky_du_lieu || null,
       publishedFeePeriods: publishedFeeBatches.map((batch) => ({
         id: batch.id,
@@ -832,3 +862,5 @@ async function getApartmentDetail(apartmentId: number) {
     })),
   };
 }
+
+

@@ -189,6 +189,33 @@ export function transactionFingerprint(transaction: StatementTransaction): strin
     .digest("hex");
 }
 
+export function normalizeStatementDuplicateText(value: string): string {
+  return safeString(value).replace(/\s+/g, " ").trim();
+}
+
+export function transactionStableFingerprint(transaction: StatementTransaction): string {
+  return crypto
+    .createHash("sha256")
+    .update(
+      [
+        transaction.transactionDate?.toISOString() || "",
+        transaction.amount,
+        normalizeStatementDuplicateText(transaction.description),
+        transaction.senderAccount || "",
+      ].join("|")
+    )
+    .digest("hex");
+}
+
+export function statementReferenceTokens(transaction: StatementTransaction): string[] {
+  const embeddedTokens = safeString(transaction.description).match(/[A-Za-z0-9][A-Za-z0-9_-]{8,}/g) || [];
+  const rawTokens = [
+    transaction.transactionId || "",
+    ...embeddedTokens,
+  ];
+  return [...new Set(rawTokens.map((token) => token.trim()).filter(Boolean))];
+}
+
 export function resolveExistingInputArg(defaultInput: string, args = process.argv.slice(2)) {
   if (!args.length) {
     return { inputPath: defaultInput, rest: [] };

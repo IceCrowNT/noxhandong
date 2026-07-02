@@ -528,7 +528,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
         <Notice tone={params?.error ? "error" : "success"}>{message}</Notice>
       ) : null}
 
-      <form className="mb-4 grid gap-3 rounded-xl border border-[var(--line)] bg-white/90 p-3 xl:grid-cols-[minmax(240px,0.8fr)_minmax(420px,1.2fr)_auto] xl:items-center">
+      {/* <form className="mb-4 grid gap-3 rounded-xl border border-[var(--line)] bg-white/90 p-3 xl:grid-cols-[minmax(240px,0.8fr)_minmax(420px,1.2fr)_auto] xl:items-center">
         <div className="min-w-0 text-sm leading-6 text-[var(--muted)]">
           <div className="font-semibold text-[var(--text)]">Giao dịch cần duyệt</div>
           <div className="truncate">
@@ -601,7 +601,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
             <SubmitButton variant="secondary" pendingText="Đang lọc...">Áp dụng nâng cao</SubmitButton>
           </div>
         </details>
-      </form>
+      </form> */}
 
       <details open={showMonthlyPanel} className="mb-4 rounded-xl border border-[var(--line)] bg-white/90">
         <summary className="flex cursor-pointer items-center justify-between gap-3 px-6 py-4">

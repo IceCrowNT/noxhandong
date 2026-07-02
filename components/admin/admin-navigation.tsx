@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, FileSearch, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
+import { Bell, Database, FileSearch, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,14 +34,8 @@ export const adminNavigation = [
     permission: "MANAGE_ANNOUNCEMENTS",
     group: "Vận hành",
   },
-  {
-    key: "contacts",
-    href: "/admin/contacts/review",
-    label: "Danh bạ cư dân",
-    icon: Users,
-    permission: "VIEW_CONTACTS",
-    group: "Cơ sở dữ liệu",
-  },
+  
+  
   {
     key: "import",
     href: "/admin/import",
@@ -59,11 +53,27 @@ export const adminNavigation = [
     group: "Cơ sở dữ liệu",
   },
   {
+    key: "contacts",
+    href: "/admin/contacts/review",
+    label: "Danh bạ cư dân",
+    icon: Users,
+    permission: "VIEW_CONTACTS",
+    group: "Cơ sở dữ liệu",
+  },
+  {
     key: "accounts",
     href: "/admin/accounts",
     label: "Tài khoản quản trị",
     icon: ShieldCheck,
     permission: "MANAGE_ACCOUNTS",
+    group: "Cơ sở dữ liệu",
+  },
+  {
+    key: "database",
+    href: "/admin/database",
+    label: "Cơ sở dữ liệu",
+    icon: Database,
+    permission: "VIEW_DASHBOARD",
     group: "Cơ sở dữ liệu",
   },
   {
@@ -91,7 +101,7 @@ function AdminBrand() {
         />
       </div>
       <div className="min-w-0">
-        <strong className="block truncate text-sm leading-5">BQT An Đông</strong>
+        <strong className="block truncate text-sm leading-5">BQT An Đồng</strong>
         <span className="block truncate text-xs text-[var(--muted)]">Vùng quản trị</span>
       </div>
     </Link>
@@ -183,3 +193,4 @@ export function AdminMobileMenu({ activeKey, role }: { activeKey: AdminNavigatio
     </Sheet>
   );
 }
+

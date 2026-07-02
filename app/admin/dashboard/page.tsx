@@ -3,9 +3,6 @@ import {
   AlertTriangle,
   Building2,
   CheckCircle2,
-  Database,
-  FileText,
-  FileSpreadsheet,
   Gauge,
   PhoneCall,
   Search,
@@ -341,121 +338,6 @@ function FeePeriodControls({
         </Button>
       </form>
     </div>
-  );
-}
-
-function FeeNoticeList({
-  options,
-  selected,
-  selectedPeriod,
-  searchQuery,
-}: {
-  options: Array<{ key: string; label: string; count: number }>;
-  selected: {
-    key: string;
-    label: string;
-    count: number;
-    apartmentGroups: Array<{ lot: string; apartmentCodes: string[] }>;
-    noticePeriod: { label: string; paidThrough: string };
-  } | null;
-  selectedPeriod: string | null;
-  searchQuery: string;
-}) {
-  if (!options.length || !selected) return null;
-
-  return (
-    <Card className="bg-white/90">
-      <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <CardTitle>Lập danh sách thông báo thu phí</CardTitle>
-          <CardDescription>
-            Lọc các căn đã đóng chính xác đến một tháng; không gồm căn đóng lẻ hoặc đã đóng vượt mốc.
-          </CardDescription>
-        </div>
-        <form action="/admin/dashboard" className="flex flex-wrap items-end gap-2" data-preserve-scroll>
-          {selectedPeriod ? <input name="ky_phi" type="hidden" value={selectedPeriod} /> : null}
-          {searchQuery ? <input name="ma_can" type="hidden" value={searchQuery} /> : null}
-          <label className="grid gap-1 text-xs font-semibold text-[var(--muted)]">
-            Đã đóng chính xác đến
-            <select
-              className="h-10 min-w-[190px] rounded-md border border-[var(--line)] bg-white px-3 text-sm font-medium"
-              defaultValue={selected.key}
-              name="thang_da_dong"
-            >
-              {options.map((option) => (
-                <option key={option.key} value={option.key}>
-                  {option.label} · {formatNumber(option.count)} căn
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button type="submit" variant="secondary">Lọc danh sách</Button>
-          {selectedPeriod ? (
-            <>
-              <Button asChild type="button">
-                <a
-                  href={`/api/export/fee-notice-list?period=${encodeURIComponent(selectedPeriod)}&paidThrough=${encodeURIComponent(
-                    selected.noticePeriod.paidThrough,
-                  )}`}
-                >
-                  <FileSpreadsheet size={16} aria-hidden="true" />
-                  Xuất Excel
-                </a>
-              </Button>
-              <Button asChild type="button" variant="secondary">
-                <a
-                  href={`/api/export/fee-notice-docx?period=${encodeURIComponent(selectedPeriod)}&paidThrough=${encodeURIComponent(
-                    selected.noticePeriod.paidThrough,
-                  )}`}
-                >
-                  <FileText size={16} aria-hidden="true" />
-                  Xuất Word
-                </a>
-              </Button>
-            </>
-          ) : null}
-        </form>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-[var(--line)] bg-white p-3">
-            <span className="text-xs font-semibold uppercase text-[var(--muted)]">Mốc đã đóng</span>
-            <strong className="mt-1 block text-lg">{selected.label}</strong>
-          </div>
-          <div className="rounded-lg border border-[var(--line)] bg-white p-3">
-            <span className="text-xs font-semibold uppercase text-[var(--muted)]">Kỳ thông báo 6 tháng</span>
-            <strong className="mt-1 block text-lg text-[var(--accent)]">{selected.noticePeriod.label}</strong>
-          </div>
-          <div className="rounded-lg border border-[var(--line)] bg-white p-3">
-            <span className="text-xs font-semibold uppercase text-[var(--muted)]">Số căn cần thông báo</span>
-            <strong className="mt-1 block text-lg">{formatNumber(selected.count)} căn</strong>
-          </div>
-        </div>
-        <div className="max-h-96 space-y-3 overflow-y-auto overscroll-contain rounded-lg border border-[var(--line)] bg-white p-3">
-          {selected.apartmentGroups.map((group) => (
-            <section className="rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3" key={group.lot}>
-              <div className="mb-3 flex items-center justify-between gap-3 border-b border-[var(--line)] pb-2">
-                <strong className="text-base text-[var(--accent)]">Lô {group.lot}</strong>
-                <span className="text-xs font-semibold text-[var(--muted)]">
-                  {formatNumber(group.apartmentCodes.length)} căn
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10">
-                {group.apartmentCodes.map((code) => (
-                  <Link
-                    className="rounded-md border border-[var(--line)] bg-white px-2 py-2 text-center text-sm font-semibold hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
-                    href={`/admin/dashboard?ma_can=${encodeURIComponent(code)}${selectedPeriod ? `&ky_phi=${encodeURIComponent(selectedPeriod)}` : ""}&thang_da_dong=${encodeURIComponent(selected.key)}`}
-                    key={code}
-                  >
-                    {code}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
   );
 }
 
@@ -940,7 +822,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
   const selected = data.search.selectedApartment;
   const hasSearch = Boolean(data.search.query);
   const feeOverview = data.summary.feeOverview;
-  const latestImport = data.latestImports[0] || null;
+  const distributionOverview = data.summary.distributionOverview;
 
   const details = selected
     ? [
@@ -1032,16 +914,9 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                   selectedPeriod={data.summary.selectedFeePeriod}
                   searchQuery={data.search.query}
                 />
-                <FeeDistributionReportBars items={feeOverview.distribution} />
+                <FeeDistributionReportBars items={distributionOverview.distribution} />
               </CardContent>
             </Card>
-
-            <FeeNoticeList
-              options={feeOverview.exactPaidThroughOptions}
-              selected={feeOverview.selectedNoticeGroup}
-              selectedPeriod={data.summary.selectedFeePeriod}
-              searchQuery={data.search.query}
-            />
 
             <Card className="bg-white/90">
               <CardHeader className="pb-3">
@@ -1227,7 +1102,8 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             </div>
           </CardHeader>
           <CardContent className="text-sm leading-6 text-[var(--muted)]">
-            {feeOverview.completionPercent}% trên kỳ {data.summary.selectedFeePeriod || "-"} · Đã công khai
+            {feeOverview.completionPercent}% theo tháng vận hành hiện tại · nguồn public{" "}
+            {data.summary.currentBatch?.ky_du_lieu || "-"}
           </CardContent>
         </Card>
 
@@ -1301,7 +1177,7 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             />
           </CardHeader>
           <CardContent>
-            <FeeDistributionReportBars items={feeOverview.distribution} />
+            <FeeDistributionReportBars items={distributionOverview.distribution} />
           </CardContent>
         </Card>
 
@@ -1317,82 +1193,6 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             <AttentionRows items={feeOverview.attentionRows} />
           </CardContent>
         </Card>
-      </section>      <section className="order-4 mb-5">
-        <Card className="bg-white/90">
-          <CardHeader className="gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--muted)]">
-                <Database size={14} aria-hidden="true" />
-                Cơ sở dữ liệu
-              </div>
-              <CardTitle>Dữ liệu mới nhất và xuất file</CardTitle>
-              <CardDescription>
-                {data.summary.currentBatch
-                  ? `Public hiện hành: ${data.summary.currentBatch.ky_du_lieu} · ${formatDateTime(data.summary.currentBatch.public_luc)}`
-                  : "Chưa có dữ liệu public hiện hành."}
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-[var(--line)] bg-white p-4 text-sm">
-                <span className="block text-xs font-semibold uppercase text-[var(--muted)]">Public hiện hành</span>
-                <strong className="mt-1 block text-lg">
-                  {data.summary.currentBatch?.ky_du_lieu || data.summary.selectedFeePeriod || "-"}
-                </strong>
-                <span className="text-[var(--muted)]">
-                  {data.summary.currentBatch?.public_luc
-                    ? formatDateTime(data.summary.currentBatch.public_luc)
-                    : "Chưa công khai"}
-                </span>
-              </div>
-
-              <div className="rounded-lg border border-[var(--line)] bg-white p-4 text-sm">
-                <span className="block text-xs font-semibold uppercase text-[var(--muted)]">Import gần nhất</span>
-                {latestImport ? (
-                  <>
-                    <strong className="mt-1 block max-w-[520px] truncate" title={latestImport.ten_file}>
-                      {latestImport.ten_file}
-                    </strong>
-                    <span className="text-[var(--muted)]">{formatDateTime(latestImport.thoi_diem_nhap)}</span>
-                  </>
-                ) : (
-                  <span className="text-[var(--muted)]">Chưa có lịch sử import.</span>
-                )}
-              </div>
-            </div>
-
-            {data.summary.selectedFeePeriod ? (
-              <div className="flex flex-wrap gap-2 lg:justify-end">
-                <Button asChild type="button" variant="secondary">
-                  <a href={`/api/export/monthly-fee-ledger?period=${encodeURIComponent(data.summary.selectedFeePeriod)}`}>
-                    <FileSpreadsheet size={16} aria-hidden="true" />
-                    Xuất Excel dữ liệu tháng
-                  </a>
-                </Button>
-                <Button asChild type="button">
-                  <a
-                    href={`/api/export/monthly-bank-statement?period=${encodeURIComponent(
-                      data.summary.selectedFeePeriod,
-                    )}`}
-                  >
-                    <FileText size={16} aria-hidden="true" />
-                    Xuất sao kê tháng này
-                  </a>
-                </Button>
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="order-4 mb-5">
-        <FeeNoticeList
-          options={feeOverview.exactPaidThroughOptions}
-          selected={feeOverview.selectedNoticeGroup}
-          selectedPeriod={data.summary.selectedFeePeriod}
-          searchQuery={data.search.query}
-        />
       </section>
 
       <section className="order-1 mb-5 grid gap-4">
@@ -1717,47 +1517,9 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
         </section>
       ) : null}
 
-      <Card className="order-5 hidden bg-white/90">
-        <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <FileSpreadsheet className="text-[var(--accent)]" size={20} aria-hidden="true" />
-              <CardTitle>Lịch sử nhập dữ liệu</CardTitle>
-            </div>
-            <CardDescription className="mt-2">Các file đã nhập gần nhất, cuộn trong card.</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="max-h-[360px] overflow-auto rounded-xl border border-[var(--line)] bg-white">
-            <Table className="min-w-[900px]">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Loại nguồn</TableHead>
-                  <TableHead>Tên file</TableHead>
-                  <TableHead>Số dòng</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Thời điểm</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.latestImports.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>#{item.id}</TableCell>
-                    <TableCell>{importSourceLabel(item.loai_nguon)}</TableCell>
-                    <TableCell>{item.ten_file}</TableCell>
-                    <TableCell>{formatNumber(item.so_dong)}</TableCell>
-                    <TableCell>{importStatusLabel(item.trang_thai)}</TableCell>
-                    <TableCell>{formatDateTime(item.thoi_diem_nhap)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
       </div>
     </AdminFrame>
   );
 }
+
 

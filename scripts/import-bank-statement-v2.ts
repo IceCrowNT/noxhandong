@@ -15,7 +15,9 @@ import {
   fileHash,
   readStatementRows,
   resolveExistingInputArg,
+  statementReferenceTokens,
   transactionFingerprint,
+  transactionStableFingerprint,
 } from "../src/modules/transactions/import/bank-statement-common";
 
 if (!process.env.DATABASE_URL) {
@@ -81,6 +83,63 @@ async function resolveImportCutoff(args) {
     closingId: latestClosing?.id || null,
     closingPeriod: latestClosing?.ky_du_lieu || null,
   };
+}
+
+const existingBankTransactionSelect = {
+  id: true,
+  trang_thai_duyet: true,
+  ma_can_duoc_chon: true,
+  ma_can_parse: true,
+  phien_ban_parser: true,
+  payload_goc_json: true,
+};
+
+async function findExistingBankTransaction(tx, transaction, fingerprint) {
+  const transactionId = transaction.transactionId?.trim();
+  if (transactionId) {
+    const byReference = await tx.giaoDichNganHang.findUnique({
+      where: { tham_chieu_ngan_hang: transactionId },
+      select: existingBankTransactionSelect,
+    });
+    if (byReference) return byReference;
+  }
+
+  const byFingerprint = await tx.giaoDichNganHang.findUnique({
+    where: { van_tay_giao_dich: fingerprint },
+    select: existingBankTransactionSelect,
+  });
+  if (byFingerprint) return byFingerprint;
+
+  if (transaction.transactionDate && transaction.description) {
+    const exactDuplicate = await tx.giaoDichNganHang.findFirst({
+      where: {
+        ngay_giao_dich: transaction.transactionDate,
+        so_tien: String(transaction.amount),
+        noi_dung_goc: transaction.description,
+        tai_khoan_nguoi_chuyen: transaction.senderAccount || null,
+      },
+      orderBy: { id: "asc" },
+      select: existingBankTransactionSelect,
+    });
+    if (exactDuplicate) return exactDuplicate;
+  }
+
+  const referenceTokens = statementReferenceTokens(transaction).filter((token) => token !== transactionId);
+  if (transaction.transactionDate && referenceTokens.length) {
+    const tokenMatchedDuplicate = await tx.giaoDichNganHang.findFirst({
+      where: {
+        ngay_giao_dich: transaction.transactionDate,
+        so_tien: String(transaction.amount),
+        tai_khoan_nguoi_chuyen: transaction.senderAccount || null,
+        tham_chieu_ngan_hang: { in: referenceTokens },
+      },
+      orderBy: { id: "asc" },
+      select: existingBankTransactionSelect,
+    });
+    if (tokenMatchedDuplicate) return tokenMatchedDuplicate;
+  }
+
+  return null;
 }
 
 async function main() {
@@ -161,6 +220,7 @@ async function main() {
 
     const transaction = record.transaction;
     const fingerprint = transactionFingerprint(transaction);
+    const stableFingerprint = transactionStableFingerprint(transaction);
     const parseResult = parseApartmentCode(transaction.description);
     const normalizedDescription = parseResult.normalizedDescription;
 
@@ -244,29 +304,7 @@ async function main() {
         : suggestPartialApartmentCandidates(transaction.description, validApartments);
     result.parseStatus[mapped.status] = (result.parseStatus[mapped.status] || 0) + 1;
 
-    const existingTransaction = transaction.transactionId
-      ? await tx.giaoDichNganHang.findUnique({
-          where: { tham_chieu_ngan_hang: transaction.transactionId },
-          select: {
-            id: true,
-            trang_thai_duyet: true,
-            ma_can_duoc_chon: true,
-            ma_can_parse: true,
-            phien_ban_parser: true,
-            payload_goc_json: true,
-          },
-        })
-      : await tx.giaoDichNganHang.findUnique({
-          where: { van_tay_giao_dich: fingerprint },
-          select: {
-            id: true,
-            trang_thai_duyet: true,
-            ma_can_duoc_chon: true,
-            ma_can_parse: true,
-            phien_ban_parser: true,
-            payload_goc_json: true,
-          },
-        });
+    const existingTransaction = await findExistingBankTransaction(tx, transaction, fingerprint);
 
     const existingReviewed =
       existingTransaction &&
@@ -297,6 +335,8 @@ async function main() {
         rawStatementRowId: rawRow.id,
         rawRow: transaction.rawRow,
         sourceRowIndex: record.sourceRowIndex,
+        stableFingerprint,
+        referenceTokens: statementReferenceTokens(transaction),
       },
       phien_ban_parser: APARTMENT_CODE_PARSER_VERSION,
       ma_can_parse: mapped.matchedCode,
@@ -328,6 +368,8 @@ async function main() {
         rawStatementRowId: rawRow.id,
         rawRow: transaction.rawRow,
         sourceRowIndex: record.sourceRowIndex,
+        stableFingerprint,
+        referenceTokens: statementReferenceTokens(transaction),
         parserConflict: parserConflict
           ? {
               previousParserVersion: existingTransaction?.phien_ban_parser || null,
