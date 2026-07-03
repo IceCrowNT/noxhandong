@@ -9,6 +9,7 @@ import { requirePermission } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 import { createMonthlyClosingLedgerFromPublicBatch } from "@/src/modules/imports/monthly-closing";
 import { runProjectScript } from "@/src/modules/imports/script-runner";
+import { feePeriodFromDate } from "@/src/modules/transactions/review/period";
 
 const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = new Set([".xlsx", ".xls"]);
@@ -230,7 +231,7 @@ export async function importBankStatementAction(formData: FormData) {
 
 export async function prepareApprovedPaymentHistoryPublicBatchAction(formData: FormData) {
   await requirePermission("PUBLISH_DATA");
-  const period = getString(formData, "period") || "T6-2026";
+  const period = getString(formData, "period") || feePeriodFromDate(new Date()).label;
 
   if (!/^T\s*\d{1,2}\s*[-/]\s*\d{4}$/i.test(period)) {
     redirect("/admin/transactions/review?historyPublishError=invalid_period");

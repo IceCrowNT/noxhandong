@@ -272,6 +272,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
     prisma.lichSuDongPhiCanHo.count({
       where: {
         loai_nguon: "GIAO_DICH_DA_DUYET",
+        ky_du_lieu: { in: [monthFilter.label, `${monthFilter.label}+`] },
         batch_phi_public_id: null,
       },
     }),
@@ -752,7 +753,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
               <form action={prepareApprovedPaymentHistoryPublicBatchAction} className="grid gap-2 md:grid-cols-[180px_minmax(0,1fr)_auto] md:items-end">
                 <Label className="grid gap-2">
                   Kỳ dữ liệu
-                  <Input name="period" defaultValue="T6-2026" maxLength={16} placeholder="T6-2026" />
+                  <Input name="period" defaultValue={monthFilter.label} maxLength={16} placeholder="T7-2026" />
                 </Label>
                 <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-900">
                   Tạo preview trước để kiểm tra thay đổi từng căn. Chưa public ngay.

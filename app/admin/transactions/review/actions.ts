@@ -9,6 +9,7 @@ import type { Prisma } from "@prisma/client";
 import { requirePermission } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 import { normalizeApartmentCode } from "@/src/modules/shared/utils/text";
+import { feePeriodFromDate } from "@/src/modules/transactions/review/period";
 
 const EVIDENCE_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "evidence");
 const MAX_EVIDENCE_BYTES = 8 * 1024 * 1024;
@@ -111,7 +112,7 @@ export async function approveTransactionAction(formData: FormData) {
   const [transaction, apartment] = await Promise.all([
     prisma.giaoDichNganHang.findUnique({
       where: { id: transactionId },
-      select: { id: true, so_tien: true, trang_thai_duyet: true },
+      select: { id: true, ngay_giao_dich: true, so_tien: true, trang_thai_duyet: true },
     }),
     prisma.canHo.findUnique({ where: { ma_can: apartmentCode }, select: { id: true, ma_can: true } }),
   ]);
@@ -130,6 +131,7 @@ export async function approveTransactionAction(formData: FormData) {
   if (publishedHistoryCount > 0) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=already_public`);
   }
+  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich).historyLabel;
 
   await prisma.$transaction(async (tx) => {
     await tx.lichSuDongPhiCanHo.deleteMany({
@@ -152,7 +154,7 @@ export async function approveTransactionAction(formData: FormData) {
     await tx.lichSuDongPhiCanHo.create({
       data: {
         can_ho_id: apartment.id,
-        ky_du_lieu: "T6-2026+",
+        ky_du_lieu: historyPeriod,
         so_tien: transaction.so_tien,
         loai_nguon: "GIAO_DICH_DA_DUYET",
         giao_dich_ngan_hang_id: transactionId,
@@ -207,6 +209,7 @@ export async function approveTransactionWithEvidenceAction(formData: FormData) {
   if (publishedHistoryCount > 0) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=already_public`);
   }
+  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich).historyLabel;
 
   const storedEvidence = await storeEvidenceFile(file, transactionId);
   const shouldSaveEvidence = Boolean(storedEvidence.publicPath || storedEvidence.originalName || evidenceNote);
@@ -233,7 +236,7 @@ export async function approveTransactionWithEvidenceAction(formData: FormData) {
     await tx.lichSuDongPhiCanHo.create({
       data: {
         can_ho_id: apartment.id,
-        ky_du_lieu: "T6-2026+",
+        ky_du_lieu: historyPeriod,
         so_tien: transaction.so_tien,
         loai_nguon: "GIAO_DICH_DA_DUYET",
         giao_dich_ngan_hang_id: transactionId,
@@ -302,7 +305,7 @@ export async function approveMultiTransactionAction(formData: FormData) {
   const [transaction, apartments, publishedHistoryCount] = await Promise.all([
     prisma.giaoDichNganHang.findUnique({
       where: { id: transactionId },
-      select: { id: true, so_tien: true, trang_thai_duyet: true },
+      select: { id: true, ngay_giao_dich: true, so_tien: true, trang_thai_duyet: true },
     }),
     prisma.canHo.findMany({
       where: { ma_can: { in: drafts.map((item) => item.code) } },
@@ -323,6 +326,7 @@ export async function approveMultiTransactionAction(formData: FormData) {
   if (publishedHistoryCount > 0) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=already_public`);
   }
+  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich).historyLabel;
 
   const totalAmount = Math.round(Number(transaction.so_tien));
   const allocatedTotal = drafts.reduce((sum, item) => sum + item.amount, 0);
@@ -360,7 +364,7 @@ export async function approveMultiTransactionAction(formData: FormData) {
       await tx.lichSuDongPhiCanHo.create({
         data: {
           can_ho_id: apartment.id,
-          ky_du_lieu: "T6-2026+",
+          ky_du_lieu: historyPeriod,
           so_tien: draft.amount,
           loai_nguon: "GIAO_DICH_DA_DUYET",
           giao_dich_ngan_hang_id: transactionId,

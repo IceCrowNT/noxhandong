@@ -10,21 +10,17 @@ import {
   extractNumericPaidThrough,
 } from "@/src/modules/billing/paid-through";
 import { prisma } from "@/src/modules/database";
+import { feePeriodFromDate, parseFeePeriodLabel } from "@/src/modules/transactions/review/period";
 
 function parsePeriod(value: string) {
-  const match = value.match(/T\s*(\d{1,2})\s*[-/]\s*(\d{4})/i);
-  if (!match) throw new Error("Period must use format T6-2026");
-  const month = Number(match[1]);
-  const year = Number(match[2]);
-  if (!Number.isInteger(month) || month < 1 || month > 12) {
-    throw new Error("Period must use format T6-2026");
-  }
-  return { label: `T${month}-${year}` };
+  const period = parseFeePeriodLabel(value);
+  if (!period) throw new Error("Period must use format T6-2026");
+  return period;
 }
 
 function periodFromArguments() {
   const periodArg = process.argv.slice(2).find((arg) => arg.startsWith("--period="));
-  return parsePeriod(periodArg?.split("=").slice(1).join("=").trim() || "T6-2026");
+  return parsePeriod(periodArg?.split("=").slice(1).join("=").trim() || feePeriodFromDate(new Date()).label);
 }
 
 async function main() {
@@ -58,8 +54,16 @@ async function main() {
     }),
     prisma.lichSuDongPhiCanHo.findMany({
       where: {
-        loai_nguon: { in: ["GIAO_DICH_DA_DUYET", "BO_SUNG_QUA_KHU"] },
         batch_phi_public_id: null,
+        OR: [
+          {
+            loai_nguon: "GIAO_DICH_DA_DUYET",
+            ky_du_lieu: { in: [period.label, period.historyLabel] },
+          },
+          {
+            loai_nguon: "BO_SUNG_QUA_KHU",
+          },
+        ],
       },
       orderBy: { ngay_tao: "asc" },
       select: {

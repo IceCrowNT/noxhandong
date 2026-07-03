@@ -90,8 +90,9 @@ function resolveReason(row: {
 
 export async function buildMonthlyBankStatementWorkbook(period: string) {
   const { month, year, label } = parsePeriod(period);
-  const start = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
-  const end = new Date(Date.UTC(year, month, 1, 0, 0, 0));
+  const vietnamOffsetMs = 7 * 60 * 60 * 1000;
+  const start = new Date(Date.UTC(year, month - 1, 1) - vietnamOffsetMs);
+  const end = new Date(Date.UTC(year, month, 1) - vietnamOffsetMs);
 
   const rows = await prisma.giaoDichNganHang.findMany({
     where: {
@@ -157,8 +158,8 @@ export async function buildMonthlyBankStatementWorkbook(period: string) {
     { header: "Tên căn hộ sau parser/duyệt", key: "canHo", width: 24 },
     { header: "Thông tin lý do", key: "lyDo", width: 34 },
     { header: "Trạng thái duyệt", key: "trangThai", width: 18 },
-    { header: "Lô nhập", key: "loNhap", width: 14 },
-    { header: "Tên file nhập", key: "tenFile", width: 34 },
+    // { header: "Lô nhập", key: "loNhap", width: 14 },
+    // { header: "Tên file nhập", key: "tenFile", width: 34 },
   ];
 
   sheet.getRow(1).height = 22;
@@ -194,8 +195,8 @@ export async function buildMonthlyBankStatementWorkbook(period: string) {
       canHo: apartmentName,
       lyDo: reason,
       trangThai: status,
-      loNhap: `#${row.lo_nhap_du_lieu.id}`,
-      tenFile: row.lo_nhap_du_lieu.ten_file,
+      // loNhap: `#${row.lo_nhap_du_lieu.id}`,
+      // tenFile: row.lo_nhap_du_lieu.ten_file,
     });
 
     excelRow.eachCell((cell, colNumber) => {
