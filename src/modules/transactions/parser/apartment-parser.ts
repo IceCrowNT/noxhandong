@@ -93,6 +93,7 @@ const LK_ROOM_CAPTURE = "([1-9]\\d?)";
 const LKV_BLOCK_ALIAS_CAPTURE = "(LKV|LK\\s+V)";
 const LKV_ROOM_CAPTURE = "([1-9]\\d{0,2}[A-Z]?)";
 const BLOCK_WORD_CAPTURE = "(MOT|NHAT|HAI|BA|BON|TU|NAM|SAU|BAY|TAM|CHIN)";
+const GLUED_PAYMENT_WORD_PATTERN = "(?:NOP|PHI|DONG|CHUYEN|QLVH|PQLVH|QLCC|PQLCC|THANG|TU|DEN)";
 
 const BLOCK_WORD_VALUES: Record<string, string> = {
   MOT: "1",
@@ -548,6 +549,14 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildCandidate(match[1], match[2], "BLOCK_ROOM_TRAILING_WORD", 0.9));
   }
 
+  const compactBlockRoomGluedPaymentWordPattern = new RegExp(
+    `\\bL${BLOCK_CAPTURE}([1-9]\\d{2})(?=${GLUED_PAYMENT_WORD_PATTERN}\\b)`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(compactBlockRoomGluedPaymentWordPattern)) {
+    push(buildCandidate(match[1], match[2], "BLOCK_ROOM_GLUED_PAYMENT_WORD", 0.91));
+  }
+
   const compactBlockRoomTrailingWordPattern = new RegExp(`\\bL${BLOCK_CAPTURE}${ROOM_CAPTURE}(?=[A-Z]{2,}\\b)`, "g");
   for (const match of normalizedDescription.matchAll(compactBlockRoomTrailingWordPattern)) {
     push(buildCandidate(match[1], match[2], "BLOCK_ROOM_COMPACT_TRAILING_WORD", 0.9));
@@ -593,6 +602,24 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
 
     if (candidateBlock.startsWith("LK")) {
       return true;
+    }
+
+    const unsuffixedGluedPaymentCandidate = candidates.find((other) => {
+      if (other.code === candidate.code || other.reason !== "BLOCK_ROOM_GLUED_PAYMENT_WORD") {
+        return false;
+      }
+
+      const [otherBlock, otherRoom] = other.code.split(".");
+      return (
+        candidate.reason === "BLOCK_ROOM_COMPACT_TRAILING_WORD" &&
+        candidateBlock === otherBlock &&
+        candidateRoom.length === otherRoom.length + 1 &&
+        candidateRoom.startsWith(otherRoom)
+      );
+    });
+
+    if (unsuffixedGluedPaymentCandidate) {
+      return false;
     }
 
     const splitSuffixBlockCandidate = candidates.find((other) => {
@@ -660,6 +687,10 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
 
     const exactWithSuffix = candidates.find((other) => {
       if (other.code === candidate.code) {
+        return false;
+      }
+
+      if (candidate.reason === "BLOCK_ROOM_GLUED_PAYMENT_WORD") {
         return false;
       }
 

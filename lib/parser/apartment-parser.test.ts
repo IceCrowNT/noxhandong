@@ -133,6 +133,7 @@ describe("parseApartmentCode", () => {
     expect(parseApartmentCode("Toa L1can 208 dt 0915520274 nop PQLVH T3T82026").parsedApartmentCode).toBe("L1.208");
     expect(parseApartmentCode("L2- P508-phi chung cu").parsedApartmentCode).toBe("L2.508");
     expect(parseApartmentCode("L 1 , 118 , 0899289266 , nop phi QLVH").parsedApartmentCode).toBe("L1.118");
+    expect(parseApartmentCode("CT DEN:164T26708D7ZEFKN toa L1315nop phi QLVH tu1520263172026").parsedApartmentCode).toBe("L1.315");
     expect(parseApartmentCode("Toa LA4 so 210 nop phi QLVH").parsedApartmentCode).toBe("L4A.210");
     expect(parseApartmentCode("L4C 506 a tu thang 1 den thang 6 nam 2026").parsedApartmentCode).toBe("L4C.506A");
     expect(parseApartmentCode("117l4 b . thangs 1.2.3 dt 0563788383").parsedApartmentCode).toBe("L4B.117");
