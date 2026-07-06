@@ -25,6 +25,17 @@ const transactions = await prisma.giaoDichNganHang.findMany({
     },
   });
 
+  const manualHistories = await prisma.lichSuDongPhiCanHo.findMany({
+    where: {
+      loai_nguon: "BO_SUNG_QUA_KHU",
+      ngay_tao: { gte: from, lt: to },
+    },
+    orderBy: { ngay_tao: "desc" },
+    include: {
+      can_ho: { select: { ma_can: true } },
+    },
+  });
+
   const rows: MonthlyReconciliationRow[] = transactions.flatMap((transaction) =>
     transaction.lich_su_dong_phi.map((history) => ({
       id: history.id,
@@ -45,11 +56,25 @@ const transactions = await prisma.giaoDichNganHang.findMany({
     })),
   );
 
+  const manualRows: MonthlyReconciliationRow[] = manualHistories.map((history) => ({
+    id: history.id,
+    transactionId: 0,
+    maCan: history.can_ho.ma_can,
+    soTien: Number(history.so_tien || 0),
+    ngayGiaoDich: history.ngay_tao,
+    nguoiChuyen: "Giao dịch bổ sung quá khứ",
+    thamChieu: history.ghi_chu || "-",
+    daPublic: Boolean(history.batch_phi_public_id),
+    cachPhanBo: "CHINH_TAY",
+  }));
+
+  const allRows = [...rows, ...manualRows].sort((a, b) => (b.ngayGiaoDich?.getTime() || 0) - (a.ngayGiaoDich?.getTime() || 0));
+
   return {
-    rows,
-    transactionCount: transactions.length,
-    apartmentCount: new Set(rows.map((row) => row.maCan)).size,
-    totalAmount: rows.reduce((sum, row) => sum + row.soTien, 0),
-    unpublishedCount: rows.filter((row) => !row.daPublic).length,
+    rows: allRows,
+    transactionCount: transactions.length + manualHistories.length,
+    apartmentCount: new Set(allRows.map((row) => row.maCan)).size,
+    totalAmount: allRows.reduce((sum, row) => sum + row.soTien, 0),
+    unpublishedCount: allRows.filter((row) => !row.daPublic).length,
   };
 }

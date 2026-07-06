@@ -74,6 +74,11 @@ describe("parseApartmentCode", () => {
   it("does not infer block suffix from following words", () => {
     expect(parseApartmentCode("can 421 l2 dong 6 thang phi").candidates.map((candidate) => candidate.code)).toEqual(["L2.421"]);
     expect(parseApartmentCode("Bich Ngoc ck phi chung cu 209 L3 tu t12-t5").candidates.map((candidate) => candidate.code)).toEqual(["L3.209"]);
+    expect(
+      parseApartmentCode(
+        "Bich Lan chuyen khoan nhanh qua Zalo dong phi chung cu an dong an duong phong 308 lo l1 c"
+      ).candidates.map((candidate) => candidate.code)
+    ).toEqual(["L1.308"]);
   });
 
   it("does not over-generate cross-linked candidates in multi-apartment lists", () => {
@@ -125,6 +130,7 @@ describe("parseApartmentCode", () => {
     expect(parseApartmentCode("L3 P505 dong phi QL T12, T1, T2/2026").parsedApartmentCode).toBe("L3.505");
     expect(parseApartmentCode("Toa nha L2 _ so can ho 211B_ sdt 0357046014 nop phi QLVH").parsedApartmentCode).toBe("L2.211B");
     expect(parseApartmentCode("Toa L2. so can 208 0336177271. nop phi QLVH").parsedApartmentCode).toBe("L2.208");
+    expect(parseApartmentCode("Toa L1can 208 dt 0915520274 nop PQLVH T3T82026").parsedApartmentCode).toBe("L1.208");
     expect(parseApartmentCode("L2- P508-phi chung cu").parsedApartmentCode).toBe("L2.508");
     expect(parseApartmentCode("L 1 , 118 , 0899289266 , nop phi QLVH").parsedApartmentCode).toBe("L1.118");
     expect(parseApartmentCode("Toa LA4 so 210 nop phi QLVH").parsedApartmentCode).toBe("L4A.210");

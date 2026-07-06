@@ -76,6 +76,46 @@ function compactPeriodLabel(period: string) {
   return `T${Number(match[1])}`;
 }
 
+function resolveRelativeMonth(relativeMonth: number, baseYear = 2026) {
+  const zeroBasedMonthIndex = relativeMonth - 1;
+  return {
+    year: baseYear + Math.floor(zeroBasedMonthIndex / 12),
+    month: ((zeroBasedMonthIndex % 12) + 12) % 12 + 1,
+  };
+}
+
+function formatPaidThrough(payload: JsonRecord, fallback: string | null) {
+  const paidThroughObj = jsonRecord(payload?.paidThrough);
+  
+  let numericMonth: number | null = null;
+  const numFromPaidThrough = Number(paidThroughObj?.numericMonth);
+  const numFromPayload = Number(payload?.numericMonth);
+  
+  if (paidThroughObj?.numericMonth !== undefined && Number.isFinite(numFromPaidThrough)) numericMonth = Math.floor(numFromPaidThrough);
+  else if (payload?.numericMonth !== undefined && Number.isFinite(numFromPayload)) numericMonth = Math.floor(numFromPayload);
+  else {
+    const match = String(fallback || "").match(/-?\d+(?:[.,]\d+)?/);
+    if (match) {
+      const parsed = Number(match[0].replace(",", "."));
+      if (Number.isFinite(parsed)) numericMonth = Math.floor(parsed);
+    }
+  }
+
+  if (numericMonth === null) {
+    return fallback || "";
+  }
+
+  const resolvedMonth = Number(paidThroughObj?.resolvedMonth);
+  const resolvedYear = Number(paidThroughObj?.resolvedYear);
+
+  if (paidThroughObj?.resolvedMonth !== undefined && paidThroughObj?.resolvedYear !== undefined && Number.isFinite(resolvedMonth) && Number.isFinite(resolvedYear)) {
+    return `Hết tháng ${resolvedMonth}/${resolvedYear}`;
+  }
+
+  const resolved = resolveRelativeMonth(numericMonth);
+  return `Hết tháng ${resolved.month}/${resolved.year}`;
+}
+
 function makeSheet(rows: Array<Record<string, unknown>>, widths: number[], filter = true) {
   const sheet = XLSX.utils.json_to_sheet(rows);
   sheet["!cols"] = widths.map((wch) => ({ wch }));
@@ -200,7 +240,7 @@ async function main() {
     previousPublishedBatch?.id
       ? await prisma.trangThaiPhiCanHoPublic.findMany({
           where: { batch_id: previousPublishedBatch.id },
-          select: { can_ho_id: true, thang_da_dong_den_hien_tai: true },
+          select: { can_ho_id: true, thang_da_dong_den_hien_tai: true, payload_public_json: true },
         })
       : [];
 
@@ -223,6 +263,7 @@ async function main() {
     const previousRow = previousByApartment.get(apartment.id);
     const apartmentHistories = historiesByApartment.get(apartment.id) || [];
     const paymentAmount = apartmentHistories.reduce((sum, row) => sum + Number(row.so_tien), 0);
+    const previousPayload = jsonRecord(previousRow?.payload_public_json);
     const payload = jsonRecord(targetRow?.payload_public_json);
     const remainder = jsonNumber(payload.remainderAmount);
     const needsReview = Boolean(payload.needsReview) || remainder > 0;
@@ -241,9 +282,10 @@ async function main() {
       "Loại căn": apartment.loai_can === "CHUNG_CU" ? "Chung cư" : "Liền kề",
       "Lô": apartment.ma_lo,
       "Chủ hộ gốc": apartment.chu_ho_ten_goc || "",
-      [`Trạng thái cuối ${previousPeriodLabel}`]: previousRow?.thang_da_dong_den_hien_tai || "",
+      [`Trạng thái cuối ${previousPeriodLabel}`]: previousRow ? formatPaidThrough(previousPayload, previousRow.thang_da_dong_den_hien_tai) : "",
       [periodColumnLabel]: paymentAmount,
-      "Tháng đã đóng đến hiện tại": targetRow?.thang_da_dong_den_hien_tai || "",
+      "Tháng đã đóng đến hiện tại": targetRow ? formatPaidThrough(payload, targetRow.thang_da_dong_den_hien_tai) : "",
+      "Tháng hệ cơ sở (DB thô)": targetRow?.thang_da_dong_den_hien_tai || "",
       "Giao dịch trong tháng": transactionTimes.join("\n"),
       "Giao dịch gần nhất": formatDate(latestTransactionTime),
       "Trạng thái": needsReview ? "Cần kiểm tra" : paymentAmount > 0 ? "Đã ghi nhận" : "Không phát sinh",
@@ -334,7 +376,7 @@ async function main() {
 
   const workbook = XLSX.utils.book_new();
 
-  const trackingSheet = makeSheet(trackingRows, [7, 14, 12, 10, 22, 18, 14, 24, 18, 16, 16, 30]);
+  const trackingSheet = makeSheet(trackingRows, [7, 14, 12, 10, 22, 18, 14, 24, 20, 18, 16, 16, 30]);
   setMoneyFormat(trackingSheet, [6], trackingRows.length);
   XLSX.utils.book_append_sheet(workbook, trackingSheet, "Theo doi thu phi");
 
@@ -342,7 +384,7 @@ async function main() {
   setMoneyFormat(transactionSheet, [3], transactionRows.length);
   XLSX.utils.book_append_sheet(workbook, transactionSheet, "Giao dich trong ky");
 
-  const changedSheet = makeSheet(changedRows, [7, 14, 12, 10, 22, 18, 14, 24, 18, 16, 16, 30]);
+  const changedSheet = makeSheet(changedRows, [7, 14, 12, 10, 22, 18, 14, 24, 20, 18, 16, 16, 30]);
   setMoneyFormat(changedSheet, [6], changedRows.length);
   XLSX.utils.book_append_sheet(workbook, changedSheet, "Can thay doi");
 

@@ -333,8 +333,7 @@ export async function createHistoricalSupplementAction(formData: FormData) {
   const account = await requirePermission("IMPORT_DATA");
   const apartmentCode = getString(formData, "apartmentCode").toUpperCase();
   const amountRaw = getString(formData, "amount").replace(/[^\d-]/g, "");
-  const sourcePeriod = getString(formData, "sourcePeriod") || "T5-2026";
-  const appliedMonth = getString(formData, "appliedMonth");
+  const sourcePeriod = feePeriodFromDate(new Date()).label;
   const occurredAt = parseDateTimeInput(getString(formData, "occurredAt"));
   const evidenceType = getString(formData, "evidenceType") || "GHI_CHU_THU_CONG";
   const evidenceNote = getString(formData, "evidenceNote");
@@ -367,7 +366,7 @@ export async function createHistoricalSupplementAction(formData: FormData) {
         data: {
           can_ho_id: apartment.id,
           ky_du_lieu: sourcePeriod,
-          thang_ap_dung: appliedMonth || null,
+          thang_ap_dung: null,
           so_tien: amount,
           loai_nguon: "BO_SUNG_QUA_KHU",
           ghi_chu:
@@ -384,7 +383,7 @@ export async function createHistoricalSupplementAction(formData: FormData) {
           lich_su_dong_phi_id: history.id,
           so_tien: amount,
           ky_du_lieu: sourcePeriod,
-          thang_ap_dung: appliedMonth || null,
+          thang_ap_dung: null,
           ngay_giao_dich_goc: occurredAt,
           loai_bang_chung: evidenceType,
           duong_dan_file: storedEvidence.publicPath,

@@ -473,6 +473,14 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildCandidate(`${match[2]}${match[3]}`, match[1], "ROOM_TOWER_SPLIT_BLOCK_ALIAS", 0.95));
   }
 
+  const towerBlockGluedContextThenRoomPattern = new RegExp(
+    `\\b(?:LO|TOA|BLOCK|BLK)\\s+L?\\s*${BLOCK_CAPTURE}\\s*(?:CAN\\s+HO|CANHO|CAN|HO|PHONG|SO|NHA)\\s*${ROOM_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(towerBlockGluedContextThenRoomPattern)) {
+    push(buildCandidate(match[1], match[2], "TOWER_BLOCK_GLUED_CONTEXT_ROOM_ALIAS", 0.95));
+  }
+
   const towerBlockThenRoomPattern = new RegExp(
     `\\b(?:LO|TOA|BLOCK|BLK)\\s+L?\\s*${BLOCK_CAPTURE}\\s+(?:CAN\\s+HO|SO\\s+NHA|CAN|CANHO|HO|PHONG|SO|NHA)?\\s*${ROOM_CAPTURE}(?=\\b|[^A-Z])`,
     "g"
@@ -597,6 +605,25 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     });
 
     if (splitSuffixBlockCandidate) {
+      return false;
+    }
+
+    const unsuffixedLoCandidate = candidates.find((other) => {
+      if (other.code === candidate.code || other.reason !== "ROOM_LO_L_BLOCK_ALIAS") {
+        return false;
+      }
+
+      const [otherBlock, otherRoom] = other.code.split(".");
+      return (
+        candidate.reason === "ROOM_TOWER_SPLIT_BLOCK_ALIAS" &&
+        /^L[1-9][A-C]$/.test(candidateBlock) &&
+        otherBlock === candidateBlock.slice(0, 2) &&
+        otherRoom === candidateRoom &&
+        other.score >= candidate.score
+      );
+    });
+
+    if (unsuffixedLoCandidate) {
       return false;
     }
 

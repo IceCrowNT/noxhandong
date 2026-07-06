@@ -131,7 +131,7 @@ export async function approveTransactionAction(formData: FormData) {
   if (publishedHistoryCount > 0) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=already_public`);
   }
-  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich).historyLabel;
+  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich || new Date()).historyLabel;
 
   await prisma.$transaction(async (tx) => {
     await tx.lichSuDongPhiCanHo.deleteMany({
@@ -209,7 +209,7 @@ export async function approveTransactionWithEvidenceAction(formData: FormData) {
   if (publishedHistoryCount > 0) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=already_public`);
   }
-  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich).historyLabel;
+  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich || new Date()).historyLabel;
 
   const storedEvidence = await storeEvidenceFile(file, transactionId);
   const shouldSaveEvidence = Boolean(storedEvidence.publicPath || storedEvidence.originalName || evidenceNote);
@@ -326,7 +326,7 @@ export async function approveMultiTransactionAction(formData: FormData) {
   if (publishedHistoryCount > 0) {
     redirect(`/admin/transactions/review?transactionId=${transactionId}&error=already_public`);
   }
-  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich).historyLabel;
+  const historyPeriod = feePeriodFromDate(transaction.ngay_giao_dich || new Date()).historyLabel;
 
   const totalAmount = Math.round(Number(transaction.so_tien));
   const allocatedTotal = drafts.reduce((sum, item) => sum + item.amount, 0);

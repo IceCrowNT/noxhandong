@@ -497,14 +497,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
               Số tiền
               <Input name="amount" type="text" placeholder="Ví dụ 1500000 hoặc -1500000" required />
             </Label>
-            <Label className="grid gap-2">
-              Kỳ dữ liệu nguồn
-              <Input name="sourcePeriod" defaultValue="T5-2026" placeholder="Ví dụ T3-2026" />
-            </Label>
-            <Label className="grid gap-2">
-              Tháng áp dụng
-              <Input name="appliedMonth" placeholder="Ví dụ 03/2026" />
-            </Label>
+
             <Label className="grid gap-2">
               Ngày giao dịch gốc
               <Input name="occurredAt" type="datetime-local" />

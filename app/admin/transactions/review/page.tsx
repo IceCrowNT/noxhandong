@@ -174,13 +174,13 @@ function getLatestReview(transaction: {
 }) {
   return transaction.trang_thai_duyet
     ? {
-        id: 0,
-        trang_thai_duyet: transaction.trang_thai_duyet,
-        ma_can_duoc_chon: transaction.ma_can_duoc_chon || null,
-        ghi_chu_duyet: transaction.ghi_chu_duyet || null,
-        nguoi_duyet: transaction.nguoi_duyet || null,
-        ngay_duyet: transaction.ngay_duyet || null,
-      }
+      id: 0,
+      trang_thai_duyet: transaction.trang_thai_duyet,
+      ma_can_duoc_chon: transaction.ma_can_duoc_chon || null,
+      ghi_chu_duyet: transaction.ghi_chu_duyet || null,
+      nguoi_duyet: transaction.nguoi_duyet || null,
+      ngay_duyet: transaction.ngay_duyet || null,
+    }
     : null;
 }
 
@@ -271,9 +271,16 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
     }),
     prisma.lichSuDongPhiCanHo.count({
       where: {
-        loai_nguon: "GIAO_DICH_DA_DUYET",
-        ky_du_lieu: { in: [monthFilter.label, `${monthFilter.label}+`] },
         batch_phi_public_id: null,
+        OR: [
+          {
+            loai_nguon: "GIAO_DICH_DA_DUYET",
+            ky_du_lieu: { in: [monthFilter.label, `${monthFilter.label}+`] },
+          },
+          {
+            loai_nguon: "BO_SUNG_QUA_KHU",
+          },
+        ],
       },
     }),
   ]);
@@ -346,9 +353,9 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
   const visibleTransactions =
     statusFilter === "CAN_XU_LY"
       ? transactions.filter((transaction) => {
-          const latest = getLatestReview(transaction);
-          return !latest || latest.trang_thai_duyet === "CHUA_DUYET" || latest.trang_thai_duyet === "DA_RA_SOAT";
-        })
+        const latest = getLatestReview(transaction);
+        return !latest || latest.trang_thai_duyet === "CHUA_DUYET" || latest.trang_thai_duyet === "DA_RA_SOAT";
+      })
       : transactions;
 
   const selected =
@@ -376,29 +383,29 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
   const [candidateApartments, candidateContacts, activeFeeRules] = await Promise.all([
     candidateCodes.length
       ? prisma.canHo.findMany({
-          where: { ma_can: { in: candidateCodes } },
-          include: {
-            lien_he: {
-              orderBy: [{ la_lien_he_chinh: "desc" }, { thu_tu_uu_tien: "asc" }],
-              take: 3,
-            },
+        where: { ma_can: { in: candidateCodes } },
+        include: {
+          lien_he: {
+            orderBy: [{ la_lien_he_chinh: "desc" }, { thu_tu_uu_tien: "asc" }],
+            take: 3,
           },
-        })
+        },
+      })
       : Promise.resolve([]),
     candidateCodes.length
       ? prisma.ungVienLienHeCanHo.findMany({
-          where: { ma_can: { in: candidateCodes } },
-          orderBy: [{ trang_thai_duyet: "asc" }, { id: "asc" }],
-          take: 40,
-          select: {
-            ma_can: true,
-            ten_hien_thi_parse: true,
-            so_dien_thoai_parse: true,
-            ten_chu_ho_goc: true,
-            so_dien_thoai_goc: true,
-            trang_thai_duyet: true,
-          },
-        })
+        where: { ma_can: { in: candidateCodes } },
+        orderBy: [{ trang_thai_duyet: "asc" }, { id: "asc" }],
+        take: 40,
+        select: {
+          ma_can: true,
+          ten_hien_thi_parse: true,
+          so_dien_thoai_parse: true,
+          ten_chu_ho_goc: true,
+          so_dien_thoai_goc: true,
+          trang_thai_duyet: true,
+        },
+      })
       : Promise.resolve([]),
     prisma.quyTacPhi.findMany({
       where: {
@@ -442,8 +449,9 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
       return fee ? [[apartment.ma_can, fee] as const] : [];
     }),
   );
+  const allocationSuggestionCodes = candidateApartments.map((apartment) => apartment.ma_can);
   const allocationSuggestions = selected
-    ? suggestTransactionAllocations(candidateCodes, Number(selected.so_tien), feeByApartmentCode)
+    ? suggestTransactionAllocations(allocationSuggestionCodes, Number(selected.so_tien), feeByApartmentCode)
     : [];
 
   const summaryMap = new Map(summary.map((item) => [item.trang_thai_duyet, item._count._all]));
@@ -529,7 +537,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
         <Notice tone={params?.error ? "error" : "success"}>{message}</Notice>
       ) : null}
 
-      {/* <form className="mb-4 grid gap-3 rounded-xl border border-[var(--line)] bg-white/90 p-3 xl:grid-cols-[minmax(240px,0.8fr)_minmax(420px,1.2fr)_auto] xl:items-center">
+      <form className="mb-4 grid gap-3 rounded-xl border border-[var(--line)] bg-white/90 p-3 xl:grid-cols-[minmax(240px,0.8fr)_minmax(420px,1.2fr)_auto] xl:items-center">
         <div className="min-w-0 text-sm leading-6 text-[var(--muted)]">
           <div className="font-semibold text-[var(--text)]">Giao dịch cần duyệt</div>
           <div className="truncate">
@@ -602,7 +610,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
             <SubmitButton variant="secondary" pendingText="Đang lọc...">Áp dụng nâng cao</SubmitButton>
           </div>
         </details>
-      </form> */}
+      </form>
 
       <details open={showMonthlyPanel} className="mb-4 rounded-xl border border-[var(--line)] bg-white/90">
         <summary className="flex cursor-pointer items-center justify-between gap-3 px-6 py-4">
@@ -617,103 +625,103 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
           </span>
         </summary>
         <div className="border-t border-[var(--line)]">
-        <CardHeader className="pb-3">
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-            <div>
-              <CardTitle className="text-lg">Đối soát theo tháng</CardTitle>
-              <CardDescription>
-                Lọc các căn đã có giao dịch được duyệt trong tháng để so sánh với sao kê hoặc bảng theo dõi thu phí.
-              </CardDescription>
-            </div>
-            <form className="flex w-full gap-2 sm:w-auto">
-              <input type="hidden" name="transactionId" value={selected?.id || ""} />
-              <input type="hidden" name="batchId" value={selectedBatch?.id || ""} />
-              <input type="hidden" name="status" value={statusFilter} />
-              <input type="hidden" name="from" value={from} />
-              <input type="hidden" name="q" value={q} />
-              <input type="hidden" name="monthSort" value={monthlySort} />
-              <input type="hidden" name="monthDir" value={monthlyDirection} />
-              <input type="hidden" name="showMonthly" value="1" />
-              <Input className="w-full sm:w-[170px]" name="month" type="month" defaultValue={monthFilter.value} />
-              <SubmitButton variant="secondary" pendingText="Đang lọc...">Xem tháng</SubmitButton>
-            </form>
-          </div>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="grid items-stretch gap-3 md:grid-cols-4">
-            <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
-              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Kỳ đang xem</span>
-              <strong className="mt-1 block text-xl">{monthFilter.label}</strong>
-            </div>
-            <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
-              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Căn khác nhau đã ghi nhận</span>
-              <strong className="mt-1 block text-xl">{monthlyApartmentCount.toLocaleString("vi-VN")}</strong>
-              <span className="text-xs text-[var(--muted)]">
-                {monthlyRows.length.toLocaleString("vi-VN")} dòng phí từ {monthlyReconciliation.transactionCount.toLocaleString("vi-VN")} giao dịch
-              </span>
-            </div>
-            <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
-              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Tổng tiền đã duyệt</span>
-              <strong className="mt-1 block text-xl">{formatMoney(monthlyTotalAmount)}</strong>
-            </div>
-            <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
-              <span className="text-xs font-semibold uppercase text-[var(--muted)]">Chưa public</span>
-              <strong className="mt-1 block text-xl">{monthlyUnpublishedCount.toLocaleString("vi-VN")}</strong>
-            </div>
-          </div>
-
-          <div
-            data-testid="monthly-reconciliation-scroll"
-            className="max-h-[480px] overflow-auto rounded-xl border border-[var(--line)] bg-white"
-          >
-            <div className="min-w-[820px]">
-              <div className="sticky top-0 z-10 grid grid-cols-[110px_120px_minmax(0,1fr)_140px_120px] gap-3 border-b border-[var(--line)] bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--muted)] shadow-sm">
-                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("apartment")} scroll={false}>
-                  Căn {monthlySortIcon("apartment")}
-                </Link>
-                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("amount")} scroll={false}>
-                  Số tiền {monthlySortIcon("amount")}
-                </Link>
-                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("payer")} scroll={false}>
-                  Người chuyển / tham chiếu {monthlySortIcon("payer")}
-                </Link>
-                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("date")} scroll={false}>
-                  Ngày {monthlySortIcon("date")}
-                </Link>
-                <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("status")} scroll={false}>
-                  Trạng thái {monthlySortIcon("status")}
-                </Link>
+          <CardHeader className="pb-3">
+            <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+              <div>
+                <CardTitle className="text-lg">Đối soát theo tháng</CardTitle>
+                <CardDescription>
+                  Lọc các căn đã có giao dịch được duyệt trong tháng để so sánh với sao kê hoặc bảng theo dõi thu phí.
+                </CardDescription>
               </div>
-              {monthlyVisibleRows.length ? (
-                monthlyVisibleRows.map((row) => (
-                  <Link
-                    key={row.id}
-                    href={`/admin/transactions/review?transactionId=${row.transactionId}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}&showMonthly=1&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
-                    scroll={false}
-                    className="grid grid-cols-[110px_120px_minmax(0,1fr)_140px_120px] gap-3 border-b border-[var(--line)] px-3 py-2 text-sm last:border-b-0 hover:bg-[var(--accent-soft)]"
-                  >
-                    <span className="font-semibold">{row.maCan}</span>
-                    <span>{formatMoney(row.soTien)}</span>
-                    <span className="min-w-0 truncate">
-                      {row.nguoiChuyen} · {row.thamChieu}
-                    </span>
-                    <span>{formatDate(row.ngayGiaoDich)}</span>
-                    <span>
-                      <Badge variant={row.daPublic ? "success" : "secondary"}>{row.daPublic ? "Đã public" : "Chưa public"}</Badge>
-                    </span>
-                  </Link>
-                ))
-              ) : (
-                <div className="px-3 py-4 text-sm text-[var(--muted)]">
-                  Chưa có lịch sử phí được duyệt trong {monthFilter.label}. Hãy duyệt sao kê trước, sau đó quay lại lọc tháng.
-                </div>
-              )}
+              <form className="flex w-full gap-2 sm:w-auto">
+                <input type="hidden" name="transactionId" value={selected?.id || ""} />
+                <input type="hidden" name="batchId" value={selectedBatch?.id || ""} />
+                <input type="hidden" name="status" value={statusFilter} />
+                <input type="hidden" name="from" value={from} />
+                <input type="hidden" name="q" value={q} />
+                <input type="hidden" name="monthSort" value={monthlySort} />
+                <input type="hidden" name="monthDir" value={monthlyDirection} />
+                <input type="hidden" name="showMonthly" value="1" />
+                <Input className="w-full sm:w-[170px]" name="month" type="month" defaultValue={monthFilter.value} />
+                <SubmitButton variant="secondary" pendingText="Đang lọc...">Xem tháng</SubmitButton>
+              </form>
             </div>
-          </div>
-          <p className="text-xs text-[var(--muted)]">
-            Hiển thị toàn bộ {monthlyRows.length.toLocaleString("vi-VN")} dòng trong khung cuộn. Bấm tiêu đề cột để đổi thứ tự.
-          </p>
-        </CardContent>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="grid items-stretch gap-3 md:grid-cols-4">
+              <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
+                <span className="text-xs font-semibold uppercase text-[var(--muted)]">Kỳ đang xem</span>
+                <strong className="mt-1 block text-xl">{monthFilter.label}</strong>
+              </div>
+              <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
+                <span className="text-xs font-semibold uppercase text-[var(--muted)]">Căn khác nhau đã ghi nhận</span>
+                <strong className="mt-1 block text-xl">{monthlyApartmentCount.toLocaleString("vi-VN")}</strong>
+                <span className="text-xs text-[var(--muted)]">
+                  {monthlyRows.length.toLocaleString("vi-VN")} dòng phí từ {monthlyReconciliation.transactionCount.toLocaleString("vi-VN")} giao dịch
+                </span>
+              </div>
+              <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
+                <span className="text-xs font-semibold uppercase text-[var(--muted)]">Tổng tiền đã duyệt</span>
+                <strong className="mt-1 block text-xl">{formatMoney(monthlyTotalAmount)}</strong>
+              </div>
+              <div className="flex h-full min-h-[96px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white p-3">
+                <span className="text-xs font-semibold uppercase text-[var(--muted)]">Chưa public</span>
+                <strong className="mt-1 block text-xl">{monthlyUnpublishedCount.toLocaleString("vi-VN")}</strong>
+              </div>
+            </div>
+
+            <div
+              data-testid="monthly-reconciliation-scroll"
+              className="max-h-[480px] overflow-auto rounded-xl border border-[var(--line)] bg-white"
+            >
+              <div className="min-w-[820px]">
+                <div className="sticky top-0 z-10 grid grid-cols-[110px_120px_minmax(0,1fr)_140px_120px] gap-3 border-b border-[var(--line)] bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--muted)] shadow-sm">
+                  <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("apartment")} scroll={false}>
+                    Căn {monthlySortIcon("apartment")}
+                  </Link>
+                  <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("amount")} scroll={false}>
+                    Số tiền {monthlySortIcon("amount")}
+                  </Link>
+                  <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("payer")} scroll={false}>
+                    Người chuyển / tham chiếu {monthlySortIcon("payer")}
+                  </Link>
+                  <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("date")} scroll={false}>
+                    Ngày {monthlySortIcon("date")}
+                  </Link>
+                  <Link className="flex items-center gap-1 hover:text-[var(--accent)]" href={monthlySortHref("status")} scroll={false}>
+                    Trạng thái {monthlySortIcon("status")}
+                  </Link>
+                </div>
+                {monthlyVisibleRows.length ? (
+                  monthlyVisibleRows.map((row) => (
+                    <Link
+                      key={row.id}
+                      href={`/admin/transactions/review?transactionId=${row.transactionId}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}&showMonthly=1&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
+                      scroll={false}
+                      className="grid grid-cols-[110px_120px_minmax(0,1fr)_140px_120px] gap-3 border-b border-[var(--line)] px-3 py-2 text-sm last:border-b-0 hover:bg-[var(--accent-soft)]"
+                    >
+                      <span className="font-semibold">{row.maCan}</span>
+                      <span>{formatMoney(row.soTien)}</span>
+                      <span className="min-w-0 truncate">
+                        {row.nguoiChuyen} · {row.thamChieu}
+                      </span>
+                      <span>{formatDate(row.ngayGiaoDich)}</span>
+                      <span>
+                        <Badge variant={row.daPublic ? "success" : "secondary"}>{row.daPublic ? "Đã public" : "Chưa public"}</Badge>
+                      </span>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="px-3 py-4 text-sm text-[var(--muted)]">
+                    Chưa có lịch sử phí được duyệt trong {monthFilter.label}. Hãy duyệt sao kê trước, sau đó quay lại lọc tháng.
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-[var(--muted)]">
+              Hiển thị toàn bộ {monthlyRows.length.toLocaleString("vi-VN")} dòng trong khung cuộn. Bấm tiêu đề cột để đổi thứ tự.
+            </p>
+          </CardContent>
         </div>
       </details>
 
@@ -785,44 +793,44 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
             </CardHeader>
             <CardContent>
               <ReviewTransactionList>
-              {visibleTransactions.map((transaction) => {
-                const latest = getLatestReview(transaction);
-                const parseInfo = getParseInfo(transaction);
-                const active = transaction.id === selected.id;
-                return (
-                  <Link
-                    key={transaction.id}
-                    data-testid={`review-transaction-${transaction.id}`}
-                    href={`/admin/transactions/review?transactionId=${transaction.id}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}${showMonthlyPanel ? "&showMonthly=1" : ""}&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
-                    scroll={false}
-                    className={
-                      active
-                        ? "block rounded-xl border border-[var(--accent)] bg-[var(--accent-soft)] p-3"
-                        : "block rounded-xl border border-[var(--line)] bg-white p-3 hover:border-[var(--accent)]"
-                    }
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="text-sm font-semibold">{formatDate(transaction.ngay_giao_dich)}</div>
-                        <div className="mt-1 text-lg font-bold">{formatMoney(transaction.so_tien)}</div>
+                {visibleTransactions.map((transaction) => {
+                  const latest = getLatestReview(transaction);
+                  const parseInfo = getParseInfo(transaction);
+                  const active = transaction.id === selected.id;
+                  return (
+                    <Link
+                      key={transaction.id}
+                      data-testid={`review-transaction-${transaction.id}`}
+                      href={`/admin/transactions/review?transactionId=${transaction.id}&month=${monthFilter.value}&monthSort=${monthlySort}&monthDir=${monthlyDirection}${showMonthlyPanel ? "&showMonthly=1" : ""}&batchId=${selectedBatch?.id || ""}&status=${statusFilter}&from=${encodeURIComponent(from)}&q=${encodeURIComponent(q)}`}
+                      scroll={false}
+                      className={
+                        active
+                          ? "block rounded-xl border border-[var(--accent)] bg-[var(--accent-soft)] p-3"
+                          : "block rounded-xl border border-[var(--line)] bg-white p-3 hover:border-[var(--accent)]"
+                      }
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold">{formatDate(transaction.ngay_giao_dich)}</div>
+                          <div className="mt-1 text-lg font-bold">{formatMoney(transaction.so_tien)}</div>
+                        </div>
+                        <Badge variant={statusTone(latest?.trang_thai_duyet) as never}>
+                          {transactionReviewStatusLabel(latest?.trang_thai_duyet)}
+                        </Badge>
                       </div>
-                      <Badge variant={statusTone(latest?.trang_thai_duyet) as never}>
-                        {transactionReviewStatusLabel(latest?.trang_thai_duyet)}
-                      </Badge>
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      <Badge variant={statusTone(parseInfo.trang_thai_khop) as never}>
-                        {transactionMatchStatusLabel(parseInfo.trang_thai_khop)}
-                      </Badge>
-                      {parseInfo.ma_can_parse ? (
-                        <Badge variant="outline">{parseInfo.ma_can_parse}</Badge>
-                      ) : null}
-                    </div>
-                    <p className="mt-2 truncate text-sm text-[var(--muted)]">{transaction.ten_nguoi_chuyen || transaction.tai_khoan_nguoi_chuyen || "Không rõ người chuyển"}</p>
-                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--muted)]">{transaction.noi_dung_goc}</p>
-                  </Link>
-                );
-              })}
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        <Badge variant={statusTone(parseInfo.trang_thai_khop) as never}>
+                          {transactionMatchStatusLabel(parseInfo.trang_thai_khop)}
+                        </Badge>
+                        {parseInfo.ma_can_parse ? (
+                          <Badge variant="outline">{parseInfo.ma_can_parse}</Badge>
+                        ) : null}
+                      </div>
+                      <p className="mt-2 truncate text-sm text-[var(--muted)]">{transaction.ten_nguoi_chuyen || transaction.tai_khoan_nguoi_chuyen || "Không rõ người chuyển"}</p>
+                      <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--muted)]">{transaction.noi_dung_goc}</p>
+                    </Link>
+                  );
+                })}
               </ReviewTransactionList>
             </CardContent>
           </Card>
@@ -960,8 +968,8 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                   {canActOnSelected
                     ? "Chọn thao tác phù hợp với giao dịch đang mở."
                     : selected?.trang_thai_duyet === "DA_DUYET" ||
-                        selected?.trang_thai_duyet === "BAO_LUU" ||
-                        selected?.trang_thai_duyet === "TU_CHOI"
+                      selected?.trang_thai_duyet === "BAO_LUU" ||
+                      selected?.trang_thai_duyet === "TU_CHOI"
                       ? "Giao dịch đã hoàn tất xử lý và chỉ còn ở chế độ xem."
                       : "Tài khoản hiện tại chỉ được xem."}
                 </CardDescription>
