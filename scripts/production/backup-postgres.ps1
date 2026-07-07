@@ -36,7 +36,7 @@ function Load-DotEnv {
   }
 }
 
-Load-DotEnv -Path (Join-Path (Get-Location) ".env")
+Load-DotEnv -Path (Join-Path $PSScriptRoot "..\..\.env")
 
 if ([string]::IsNullOrWhiteSpace($OutputDir)) {
   $OutputDir = $env:BACKUP_DIR
@@ -47,7 +47,7 @@ if ([string]::IsNullOrWhiteSpace($env:DATABASE_URL)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($OutputDir)) {
-  $OutputDir = Join-Path (Get-Location) ".local\db-backups"
+  $OutputDir = Join-Path $PSScriptRoot "..\..\.local\db-backups"
 }
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
@@ -94,3 +94,39 @@ Move-Item -LiteralPath $temporaryFile -Destination $outputFile -Force
 Write-Host "PostgreSQL backup written to: $outputFile"
 Write-Host "Restore test command:"
 Write-Host "pg_restore --clean --if-exists --no-owner --dbname=`"`$env:DATABASE_URL`" `"$outputFile`""
+
+Write-Host "Uploading backup to Google Drive via Rclone..."
+$rcloneExe = "C:\rclone\rclone.exe"
+if (Test-Path -LiteralPath $rcloneExe) {
+  & $rcloneExe copy $outputFile "gdrive:DB_Backups"
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host "Upload to Google Drive successful!"
+  }
+  else {
+    Write-Warning "Rclone upload failed with exit code $LASTEXITCODE"
+  }
+}
+else {
+  Write-Warning "rclone.exe not found at $rcloneExe. Skipping Cloud upload."
+}
+
+Write-Host ""
+Write-Host "Uploading Media/Evidence files to Google Drive via Rclone..."
+if (Test-Path -LiteralPath $rcloneExe) {
+  $publicUploadsDir = Join-Path $PSScriptRoot "..\..\public\uploads"
+  $localUploadsDir = Join-Path $PSScriptRoot "..\..\.local\admin-uploads"
+
+  # Upload public/uploads (Bằng chứng, thông báo)
+  if (Test-Path -LiteralPath $publicUploadsDir) {
+    Write-Host "Syncing public/uploads..."
+    & $rcloneExe copy $publicUploadsDir "gdrive:DB_Backups\Media\public_uploads"
+  }
+
+  # Upload .local/admin-uploads (File excel gốc, file sao kê gốc)
+  if (Test-Path -LiteralPath $localUploadsDir) {
+    Write-Host "Syncing .local/admin-uploads..."
+    & $rcloneExe copy $localUploadsDir "gdrive:DB_Backups\Media\admin_uploads"
+  }
+
+  Write-Host "Media Upload finished!"
+}
