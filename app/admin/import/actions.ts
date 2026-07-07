@@ -1,6 +1,6 @@
 "use server";
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -406,6 +406,61 @@ export async function createHistoricalSupplementAction(formData: FormData) {
   } catch (error) {
     console.error(error);
     redirect("/admin/import?historicalError=create_failed");
+  }
+
+  redirect(redirectUrl);
+}
+
+export async function deleteHistoricalSupplementAction(formData: FormData) {
+  const account = await requirePermission("IMPORT_DATA");
+  const supplementIdStr = getString(formData, "supplementId");
+  const supplementId = parseInt(supplementIdStr, 10);
+
+  if (Number.isNaN(supplementId) || supplementId <= 0) {
+    redirect("/admin/import?historicalError=invalid");
+  }
+
+  let redirectUrl = "/admin/import";
+
+  try {
+    const supplement = await prisma.boSungGiaoDichQuaKhu.findUnique({
+      where: { id: supplementId },
+      include: { lich_su_dong_phi: true },
+    });
+
+    if (!supplement) {
+      redirect("/admin/import?historicalError=not_found");
+    }
+
+    if (supplement.lich_su_dong_phi?.batch_phi_public_id) {
+      redirect("/admin/import?historicalError=already_published");
+    }
+
+    // Xóa lich_su_dong_phi_can_ho sẽ tự động Cascade xóa bo_sung_giao_dich_qua_khu
+    await prisma.$transaction(async (tx) => {
+      await tx.lichSuDongPhiCanHo.delete({
+        where: { id: supplement.lich_su_dong_phi_id },
+      });
+    });
+
+    // Dọn dẹp ổ cứng
+    if (supplement.duong_dan_file && supplement.duong_dan_file.startsWith("/uploads/historical-supplements/")) {
+      const fileName = path.basename(supplement.duong_dan_file);
+      const filePath = path.join(process.cwd(), "public", "uploads", "historical-supplements", fileName);
+      try {
+        await unlink(filePath);
+      } catch (e) {
+        console.error("Lỗi xóa file rác:", e);
+      }
+    }
+
+    revalidatePath("/admin/import");
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/transactions/review");
+    redirectUrl = `/admin/import?historicalDeleted=1`;
+  } catch (error) {
+    console.error(error);
+    redirect("/admin/import?historicalError=delete_failed");
   }
 
   redirect(redirectUrl);

@@ -5,6 +5,7 @@ import {
   importBankStatementAction,
   importFeeTrackingWorkbookAction,
 } from "@/app/admin/import/actions";
+import { DeleteSupplementButton } from "@/app/admin/import/delete-supplement-button";
 import { AdminFrame, ScrollPanel } from "@/components/admin/admin-frame";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -278,6 +279,9 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
         ngay_tao: true,
         can_ho: {
           select: { ma_can: true },
+        },
+        lich_su_dong_phi: {
+          select: { batch_phi_public_id: true },
         },
       },
     }),
@@ -553,9 +557,14 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
                         {` · ${formatNumber(Number(item.so_tien))} đ`}
                       </p>
                     </div>
-                    <span className="rounded-md bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]">
-                      {item.loai_bang_chung}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-md bg-[var(--accent-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent)]">
+                        {item.loai_bang_chung}
+                      </span>
+                      {!item.lich_su_dong_phi?.batch_phi_public_id ? (
+                        <DeleteSupplementButton supplementId={item.id} />
+                      ) : null}
+                    </div>
                   </div>
                   <p className="mt-3 line-clamp-3 text-sm text-[var(--muted)]">
                     {item.noi_dung_xac_minh || "Không có ghi chú xác minh."}
