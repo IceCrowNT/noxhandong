@@ -36,12 +36,10 @@ function normalizePhone(value: string | null | undefined) {
 function extractPhoneCandidates(...values: Array<string | null | undefined>) {
   const phones = new Set<string>();
   for (const value of values) {
-    const matches = String(value || "").match(/0\d(?:[\d\.\s\-]){7,14}\d/g) || [];
+    const sanitized = String(value || "").replace(/[\.\s\-]/g, "");
+    const matches = sanitized.match(/0\d{9,10}/g) || [];
     for (const match of matches) {
-      const normalized = normalizePhone(match);
-      if (normalized) {
-        phones.add(normalized);
-      }
+      phones.add(match);
     }
   }
   return [...phones];

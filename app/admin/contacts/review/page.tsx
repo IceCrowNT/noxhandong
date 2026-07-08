@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Notice } from "@/components/ui/notice";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { AutoScroll } from "@/components/ui/auto-scroll";
 import { Textarea } from "@/components/ui/textarea";
 import { requirePermission } from "@/src/modules/auth/current-user";
 import { hasPermission } from "@/src/modules/auth/permissions";
@@ -219,7 +220,8 @@ export default async function ContactDirectoryPage({ searchParams }: ContactDire
                       : "border-[var(--line)] bg-white hover:border-[var(--accent)] hover:bg-[#f8faf9]"
                   }`}
                 >
-                  <Link href={pageHref(data.filters, data.pagination.page, contact.id)}>
+                  <Link scroll={false} href={pageHref(data.filters, data.pagination.page, contact.id)}>
+                    {isSelected ? <AutoScroll /> : null}
                     <span className="grid w-full gap-2">
                       <span className="flex items-start justify-between gap-2">
                         <span>
@@ -248,7 +250,7 @@ export default async function ContactDirectoryPage({ searchParams }: ContactDire
               size="sm"
               variant="secondary"
             >
-              <Link href={pageHref(data.filters, Math.max(1, data.pagination.page - 1), selectedContact?.id)}>
+              <Link scroll={false} href={pageHref(data.filters, Math.max(1, data.pagination.page - 1), selectedContact?.id)}>
                 <ChevronLeft size={16} aria-hidden="true" />
                 Trang trước
               </Link>
@@ -262,7 +264,7 @@ export default async function ContactDirectoryPage({ searchParams }: ContactDire
               size="sm"
               variant="secondary"
             >
-              <Link href={pageHref(data.filters, Math.min(data.pagination.pageCount, data.pagination.page + 1), selectedContact?.id)}>
+              <Link scroll={false} href={pageHref(data.filters, Math.min(data.pagination.pageCount, data.pagination.page + 1), selectedContact?.id)}>
                 Trang sau
                 <ChevronRight size={16} aria-hidden="true" />
               </Link>
@@ -328,7 +330,7 @@ export default async function ContactDirectoryPage({ searchParams }: ContactDire
 
                 {canManageContacts ? (
                   <>
-                    <form action={updateContactAction} className="grid gap-3 rounded-xl border border-[var(--line)] bg-[#fbfcfb] p-4">
+                    <form key={`update-${selectedContact.id}`} action={updateContactAction} className="grid gap-3 rounded-xl border border-[var(--line)] bg-[#fbfcfb] p-4">
                       <div className="flex items-center gap-2">
                         <UserRoundPen size={18} aria-hidden="true" />
                         <strong>Chỉnh sửa liên hệ</strong>
