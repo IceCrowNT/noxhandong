@@ -379,9 +379,13 @@ async function getFeeOverview(
       label: group.label,
       count: group.apartments.length,
     }));
+  const defaultTargetMonth = currentPeriod.month === 1 ? 12 : currentPeriod.month - 1;
+  const defaultTargetYear = currentPeriod.month === 1 ? currentPeriod.year - 1 : currentPeriod.year;
+  const defaultTargetKey = `${defaultTargetYear}-${String(defaultTargetMonth).padStart(2, "0")}`;
+
   const selectedExactGroup =
     exactPaidThroughGroups.get(requestedPaidThrough || "") ||
-    exactPaidThroughGroups.get(`${BASE_YEAR}-05`) ||
+    exactPaidThroughGroups.get(defaultTargetKey) ||
     exactPaidThroughGroups.values().next().value ||
     null;
 

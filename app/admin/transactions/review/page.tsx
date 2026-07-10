@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowDown, ArrowUp, ArrowUpDown, CheckCircle2, Copy, ShieldAlert, Upload } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, ArrowUpDown, CheckCircle2, Copy, RotateCcw, ShieldAlert, Upload } from "lucide-react";
 
 import {
   prepareApprovedPaymentHistoryPublicBatchAction,
@@ -12,6 +12,7 @@ import {
   markTransactionNeedsEvidenceAction,
   rejectTransactionAction,
   reserveTransactionAction,
+  rollbackApprovedTransactionAction,
 } from "@/app/admin/transactions/review/actions";
 import { AdminFrame } from "@/components/admin/admin-frame";
 import { MultiAllocationEditor } from "@/components/admin/multi-allocation-editor";
@@ -55,6 +56,8 @@ type ReviewPageProps = {
     needsEvidence?: string;
     reserved?: string;
     rejected?: string;
+    rolledBack?: string;
+    alreadyPublic?: string;
     error?: string;
     historyPreviewed?: string;
     historyPublished?: string;
@@ -216,6 +219,8 @@ function notice(params: Awaited<ReviewPageProps["searchParams"]>) {
   if (params?.needsEvidence === "1") return "Đã đánh dấu giao dịch cần bổ sung bằng chứng.";
   if (params?.reserved === "1") return "Đã chuyển giao dịch sang danh sách bảo lưu.";
   if (params?.rejected === "1") return "Đã đánh dấu giao dịch không liên quan/từ chối.";
+  if (params?.rolledBack === "1") return "Đã gỡ duyệt giao dịch. Giao dịch đã quay lại hàng chờ để duyệt lại.";
+  if (params?.alreadyPublic === "1") return "Giao dịch đã được đưa vào batch public, không thể gỡ duyệt tại màn này.";
   if (params?.error === "invalid_apartment") return "Mã căn không hợp lệ hoặc không tồn tại.";
   if (params?.error === "invalid_allocation") return "Phân bổ nhiều căn cần ít nhất 2 căn hợp lệ.";
   if (params?.error === "duplicate_allocation") return "Danh sách phân bổ có mã căn bị trùng.";
@@ -1100,6 +1105,20 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                       </div>
                     </details>
                   </>
+                ) : selected?.trang_thai_duyet === "DA_DUYET" && canReview ? (
+                  <div className="grid gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm">
+                    <p className="leading-5 text-amber-950">
+                      Giao dịch đã duyệt. Nếu chưa public, có thể gỡ toàn bộ phân bổ, lịch sử phí và bằng chứng của lần duyệt này để duyệt lại.
+                    </p>
+                    <form action={rollbackApprovedTransactionAction} className="grid gap-2">
+                      <input type="hidden" name="transactionId" value={selected.id} />
+                      <input type="hidden" name="returnTo" value={returnToAfterAction} />
+                      <SubmitButton variant="secondary" pendingText="Đang gỡ duyệt...">
+                        <RotateCcw size={16} aria-hidden="true" />
+                        Gỡ duyệt để duyệt lại
+                      </SubmitButton>
+                    </form>
+                  </div>
                 ) : (
                   <p className="text-sm text-[var(--muted)]">Manager/Kỹ thuật có thể xem thông tin nhưng không được duyệt, từ chối hoặc upload bằng chứng.</p>
                 )}

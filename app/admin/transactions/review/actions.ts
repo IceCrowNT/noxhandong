@@ -463,6 +463,56 @@ export async function rejectTransactionAction(formData: FormData) {
   redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "rejected"));
 }
 
+export async function rollbackApprovedTransactionAction(formData: FormData) {
+  await requirePermission("REVIEW_TRANSACTIONS");
+  const transactionId = getId(formData, "transactionId");
+  if (!transactionId) redirect("/admin/transactions/review?error=invalid");
+
+  const transaction = await prisma.giaoDichNganHang.findUnique({
+    where: { id: transactionId },
+    select: { id: true, trang_thai_duyet: true },
+  });
+  if (!transaction) redirect("/admin/transactions/review?error=invalid");
+  if (transaction.trang_thai_duyet !== "DA_DUYET") {
+    redirect(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`));
+  }
+
+  const publishedHistoryCount = await prisma.lichSuDongPhiCanHo.count({
+    where: {
+      giao_dich_ngan_hang_id: transactionId,
+      batch_phi_public_id: { not: null },
+    },
+  });
+  if (publishedHistoryCount > 0) {
+    redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "alreadyPublic"));
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.lichSuDongPhiCanHo.deleteMany({
+      where: { giao_dich_ngan_hang_id: transactionId, batch_phi_public_id: null },
+    });
+    await tx.phanBoGiaoDich.deleteMany({
+      where: { giao_dich_ngan_hang_id: transactionId },
+    });
+    await tx.chungTuDoiSoat.deleteMany({
+      where: { giao_dich_ngan_hang_id: transactionId },
+    });
+    await tx.giaoDichNganHang.update({
+      where: { id: transactionId },
+      data: {
+        trang_thai_duyet: "CHUA_DUYET",
+        ma_can_duoc_chon: null,
+        ghi_chu_duyet: null,
+        nguoi_duyet: null,
+        ngay_duyet: null,
+      },
+    });
+  });
+
+  revalidatePath("/admin/transactions/review");
+  redirect(withResult(getReturnTo(formData, `/admin/transactions/review?transactionId=${transactionId}`), "rolledBack"));
+}
+
 export async function addEvidenceAction(formData: FormData) {
   const account = await requirePermission("REVIEW_TRANSACTIONS");
   const transactionId = getId(formData, "transactionId");

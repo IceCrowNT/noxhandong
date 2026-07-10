@@ -40,6 +40,13 @@ function stripMailMergeSettings(xml: string) {
   return xml.replace(/<w:mailMerge>[\s\S]*?<\/w:mailMerge>/g, "");
 }
 
+function stripTrackChanges(xml: string) {
+  return xml
+    .replace(/<w:del\b[\s\S]*?<\/w:del>/g, "")
+    .replace(/<w:ins\b[^>]*>/g, "")
+    .replace(/<\/w:ins>/g, "");
+}
+
 function stripLegacyFallback(xml: string) {
   return xml.replace(/<mc:Fallback>[\s\S]*?<\/mc:Fallback>/g, "");
 }
@@ -115,12 +122,7 @@ function replaceFeeNoticeParagraphs(
   row: Awaited<ReturnType<typeof getFeeNoticeDataset>>["rows"][number],
   dataset: Awaited<ReturnType<typeof getFeeNoticeDataset>>,
 ) {
-  let nextXml = replaceApartmentCode(pageXml, row.maCan);
-  nextXml = nextXml
-    .replaceAll(`từ ${TEMPLATE_START_DATE} `, `từ ${dataset.notice.startDateText} `)
-    .replaceAll(`từ ${TEMPLATE_START_DATE})`, `từ ${dataset.notice.startDateText})`)
-    .replaceAll(`đến ${TEMPLATE_END_DATE}`, `đến ${dataset.notice.endDateText}`)
-    .replaceAll("25/05/2026", dataset.notice.dueDateText);
+  const nextXml = replaceApartmentCode(pageXml, row.maCan);
 
   return nextXml.replace(/<w:p\b[\s\S]*?<\/w:p>/g, (paragraphXml) => {
     const text = decodeParagraphText(paragraphXml);
@@ -131,6 +133,24 @@ function replaceFeeNoticeParagraphs(
 
     if (text.startsWith("Kính gửi")) {
       return replaceParagraphTextRuns(paragraphXml, `Kính gửi : CĂN HỘ ${row.maCan}`);
+    }
+
+    if (text.startsWith("V/v:")) {
+      return replaceParagraphTextRuns(
+        paragraphXml,
+        `V/v: Thu phí dịch vụ quản lý vận hành kỳ phí từ ${dataset.notice.startDateText} đến ${dataset.notice.endDateText}`,
+      );
+    }
+
+    if (text.startsWith("BQT trân trọng thông báo")) {
+      return replaceParagraphTextRuns(
+        paragraphXml,
+        `BQT trân trọng thông báo tới Quý Cư dân lịch thu phí Quản lý vận hành kỳ phí 06 tháng (từ ${dataset.notice.startDateText} đến ${dataset.notice.endDateText}), như sau:`,
+      );
+    }
+
+    if (text.startsWith("Thời gian:")) {
+      return replaceParagraphTextRuns(paragraphXml, `Thời gian: trước ngày ${dataset.notice.dueDateText}`);
     }
 
     if (text.startsWith("Phí quản lý")) {
@@ -212,7 +232,7 @@ function buildDocumentXml(
   rows: Awaited<ReturnType<typeof getFeeNoticeDataset>>["rows"],
   dataset: Awaited<ReturnType<typeof getFeeNoticeDataset>>,
 ) {
-  const sanitizedOriginalXml = stripLegacyFallback(stripSpellMarks(originalXml));
+  const sanitizedOriginalXml = stripLegacyFallback(stripTrackChanges(stripSpellMarks(originalXml)));
   const bodyMatch = sanitizedOriginalXml.match(/<w:body>([\s\S]*?)(<w:sectPr[\s\S]*?<\/w:sectPr>)<\/w:body>/);
   if (!bodyMatch) {
     throw new Error("Không đọc được cấu trúc Word template.");
