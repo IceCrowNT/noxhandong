@@ -5,7 +5,7 @@ import {
   removeVietnameseDiacritics,
 } from "@/src/modules/shared/utils/text";
 
-export const APARTMENT_CODE_PARSER_VERSION = "apartment-code-parser-v0.8-unified";
+export const APARTMENT_CODE_PARSER_VERSION = "apartment-code-parser-v0.9-unified";
 
 export const APARTMENT_TRANSACTION_FILTER_RULES = {
   hardInternalKeywords: [
@@ -433,6 +433,22 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildLkCandidate(match[1], match[2], "LK_BLOCK_ROOM_SPACED", 0.98));
   }
 
+  const lkSoNhaPattern = new RegExp(
+    `\\b${LK_BLOCK_ALIAS_CAPTURE}\\b(?:\\s+(?:SO|NHA|SO\\s+NHA)){1,2}\\s+${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(lkSoNhaPattern)) {
+    push(buildLkCandidate(match[1], match[2], "LK_BLOCK_SO_NHA_ROOM", 0.995));
+  }
+
+  const lkSoNhaCompactPattern = new RegExp(
+    `\\b${LK_BLOCK_ALIAS_CAPTURE}\\s+(?:SO|NHA|SONHA|SO\\s+NHA)${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(lkSoNhaCompactPattern)) {
+    push(buildLkCandidate(match[1], match[2], "LK_BLOCK_SO_NHA_COMPACT_ROOM", 0.99));
+  }
+
   const separatedLkPattern = new RegExp(`\\b(?:LK|IK)\\s+([1-9])\\s+${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");
   for (const match of normalizedDescription.matchAll(separatedLkPattern)) {
     push(buildLkCandidate(`LK${match[1]}`, match[2], "LK_BLOCK_ROOM_SEPARATED", 0.97));
@@ -534,6 +550,14 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildCandidate(match[1], match[2], "SUFFIX_BLOCK_ROOM_COMPACT", 0.91));
   }
 
+  const splitSuffixBlockRoomPattern = new RegExp(
+    `(?:^|[^A-Z0-9])(?:LONG\\s*)?L\\s*([1-9])\\s*([A-C])\\s*-?\\s*${ROOM_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(splitSuffixBlockRoomPattern)) {
+    push(buildCandidate(`${match[1]}${match[2]}`, match[3], "SPLIT_SUFFIX_BLOCK_ROOM", 0.97));
+  }
+
   const blockSoNhaPattern = new RegExp(`\\bL${BLOCK_CAPTURE}\\b(?:\\s+(?:SO|NHA|SO NHA)){1,2}\\s+${ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");
   for (const match of normalizedDescription.matchAll(blockSoNhaPattern)) {
     push(buildCandidate(match[1], match[2], "BLOCK_SO_NHA_ROOM", 0.95));
@@ -601,6 +625,18 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     }
 
     if (candidateBlock.startsWith("LK")) {
+      const strongerSameLkHouseCandidate = candidates.find((other) => {
+        if (other.code === candidate.code || !other.reason.startsWith("LK_BLOCK_SO_NHA")) {
+          return false;
+        }
+        const [otherBlock] = other.code.split(".");
+        return otherBlock === candidateBlock && other.score >= candidate.score;
+      });
+
+      if (strongerSameLkHouseCandidate && !candidate.reason.startsWith("LK_BLOCK_SO_NHA")) {
+        return false;
+      }
+
       return true;
     }
 
