@@ -10,14 +10,8 @@ import { getCurrentAdmin } from "@/src/modules/auth/current-user";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const FEE_NOTICE_TEMPLATE_PATH = path.join(process.cwd(), "templates", "fee-notice-template.docx");
-const POWER_CUT_TEMPLATE_PATH = path.join(process.cwd(), "templates", "power-cut-template.docx");
-
-const TEMPLATE_APARTMENT_CODES = ["L2.220", "L2.310"];
-const TEMPLATE_START_DATE = "01/05/2026";
-const TEMPLATE_END_DATE = "30/10/2026";
-const TEMPLATE_MONTHLY_FEE = "250.000";
-const TEMPLATE_TOTAL_FEE = "1.500.000";
+const FEE_NOTICE_TEMPLATE_PATH = path.join(process.cwd(), "templates", "fee-notice-template-v2.docx");
+const POWER_CUT_TEMPLATE_PATH = path.join(process.cwd(), "templates", "power-cut-template-v2.docx");
 
 function escapeXml(value: string) {
   return value
@@ -81,13 +75,6 @@ function decodeParagraphText(paragraphXml: string) {
   );
 }
 
-function replaceApartmentCode(xml: string, apartmentCode: string) {
-  let nextXml = xml;
-  for (const code of TEMPLATE_APARTMENT_CODES) {
-    nextXml = nextXml.replaceAll(code, apartmentCode);
-  }
-  return nextXml;
-}
 
 function replaceParagraphTextRuns(paragraphXml: string, nextText: string) {
   const runs = paragraphXml.match(/<w:r\b[\s\S]*?<\/w:r>/g) ?? [];
@@ -113,8 +100,22 @@ function currentHaiPhongDateText() {
   return `Hải Phòng, ngày ${day} tháng ${month} năm ${now.getFullYear()}`;
 }
 
-function buildPowerCutTransferContent(overdueFromText: string, overdueToText: string) {
-  return `ND : Căn hộ + SĐT + nộp phí QLVH từ tháng ${overdueFromText} – tháng ${overdueToText}`;
+function replacePlaceholders(paragraphXml: string, replacements: Record<string, string>) {
+  let text = decodeParagraphText(paragraphXml);
+  let hasReplacement = false;
+
+  for (const [key, value] of Object.entries(replacements)) {
+    if (text.includes(key)) {
+      text = text.replaceAll(key, value);
+      hasReplacement = true;
+    }
+  }
+
+  if (hasReplacement) {
+    return replaceParagraphTextRuns(paragraphXml, text);
+  }
+
+  return paragraphXml;
 }
 
 function replaceFeeNoticeParagraphs(
@@ -122,66 +123,20 @@ function replaceFeeNoticeParagraphs(
   row: Awaited<ReturnType<typeof getFeeNoticeDataset>>["rows"][number],
   dataset: Awaited<ReturnType<typeof getFeeNoticeDataset>>,
 ) {
-  const nextXml = replaceApartmentCode(pageXml, row.maCan);
+  const replacements: Record<string, string> = {
+    "{{TIEU_DE_THONG_BAO}}": dataset.notice.titleText,
+    "{{MA_CAN}}": row.maCan,
+    "{{KY_PHI_BAT_DAU}}": dataset.notice.startDateText,
+    "{{KY_PHI_KET_THUC}}": dataset.notice.endDateText,
+    "{{PHI_HANG_THANG}}": moneyText(row.monthlyFee),
+    "{{TONG_PHI}}": moneyText(row.totalFee),
+    "{{HAN_NOP_PHI}}": dataset.notice.dueDateText,
+    "{{NOI_DUNG_CHUYEN_KHOAN}}": dataset.notice.transferContentHint,
+    "{{NGAY_THANG_NAM}}": dataset.notice.documentDateText,
+  };
 
-  return nextXml.replace(/<w:p\b[\s\S]*?<\/w:p>/g, (paragraphXml) => {
-    const text = decodeParagraphText(paragraphXml);
-
-    if (text === "THÔNG BÁO" || text.startsWith("THÔNG BÁO LẦN")) {
-      return replaceParagraphTextRuns(paragraphXml, dataset.notice.titleText);
-    }
-
-    if (text.startsWith("Kính gửi")) {
-      return replaceParagraphTextRuns(paragraphXml, `Kính gửi : CĂN HỘ ${row.maCan}`);
-    }
-
-    if (text.startsWith("V/v:")) {
-      return replaceParagraphTextRuns(
-        paragraphXml,
-        `V/v: Thu phí dịch vụ quản lý vận hành kỳ phí từ ${dataset.notice.startDateText} đến ${dataset.notice.endDateText}`,
-      );
-    }
-
-    if (text.startsWith("BQT trân trọng thông báo")) {
-      return replaceParagraphTextRuns(
-        paragraphXml,
-        `BQT trân trọng thông báo tới Quý Cư dân lịch thu phí Quản lý vận hành kỳ phí 06 tháng (từ ${dataset.notice.startDateText} đến ${dataset.notice.endDateText}), như sau:`,
-      );
-    }
-
-    if (text.startsWith("Thời gian:")) {
-      return replaceParagraphTextRuns(paragraphXml, `Thời gian: trước ngày ${dataset.notice.dueDateText}`);
-    }
-
-    if (text.startsWith("Phí quản lý")) {
-      return replaceParagraphTextRuns(paragraphXml, `Phí quản lý chung cư là : ${moneyText(row.monthlyFee)} VNĐ/1 tháng`);
-    }
-
-    if (text.startsWith("Kỳ phí 6 tháng phải nộp")) {
-      return replaceParagraphTextRuns(
-        paragraphXml,
-        `Kỳ phí 6 tháng phải nộp : (${moneyText(row.monthlyFee)} × 6) = ${moneyText(row.totalFee)} VNĐ`,
-      );
-    }
-
-    if (text.startsWith("“") || text.startsWith('" Tòa') || text.includes("nộp phí QLVH từ")) {
-      return replaceParagraphTextRuns(paragraphXml, `“ ${dataset.notice.transferContentHint}”`);
-    }
-
-    if (text.startsWith("Số:") && text.includes("An Hải")) {
-      return [
-        '<w:p w14:paraId="DOCXDATE1" w14:textId="DOCXDATE1" w:rsidR="007E420E" w:rsidRPr="003D0095" w:rsidRDefault="007E420E" w:rsidP="00954FAD">',
-        '<w:pPr><w:tabs><w:tab w:val="right" w:pos="9360"/></w:tabs><w:spacing w:line="276" w:lineRule="auto"/>',
-        '<w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:i/><w:iCs/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr></w:pPr>',
-        '<w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:i/><w:iCs/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr>',
-        '<w:t xml:space="preserve">Số: …../TBTP-BQTNOXHAD</w:t></w:r>',
-        '<w:r><w:tab/></w:r>',
-        '<w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:i/><w:iCs/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr>',
-        `<w:t>${escapeXml(dataset.notice.documentDateText)}</w:t></w:r></w:p>`,
-      ].join("");
-    }
-
-    return paragraphXml;
+  return pageXml.replace(/<w:p\b[\s\S]*?<\/w:p>/g, (paragraphXml) => {
+    return replacePlaceholders(paragraphXml, replacements);
   });
 }
 
@@ -190,40 +145,17 @@ function replacePowerCutParagraphs(
   row: Awaited<ReturnType<typeof getFeeNoticeDataset>>["rows"][number],
   dataset: Awaited<ReturnType<typeof getFeeNoticeDataset>>,
 ) {
-  let nextXml = replaceApartmentCode(pageXml, row.maCan);
-  nextXml = nextXml.replaceAll(`Số tiền : ${TEMPLATE_TOTAL_FEE} đ`, `Số tiền : ${moneyText(row.totalFee)} đ`);
+  const replacements: Record<string, string> = {
+    "{{NGAY_THANG_NAM}}": currentHaiPhongDateText(),
+    "{{MA_CAN}}": row.maCan,
+    "{{THANG_NO_BAT_DAU}}": dataset.notice.overdueFromText,
+    "{{THANG_NO_KET_THUC}}": dataset.notice.overdueToText,
+    "{{TONG_PHI}}": moneyText(row.totalFee),
+    "{{NGAY_CAT_DIEN}}": dataset.notice.dueDateText,
+  };
 
-  return nextXml.replace(/<w:p\b[\s\S]*?<\/w:p>/g, (paragraphXml) => {
-    const text = decodeParagraphText(paragraphXml);
-
-    if (text.startsWith("Hải Phòng, ngày")) {
-      return replaceParagraphTextRuns(paragraphXml, currentHaiPhongDateText());
-    }
-
-    if (text.startsWith("Kính gửi:")) {
-      return replaceParagraphTextRuns(paragraphXml, `Kính gửi: CĂN HỘ ${row.maCan}`);
-    }
-
-    if (text.startsWith("Hiện tại hộ dân đang")) {
-      return replaceParagraphTextRuns(
-        paragraphXml,
-        `Hiện tại hộ dân đang chậm đóng phí QLVH từ tháng ${dataset.notice.overdueFromText} theo quy định của khu NOXH.`,
-      );
-    }
-
-    if (text.startsWith("ND")) {
-      return replaceParagraphTextRuns(
-        paragraphXml,
-        buildPowerCutTransferContent(dataset.notice.overdueFromText, dataset.notice.overdueToText),
-      );
-    }
-
-    if (text.startsWith("Thời gian dự kiến cắt điện:")) {
-      const replacedApartmentText = text.replace(/(tại căn hộ số:\s*)(.+)$/i, `$1${row.maCan}`);
-      return replaceParagraphTextRuns(paragraphXml, replacedApartmentText);
-    }
-
-    return paragraphXml;
+  return pageXml.replace(/<w:p\b[\s\S]*?<\/w:p>/g, (paragraphXml) => {
+    return replacePlaceholders(paragraphXml, replacements);
   });
 }
 
