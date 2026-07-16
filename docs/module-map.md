@@ -602,3 +602,23 @@ Các điểm cần giữ khi tiếp tục phát triển:
 - `src/modules/imports/monthly-closing.ts`: tạo sổ chốt từ batch public.
 - `src/modules/transactions/review/monthly-reconciliation.ts`: tổng hợp giao
   dịch đã duyệt theo tháng.
+
+## Phân khu hiện hành 2026-07-14
+
+Các khu vực chức năng đang hoạt động:
+
+- `app/tra-cuu-phi/`: tra cứu phí public cho cư dân.
+- `app/admin/dashboard/`: tra cứu nội bộ, thống kê kỳ phí, cảnh báo cắt điện.
+- `app/admin/database/`: dữ liệu mới nhất, xuất file, lập danh sách thông báo thu phí.
+- `app/admin/import/`: nhập sao kê/Excel vận hành.
+- `app/admin/transactions/review/`: duyệt sao kê, đối soát tháng, preview/public.
+- `app/admin/announcements/`: quản lý thông báo PDF public.
+- `app/admin/contacts/`: định hướng là `Danh bạ cư dân`, thao tác tra cứu/thêm/sửa/xóa dữ liệu liên hệ.
+- `src/modules/transactions/`: parser, review, allocation, reconciliation.
+- `src/modules/apartments/`: dashboard, thống kê, export và logic căn hộ.
+
+Quy tắc tránh trùng lặp:
+
+- Parser mã căn chỉ nằm ở một module chính.
+- Logic xuất file dùng chung module nghiệp vụ nếu có thể, không copy query sang nhiều route.
+- Code cũ không dùng chuyển vào `archive/` kèm lý do, không xóa thẳng.

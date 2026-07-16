@@ -488,3 +488,25 @@ Quy tắc bảo trì:
 2. Case dữ liệu thật phải có test hồi quy.
 3. Không tạo thêm parser hoặc bộ từ khóa song song trong script.
 4. File cũ không xóa ngay; chuyển vào archive theo quy tắc tại `docs/module-map.md`.
+
+## Mốc parser hiện hành 2026-07-14
+
+Parser chính duy nhất:
+
+- `src/modules/transactions/parser/apartment-parser.ts`
+
+Nguyên tắc bắt buộc:
+
+- Không tạo parser thứ hai trong script/import/export.
+- Mọi luồng import sao kê, preview, export có đánh dấu parser phải dùng chung parser chính.
+- Khi thêm case thật, thêm test hồi quy để tránh sửa case này làm hỏng case cũ.
+- File parser cũ hoặc helper thử nghiệm chuyển vào `archive/`, không xóa thẳng.
+
+Một số case thực tế đã/đang cần giữ:
+
+- `LK1 so nha 52` -> `LK1.52`.
+- `LongL4 C-406A` -> `L4C.406A`.
+- `toa L1can 208` -> `L1.208`.
+- `L1315nop` -> `L1.315`, không nhận thành `L1.315N`.
+- `Can ho 415 toa nha L2` -> `L2.415`.
+- `toa L1315` cần kiểm tra tồn tại căn; nếu không tồn tại thì báo để duyệt tay.

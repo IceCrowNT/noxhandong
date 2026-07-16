@@ -893,3 +893,23 @@ Không nên chốt public kỳ mới nếu còn:
 - giao dịch nhiều căn chưa phân bổ;
 - case Zalo/chứng từ chưa lưu bằng chứng;
 - report trước chốt chưa được chủ dự án duyệt.
+
+## Trạng thái Phase 2 hiện hành 2026-07-14
+
+Đã vận hành được:
+
+- Import sao kê ngân hàng.
+- Duyệt nhanh, duyệt kèm bằng chứng, phân bổ nhiều căn, đánh dấu không liên quan.
+- Tạo preview public và xác nhận public.
+- Đối soát theo tháng theo ngày giao dịch đã duyệt.
+- Thông báo PDF public cho cư dân.
+- Export dữ liệu vận hành và lập danh sách thông báo thu phí/cắt điện.
+- Bổ sung giao dịch quá khứ theo hướng có bằng chứng, không tạo giao dịch ngân hàng giả.
+
+Cần tiếp tục tinh chỉnh:
+
+- Quyền theo role và ẩn menu theo quyền.
+- Danh bạ cư dân theo hướng CRUD đơn giản thay vì màn duyệt.
+- Export theo tháng đồng bộ với bộ lọc đối soát.
+- Rollback/gỡ duyệt chỉ cho giao dịch chưa public; giao dịch đã public xử lý bằng điều chỉnh.
+- Dọn code cũ vào archive sau khi xác nhận không còn route/query dùng đến.

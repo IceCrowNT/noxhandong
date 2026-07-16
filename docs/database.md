@@ -247,3 +247,29 @@ Public lookup chi doc batch co `la_batch_public_hien_hanh = true`.
 - [phase-2-roadmap.md](phase-2-roadmap.md)
 - [handoff.md](handoff.md)
 - [module-map.md](module-map.md)
+
+## Nguyên tắc dữ liệu hiện hành 2026-07-14
+
+Nguồn dữ liệu chính:
+
+- `can_ho`: danh sách 934 căn.
+- `lien_he_can_ho`: danh bạ/liên hệ cư dân đang dùng cho tra cứu nội bộ.
+- `lo_nhap_du_lieu`, `dong_sao_ke_tho`, `giao_dich_ngan_hang`: lưu lô import, raw sao kê và giao dịch ngân hàng đã chuẩn hóa/chống trùng.
+- `ket_qua_parse_giao_dich`, `ung_vien_khop_giao_dich`: kết quả parser và gợi ý căn hộ.
+- `duyet_giao_dich`, `phan_bo_giao_dich`, `chung_tu_doi_soat`: quyết định duyệt, phân bổ nhiều căn và bằng chứng.
+- `lich_su_dong_phi_can_ho`: lịch sử phí đã được ghi nhận theo căn.
+- `batch_trang_thai_phi_public`, `trang_thai_phi_can_ho_public`: snapshot public cuối cùng cho cư dân tra cứu.
+- `bo_sung_giao_dich_qua_khu`: bổ sung/điều chỉnh giao dịch quá khứ, không giả lập giao dịch ngân hàng.
+
+Mốc nghiệp vụ:
+
+- Excel T5 final là mốc quá khứ chuẩn, chốt đến 23:59:00 31/05/2026.
+- Từ T6/2026, sao kê ngân hàng là nguồn phát sinh chính.
+- Batch public mới chỉ trở thành dữ liệu cư dân thấy sau khi tạo preview và xác nhận public.
+- Giao dịch đã public không xóa/gỡ trực tiếp; nếu sai thì dùng giao dịch điều chỉnh hoặc bổ sung có dấu vết.
+
+Nguyên tắc thay đổi DB:
+
+- Chỉ một schema Prisma hoạt động: `prisma/schema.prisma`.
+- File schema cũ hoặc thử nghiệm phải chuyển archive, không để song song gây hiểu nhầm.
+- Không xóa bảng/cột production nếu chưa chứng minh không còn query và đã có backup.

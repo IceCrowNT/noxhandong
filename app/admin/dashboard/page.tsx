@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import {
   AlertTriangle,
   Building2,
@@ -31,7 +31,8 @@ import {
   importStatusLabel,
   reviewFlagLabel,
   transactionMatchStatusLabel,
-  transactionReviewStatusLabel
+  transactionReviewStatusLabel,
+  evidenceTypeLabel
 } from "@/src/modules/shared/labels";
 import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
 
@@ -681,14 +682,66 @@ function LatestPaymentHistoryCard({
         </div>
 
         <div className={compact ? "mt-3 grid gap-2 text-sm" : "mt-4 grid gap-2 text-sm md:grid-cols-2"}>
-          {rows.map(([label, value]) => (
-            <div key={label} className="rounded-lg border border-[var(--line)] bg-[#fbfcfb] p-3">
-              <span className="block text-[11px] font-semibold uppercase text-[var(--muted)]">{label}</span>
-              <strong className="mt-1 block min-w-0 truncate leading-5" title={value}>
-                {value}
-              </strong>
-            </div>
-          ))}
+          {rows.map(([label, value]) => {
+            if (label === "Bằng chứng" && evidenceCount > 0) {
+              return (
+                <Sheet key={label}>
+                  <SheetTrigger asChild>
+                    <button type="button" className="group rounded-lg border border-[var(--accent)] bg-[var(--accent-soft)] p-3 text-left text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-white">
+                      <span className="block text-[11px] font-semibold uppercase group-hover:text-white/80">{label}</span>
+                      <strong className="mt-1 block min-w-0 truncate leading-5" title={value}>
+                        {value} (Bấm để xem)
+                      </strong>
+                    </button>
+                  </SheetTrigger>
+                  <SheetContent className="w-[min(94vw,520px)] overflow-y-auto">
+                    <SheetHeader className="mb-4 border-b border-[var(--line)] pb-4">
+                      <SheetTitle>Bằng chứng giao dịch</SheetTitle>
+                      <SheetDescription>
+                        Các file và ghi chú đính kèm với giao dịch ngân hàng đã duyệt.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="grid gap-4">
+                      {transaction?.chung_tu_doi_soat.map((evidence) => (
+                        <div key={evidence.id} className="rounded-lg border border-[var(--line)] p-4">
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <strong className="text-[var(--accent)]">{evidenceTypeLabel(evidence.loai_chung_tu)}</strong>
+                            <span className="text-xs text-[var(--muted)]">{formatDateTime(evidence.ngay_tao)}</span>
+                          </div>
+                          {evidence.ghi_chu ? (
+                            <p className="mb-3 text-sm text-[var(--text)]">{evidence.ghi_chu}</p>
+                          ) : null}
+                          {evidence.duong_dan_file ? (
+                            <div className="mt-2">
+                              {evidence.duong_dan_file.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                                <a href={evidence.duong_dan_file} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-md border border-[var(--line)] hover:border-[var(--accent)]">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={evidence.duong_dan_file} alt="Evidence" className="max-h-[300px] w-full bg-[var(--surface)] object-contain" />
+                                </a>
+                              ) : (
+                                <a href={evidence.duong_dan_file} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent)] underline hover:text-[var(--accent)]">
+                                  Mở file {evidence.ten_file_goc ? `(${evidence.ten_file_goc})` : ""}
+                                </a>
+                              )}
+                            </div>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              );
+            }
+
+            return (
+              <div key={label} className="rounded-lg border border-[var(--line)] bg-[#fbfcfb] p-3">
+                <span className="block text-[11px] font-semibold uppercase text-[var(--muted)]">{label}</span>
+                <strong className="mt-1 block min-w-0 truncate leading-5" title={value}>
+                  {value}
+                </strong>
+              </div>
+            );
+          })}
         </div>
 
         {transaction?.noi_dung_goc ? (

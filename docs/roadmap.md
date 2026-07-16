@@ -193,3 +193,19 @@ Phải dừng và xin xác nhận người dùng khi:
 - `docs/phase-2-roadmap.md`: chi tiết Phase 2.
 - `docs/deploy-vps-step-by-step.md`: runbook deploy duy nhất.
 - `docs/production-deploy-vps.md`: quyết định/checklist production, không phải runbook thao tác.
+
+## Cập nhật tiến trình 2026-07-14
+
+Trạng thái hiện tại:
+
+- Phase 1 đã deploy thành công lên VPS/domain.
+- Phase 2 đang vận hành ổn ở mức MVP mở rộng: tra cứu public, dashboard nội bộ, nhập sao kê, duyệt sao kê, public dữ liệu phí, thông báo PDF, danh bạ cư dân và các xuất file vận hành.
+- Dữ liệu T5 final là mốc chốt quá khứ. Từ T6/2026 trở đi, giao dịch ngân hàng được import, duyệt, public theo kỳ.
+- Local và VPS có thể lệch dữ liệu trong giai đoạn test; trước khi sync phải xác định rõ nguồn chuẩn. Hiện nguyên tắc là production/VPS có thể là nguồn thật sau khi đã vận hành, local dùng để phát triển và test.
+
+Các việc còn theo dõi:
+
+- Hoàn thiện quyền theo role bằng một nguồn phân quyền trung tâm.
+- Tinh giản DB/code trùng lặp nhưng không xóa bảng/cột khi chưa có lợi ích rõ ràng.
+- Hoàn thiện rollback/gỡ duyệt cho giao dịch chưa public; giao dịch đã public không gỡ trực tiếp, xử lý bằng giao dịch điều chỉnh/bổ sung.
+- Cải thiện xuất Excel/Word theo yêu cầu thực tế sau khi mẫu vận hành được chốt.

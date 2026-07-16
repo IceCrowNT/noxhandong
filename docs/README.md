@@ -125,3 +125,18 @@ Khi thay đổi deploy:
 - Không xóa thẳng file cũ nếu chưa chắc chắn.
 - File cũ, thử nghiệm hoặc không còn dùng nên chuyển vào thư mục `archive/`.
 - File xương sống phải có vai trò riêng, không trùng lặp nội dung điều phối với file khác.
+
+## Mốc xương sống hiện hành 2026-07-14
+
+Các file điều phối chính:
+
+- `roadmap.md`: thứ tự phát triển, trạng thái Phase 1/Phase 2 và backlog.
+- `phase-2-roadmap.md`: chi tiết các hạng mục Phase 2.
+- `handoff.md`: trạng thái môi trường, dữ liệu và bàn giao gần nhất.
+- `database.md`: thiết kế DB đang dùng và nguyên tắc nguồn dữ liệu.
+- `parser-ma-can-ho.md`: quy tắc parser mã căn hộ; chỉ một parser chính.
+- `module-map.md`: bản đồ phân khu code, khu vực archive và tránh trùng lặp.
+- `deploy-vps-step-by-step.md`: runbook deploy duy nhất lên VPS.
+- `nghiep-vu-he-thong.md`: mô tả nghiệp vụ để người mới tiếp nhận hiểu hệ thống.
+
+Nguyên tắc: tài liệu xương sống ghi quyết định hiện hành; báo cáo phân tích để trong `docs/reports/` chỉ dùng tham khảo, không thay thế roadmap/handoff/database.

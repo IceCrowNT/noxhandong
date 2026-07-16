@@ -1176,3 +1176,19 @@ Náº¿u cÃ³ thay Ä‘á»•i parser mÃ£ cÄƒn:
 - Dev server dang chay tai `http://localhost:3000`.
 - Phan con lai khong tu dong thuc hien tren production: backup DB VPS, deploy
   migration/code moi, restart NSSM va smoke test bang tai khoan that.
+
+## Bàn giao hiện hành 2026-07-14
+
+Trạng thái sản phẩm:
+
+- App đang chạy ổn ở local và đã có bản production trên VPS/domain.
+- Luồng chính hiện hành: Excel T5 final làm mốc lịch sử, sao kê T6+ nhập vào DB, giao dịch được duyệt, tạo preview, xác nhận public, cư dân tra cứu theo batch public hiện hành.
+- Dữ liệu public cuối cùng lấy từ `batch_trang_thai_phi_public` và `trang_thai_phi_can_ho_public`.
+- Lịch sử phát sinh đã duyệt nằm ở `lich_su_dong_phi_can_ho`; các dòng đã public có `batch_phi_public_id`.
+- Dữ liệu cư dân hiện coi là dữ liệu chuẩn từ DB, định hướng màn `Danh bạ cư dân` là tra cứu/thêm/sửa/xóa, không phải màn duyệt phức tạp.
+
+Lưu ý vận hành:
+
+- Khi sang tháng mới, dữ liệu đối soát theo tháng có thể có trước batch public mới. Batch public chỉ chuyển kỳ khi tạo preview và xác nhận public cho kỳ đó.
+- Không restore DB production nếu chưa backup. Nếu cần đồng bộ, xác định bảng nào là nguồn chuẩn trước khi ghi đè.
+- Không lưu mật khẩu VPS trong tài liệu.

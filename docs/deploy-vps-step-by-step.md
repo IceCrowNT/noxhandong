@@ -896,3 +896,30 @@ call npm run export:operations:xlsx
 ```
 
 Nếu không có `call`, batch có thể dừng sau lệnh npm đầu tiên.
+
+## Quy tắc deploy hiện hành 2026-07-14
+
+Quy trình chính vẫn là runbook deploy duy nhất của dự án. Phase 1 từng deploy bằng cách sao chép project lên VPS, không phụ thuộc git pull.
+
+Nguyên tắc trước khi deploy:
+
+- Build local phải pass trước khi đưa lên VPS.
+- Backup DB VPS trước mọi thay đổi DB.
+- Không restore toàn bộ DB nếu chỉ cần một bảng hoặc một nhóm dữ liệu nhỏ.
+- Nếu thay đổi schema: cập nhật code/schema trước, chạy migration trên VPS, sau đó mới restore/sync dữ liệu nếu cần.
+- Nếu chỉ thay đổi code: copy source/build, restart service, smoke test domain.
+
+Nguyên tắc dữ liệu:
+
+- Production/VPS có thể là nguồn dữ liệu thật sau khi đã vận hành.
+- Local có thể là dữ liệu test hoặc dữ liệu thật tùy thời điểm; trước khi sync phải ghi rõ hướng sync.
+- Không đồng bộ mù hai chiều. Luôn chọn một nguồn chuẩn cho từng lần thao tác.
+
+Smoke test tối thiểu sau deploy:
+
+- Trang chủ public mở được.
+- Admin login được.
+- Tra cứu nội bộ mở được.
+- Nhập sao kê mở được.
+- Duyệt sao kê mở được và không báo lỗi schema thiếu bảng.
+- Thông báo PDF public mở đúng file trong `/uploads/announcements/`.

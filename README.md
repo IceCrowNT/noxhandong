@@ -104,3 +104,12 @@ npm run prisma:generate
 ## Ghi chú
 
 MVP cũ xử lý file trong bộ nhớ vẫn còn một số route/API để tương thích. Hướng phát triển chính hiện tại là DB V2 theo tài liệu trong `docs/`.
+
+## Mốc hiện hành 2026-07-14
+
+App hiện đang vận hành ổn theo mô hình Phase 2:
+
+- Cư dân tra cứu phí public không cần đăng nhập.
+- Admin vận hành qua dashboard, nhập sao kê, duyệt giao dịch, chốt public và quản lý thông báo PDF.
+- Dữ liệu Excel T5 final là mốc quá khứ chuẩn; từ T6/2026 trở đi, sao kê ngân hàng sau khi duyệt là nguồn phát sinh chính.
+- File xương sống trong `docs/` là nguồn điều phối nghiệp vụ, DB, parser, deploy và bàn giao. Khi có thay đổi lớn, cập nhật `docs/README.md`, `docs/roadmap.md`, `docs/handoff.md`, `docs/database.md`, `docs/parser-ma-can-ho.md` và `docs/deploy-vps-step-by-step.md`.

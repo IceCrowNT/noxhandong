@@ -187,10 +187,10 @@ function StatementResultSummary({ params }: { params?: SearchParams }) {
     { label: "Tổng dòng thô", value: numberParam(params.statementRows) },
     { label: "Dòng thu", value: numberParam(params.statementIncomeRows) },
     { label: "Dòng chi bỏ qua", value: numberParam(params.statementSkippedExpenseRows) },
-    { label: "Đã thuộc mốc chốt", value: numberParam(params.statementSkippedClosingRows) },
-    { label: "Nhận diện chắc", value: numberParam(params.statementParsedValidRows) },
-    { label: "Nhiều căn", value: numberParam(params.statementMultiCandidateRows) },
-    { label: "Chưa nhận diện", value: numberParam(params.statementUnparsedRows) },
+    //{ label: "Đã thuộc mốc chốt", value: numberParam(params.statementSkippedClosingRows) },
+    //{ label: "Nhận diện chắc", value: numberParam(params.statementParsedValidRows) },
+    //{ label: "Nhiều căn", value: numberParam(params.statementMultiCandidateRows) },
+    //{ label: "Chưa nhận diện", value: numberParam(params.statementUnparsedRows) },
   ];
 
   return (

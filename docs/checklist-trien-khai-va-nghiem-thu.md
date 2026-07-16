@@ -1170,5 +1170,18 @@ Náº¿u task tháº¥t báº¡i:
 - [x] Trang `/admin` mobile dÃ¹ng list compact; desktop váº«n giá»¯ card grid.
 - [x] Báº£ng dÃ i admin cÃ³ vÃ¹ng cuá»™n riÃªng, khÃ´ng Ã©p háº¿t cá»™t trÃªn mobile.
 
+## Checklist hiện hành 2026-07-14
+
+- [x] App local/prod đang vận hành ổn ở luồng chính.
+- [x] Public lookup lấy dữ liệu từ batch public hiện hành.
+- [x] Admin có luồng nhập sao kê, duyệt, preview và public.
+- [x] Dữ liệu T5 final được coi là mốc quá khứ chuẩn.
+- [x] Dữ liệu T6+ đi theo luồng sao kê ngân hàng.
+- [x] Parser có nguyên tắc một file chính và test hồi quy.
+- [x] File cũ/không dùng chuyển archive thay vì xóa thẳng.
+- [ ] Phân quyền UI/page/action cần gom về một nguồn quyền trung tâm.
+- [ ] Danh bạ cư dân cần chuyển hẳn sang mô hình tra cứu/thêm/sửa/xóa.
+- [ ] Export Excel/Word tiếp tục tinh chỉnh theo mẫu vận hành thực tế.
+
 
 
