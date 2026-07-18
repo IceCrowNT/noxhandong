@@ -51,6 +51,7 @@ function parseRole(value: string) {
 export async function createContactAction(formData: FormData) {
   await requirePermission("REVIEW_CONTACTS");
 
+  let createdId: number;
   try {
     const created = await createDirectoryContact({
       maCan: getString(formData, "maCan"),
@@ -63,11 +64,12 @@ export async function createContactAction(formData: FormData) {
       status: parseStatus(getString(formData, "contactStatus")),
       note: getString(formData, "note"),
     });
-
-    redirect(buildReturnHref(formData, "created", created.id));
+    createdId = created.id;
   } catch {
-    redirect(buildReturnHref(formData, "error_create"));
+    return redirect(buildReturnHref(formData, "error_create"));
   }
+
+  redirect(buildReturnHref(formData, "created", createdId));
 }
 
 export async function updateContactAction(formData: FormData) {
@@ -90,11 +92,11 @@ export async function updateContactAction(formData: FormData) {
       status: parseStatus(getString(formData, "contactStatus")),
       note: getString(formData, "note"),
     });
-
-    redirect(buildReturnHref(formData, "updated", contactId));
   } catch {
-    redirect(buildReturnHref(formData, "error_update", contactId));
+    return redirect(buildReturnHref(formData, "error_update", contactId));
   }
+
+  redirect(buildReturnHref(formData, "updated", contactId));
 }
 
 export async function deleteContactAction(formData: FormData) {
@@ -107,8 +109,9 @@ export async function deleteContactAction(formData: FormData) {
 
   try {
     await deleteDirectoryContact(contactId);
-    redirect(buildReturnHref(formData, "deleted"));
   } catch {
-    redirect(buildReturnHref(formData, "error_delete", contactId));
+    return redirect(buildReturnHref(formData, "error_delete", contactId));
   }
+
+  redirect(buildReturnHref(formData, "deleted"));
 }

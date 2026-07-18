@@ -15,22 +15,17 @@ function safeText(value: string | null | undefined) {
   return (value || "").trim();
 }
 
-function uniqueLines(values: string[]) {
-  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
-}
-
-function normalizeContactLabel(value: string) {
-  return value
-    .replace(/\s+/g, " ")
-    .replace(/\s*\/\s*/g, " / ")
-    .replace(/\s*-\s*/g, " - ")
-    .trim();
-}
-
-function compactContactLines(contactLines: string[]) {
-  const cleaned = uniqueLines(contactLines.map(normalizeContactLabel)).filter(Boolean);
-  if (cleaned.length <= 10) return cleaned;
-  return [...cleaned.slice(0, 10), `(+${cleaned.length - 10} liên hệ khác)`];
+function deduplicateContacts(contacts: {name: string, phone: string}[]) {
+  const seen = new Set<string>();
+  const result: {name: string, phone: string}[] = [];
+  for (const c of contacts) {
+    const key = `${c.name}|${c.phone}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(c);
+    }
+  }
+  return result;
 }
 
 function estimateWrappedLineCount(text: string, widthChars: number) {
@@ -58,7 +53,6 @@ async function buildContactMap(rows: DatasetRow[]) {
         ma_can: true,
         chu_ho_ten_goc: true,
         lien_he: {
-          where: { trang_thai_lien_he: "DANG_DUNG" },
           orderBy: [{ la_lien_he_chinh: "desc" }, { thu_tu_uu_tien: "asc" }, { id: "asc" }],
           select: {
             ten_hien_thi: true,
@@ -81,48 +75,34 @@ async function buildContactMap(rows: DatasetRow[]) {
     }),
   ]);
 
-  const map = new Map<string, { contactLines: string[]; phoneLines: string[] }>();
+  const map = new Map<string, { name: string; phone: string }[]>();
 
   for (const apartment of apartments) {
-    let contactLines = uniqueLines(
-      apartment.lien_he.map((contact) => {
-        const name = safeText(contact.ten_hien_thi);
-        const phone = safeText(contact.so_dien_thoai);
-        return normalizeContactLabel(phone ? `${name} / ${phone}` : name);
-      }),
-    );
-    const phoneLines = uniqueLines(apartment.lien_he.map((contact) => safeText(contact.so_dien_thoai)));
+    let contacts = apartment.lien_he.map((contact) => ({
+      name: safeText(contact.ten_hien_thi),
+      phone: safeText(contact.so_dien_thoai),
+    })).filter(c => c.name || c.phone);
     
-    // Bổ sung tên gốc nếu không có liên hệ nào
-    if (contactLines.length === 0 && safeText(apartment.chu_ho_ten_goc)) {
-      contactLines.push(normalizeContactLabel(safeText(apartment.chu_ho_ten_goc)));
+    if (contacts.length === 0 && safeText(apartment.chu_ho_ten_goc)) {
+      contacts.push({ name: safeText(apartment.chu_ho_ten_goc), phone: "" });
     }
 
-    map.set(apartment.ma_can, { contactLines, phoneLines });
+    map.set(apartment.ma_can, deduplicateContacts(contacts));
   }
 
   for (const candidate of candidates) {
     const key = safeText(candidate.ma_can);
     if (!key) continue;
 
-    const existing = map.get(key) || { contactLines: [], phoneLines: [] };
-    const name =
-      safeText(candidate.ten_hien_thi_parse) ||
-      safeText(candidate.ten_nguoi_su_dung_goc) ||
-      safeText(candidate.ten_chu_ho_goc);
+    const existing = map.get(key) || [];
+    const name = safeText(candidate.ten_hien_thi_parse) || safeText(candidate.ten_nguoi_su_dung_goc) || safeText(candidate.ten_chu_ho_goc);
     const phone = safeText(candidate.so_dien_thoai_parse) || safeText(candidate.so_dien_thoai_goc);
 
     if (phone || name) {
-      existing.contactLines = uniqueLines([
-        ...existing.contactLines,
-        normalizeContactLabel(phone ? `${name || "Liên hệ"} / ${phone}` : name),
-      ]);
-      if (phone) {
-        existing.phoneLines = uniqueLines([...existing.phoneLines, phone]);
-      }
+      existing.push({ name, phone });
     }
 
-    map.set(key, existing);
+    map.set(key, deduplicateContacts(existing));
   }
 
   return map;
@@ -293,10 +273,10 @@ async function buildPowerCutWorkbook(dataset: Dataset) {
   sheet.columns = [
     { key: "stt", width: 7 },
     { key: "maCan", width: 11 },
-    { key: "contact", width: 34 },
+    { key: "phone", width: 20 },
     { key: "delivered", width: 12 },
     { key: "cut", width: 10 },
-    { key: "note", width: 22 },
+    { key: "note", width: 34 },
   ];
 
   sheet.mergeCells("A1:F2");
@@ -309,12 +289,12 @@ async function buildPowerCutWorkbook(dataset: Dataset) {
 
   const headerRowIndex = 4;
   const headerRow = sheet.getRow(headerRowIndex);
-  headerRow.values = ["STT", "Căn hộ", "Số điện thoại liên hệ", "Đã dán / Đưa tay", "Đã cắt (Tick ✓)", "Ghi chú / Chứng kiến"];
+  headerRow.values = ["STT", "Căn hộ", "Số điện thoại", "Đã dán / Đưa tay", "Đã cắt (Tick ✓)", "Ghi chú / Chứng kiến"];
   headerRow.height = 32;
   headerRow.eachCell((cell) => {
     cell.font = { name: "Times New Roman", size: 11, bold: true };
     cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
-    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF2F2F2" } };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFD9D9D9" } };
     cell.border = {
       top: { style: "thin" },
       bottom: { style: "thin" },
@@ -324,26 +304,28 @@ async function buildPowerCutWorkbook(dataset: Dataset) {
   });
 
   dataset.rows.forEach((row, index) => {
-    const contact = contactMap.get(row.maCan) || { contactLines: [], phoneLines: [] };
-    const compactLines = compactContactLines(contact.contactLines);
-    const phoneText = compactLines.length
-      ? compactLines.join("\n")
-      : contact.phoneLines.length
-        ? contact.phoneLines.join("\n")
-        : "";
+    const contacts = contactMap.get(row.maCan) || [];
+    const uniquePhones = Array.from(new Set(contacts.map(c => c.phone).filter(Boolean)));
+    const phonesText = uniquePhones.join("\n");
 
-    const excelRow = sheet.addRow([index + 1, row.maCan, phoneText, "", "", ""]);
-    const estimatedLineCount = estimateWrappedLineCount(phoneText, 28);
-    excelRow.height = Math.max(24, estimatedLineCount * 14 + 6);
+    const excelRow = sheet.addRow([index + 1, row.maCan, phonesText, "", "", ""]);
+    const estimatedLineCount = estimateWrappedLineCount(phonesText, 20);
+    excelRow.height = Math.max(30, estimatedLineCount * 14 + 6);
 
     excelRow.eachCell((cell, colNumber) => {
       cell.font = {
         name: "Times New Roman",
-        size: colNumber === 3 ? 10 : 11,
+        size: 11,
         bold: colNumber === 2,
       };
+      
+      let align: "center" | "left" = "center";
+      if (colNumber === 3 || colNumber === 6) {
+        align = "left";
+      }
+      
       cell.alignment = {
-        horizontal: colNumber === 6 ? "left" : "center",
+        horizontal: align,
         vertical: colNumber === 3 || colNumber === 6 ? "top" : "middle",
         wrapText: true,
       };
@@ -367,7 +349,7 @@ async function buildPowerCutWorkbook(dataset: Dataset) {
   sheet.mergeCells(`D${signRowIndex}:F${signRowIndex}`);
   const signCell = sheet.getCell(`D${signRowIndex}`);
   signCell.value = "BỘ PHẬN KỸ THUẬT";
-  signCell.font = { name: "Times New Roman", size: 13, bold: true };
+  signCell.font = { name: "Times New Roman", size: 14, bold: true };
   signCell.alignment = { horizontal: "center", vertical: "middle" };
 
   sheet.pageSetup.printTitlesRow = `${headerRowIndex}:${headerRowIndex}`;
