@@ -29,8 +29,8 @@ function normalizeContactLabel(value: string) {
 
 function compactContactLines(contactLines: string[]) {
   const cleaned = uniqueLines(contactLines.map(normalizeContactLabel)).filter(Boolean);
-  if (cleaned.length <= 3) return cleaned;
-  return [...cleaned.slice(0, 3), `(+${cleaned.length - 3} liên hệ khác)`];
+  if (cleaned.length <= 10) return cleaned;
+  return [...cleaned.slice(0, 10), `(+${cleaned.length - 10} liên hệ khác)`];
 }
 
 function estimateWrappedLineCount(text: string, widthChars: number) {
@@ -56,6 +56,7 @@ async function buildContactMap(rows: DatasetRow[]) {
       where: { ma_can: { in: maCanList } },
       select: {
         ma_can: true,
+        chu_ho_ten_goc: true,
         lien_he: {
           where: { trang_thai_lien_he: "DANG_DUNG" },
           orderBy: [{ la_lien_he_chinh: "desc" }, { thu_tu_uu_tien: "asc" }, { id: "asc" }],
@@ -67,7 +68,7 @@ async function buildContactMap(rows: DatasetRow[]) {
       },
     }),
     prisma.ungVienLienHeCanHo.findMany({
-      where: { ma_can: { in: maCanList } },
+      where: { ma_can: { in: maCanList }, trang_thai_duyet: { not: "TU_CHOI" } },
       orderBy: [{ co_can_ra_soat: "asc" }, { thu_tu_nguon: "asc" }, { id: "asc" }],
       select: {
         ma_can: true,
@@ -83,7 +84,7 @@ async function buildContactMap(rows: DatasetRow[]) {
   const map = new Map<string, { contactLines: string[]; phoneLines: string[] }>();
 
   for (const apartment of apartments) {
-    const contactLines = uniqueLines(
+    let contactLines = uniqueLines(
       apartment.lien_he.map((contact) => {
         const name = safeText(contact.ten_hien_thi);
         const phone = safeText(contact.so_dien_thoai);
@@ -91,6 +92,12 @@ async function buildContactMap(rows: DatasetRow[]) {
       }),
     );
     const phoneLines = uniqueLines(apartment.lien_he.map((contact) => safeText(contact.so_dien_thoai)));
+    
+    // Bổ sung tên gốc nếu không có liên hệ nào
+    if (contactLines.length === 0 && safeText(apartment.chu_ho_ten_goc)) {
+      contactLines.push(normalizeContactLabel(safeText(apartment.chu_ho_ten_goc)));
+    }
+
     map.set(apartment.ma_can, { contactLines, phoneLines });
   }
 

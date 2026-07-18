@@ -1,17 +1,22 @@
-﻿import { Database, FileSpreadsheet, FileText } from "lucide-react";
+import { Database, FileSpreadsheet, FileText } from "lucide-react";
 
 import { AdminFrame } from "@/components/admin/admin-frame";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requirePermission } from "@/src/modules/auth/current-user";
 import { getApartmentDashboardData } from "@/src/modules/apartments/dashboard";
+import { searchGlobalFinancialData } from "@/src/modules/apartments/financial-profile";
 import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
+import { ApartmentFinancialProfileView } from "./apartment-financial-profile";
+import { TransactionSearchResults } from "./transaction-search-results";
+import { Search } from "lucide-react";
 
 type DatabasePageProps = {
   searchParams?: Promise<{
     ky_phi?: string;
     thang_da_dong?: string;
     xuat_thang?: string;
+    ma_can_tra_cuu?: string;
   }>;
 };
 
@@ -155,6 +160,8 @@ function FeeNoticeList({
 export default async function AdminDatabasePage({ searchParams }: DatabasePageProps) {
   const account = await requirePermission("VIEW_DASHBOARD");
   const params = searchParams ? await searchParams : undefined;
+  const maCanTraCuu = params?.ma_can_tra_cuu;
+  const globalSearch = maCanTraCuu ? await searchGlobalFinancialData(maCanTraCuu) : null;
   const data = await getApartmentDashboardData("", params?.ky_phi, params?.thang_da_dong);
   const latestImport = data.latestImports[0] || null;
   const feeOverview = data.summary.feeOverview;
@@ -180,6 +187,52 @@ export default async function AdminDatabasePage({ searchParams }: DatabasePagePr
       title="Cơ sở dữ liệu"
       description={`${account.ten_hien_thi || account.ten_dang_nhap} có thể xuất file và lập danh sách thông báo thu phí từ dữ liệu đã công khai.`}
     >
+      <section className="mb-5">
+        <Card className="bg-white/90">
+          <CardHeader>
+            <CardTitle>Tra cứu thông tin tài chính căn hộ</CardTitle>
+            <CardDescription>Nhập mã căn hộ để xem toàn bộ lịch sử thu phí và bằng chứng giao dịch.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form action="/admin/database" className="flex flex-wrap items-end gap-2 max-w-md">
+              <label className="grid flex-1 gap-1 text-xs font-semibold text-[var(--muted)]">
+                Mã căn hộ
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--muted)]">
+                    <Search size={16} aria-hidden="true" />
+                  </div>
+                  <input
+                    name="ma_can_tra_cuu"
+                    className="block h-10 w-full rounded-md border border-[var(--line)] bg-white py-2 pl-10 pr-3 text-sm placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+                    placeholder="Nhập mã căn, tên người chuyển, số tài khoản, nội dung..."
+                    defaultValue={maCanTraCuu || ""}
+                  />
+                </div>
+              </label>
+              <Button type="submit" variant="default">Tra cứu</Button>
+            </form>
+
+            {maCanTraCuu && globalSearch && (
+              <div className="mt-6">
+                {globalSearch.apartmentProfile ? (
+                  <ApartmentFinancialProfileView data={globalSearch.apartmentProfile} />
+                ) : null}
+
+                {globalSearch.transactions.length > 0 || globalSearch.boSung.length > 0 ? (
+                  <TransactionSearchResults transactions={globalSearch.transactions} boSung={globalSearch.boSung} />
+                ) : null}
+
+                {!globalSearch.apartmentProfile && globalSearch.transactions.length === 0 && globalSearch.boSung.length === 0 && (
+                  <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                    Không tìm thấy dữ liệu nào khớp với từ khóa <strong>{maCanTraCuu}</strong>.
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </section>
+
       <section className="mb-5">
         <Card className="bg-white/90">
           <CardHeader className="gap-3 md:flex-row md:items-center md:justify-between">
