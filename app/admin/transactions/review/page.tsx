@@ -15,6 +15,7 @@ import {
   rollbackApprovedTransactionAction,
 } from "@/app/admin/transactions/review/actions";
 import { AdminFrame } from "@/components/admin/admin-frame";
+import { ApartmentCombobox } from "@/components/admin/apartment-combobox";
 import { MultiAllocationEditor } from "@/components/admin/multi-allocation-editor";
 import { ReviewScrollMemory, ReviewTransactionList } from "@/components/admin/review-scroll-memory";
 import { Badge } from "@/components/ui/badge";
@@ -422,7 +423,16 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
       orderBy: { hieu_luc_tu_ngay: "desc" },
       select: { loai_can: true, so_tien: true },
     }),
+    prisma.canHo.findMany({
+      select: { ma_can: true },
+      orderBy: { ma_can: "asc" }
+    })
   ]);
+
+  const allApartmentCodes = activeFeeRules[0] /* Hack to avoid index errors, real data is in index 3 */ ? undefined : undefined;
+  // Actually, let's unpack properly
+  const allApartmentsList = await prisma.canHo.findMany({ select: { ma_can: true }, orderBy: { ma_can: "asc" } });
+  const allApartmentCodesStrings = allApartmentsList.map(a => a.ma_can);
 
   const contactByApartment = new Map<string, typeof candidateContacts>();
   for (const contact of candidateContacts) {
@@ -987,11 +997,12 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                       <input type="hidden" name="returnTo" value={returnToAfterAction} />
                       <h3 className="text-sm font-semibold">Duyệt nhanh</h3>
                       <div className="grid gap-2">
-                        <Input
+                        <ApartmentCombobox
                           key={`quick-apartment-${selected.id}`}
                           name="apartmentCode"
                           defaultValue={selectedReview?.ma_can_duoc_chon || selectedParse?.ma_can_parse || ""}
                           placeholder="Ví dụ L4B.303"
+                          apartments={allApartmentCodesStrings}
                         />
                         <SubmitButton pendingText="Đang duyệt...">
                           <CheckCircle2 size={16} aria-hidden="true" />
@@ -1007,11 +1018,12 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                         <input type="hidden" name="returnTo" value={returnToAfterAction} />
                         <Label className="grid gap-2">
                           Mã căn xác nhận
-                          <Input
+                          <ApartmentCombobox
                             key={`evidence-apartment-${selected.id}`}
                             name="apartmentCode"
                             defaultValue={selectedReview?.ma_can_duoc_chon || selectedParse?.ma_can_parse || ""}
                             placeholder="Ví dụ L4B.303"
+                            apartments={allApartmentCodesStrings}
                           />
                         </Label>
                         <Label className="grid gap-2">
@@ -1060,6 +1072,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                           key={`multi-allocation-${selected.id}`}
                           totalAmount={Math.round(Number(selected.so_tien))}
                           initialRows={allocationSuggestions}
+                          allApartments={allApartmentCodesStrings}
                         />
                       </form>
                     </details>

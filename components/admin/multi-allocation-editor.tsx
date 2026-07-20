@@ -13,19 +13,21 @@ import {
   splitAllocationAmount,
   type AllocationEditorRow,
 } from "@/src/modules/transactions/review/allocation-editor";
+import { ApartmentCombobox } from "@/components/admin/apartment-combobox";
 
 type RowWithId = AllocationEditorRow & { id: number };
 
 type MultiAllocationEditorProps = {
   totalAmount: number;
   initialRows: Array<{ code: string; amount: number | string }>;
+  allApartments: string[];
 };
 
 function formatMoney(value: number) {
   return `${value.toLocaleString("vi-VN")} đ`;
 }
 
-export function MultiAllocationEditor({ totalAmount, initialRows }: MultiAllocationEditorProps) {
+export function MultiAllocationEditor({ totalAmount, initialRows, allApartments }: MultiAllocationEditorProps) {
   const nextId = useRef(1);
   const [rows, setRows] = useState<RowWithId[]>(() => {
     const source = initialRows.length ? [...initialRows] : [];
@@ -123,12 +125,12 @@ export function MultiAllocationEditor({ totalAmount, initialRows }: MultiAllocat
             className="grid grid-cols-[minmax(0,1fr)_110px_32px] gap-2"
             data-testid="multi-allocation-row"
           >
-            <Input
+            <ApartmentCombobox
               name="allocationCode"
-              value={row.code}
-              onChange={(event) => updateRow(row.id, { code: event.target.value })}
+              defaultValue={row.code}
+              onChange={(value) => updateRow(row.id, { code: value })}
               placeholder={`Mã căn ${index + 1}`}
-              aria-label={`Mã căn phân bổ ${index + 1}`}
+              apartments={allApartments}
             />
             <Input
               name="allocationAmount"
