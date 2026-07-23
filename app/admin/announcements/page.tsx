@@ -62,8 +62,8 @@ export default async function AnnouncementsPage({ searchParams }: AnnouncementsP
       <Card className="mb-5 bg-white/90">
         <CardHeader>
           <Bell className="text-[var(--accent)]" size={22} aria-hidden="true" />
-          <CardTitle>Tạo thông báo PDF</CardTitle>
-          <CardDescription>Phase 2 chỉ nhận PDF, tối đa 10 MB/file.</CardDescription>
+          <CardTitle>Tạo bài viết / thông báo</CardTitle>
+          <CardDescription>Đăng thông báo văn bản hoặc tải lên file PDF đính kèm.</CardDescription>
         </CardHeader>
         <CardContent>
           <form action={createAnnouncementAction} className="grid gap-4 lg:grid-cols-2">
@@ -72,12 +72,12 @@ export default async function AnnouncementsPage({ searchParams }: AnnouncementsP
               <Input name="title" required />
             </Label>
             <Label className="grid gap-2">
-              File PDF
-              <Input name="pdfFile" type="file" accept="application/pdf,.pdf" required />
+              File PDF đính kèm (Không bắt buộc)
+              <Input name="pdfFile" type="file" accept="application/pdf,.pdf" />
             </Label>
             <Label className="grid gap-2 lg:col-span-2">
-              Mô tả ngắn
-              <Textarea name="description" rows={3} />
+              Nội dung thông báo (hỗ trợ xuống dòng)
+              <Textarea name="description" rows={8} />
             </Label>
             <Label className="grid gap-2">
               Trạng thái

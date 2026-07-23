@@ -10,6 +10,8 @@ import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
 import { ApartmentFinancialProfileView } from "./apartment-financial-profile";
 import { TransactionSearchResults } from "./transaction-search-results";
 import { Search } from "lucide-react";
+import { AutoSubmitMonthInput } from "@/components/admin/auto-submit-month-input";
+import { AutoSubmitSelect } from "@/components/admin/auto-submit-select";
 
 type DatabasePageProps = {
   searchParams?: Promise<{
@@ -72,46 +74,47 @@ function FeeNoticeList({
             Lọc các căn đã đóng chính xác đến một tháng; không gồm căn đóng lẻ hoặc đã đóng vượt mốc.
           </CardDescription>
         </div>
-        <form action="/admin/database" className="flex flex-wrap items-end gap-2">
-          {selectedPeriod ? <input name="ky_phi" type="hidden" value={selectedPeriod} /> : null}
-          <label className="grid gap-1 text-xs font-semibold text-[var(--muted)]">
-            Đã đóng chính xác đến
-            <select
-              className="h-10 min-w-[190px] rounded-md border border-[var(--line)] bg-white px-3 text-sm font-medium"
-              defaultValue={selected.key}
-              name="thang_da_dong"
-            >
-              {options.map((option) => (
-                <option key={option.key} value={option.key}>
-                  {option.label} · {formatNumber(option.count)} căn
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button type="submit" variant="secondary">Lọc danh sách</Button>
+        <form action="/admin/database" className="flex flex-wrap items-end gap-3 ml-auto">
+          <div className="flex flex-wrap items-end gap-2">
+            {selectedPeriod ? <input name="ky_phi" type="hidden" value={selectedPeriod} /> : null}
+            <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
+              Đã đóng chính xác đến
+              <AutoSubmitSelect
+                name="thang_da_dong"
+                defaultValue={selected.key}
+              >
+                {options.map((option) => (
+                  <option key={option.key} value={option.key}>
+                    {option.label} · {formatNumber(option.count)} căn
+                  </option>
+                ))}
+              </AutoSubmitSelect>
+            </label>
+          </div>
+          
           {selectedPeriod ? (
-            <>
-              <Button asChild type="button">
+            <div className="flex flex-wrap gap-2">
+              <Button asChild type="button" variant="outline">
                 <a
                   href={`/api/export/fee-notice-list?period=${encodeURIComponent(selectedPeriod)}&paidThrough=${encodeURIComponent(
                     selected.noticePeriod.paidThrough,
                   )}`}
                 >
-                  <FileSpreadsheet size={16} aria-hidden="true" />
+                  <FileSpreadsheet size={16} aria-hidden="true" className="mr-2" />
                   Xuất Excel
                 </a>
               </Button>
-              <Button asChild type="button" variant="secondary">
+              <Button asChild type="button" variant="default">
                 <a
                   href={`/api/export/fee-notice-docx?period=${encodeURIComponent(selectedPeriod)}&paidThrough=${encodeURIComponent(
                     selected.noticePeriod.paidThrough,
                   )}`}
                 >
-                  <FileText size={16} aria-hidden="true" />
+                  <FileText size={16} aria-hidden="true" className="mr-2" />
                   Xuất Word
                 </a>
               </Button>
-            </>
+            </div>
           ) : null}
         </form>
       </CardHeader>
@@ -249,74 +252,45 @@ export default async function AdminDatabasePage({ searchParams }: DatabasePagePr
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-[var(--line)] bg-white p-4 text-sm">
-                <span className="block text-xs font-semibold uppercase text-[var(--muted)]">Public hiện hành</span>
-                <strong className="mt-1 block text-lg">
-                  {data.summary.currentBatch?.ky_du_lieu || data.summary.selectedFeePeriod || "-"}
-                </strong>
-                <span className="text-[var(--muted)]">
-                  {data.summary.currentBatch?.public_luc ? formatDateTime(data.summary.currentBatch.public_luc) : "Chưa công khai"}
-                </span>
-              </div>
-
-              <div className="rounded-lg border border-[var(--line)] bg-white p-4 text-sm">
-                <span className="block text-xs font-semibold uppercase text-[var(--muted)]">Import gần nhất</span>
-                {latestImport ? (
-                  <>
-                    <strong className="mt-1 block max-w-[520px] truncate" title={latestImport.ten_file}>
-                      {latestImport.ten_file}
-                    </strong>
-                    <span className="text-[var(--muted)]">{formatDateTime(latestImport.thoi_diem_nhap)}</span>
-                  </>
-                ) : (
-                  <span className="text-[var(--muted)]">Chưa có lịch sử import.</span>
-                )}
-              </div>
-            </div>
-
+          <CardContent className="pt-2">
             {exportPeriod ? (
-              <form action="/admin/database" className="grid gap-2 lg:min-w-[420px]">
-                <label className="grid gap-1 text-xs font-semibold text-[var(--muted)]">
-                  Xuất theo tháng
-                  <div className="flex flex-wrap gap-2">
-                    {params?.ky_phi ? <input name="ky_phi" type="hidden" value={params.ky_phi} /> : null}
-                    {params?.thang_da_dong ? (
-                      <input name="thang_da_dong" type="hidden" value={params.thang_da_dong} />
+              <div className="grid gap-4">
+                <form action="/admin/database" className="flex flex-wrap items-end gap-3">
+                  <label className="grid gap-1.5 text-sm font-medium text-[var(--text)]">
+                    Chọn kỳ dữ liệu
+                    <div className="flex flex-wrap items-center gap-2">
+                      {params?.ky_phi ? <input name="ky_phi" type="hidden" value={params.ky_phi} /> : null}
+                      {params?.thang_da_dong ? (
+                        <input name="thang_da_dong" type="hidden" value={params.thang_da_dong} />
+                      ) : null}
+                      <AutoSubmitMonthInput defaultValue={defaultExportMonth} />
+                    </div>
+                  </label>
+                </form>
+
+                <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-[var(--line)] bg-[var(--surface)] p-4">
+                  <div className="text-sm text-[var(--muted)]">
+                    Kỳ xuất đang dùng: <b className="font-semibold text-[var(--text)]">{exportPeriodLabel}</b>
+                    {!exportPeriodExists && requestedExportPeriod ? (
+                      <span className="block mt-0.5 text-xs">· Chưa có batch public đúng tháng này, hệ thống đang dùng kỳ public gần nhất.</span>
                     ) : null}
-                    <input
-                      className="h-10 min-w-[220px] rounded-md border border-[var(--line)] bg-white px-3 text-sm font-medium"
-                      defaultValue={defaultExportMonth}
-                      name="xuat_thang"
-                      type="month"
-                    />
-                    <Button type="submit" variant="secondary">
-                      Xem kỳ
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button asChild type="button" variant="outline">
+                      <a href={`/api/export/monthly-fee-ledger?period=${encodeURIComponent(exportPeriod)}`}>
+                        <FileSpreadsheet size={16} aria-hidden="true" className="mr-2" />
+                        Xuất Excel dữ liệu tháng
+                      </a>
+                    </Button>
+                    <Button asChild type="button" variant="default">
+                      <a href={`/api/export/monthly-bank-statement?period=${encodeURIComponent(exportPeriod)}`}>
+                        <FileText size={16} aria-hidden="true" className="mr-2" />
+                        Xuất sao kê tháng này
+                      </a>
                     </Button>
                   </div>
-                </label>
-                <div className="text-xs text-[var(--muted)]">
-                  Kỳ xuất đang dùng: <b className="text-[var(--text)]">{exportPeriodLabel}</b>
-                  {!exportPeriodExists && requestedExportPeriod ? (
-                    <span> · Chưa có batch public đúng tháng này, hệ thống đang dùng kỳ public gần nhất.</span>
-                  ) : null}
                 </div>
-                <div className="flex flex-wrap gap-2 lg:justify-end">
-                  <Button asChild type="button" variant="secondary">
-                    <a href={`/api/export/monthly-fee-ledger?period=${encodeURIComponent(exportPeriod)}`}>
-                      <FileSpreadsheet size={16} aria-hidden="true" />
-                      Xuất Excel dữ liệu tháng
-                    </a>
-                  </Button>
-                  <Button asChild type="button">
-                    <a href={`/api/export/monthly-bank-statement?period=${encodeURIComponent(exportPeriod)}`}>
-                      <FileText size={16} aria-hidden="true" />
-                      Xuất sao kê tháng này
-                    </a>
-                  </Button>
-                </div>
-              </form>
+              </div>
             ) : null}
           </CardContent>
         </Card>

@@ -9,6 +9,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { PUBLIC_LOOKUP_MAX_LENGTH } from "@/src/modules/billing/fee-status";
 import { prisma } from "@/src/modules/database";
 import { formatVietnamDate } from "@/src/modules/shared/utils/date-time";
+import { AnnouncementDialog } from "@/components/resident/announcement-dialog";
 
 export default async function HomePage() {
   const announcements = await prisma.thongBaoCongKhai.findMany({
@@ -116,39 +117,38 @@ export default async function HomePage() {
               {announcements.map((item, index) => {
                 const isPrimary = index === 0;
                 return (
-                  <a
-                    key={item.id}
-                    href={item.duong_dan_file || "#"}
-                    target={item.duong_dan_file ? "_blank" : undefined}
-                    rel={item.duong_dan_file ? "noreferrer" : undefined}
-                    className={
-                      isPrimary
-                        ? "group grid gap-3 rounded-xl border border-[rgba(0,75,70,0.20)] bg-[rgba(232,245,238,0.82)] p-4 text-left transition hover:border-[var(--accent)] hover:bg-[rgba(232,245,238,0.96)] sm:grid-cols-[1fr_auto] sm:items-center"
-                        : "group grid gap-2 rounded-xl border border-[var(--line)] bg-white/88 p-3 text-left transition hover:border-[var(--accent)] sm:grid-cols-[1fr_auto] sm:items-center"
-                    }
-                  >
-                    <div className="min-w-0">
-                      <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
-                        <FileText size={15} aria-hidden="true" />
-                        {isPrimary ? "Thông báo mới nhất" : "PDF công khai"}
+                  <AnnouncementDialog key={item.id} item={item}>
+                    <button
+                      type="button"
+                      className={
+                        isPrimary
+                          ? "group grid gap-3 rounded-xl border border-[rgba(0,75,70,0.20)] bg-[rgba(232,245,238,0.82)] p-4 text-left transition hover:border-[var(--accent)] hover:bg-[rgba(232,245,238,0.96)] sm:grid-cols-[1fr_auto] sm:items-center w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                          : "group grid gap-2 rounded-xl border border-[var(--line)] bg-white/88 p-3 text-left transition hover:border-[var(--accent)] sm:grid-cols-[1fr_auto] sm:items-center w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                      }
+                    >
+                      <div className="min-w-0">
+                        <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
+                          <FileText size={15} aria-hidden="true" />
+                          {isPrimary ? "Thông báo mới nhất" : (item.duong_dan_file ? "PDF công khai" : "Thông báo")}
+                        </div>
+                        <strong className={isPrimary ? "block text-lg leading-snug text-[var(--text)]" : "block truncate text-sm text-[var(--text)]"}>
+                          {item.tieu_de}
+                        </strong>
+                        {item.mo_ta_ngan ? (
+                          <p className={isPrimary ? "mt-2 line-clamp-2 text-sm leading-6 text-[var(--muted)]" : "mt-1 line-clamp-1 text-sm text-[var(--muted)]"}>
+                            {item.mo_ta_ngan}
+                          </p>
+                        ) : null}
+                        <div className="mt-2 flex items-center gap-1 text-xs text-[var(--muted)]">
+                          <CalendarDays size={14} aria-hidden="true" />
+                          {formatVietnamDate(item.ngay_cong_khai)}
+                        </div>
                       </div>
-                      <strong className={isPrimary ? "block text-lg leading-snug text-[var(--text)]" : "block truncate text-sm text-[var(--text)]"}>
-                        {item.tieu_de}
-                      </strong>
-                      {item.mo_ta_ngan ? (
-                        <p className={isPrimary ? "mt-2 line-clamp-2 text-sm leading-6 text-[var(--muted)]" : "mt-1 line-clamp-1 text-sm text-[var(--muted)]"}>
-                          {item.mo_ta_ngan}
-                        </p>
-                      ) : null}
-                      <div className="mt-2 flex items-center gap-1 text-xs text-[var(--muted)]">
-                        <CalendarDays size={14} aria-hidden="true" />
-                        {formatVietnamDate(item.ngay_cong_khai)}
-                      </div>
-                    </div>
-                    <span className="inline-flex h-9 items-center justify-center rounded-lg bg-[var(--accent)] px-3 text-sm font-bold text-white transition group-hover:brightness-110">
-                      Mở PDF
-                    </span>
-                  </a>
+                      <span className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent)] px-3 text-sm font-bold text-white transition group-hover:brightness-110">
+                        Xem chi tiết
+                      </span>
+                    </button>
+                  </AnnouncementDialog>
                 );
               })}
             </div>

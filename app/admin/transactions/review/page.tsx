@@ -540,7 +540,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
       activeKey="transactions"
       badge={adminRoleLabel(account.vai_tro)}
       title="Duyệt sao kê"
-      description="Màn hình PC-first để rà soát giao dịch mới, chọn căn hộ và lưu bằng chứng khi cần."
+      // description="Màn hình PC-first để rà soát giao dịch mới, chọn căn hộ và lưu bằng chứng khi cần."
       headerActions={
         <Button asChild variant="secondary" size="sm">
           <Link href="/admin/import">Nhập sao kê</Link>
@@ -579,7 +579,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
             <SelectContent>
               <SelectItem value="CAN_XU_LY">Cần xử lý</SelectItem>
               <SelectItem value="CHUA_DUYET">Chưa duyệt</SelectItem>
-              <SelectItem value="DA_RA_SOAT">Đã rà soát</SelectItem>
+              {/* <SelectItem value="DA_RA_SOAT">Đã rà soát</SelectItem> */}
               <SelectItem value="DA_DUYET">Đã duyệt</SelectItem>
               {showReserveUi ? <SelectItem value="BAO_LUU">Bảo lưu</SelectItem> : null}
               <SelectItem value="TU_CHOI">Từ chối</SelectItem>
@@ -783,7 +783,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                 </div>
                 <SubmitButton pendingText="Đang tạo preview...">
                   <CheckCircle2 size={17} aria-hidden="true" />
-                  Tạo preview
+                  Tạo bản xem trước
                 </SubmitButton>
               </form>
             )}

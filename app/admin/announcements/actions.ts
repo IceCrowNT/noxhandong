@@ -40,32 +40,40 @@ export async function createAnnouncementAction(formData: FormData) {
   const status = getString(formData, "status") === "CONG_KHAI" ? "CONG_KHAI" : "NHAP";
   const file = formData.get("pdfFile");
 
-  if (!title || !(file instanceof File) || file.size <= 0) {
+  if (!title) {
     redirect("/admin/announcements?error=invalid");
   }
 
-  if (file.type && file.type !== "application/pdf") {
-    redirect("/admin/announcements?error=not_pdf");
-  }
+  let storedPathUrl = null;
+  let originalName = null;
+  let fileSize = null;
 
-  if (file.size > MAX_PDF_BYTES) {
-    redirect("/admin/announcements?error=file_too_large");
-  }
+  if (file instanceof File && file.size > 0) {
+    if (file.type && file.type !== "application/pdf") {
+      redirect("/admin/announcements?error=not_pdf");
+    }
 
-  await mkdir(ANNOUNCEMENT_UPLOAD_DIR, { recursive: true });
-  const originalName = path.basename(file.name || "announcement.pdf").trim() || "announcement.pdf";
-  const storedName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${safeUrlFileName(originalName)}`;
-  const storedPath = path.join(ANNOUNCEMENT_UPLOAD_DIR, storedName);
-  await writeFile(storedPath, Buffer.from(await file.arrayBuffer()));
+    if (file.size > MAX_PDF_BYTES) {
+      redirect("/admin/announcements?error=file_too_large");
+    }
+
+    await mkdir(ANNOUNCEMENT_UPLOAD_DIR, { recursive: true });
+    originalName = path.basename(file.name || "announcement.pdf").trim() || "announcement.pdf";
+    const storedName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${safeUrlFileName(originalName)}`;
+    const storedPath = path.join(ANNOUNCEMENT_UPLOAD_DIR, storedName);
+    await writeFile(storedPath, Buffer.from(await file.arrayBuffer()));
+    storedPathUrl = `/uploads/announcements/${storedName}`;
+    fileSize = file.size;
+  }
 
   await prisma.thongBaoCongKhai.create({
     data: {
       tieu_de: title,
       mo_ta_ngan: description || null,
       ten_file_goc: originalName,
-      duong_dan_file: `/uploads/announcements/${storedName}`,
-      mime_type: "application/pdf",
-      kich_thuoc_byte: file.size,
+      duong_dan_file: storedPathUrl,
+      mime_type: storedPathUrl ? "application/pdf" : null,
+      kich_thuoc_byte: fileSize,
       trang_thai: status,
       ngay_cong_khai: status === "CONG_KHAI" ? new Date() : null,
       nguoi_tao_id: account.id,
