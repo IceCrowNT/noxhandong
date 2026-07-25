@@ -7,11 +7,13 @@ import {
 } from "@/app/admin/import/actions";
 import { DeleteSupplementButton } from "@/app/admin/import/delete-supplement-button";
 import { AdminFrame, ScrollPanel } from "@/components/admin/admin-frame";
+import { ImportProgressButton } from "@/components/admin/import-progress-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Notice } from "@/components/ui/notice";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
@@ -406,10 +408,9 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
               />
             </Label>
             <div className="grid gap-2 sm:flex sm:flex-wrap sm:justify-end">
-              <SubmitButton className="w-full sm:w-auto" name="intent" value="import_statement" pendingText="Đang nhập sao kê...">
-                <CheckCircle2 size={17} aria-hidden="true" />
+              <ImportProgressButton className="w-full sm:w-auto" name="intent" value="import_statement" pendingText="Đang xử lý sao kê..." icon={<CheckCircle2 size={17} aria-hidden="true" />}>
                 Nhập sao kê
-              </SubmitButton>
+              </ImportProgressButton>
             </div>
           </form>
           <div className="mt-4 grid gap-2 rounded-lg border border-[var(--border-subtle)] bg-white/70 p-4 text-sm leading-6 text-[var(--muted)] md:grid-cols-3">
@@ -458,13 +459,12 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
               <Input name="confirmExcelPublic" placeholder="CHOT_EXCEL" />
             </Label>
             <div className="grid gap-2 sm:flex sm:flex-wrap sm:justify-end">
-              <SubmitButton className="w-full sm:w-auto" variant="secondary" name="intent" value="import_only" pendingText="Đang kiểm tra file...">
+              <ImportProgressButton className="w-full sm:w-auto" variant="secondary" name="intent" value="import_only" pendingText="Đang kiểm tra file..." icon={null}>
                 Kiểm tra file
-              </SubmitButton>
-              <SubmitButton className="w-full sm:w-auto" name="intent" value="import_and_publish" pendingText="Đang chốt public...">
-                <CheckCircle2 size={17} aria-hidden="true" />
+              </ImportProgressButton>
+              <ImportProgressButton className="w-full sm:w-auto" name="intent" value="import_and_publish" pendingText="Đang xử lý chốt sổ..." icon={<CheckCircle2 size={17} aria-hidden="true" />}>
                 Chốt public từ Excel
-              </SubmitButton>
+              </ImportProgressButton>
             </div>
           </form>
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">

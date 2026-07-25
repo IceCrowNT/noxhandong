@@ -277,6 +277,12 @@ export default async function AdminDatabasePage({ searchParams }: DatabasePagePr
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button asChild type="button" variant="outline">
+                      <a href={`/api/export/fee-distribution-report?ky_phi=${encodeURIComponent(exportPeriod)}`}>
+                        <FileSpreadsheet size={16} aria-hidden="true" className="mr-2" />
+                        Xuất báo cáo tiến độ
+                      </a>
+                    </Button>
+                    <Button asChild type="button" variant="outline">
                       <a href={`/api/export/monthly-fee-ledger?period=${encodeURIComponent(exportPeriod)}`}>
                         <FileSpreadsheet size={16} aria-hidden="true" className="mr-2" />
                         Xuất Excel dữ liệu tháng
