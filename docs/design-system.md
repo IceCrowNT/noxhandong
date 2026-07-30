@@ -1,547 +1,174 @@
 # Design system
 
-## Vai trò
+Cập nhật: 2026-07-28.
 
-File này là **xương sống UI/UX của project**.
+## Vai Trò
 
-Mọi quyết định thiết kế quan trọng cho public page, admin dashboard, mobile layout, component pattern, copy hiển thị và quy tắc responsive phải được ghi tại đây. Khi có thay đổi UI/UX đáng kể, cập nhật file này cùng với `docs/handoff.md`.
+File này là xương sống UI/UX của project. Khi thay đổi public page, admin dashboard, màn database, dialog thông báo, form import hoặc component pattern, cập nhật file này cùng `docs/handoff.md`.
 
-Thiết kế lấy cảm hứng từ bản Stitch trong `stitch_markdown_dashboard_viewer/`, nhưng đã điều chỉnh nội dung và nguyên tắc cho đúng nghiệp vụ BQT An Đồng.
+## Tinh Thần Thiết Kế
 
-Không copy nguyên HTML từ Stitch vào app. Stitch chỉ là visual reference; code chính vẫn theo Next.js hiện tại.
-
-## Quan hệ với tài liệu khác
-
-- `docs/design-system.md`: quyết định UI/UX, layout, component, mobile-first, copy, token.
-- `docs/handoff.md`: trạng thái đã làm và kết quả kiểm tra gần nhất.
-- `docs/roadmap.md`: task cấp cao, không ghi chi tiết từng pattern UI.
-- `docs/checklist-trien-khai-va-nghiem-thu.md`: điều kiện nghiệm thu và checklist test.
-- `docs/stitch-mobile-ui-prompt.md`: prompt thiết kế tham khảo, không phải nguồn sự thật sau khi đã implement.
-
-Khi thay đổi UI lớn:
-
-1. Cập nhật `docs/design-system.md`.
-2. Cập nhật `docs/handoff.md`.
-3. Nếu ảnh hưởng nghiệm thu, cập nhật `docs/checklist-trien-khai-va-nghiem-thu.md`.
-4. Chạy test/build và ghi kết quả.
-
-## Tinh thần thiết kế
-
-Hướng thiết kế chính: **civic utility**, tức là công cụ cư dân rõ ràng, tin cậy, dễ đọc, không mang cảm giác landing page quảng cáo.
+Hướng chính: **civic utility**. Giao diện phải giống công cụ vận hành tin cậy, rõ ràng, không giống landing page quảng cáo.
 
 Nguyên tắc:
 
-- Cư dân xem được việc cần xem trong vài giây.
-- Mobile-first vì phần lớn truy cập đến từ điện thoại.
-- Không dùng trang trí thừa, gradient phức tạp, orb/blob, hero marketing.
-- Nội dung công khai không hiển thị SĐT, tên cư dân, ghi chú nội bộ, raw Excel.
-- Vùng quản trị phải thực dụng, nhiều thông tin nhưng vẫn dễ quét.
+- Public: cư dân hiểu được trạng thái phí trong vài giây.
+- Admin: ưu tiên scan dữ liệu, so sánh, thao tác lặp lại.
+- Không thêm card/chỉ số nếu không giúp quyết định nghiệp vụ.
+- Không lồng card trong card nếu chỉ để trang trí.
+- Không dùng orb/blob/gradient phức tạp.
+- Không public dữ liệu cá nhân nhạy cảm.
 
-## Brand và copy chuẩn
+## Token Và Stack UI
 
-Tên hiển thị public:
+- Tailwind CSS v4.
+- Component nền ở `components/ui`: `button`, `input`, `card`, `table`, `dialog`, `select`, `notice`, `submit-button`.
+- Admin dùng `AdminFrame`.
+- Public dùng chung token màu trong `app/globals.css`, có ảnh nền cư dân.
+- PDF public dùng `react-pdf`, load client-only.
 
-- `NOXH An Đồng`
+Token chính:
 
-Không dùng:
+| Token | Vai trò |
+| --- | --- |
+| `--bg` | nền trang |
+| `--panel`, `--panel-strong` | surface/card |
+| `--line` | border |
+| `--text`, `--muted` | chữ chính/phụ |
+| `--accent`, `--accent-soft` | brand/action/trạng thái tốt |
+| `--success`, `--danger`, `--warning` | trạng thái |
 
-- `Cư Dân Xanh`
-- `Resident Portal`
-- các cụm gợi ý có chức năng chưa tồn tại như `Thông báo`, `Cá nhân`
+## Public UI
 
-Copy public ưu tiên:
+### Trang chủ `/`
 
-- `Tra cứu phí quản lý`
-- `Mã căn`
-- `Nhập mã căn, ví dụ L1.115`
-- `Tra cứu`
+Thành phần hiện hành:
 
-Copy kết quả:
+- Header brand `BQT An Đồng` và link `Quản trị`.
+- Card tra cứu phí.
+- Danh sách tối đa 3 thông báo public mới nhất.
+- Footer cư dân gồm đầu mối liên hệ, danh bạ, góp ý/Zalo và thông tin chuyển khoản.
 
-- `Tra cứu thành công`
-- `Trạng thái đóng phí`
-- `Kỳ dữ liệu`
-- `Chốt công khai lúc`
-- `Dữ liệu đã được BQT xác nhận`
+Quy tắc:
 
-Copy lỗi:
+- Tra cứu phí vẫn là tác vụ chính.
+- Thông báo và footer là vùng phụ, không được lấn át form tra cứu.
+- Trên mobile, dialog thông báo nên full-screen hoặc gần full-screen để đọc PDF/ảnh.
 
-- `Chưa nhận diện được mã căn`
-- `Không tìm thấy dữ liệu`
-- `Hãy thử nhập theo ví dụ: L1.115, L4B.412, LK2.10 hoặc căn 115 lô L1.`
+### Trang tra cứu `/tra-cuu-phi`
 
-## Hình nền
+Kết quả thành công cần có:
 
-Trang public dùng ảnh nền chung cư xanh:
+- Mã căn rõ.
+- Trạng thái đóng phí nổi bật.
+- Kỳ dữ liệu và thời điểm public.
+- Cảnh báo đóng lẻ nếu có.
 
-- Desktop: `public/images/resident-home-desktop.webp` theo tỉ lệ 16:9, resize 1920x1080
-- Mobile: `public/images/resident-home-mobile.webp` theo tỉ lệ 9:16, resize 1080x1920
-- Logo header: `public/images/logo-hoanghuy.webp`, resize 256x256
-- Credit: `public/images/README.md`
-- Chỉ áp dụng cho trang cư dân/public lookup.
-- Admin giữ nền sạch, không dùng ảnh nền để tránh giảm khả năng đọc bảng dữ liệu.
+Không hiển thị:
 
-## Màu sắc
+- Tên/SĐT cư dân.
+- Bằng chứng giao dịch.
+- Raw nội dung sao kê.
 
-Token chính đang dùng trong `app/globals.css`:
+### Thông báo public
 
-| Token              | Giá trị   | Vai trò                    |
-| ------------------ | ----------- | --------------------------- |
-| `--bg`           | `#f7faf8` | nền public/admin           |
-| `--panel`        | `#f1f4f3` | surface nâng nhẹ          |
-| `--panel-strong` | `#ffffff` | card/input                  |
-| `--line`         | `#bec9c6` | border chính               |
-| `--text`         | `#191c1c` | chữ chính                 |
-| `--muted`        | `#3f4947` | chữ phụ                   |
-| `--accent`       | `#004b46` | nút chính, brand, focus   |
-| `--accent-soft`  | `#e5f2eb` | nền trạng thái tốt      |
-| `--success`      | `#2d7a4d` | thành công                |
-| `--danger`       | `#ba1a1a` | lỗi                        |
-| `--warning`      | `#9a3412` | cảnh báo/đóng lẻ tiền |
+- Card danh sách trên trang chủ phải ngắn, dễ bấm.
+- Dialog ảnh dùng vùng xem lớn, object-contain.
+- Dialog PDF dùng `react-pdf`, không iframe PDF cũ.
+- Nếu file không phải ảnh thì mặc định xem như PDF/tài liệu; phải có trạng thái loading/error rõ.
 
-## Typography
+## Admin UI
 
-Ưu tiên font hỗ trợ tiếng Việt tốt:
+Admin là công cụ vận hành, không phải dashboard trình diễn.
 
-```css
-font-family: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
-```
+Quy tắc:
 
-Không dùng font-size scale theo viewport cho text nhỏ. Chỉ heading public được dùng `clamp()` có giới hạn.
+- Mật độ thông tin cao nhưng phải có phân cấp.
+- Dùng bảng cho dữ liệu dạng dòng nghiệp vụ trên desktop.
+- Mobile có thể chuyển bảng sang card/list, nhưng không làm overflow ngang toàn trang.
+- Card chỉ dùng cho nhóm chức năng, trạng thái quan trọng, form, modal hoặc item lặp lại có ý nghĩa.
+- Không thêm KPI/card nếu số liệu chỉ lặp lại dữ liệu kế bên hoặc không tạo hành động.
 
-## Component pattern
+## Màn `/admin/database`
 
-### Public header
+Mục tiêu: tra cứu dữ liệu tài chính căn hộ và xuất file vận hành.
 
-- Brand trái: `BQT An Đồng`.
-- Link phải: `Quản trị`.
-- Không đặt admin link thành CTA chính.
+Hồ sơ tài chính căn hộ hiện hành:
 
-### Public lookup card
+- Header: căn hộ, chủ hộ/liên hệ chính, diện tích.
+- Trạng thái đóng phí: chỉ giữ `Đã đóng đến`.
+- Lịch sử tài chính: bảng compact.
 
-- Card trung tâm, bán kính 12px.
-- Trang chủ phải tối giản: chỉ có tiêu đề, input, nút tra cứu.
-- Không hiển thị nhiều chip, ví dụ, ghi chú hoặc mô tả dài trên màn đầu.
-- Input và nút tối thiểu 48px chiều cao.
-- Form full-width trên mobile.
-- Không dùng bottom navigation nếu chưa có chức năng thật.
+Cột bảng khuyến nghị:
 
-### Result state
+- `Thời gian`
+- `Loại / kỳ phí`
+- `Nội dung`
+- `Chứng từ`
+- `Số tiền`
 
-- Card trắng, border trái màu success.
-- Mã căn là tiêu điểm.
-- Trạng thái phí nằm trong box xanh nhạt.
-- Metadata bắt buộc: kỳ dữ liệu, thời điểm chốt công khai, nguồn hiển thị.
-- Nếu `isPartialPayment = true`, hiển thị cảnh báo nhẹ, không coi là lỗi hệ thống.
+Quy tắc riêng:
 
-### Error state
+- Không dùng timeline dài nếu dữ liệu cần scan nhanh.
+- Không hiển thị các card tổng quan như tổng tiền/chứng từ nếu chưa có nghiệp vụ đối chiếu rõ.
+- Nội dung giao dịch dài dùng `line-clamp` hoặc vùng mở rộng có chủ đích.
+- Chứng từ là link/nút gọn; không render thumbnail lớn trong bảng.
 
-- Card lỗi riêng, chữ rõ, không làm người dùng hoang mang.
-- Luôn đưa ví dụ nhập lại.
-- Có hành động quay về trang chủ hoặc tra cứu lại.
+## Màn Import
 
-### Admin
+- Form import dùng `ClientActionForm` nếu cần giữ trạng thái client sau submit server action.
+- Nút import dài hạn dùng `ImportProgressButton`.
+- Sau submit, nút có thể giữ trạng thái “Đang xử lý dữ liệu...” để tránh người dùng bấm lại trong lúc redirect/reload.
+- Luôn hiển thị cảnh báo khi thao tác chốt public trực tiếp.
 
-- Giữ kiểu work-focused: card nhỏ, bảng rõ, ít trang trí.
-- Không dùng hero lớn trong admin.
-- Route nhạy cảm vẫn ưu tiên rõ quyền và trạng thái.
+## Màn Duyệt Sao Kê
 
-### Màn duyệt sao kê
+- Giữ mô hình master/detail hoặc vùng thao tác rõ.
+- Nội dung chuyển khoản phải wrap, không tràn khung.
+- Gợi ý parser là gợi ý, không thay quyết định duyệt.
+- Phân bổ nhiều căn phải hiển thị tổng đã phân bổ/còn thiếu/vượt.
+- Bằng chứng ảnh/PDF nên mở trong dialog hoặc link riêng, không phá layout chính.
 
-Spec chi tiết: [thiet-ke-duyet-sao-ke-phase-2.md](thiet-ke-duyet-sao-ke-phase-2.md).
+## Component Quy Ước
 
-Nguyên tắc thiết kế:
+- Button thao tác chính dùng icon lucide khi phù hợp.
+- Form server action dùng `SubmitButton` hoặc component client có trạng thái pending.
+- Form field dùng `Label` + `Input`/`Select`/`Textarea`.
+- Bảng dùng `components/ui/table`.
+- Thông báo trạng thái dùng `Notice`.
+- Dialog file/tài liệu phải có loading/error state.
 
-- Không dùng table rộng làm màn chính.
-- Desktop 24 inch dùng bố cục `master-detail-review`: danh sách giao dịch, chi tiết giao dịch, gợi ý căn/action duyệt.
-- Không có horizontal scroll toàn trang.
-- Nội dung chuyển khoản gốc phải wrap nhiều dòng, không tràn khung.
-- Danh sách giao dịch dùng row card compact thay vì nhiều cột.
-- Dữ liệu cần được phân cấp theo chất lượng: chắc, khá chắc, cần kiểm tra, không đủ dữ liệu.
-- Case thiếu lô như `L 111B` chỉ hiển thị gợi ý ứng viên, không tự chọn căn.
+## Responsive
 
-## Quy tắc phát triển sau này
+Kiểm tra tối thiểu:
 
-- Mọi UI public mới phải theo token trong `app/globals.css`.
-- Nếu thêm chức năng cư dân mới như thông báo/cá nhân, chỉ khi có login cư dân thật mới thêm navigation tương ứng.
-- Không public dữ liệu cá nhân chỉ vì có trong DB.
-- Nếu Stitch/Figma sinh UI mới, phải map lại copy theo file này trước khi implement.
-- Khi đổi design token, cập nhật file này và kiểm tra mobile 360px, 390px, 414px, 430px.
+- Mobile: 390px, 430px.
+- Desktop: 1440px.
+- Không có overflow ngang toàn trang.
+- Text trong nút/card không vỡ hoặc đè lên nhau.
+- Dialog public đọc được trên mobile.
 
-## Cập nhật UI stack 2026-05-21
-
-Project chính đã cài Tailwind CSS và bộ component nội bộ theo phong cách shadcn/ui.
-
-Quy ước áp dụng:
-
-- `app/globals.css` vẫn giữ design token gốc và CSS cho các màn public hiện hữu.
-- Tailwind được dùng để dựng giao diện mới nhanh, nhất là khu vực admin.
-- Component nền nằm trong `components/ui/`: `button`, `input`, `card`, `badge`, `table`.
-- Helper class nằm ở `lib/utils.ts`.
-- `components.json` ghi alias theo chuẩn shadcn/ui để sau này có thể thêm component bằng CLI hoặc tự copy component.
-
-Phạm vi đã chuyển trước:
-
-- `/admin/login`
-- `/admin`
-- `/admin/import`
-
-Nguyên tắc tiếp theo:
-
-- Public landing page không bắt buộc dùng shadcn/ui; ưu tiên tối giản, nhẹ và dễ dùng.
-- Admin dashboard, tài khoản, review contact, import/đối soát nên chuyển dần sang `components/ui`.
-- Không rewrite toàn bộ một lần; chuyển từng route, chạy `npm test` và `npm run build` sau mỗi cụm.
-
-## Cập nhật UI admin 2026-05-21
-
-Các route admin chính đã chuyển sang Tailwind + component nền:
-
-- `/admin/login`
-- `/admin`
-- `/admin/import`
-- `/admin/accounts`
-- `/admin/dashboard`
-- `/admin/contacts/review`
-
-Phần còn giữ CSS custom:
-
-- Trang public `/`
-- Trang public `/tra-cuu-phi`
-- Một số class nền dùng chung như `page-shell`, `admin-shell`, `eyebrow`, background và token màu.
-
-Quy tắc tiếp theo:
-
-- Không cần xóa CSS cũ ngay nếu chưa gây lỗi.
-- Khi sửa UI admin, ưu tiên dùng `components/ui`.
-- Khi sửa UI public, ưu tiên đơn giản hóa trải nghiệm mobile; chỉ dùng shadcn/ui nếu thật sự cần component phức tạp.
-
-## Ghi chú cấu hình Tailwind v4
-
-Tailwind v4 cần khai báo source rõ trong `app/globals.css` để sinh utility class cho project Next.js này:
-
-```css
-@source "../app/**/*.{ts,tsx}";
-@source "../components/**/*.{ts,tsx}";
-@source "../src/**/*.{ts,tsx}";
-@source "../lib/**/*.{ts,tsx}";
-```
-
-Nếu thiếu các dòng này, trang admin có thể bị mất toàn bộ style Tailwind và hiển thị như HTML thô.
-
-## Demo dashboard vận hành 2026-05-21
-
-Đã từng tạo route thử nghiệm `/admin/dashboard-demo` để duyệt bố cục trước khi áp dụng.
-
-Mục tiêu demo:
-
-- học bố cục dashboard hiện đại từ mẫu tham khảo, không dùng màu/glow/dark theme của mẫu;
-- dùng Tailwind + `components/ui` hiện có, không thêm CSS/template ngoài;
-- thử sidebar desktop, header sticky, KPI cards, chart SVG nhẹ, bảng có vùng cuộn riêng;
-- tránh tình trạng bảng dài buộc người dùng kéo ngang/toàn trang quá nhiều.
-
-Route này dùng dữ liệu mẫu và chưa thay thế dashboard thật.
-
-## Áp dụng dashboard vận hành 2026-05-21
-
-Đã áp dụng bố cục demo vào dashboard thật `/admin/dashboard`.
-
-Điểm đã áp dụng:
-
-- sidebar desktop;
-- header sticky;
-- KPI cards dùng dữ liệu thật;
-- chart SVG nhẹ từ các lô import gần nhất;
-- cơ cấu căn hộ bằng progress bars;
-- search box đặt gần đầu màn hình;
-- bảng kết quả, danh bạ, contact nháp và lịch sử import cuộn trong từng card.
-
-Mục tiêu là giảm việc kéo ngang/toàn trang khi quản lý dữ liệu dài. Sau khi áp dụng vào dashboard thật, route demo đã được gỡ khỏi project.
-
-## Áp dụng toàn project 2026-05-21
-
-Bộ giao diện vận hành đã được áp dụng cho các route chính:
-
-- Public:
-  - `/`
-  - `/tra-cuu-phi`
-- Admin:
-  - `/admin/login`
-  - `/admin`
-  - `/admin/dashboard`
-  - `/admin/import`
-  - `/admin/accounts`
-  - `/admin/contacts/review`
-
-Chuẩn mới:
-
-- Admin dùng `AdminFrame` trong `components/admin/admin-frame.tsx`.
-- Bảng rộng/dài dùng `ScrollPanel` để cuộn trong card.
-- Public dùng cùng tone màu, ảnh nền, card và button/input từ `components/ui`, nhưng không dùng sidebar.
-- Route demo `/admin/dashboard-demo` đã được gỡ khỏi project sau khi áp dụng vào dashboard thật.
-
-## Cập nhật admin layout 2026-05-21
-
-Admin layout chuyển gần hơn với mẫu dashboard của shadcn/ui:
-
-- `AdminFrame` không còn dùng header dạng card lớn.
-- Header admin là topbar mỏng cao `56px`, có border dưới, title ngắn và nút đăng xuất.
-- Tiêu đề trang, badge và mô tả nằm trong vùng content, không bọc trong panel riêng.
-- Sidebar bỏ khối ghi chú phụ để giảm nhiễu và tiết kiệm chiều cao.
-- Card nền chuyển về `bg-white`, `shadow-sm`, border gọn hơn theo hướng component mặc định.
-- Button nền chuyển về chiều cao gọn hơn, gần mặc định shadcn.
-
-Mục tiêu: giảm diện tích header, tăng mật độ thông tin, giữ giao diện quản trị tinh tế và dễ scan.
-
-## Chuẩn hóa component shadcn 2026-05-21
-
-Đã rà theo docs chính thức của shadcn/ui cho các nhóm component đang cần trong project:
-
-- `Button`: giữ API `variant`, `size`, `asChild`; đưa kích thước về gọn hơn theo mặc định shadcn.
-- `Input`: chuẩn hóa về `h-9`, `rounded-md`, focus ring mảnh, hỗ trợ `type="file"`.
-- `Table`: bổ sung `TableFooter`, `TableCaption`; cell/head gọn hơn để dashboard nhiều dữ liệu không bị cao quá.
-- `Label`: dùng cho form thay vì label tự style rời rạc.
-- `Select`: dùng Radix Select cho bộ lọc và trường vai trò liên hệ, thay native `<select>`.
-- `Checkbox`: dùng Radix Checkbox cho các lựa chọn duyệt liên hệ.
-- `DropdownMenu`: đã thêm component nền để dùng cho row actions/menu sau này.
-- `Textarea` và `Separator`: thêm component nền cho form ghi chú dài và chia vùng layout khi cần.
-
-Quy tắc tiếp theo:
-
-- Không tự viết native `<select>` hoặc checkbox thường trong route admin mới.
-- Form admin ưu tiên dùng `Label` + `Input`/`Select`/`Checkbox`.
-- Bảng admin ưu tiên dùng `Table` + `ScrollPanel`; nếu có thao tác nhiều trên từng dòng thì dùng `DropdownMenu`.
-- Chỉ cài thêm component shadcn khi có nhu cầu thật, tránh kéo nhiều JS vào trang public cư dân.
-
-## Mobile UI audit 2026-05-21
-
-Đã thêm test Playwright tại `tests/mobile-ui.spec.ts`.
-
-Phạm vi test:
-
-- 10 viewport mobile: iPhone SE 3, iPhone 13, iPhone 14 Pro, iPhone 15 Pro Max, Pixel 5, Pixel 7, Galaxy S9+, Galaxy S24, Galaxy S24 Ultra, Galaxy Z Fold 5 folded.
-- Route public: `/`, `/tra-cuu-phi?ma_can=L1.115`.
-- Route đăng nhập: `/admin/login`.
-- Route admin sau đăng nhập bằng `admin` / `Admin@123`: `/admin`, `/admin/dashboard`, `/admin/import`, `/admin/contacts/review`, `/admin/accounts`.
-
-Tiêu chí tự động:
-
-- trang có nội dung chính, không render trắng;
-- không có Next runtime error;
-- không có tràn ngang cấp trang;
-- screenshot full-page được lưu vào `.local/mobile-ui-audit/`.
-
-Lệnh chạy lại:
+Lệnh gợi ý:
 
 ```bash
 npm run test:mobile-ui
 ```
 
-Kết quả gần nhất: `40/40` test pass. Lỗi phát hiện trong lần đầu là `/admin/import` bị tràn ngang do card trong grid nở theo bảng rộng; đã sửa bằng cách thêm `min-w-0` vào `Card`.
+## Cổng Kiểm Tra UI
 
-## Admin mobile-first hiện hành 2026-05-23
-
-### Điều hướng admin
-
-Desktop:
-
-- Dùng sidebar cố định bên trái.
-- Trang `/admin` có thể hiển thị shortcut card vì đủ không gian và hỗ trợ scan nhanh.
-
-Mobile/tablet nhỏ:
-
-- Dùng topbar gọn.
-- Menu điều hướng nằm trong `Sheet` mở bằng nút hamburger.
-- Không lặp lại toàn bộ menu dưới dạng card trên `/admin`, tránh tạo hai lớp điều hướng trùng nhau.
-- Trang `/admin` mobile chỉ giữ một hành động ưu tiên: `Tra cứu nhanh căn hộ`.
-
-Component liên quan:
-
-- `components/admin/admin-frame.tsx`
-- `components/admin/admin-navigation.tsx`
-- `components/ui/sheet.tsx`
-
-### Dashboard admin mobile
-
-Route: `/admin/dashboard`
-
-Desktop:
-
-- Giữ dashboard đầy đủ với KPI cards, chart, bảng và vùng cuộn nội bộ.
-- Desktop được phép hiển thị nhiều thông tin cùng lúc.
-
-Mobile:
-
-- Không ép toàn bộ dashboard desktop xuống một cột dài.
-- Dùng Tabs để giảm endless scroll:
-  - `Tổng quan`: KPI, vòng hoàn thành kỳ phí, phân bố tháng phí, danh sách cần chú ý.
-  - `Tra cứu`: ô tìm căn, tình trạng đóng phí, gọi nhanh, hồ sơ căn, dữ liệu gốc Excel.
-  - `Lịch sử`: ma trận nhập dữ liệu và lịch sử import dạng card.
-- Bảng dài không hiển thị dạng `<table>` trên mobile; chuyển sang card/list.
-- Tab mặc định trên mobile: `Tra cứu`, vì nhân sự nội bộ cần tìm căn/SĐT nhanh ngay sau khi đăng nhập.
-
-Component liên quan:
-
-- `components/ui/tabs.tsx`
-- `@radix-ui/react-tabs`
-
-### Table-to-cards
-
-Quy tắc:
-
-- Desktop: dùng `Table` + `ScrollPanel` hoặc `overflow-x-auto` trong card.
-- Mobile: ưu tiên card/list summary.
-- Không để bảng rộng làm overflow ngang toàn trang.
-- Nếu bắt buộc giữ bảng trên mobile, phải cuộn trong khung riêng và không làm `body.scrollWidth` lớn hơn viewport.
-
-### Kiểm tra bắt buộc sau khi sửa UI mobile
-
-Sau mỗi thay đổi UI mobile/admin:
-
-- Kiểm tra `390px`.
-- Kiểm tra `400px` hoặc `430px`.
-- Kiểm tra desktop `1440px`.
-- Kiểm tra CSS/JS static không trả `500`.
-- Kiểm tra không overflow ngang toàn trang.
-- Chạy:
+Sau thay đổi UI đáng kể:
 
 ```bash
+npx tsc --noEmit
+npm run lint
 npm test
-npm run build
 ```
 
-Nếu vừa chạy `npm run build` trong lúc dev server đang mở, phải dừng dev server và xoá `.next` trước khi chạy lại `npm run dev` để tránh lỗi mất CSS/chunk 500.
+Nếu thay đổi route public/admin lớn, chạy thêm:
 
-## Cập nhật table import 2026-05-23
+```bash
+npm run build
+npm run test:mobile-ui
+```
 
-- Trang có bảng dữ liệu dài như `/admin/import` ưu tiên mỗi bảng là một section full-width.
-- Không ép hai bảng lớn vào hai cột nếu làm mất khả năng đọc hoặc làm thanh cuộn khó thao tác.
-- Chuỗi dài trong bảng như tên file upload phải dùng `truncate`/`title` hoặc đặt trong vùng scroll riêng, không để phá card.
-- `ScrollPanel` phải có `max-height` và `overflow-auto` rõ ràng; table chỉ được cuộn trong card, không làm tràn ngang toàn trang.
-
-## UX import phí 2026-05-24
-
-- Không dùng chữ `staging` trên giao diện vận hành vì quá kỹ thuật.
-- Nút phụ là `Chỉ kiểm tra file`: đọc file, parse dữ liệu, báo số dòng/lỗi nhưng không công khai cho cư dân.
-- Nút chính là `Nhập và công khai cho cư dân`: import file, tạo snapshot public và đặt batch mới làm dữ liệu hiện hành.
-- Không thêm nút `Công khai từ staging` khi chưa có màn review thật sự; tránh tạo hai đường public khác nhau và rủi ro public nhầm batch cũ.
-- Sau khi kiểm tra file, phải hiển thị số dòng, mã căn không khớp, thiếu tháng, không parse được tháng, đóng lẻ tiền và ngoài năm 2026.
-
-## Rà soát UI admin mobile 2026-05-24
-
-- Sau đăng nhập chuyển thẳng vào `/admin/dashboard` thay vì trang đệm `/admin`.
-- Route `/admin` mặc định cũng chuyển sang `/admin/dashboard`; chỉ giữ trang `/admin?denied=1` để báo lỗi phân quyền.
-- Menu admin không hiển thị mục `Vùng quản trị` riêng vì route này chỉ redirect; brand/logo dẫn về dashboard.
-- Mobile dashboard mở tab `Tra cứu` trước để phục vụ thao tác nhanh.
-- `/admin/accounts`, `/admin/import`, `/admin/contacts/review` dùng card/list trên mobile; bảng desktop chỉ hiện từ breakpoint lớn hơn.
-- Trang duyệt liên hệ mobile chỉ hiển thị tóm tắt từng liên hệ; form duyệt/từ chối nằm trong khối mở rộng để giảm cuộn dài.
-- Tên file dài phải có `truncate` và card mobile phải có `min-w-0` để không tạo overflow ngang.
-
-## Chart phân bố phí 2026-05-24
-
-- Phân bố `Tháng đã đóng đến hiện tại` dùng histogram/thanh ngang, không dùng pie/donut.
-- Lý do: cần hiển thị đủ toàn bộ nhóm tháng của `934` căn, có số căn và phần trăm từng nhóm.
-- Phần trăm từng nhóm hiển thị 1 chữ số thập phân khi cần, ví dụ `1 căn` trên `934 căn` hiển thị khoảng `0,1%`, không làm tròn thành `0%`.
-- Chart phải có tổng đối soát ngay trong card:
-  - `Tổng`: tổng căn trong batch.
-  - `Đạt kỳ`: số căn đã đạt/vượt kỳ hiện tại.
-  - `Số mốc`: số nhóm tháng/năm đang tồn tại.
-- Màu:
-  - xanh: đã đạt hoặc vượt kỳ hiện tại.
-  - vàng: chưa đạt kỳ hiện tại.
-- Mobile vẫn hiển thị đủ các mốc tháng, không cắt top 6/top 10.
-
-## Card cảnh báo cắt điện 2026-05-24
-
-- Card `Cần chú ý` trên dashboard đổi thành `Cảnh báo cắt điện`.
-- Logic theo kỳ phí hiện tại:
-  - `Cắt tháng này`: căn đã đóng hết tháng `kỳ hiện tại - 4`.
-  - `Đã cắt điện`: căn có mốc đóng phí thấp hơn ngưỡng cắt tháng này.
-- Ví dụ kỳ `T5-2026`:
-  - đóng hết tháng `1/2026` là `Cắt tháng này`;
-  - đóng hết trước tháng `1/2026` là `Đã cắt điện`.
-- UI hiển thị nhóm `Cắt tháng này` trước, nhóm `Đã cắt điện` sau.
-- Đây là cảnh báo nội bộ cho admin/manager, không hiển thị trên public lookup.
-
-## Cập nhật dashboard desktop 2026-05-24
-
-- Desktop `/admin/dashboard` ưu tiên thao tác vận hành: card `Tra cứu nhanh` nằm ngay đầu nội dung, trước KPI và chart.
-- Mobile vẫn giữ Tabs và mở tab `Tra cứu` mặc định.
-- Logo admin dùng cùng asset `public/images/logo-hoanghuy.webp` với public header để đồng bộ nhận diện.
-- Card `Hoàn thành kỳ phí` bổ sung số liệu phụ trong phần trống: kỳ hiện tại, số căn còn thiếu, số căn đóng lẻ đã làm tròn và số căn chưa có dữ liệu.
-
-## Button và thông báo 2026-06-02
-
-- Button dùng chung tại `components/ui/button.tsx` phải có phản hồi rõ khi hover, focus và active:
-  - hover đổi nền/viền rõ hơn và có shadow nhẹ;
-  - active có cảm giác nhấn xuống bằng `translate-y-px` và `scale-[0.99]`;
-  - disabled giảm opacity và không nhận click.
-- Form submit trong vùng admin ưu tiên dùng `components/ui/submit-button.tsx` thay vì `Button type="submit"`.
-- `SubmitButton` dùng `useFormStatus` để:
-  - đổi chữ sang `Đang xử lý...` hoặc nội dung cụ thể như `Đang duyệt...`;
-  - hiện spinner;
-  - disable nút trong lúc server action đang chạy để tránh click nhiều lần.
-- Thông báo trạng thái dùng `components/ui/notice.tsx`.
-- Font thông báo:
-  - cỡ `15px`;
-  - `font-semibold`;
-  - `leading-6`;
-  - có icon theo trạng thái để người dùng nhận biết nhanh thành công/lỗi/cảnh báo.
-- Các trang đã áp dụng: public lookup, login, admin frame/logout, dashboard, import, preview public, duyệt sao kê, duyệt liên hệ, tài khoản, profile, thông báo public.
-
-## Tra cứu nội bộ và xuất sổ FINAL 2026-06-08
-
-- Dashboard tra cứu nội bộ không hiển thị card `Ma trận nhập dữ liệu` và `Chất lượng sao kê`; các thông tin audit này thuộc trang nhập/duyệt dữ liệu.
-- Card `Phân bố tháng đã đóng đến` có bộ chọn kỳ, nhưng chỉ cho chọn các batch đã `DA_PUBLIC`.
-- Kỳ đang chọn điều khiển đồng thời:
-  - thống kê hoàn thành kỳ phí;
-  - phân bố tháng đã đóng đến;
-  - cảnh báo cắt điện;
-  - file Excel FINAL được xuất.
-- Chức năng xuất Excel đặt ngay tại card phân bố trên trang tra cứu nội bộ.
-- Không cung cấp nút xuất DRAFT trên giao diện. File chỉ được xuất khi kỳ dữ liệu đã công khai, tên file có hậu tố `FINAL`.
-- Mobile dashboard chỉ giữ hai tab `Tổng quan` và `Tra cứu`; bỏ tab lịch sử để giảm cuộn và tránh lặp chức năng với trang nhập dữ liệu.
-
-## Preview trước khi công khai 2026-06-09
-
-- Màn preview ưu tiên đối chiếu bằng mắt giữa mã căn đã chốt, mã parser và nội dung chuyển khoản gốc.
-- Cột mã căn giữ kiểu bảng tiêu chuẩn. Trong nội dung chuyển khoản gốc, chỉ đoạn văn bản trực tiếp biểu diễn mã căn/lô được in đậm và tô nền nhẹ để so sánh nhanh với mã căn sau parser.
-- Phần còn lại của nội dung chuyển khoản dùng chữ nhỏ, không in đậm; người chuyển, thời gian và mã tham chiếu là thông tin phụ nhỏ hơn nữa.
-- Bảng desktop không hiển thị cột `Tiền lẻ` và `Lịch sử`; toàn bộ cột quan trọng phải nằm trong một màn hình, không yêu cầu kéo ngang.
-- Mobile chuyển từng dòng thành card nhưng giữ cùng thứ tự đọc: căn/parser, nội dung gốc, trước chốt, sau preview, tiền duyệt.
-
-## Bảng đối soát vận hành 2026-06-11
-
-- Không cắt cứng dữ liệu ở 12 dòng vì dễ tạo hiểu nhầm rằng hệ thống chỉ có từng đó dữ liệu.
-- Với dữ liệu theo tháng dưới khoảng 1.000 dòng:
-  - hiển thị toàn bộ trong vùng cuộn dọc cao tối đa khoảng `480px`;
-  - header bảng phải sticky;
-  - không kéo dài toàn bộ trang theo số dòng.
-- Tiêu đề cột có thể sắp xếp phải thể hiện icon trạng thái:
-  - chưa chọn: hai chiều;
-  - tăng dần: mũi tên lên;
-  - giảm dần: mũi tên xuống.
-- Mặc định bảng giao dịch sắp xếp ngày mới nhất trước.
-- Sort được lưu trong URL để refresh, mở link hoặc quay lại trang không mất trạng thái.
-
-## Form phân bổ nhiều căn 2026-06-11
-
-- Không dùng số ô cố định cho dữ liệu có số lượng không xác định.
-- Form phải hỗ trợ thêm/xóa dòng và dán danh sách mã căn nhiều dòng.
-- Chia đều số tiền chỉ là gợi ý; người dùng được sửa từng dòng.
-- Luôn hiển thị tổng đã phân bổ, số còn thiếu hoặc số vượt.
-- Nút duyệt bị vô hiệu hóa cho đến khi có ít nhất hai căn hợp lệ và tổng tiền khớp giao dịch.
-- Danh sách dài cuộn trong khung riêng, không kéo dài cột thao tác toàn trang.
-
-## Preview public: highlight parser và bằng chứng 2026-06-12
-
-- Highlight mã căn trong nội dung chuyển khoản phải dùng helper thuộc parser trung tâm
-  `src/modules/transactions/parser/apartment-parser.ts`; không tạo regex parser thứ hai trong UI.
-- Tô toàn bộ cụm từ đã cung cấp lô/căn cho parser, gồm cả dạng đảo và có từ nối, ví dụ:
-  - `Tòa nhà L1. Số 506B`;
-  - `Căn hộ 415 tòa nhà L2`;
-  - `303 - Lô L4B`;
-  - `327.L4B`.
-- Không tự tô mã căn vào giao dịch Zalo/phân bổ thủ công nếu nội dung gốc không chứa mã căn.
-- Bảng desktop đặt cột `Bằng chứng` ngay cạnh `Nội dung chuyển khoản`.
-- Bằng chứng ảnh/PDF mở trong dialog để đối chiếu tại chỗ; dialog có nút mở tệp gốc.
-- Mobile giữ bằng chứng ngay dưới nội dung chuyển khoản trong card, không tạo bảng cuộn ngang.
+Lưu ý: build hiện không thay thế typecheck vì `ignoreBuildErrors` đang bật.

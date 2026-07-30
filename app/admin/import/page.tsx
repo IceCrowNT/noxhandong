@@ -7,6 +7,7 @@ import {
 } from "@/app/admin/import/actions";
 import { DeleteSupplementButton } from "@/app/admin/import/delete-supplement-button";
 import { AdminFrame, ScrollPanel } from "@/components/admin/admin-frame";
+import { ClientActionForm } from "@/components/admin/client-action-form";
 import { ImportProgressButton } from "@/components/admin/import-progress-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -396,7 +397,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={importBankStatementAction} className="grid gap-4 xl:grid-cols-[minmax(260px,1fr)_auto] xl:items-end">
+          <ClientActionForm action={importBankStatementAction} className="grid gap-4 xl:grid-cols-[minmax(260px,1fr)_auto] xl:items-end">
             <Label className="grid gap-2">
               File sao kê
               <Input
@@ -412,7 +413,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
                 Nhập sao kê
               </ImportProgressButton>
             </div>
-          </form>
+          </ClientActionForm>
           <div className="mt-4 grid gap-2 rounded-lg border border-[var(--border-subtle)] bg-white/70 p-4 text-sm leading-6 text-[var(--muted)] md:grid-cols-3">
             <span><b>1.</b> Lưu raw chống trùng.</span>
             <span><b>2.</b> Tạo giao dịch cần duyệt.</span>
@@ -439,7 +440,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={importFeeTrackingWorkbookAction} className="grid gap-4 xl:grid-cols-[minmax(260px,1fr)_220px_220px_auto] xl:items-end">
+          <ClientActionForm action={importFeeTrackingWorkbookAction} className="grid gap-4 xl:grid-cols-[minmax(260px,1fr)_220px_220px_auto] xl:items-end">
             <Label className="grid gap-2">
               File Excel
               <Input
@@ -466,7 +467,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
                 Chốt public từ Excel
               </ImportProgressButton>
             </div>
-          </form>
+          </ClientActionForm>
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
             Chốt từ Excel sẽ ghi public trực tiếp. Cần nhập đúng <strong>CHOT_EXCEL</strong> để tránh bấm nhầm.
           </div>
@@ -492,7 +493,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-5">
-          <form action={createHistoricalSupplementAction} className="grid gap-4 xl:grid-cols-2">
+          <ClientActionForm action={createHistoricalSupplementAction} className="grid gap-4 xl:grid-cols-2">
             <Label className="grid gap-2">
               Mã căn
               <Input name="apartmentCode" placeholder="Ví dụ L2.511A" required />
@@ -535,7 +536,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
                 Ghi bổ sung giao dịch quá khứ
               </SubmitButton>
             </div>
-          </form>
+          </ClientActionForm>
 
           <div className="grid gap-2 rounded-lg border border-[var(--border-subtle)] bg-white/70 p-4 text-sm leading-6 text-[var(--muted)]">
             <span><b>1.</b> Không sinh giao dịch ngân hàng giả.</span>

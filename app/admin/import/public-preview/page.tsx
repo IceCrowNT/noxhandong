@@ -460,18 +460,30 @@ export default async function PublicPreviewPage({ searchParams }: PublicPreviewP
                       {rowsForView.map((row) => (
                         <TableRow key={row.id}>
                           <TableCell className="align-top">
-                            <strong>{row.ma_can}</strong>
+                            <div className="pt-2.5">
+                              <strong className="text-base">{row.ma_can}</strong>
+                            </div>
                           </TableCell>
                           <TableCell className="align-top">
                             <TransactionContentCell row={row} />
                           </TableCell>
                           <TableCell className="align-top">
-                            <EvidenceCell row={row} />
+                            <div className="pt-2.5">
+                              <EvidenceCell row={row} />
+                            </div>
                           </TableCell>
-                          <TableCell className="align-top">{row.previousDisplay}</TableCell>
-                          <TableCell className="align-top">{row.currentDisplay}</TableCell>
-                          <TableCell className="text-right">{formatNumber(row.addedMonths)}</TableCell>
-                          <TableCell className="text-right">{formatMoney(row.approvedPaymentAmount)}</TableCell>
+                          <TableCell className="align-top">
+                            <div className="pt-2.5">{row.previousDisplay}</div>
+                          </TableCell>
+                          <TableCell className="align-top">
+                            <div className="pt-2.5">{row.currentDisplay}</div>
+                          </TableCell>
+                          <TableCell className="align-top text-right">
+                            <div className="pt-2.5">{formatNumber(row.addedMonths)}</div>
+                          </TableCell>
+                          <TableCell className="align-top text-right">
+                            <div className="pt-2.5">{formatMoney(row.approvedPaymentAmount)}</div>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

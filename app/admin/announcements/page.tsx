@@ -32,8 +32,8 @@ function statusLabel(value: string) {
 function message(params?: Awaited<AnnouncementsPageProps["searchParams"]>) {
   if (params?.created === "1") return "Đã tạo thông báo.";
   if (params?.updated === "1") return "Đã cập nhật trạng thái thông báo.";
-  if (params?.error === "not_pdf") return "Chỉ hỗ trợ file PDF.";
-  if (params?.error === "file_too_large") return "File PDF quá lớn. Giới hạn 10 MB.";
+  if (params?.error === "unsupported_file") return "Chỉ hỗ trợ file PDF hoặc ảnh.";
+  if (params?.error === "file_too_large") return "File đính kèm quá lớn. Giới hạn 10 MB.";
   if (params?.error) return "Dữ liệu thông báo không hợp lệ.";
   return null;
 }
@@ -53,7 +53,7 @@ export default async function AnnouncementsPage({ searchParams }: AnnouncementsP
       activeKey="announcements"
       badge="Quản trị cao nhất"
       title="Thông báo public"
-      description="Đăng PDF/thông báo để cư dân xem từ trang chủ, không cần đăng nhập."
+      description="Đăng tài liệu/thông báo để cư dân xem từ trang chủ, không cần đăng nhập."
     >
       {notice ? (
         <Notice tone={params?.error ? "error" : "success"}>{notice}</Notice>
@@ -63,7 +63,7 @@ export default async function AnnouncementsPage({ searchParams }: AnnouncementsP
         <CardHeader>
           <Bell className="text-[var(--accent)]" size={22} aria-hidden="true" />
           <CardTitle>Tạo bài viết / thông báo</CardTitle>
-          <CardDescription>Đăng thông báo văn bản hoặc tải lên file PDF đính kèm.</CardDescription>
+          <CardDescription>Đăng thông báo văn bản hoặc tải lên file PDF/ảnh đính kèm.</CardDescription>
         </CardHeader>
         <CardContent>
           <form action={createAnnouncementAction} className="grid gap-4 lg:grid-cols-2">
@@ -72,8 +72,8 @@ export default async function AnnouncementsPage({ searchParams }: AnnouncementsP
               <Input name="title" required />
             </Label>
             <Label className="grid gap-2">
-              File PDF đính kèm (Không bắt buộc)
-              <Input name="pdfFile" type="file" accept="application/pdf,.pdf" />
+              Tài liệu đính kèm (Không bắt buộc)
+              <Input name="pdfFile" type="file" accept="application/pdf,image/*,.pdf,.jpg,.jpeg,.png,.webp,.gif" />
             </Label>
             <Label className="grid gap-2 lg:col-span-2">
               Nội dung thông báo (hỗ trợ xuống dòng)
@@ -116,7 +116,7 @@ export default async function AnnouncementsPage({ searchParams }: AnnouncementsP
                 </p>
                 {item.duong_dan_file ? (
                   <a href={item.duong_dan_file} target="_blank" className="mt-2 inline-block text-sm font-semibold text-[var(--accent)] underline">
-                    Mở PDF
+                    Mở tài liệu
                   </a>
                 ) : null}
               </div>

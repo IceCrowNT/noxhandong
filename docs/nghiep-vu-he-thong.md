@@ -1,342 +1,163 @@
-﻿# Nghiá»‡p vá»¥ há»‡ thá»‘ng BQT An Äá»“ng
+# Nghiệp vụ hệ thống BQT An Đồng
 
-## Vai trÃ² tÃ i liá»‡u
+Cập nhật: 2026-07-28.
 
-File nÃ y mÃ´ táº£ nghiá»‡p vá»¥ tá»•ng quan cá»§a há»‡ thá»‘ng Ä‘á»ƒ bÃ n giao cho ngÆ°á»i má»›i tiáº¿p nháº­n dá»± Ã¡n.
+## Mục Tiêu
 
-NgÆ°á»i Ä‘á»c file nÃ y cáº§n hiá»ƒu Ä‘Æ°á»£c:
+Hệ thống hỗ trợ BQT An Đồng quản lý thu phí căn hộ, đối soát sao kê ngân hàng, công khai trạng thái đóng phí cho cư dân và xuất tài liệu vận hành.
 
-- há»‡ thá»‘ng giáº£i quyáº¿t váº¥n Ä‘á» gÃ¬
-- ai lÃ  ngÆ°á»i sá»­ dá»¥ng
-- dá»¯ liá»‡u Ä‘i tá»« Ä‘Ã¢u Ä‘áº¿n Ä‘Ã¢u
-- chá»©c nÄƒng nÃ o Ä‘Ã£ cÃ³
-- chá»©c nÄƒng nÃ o Ä‘ang phÃ¡t triá»ƒn á»Ÿ Phase 2
-- giá»›i háº¡n an toÃ n dá»¯ liá»‡u
-- file tÃ i liá»‡u nÃ o cáº§n Ä‘á»c tiáº¿p
+Mục tiêu không phải thay toàn bộ Excel trong một lần, mà là đưa dữ liệu quan trọng vào DB theo quy trình có kiểm soát, có audit và có khả năng public an toàn.
 
-## Bá»‘i cáº£nh
+## Người Dùng
 
-BQT An Äá»“ng cáº§n má»™t web app Ä‘á»ƒ há»— trá»£ quáº£n lÃ½ vÃ  cÃ´ng khai má»™t pháº§n thÃ´ng tin váº­n hÃ nh liÃªn quan Ä‘áº¿n phÃ­ quáº£n lÃ½ cÄƒn há»™.
+### Cư dân
 
-TrÆ°á»›c khi cÃ³ há»‡ thá»‘ng, dá»¯ liá»‡u chÃ­nh náº±m trong Excel:
+Cư dân không cần đăng nhập. Có thể:
 
-- danh sÃ¡ch cÄƒn há»™
-- thÃ´ng tin cÆ° dÃ¢n/liÃªn há»‡
-- lá»‹ch sá»­ Ä‘Ã³ng phÃ­
-- file theo dÃµi thu phÃ­ theo thÃ¡ng
-- sao kÃª ngÃ¢n hÃ ng
+- Tra cứu trạng thái đóng phí theo mã căn.
+- Xem thông báo public mới nhất.
+- Xem file thông báo dạng PDF hoặc ảnh.
+- Xem đầu mối liên hệ dự án và thông tin chuyển khoản QLVH.
+- Bấm góp ý/phản ánh để đi tới Zalo đúng nhóm.
 
-Má»¥c tiÃªu khÃ´ng pháº£i thay tháº¿ toÃ n bá»™ Excel ngay láº­p tá»©c. Má»¥c tiÃªu giai Ä‘oáº¡n Ä‘áº§u lÃ :
+Cư dân không được xem:
 
-- chuáº©n hÃ³a dá»¯ liá»‡u cÄƒn há»™
-- cho cÆ° dÃ¢n tra cá»©u tráº¡ng thÃ¡i Ä‘Ã³ng phÃ­ khÃ´ng cáº§n Ä‘Äƒng nháº­p
-- cho quáº£n trá»‹ ná»™i bá»™ tra cá»©u nhanh cÄƒn há»™, liÃªn há»‡ vÃ  tráº¡ng thÃ¡i phÃ­
-- import dá»¯ liá»‡u phÃ­ tá»« Excel theo quy trÃ¬nh cÃ³ kiá»ƒm soÃ¡t
-- chuáº©n bá»‹ ná»n Ä‘á»ƒ sau nÃ y Ä‘á»‘i soÃ¡t sao kÃª trá»±c tiáº¿p trong DB
+- Tên/SĐT cư dân khác.
+- Ghi chú nội bộ.
+- Raw Excel/sao kê.
+- Bằng chứng giao dịch nội bộ.
+- Contact staging.
 
-## Äá»‘i tÆ°á»£ng sá»­ dá»¥ng
+### Nội bộ
 
-### CÆ° dÃ¢n
+Role:
 
-CÆ° dÃ¢n khÃ´ng cáº§n Ä‘Äƒng nháº­p.
+- `SUPER_ADMIN`: toàn quyền.
+- `MANAGER`: xem/tra cứu/xuất theo quyền được cấp.
+- `TECHNICIAN`: tương tự manager ở các luồng đọc/vận hành.
 
-CÆ° dÃ¢n cÃ³ thá»ƒ:
+Các thao tác có rủi ro như import, public batch, duyệt giao dịch, quản lý tài khoản, quản lý thông báo chỉ dành cho quyền phù hợp theo `src/modules/auth/permissions.ts`.
 
-- má»Ÿ trang chá»§ `https://noxhandong.vn`
-- nháº­p mÃ£ cÄƒn theo nhiá»u kiá»ƒu tá»± nhiÃªn
-- xem cÄƒn Ä‘Ã£ Ä‘Ã³ng phÃ­ Ä‘áº¿n thÃ¡ng nÃ o
-- xem ká»³ phÃ­ hiá»‡n hÃ nh
-- xem thÃ´ng bÃ¡o cÃ´ng khai náº¿u Phase 2 triá»ƒn khai module thÃ´ng bÃ¡o
+## Dữ Liệu Căn Hộ
 
-CÆ° dÃ¢n khÃ´ng Ä‘Æ°á»£c xem:
+- Master có 934 căn trong `can_ho`.
+- Mã căn là trục nối giữa phí, liên hệ, giao dịch, bằng chứng và public snapshot.
+- Parser mã căn phải chuẩn hóa input tự nhiên trước khi tra cứu/đối soát.
 
-- sá»‘ Ä‘iá»‡n thoáº¡i cÆ° dÃ¢n khÃ¡c
-- tÃªn cÆ° dÃ¢n
-- ghi chÃº ná»™i bá»™
-- dá»¯ liá»‡u gá»‘c Excel
-- sao kÃª ngÃ¢n hÃ ng
-- dá»¯ liá»‡u contact staging
+## Tra Cứu Phí Public
 
-### Quáº£n lÃ½ ná»™i bá»™
-
-NhÃ³m quáº£n lÃ½ ná»™i bá»™ gá»“m:
-
-- `SUPER_ADMIN`
-- `MANAGER`
-- `TECHNICIAN`
-
-Quyá»n hiá»‡n táº¡i:
-
-- `SUPER_ADMIN`: toÃ n quyá»n.
-- `MANAGER`: tra cá»©u ná»™i bá»™, xem liÃªn há»‡/dá»¯ liá»‡u gá»‘c, gá»i nhanh, quáº£n lÃ½ tÃ i khoáº£n cÃ¡ nhÃ¢n.
-- `TECHNICIAN`: ngang quyá»n `MANAGER`.
-
-Quyá»n bá»‹ giá»›i háº¡n:
-
-- `MANAGER` vÃ  `TECHNICIAN` khÃ´ng Ä‘Æ°á»£c import/chá»‘t dá»¯ liá»‡u phÃ­.
-- `MANAGER` vÃ  `TECHNICIAN` khÃ´ng Ä‘Æ°á»£c táº¡o/sá»­a/khÃ³a tÃ i khoáº£n.
-- `MANAGER` vÃ  `TECHNICIAN` khÃ´ng Ä‘Æ°á»£c duyá»‡t/tá»« chá»‘i liÃªn há»‡.
-
-## Dá»¯ liá»‡u cÄƒn há»™
-
-Nguá»“n cÄƒn há»™ master:
-
-- `docs/Danh_Sach_Can_Ho_Master.xlsx`
-
-Sá»‘ lÆ°á»£ng hiá»‡n táº¡i:
-
-- tá»•ng: `934` cÄƒn
-- chung cÆ°: `884`
-- liá»n ká»: `50`
-
-Báº£ng chÃ­nh:
-
-- `can_ho`
-
-NguyÃªn táº¯c:
-
-- `can_ho` lÃ  trá»¥c dá»¯ liá»‡u trung tÃ¢m.
-- Má»i tráº¡ng thÃ¡i phÃ­, liÃªn há»‡, giao dá»‹ch ngÃ¢n hÃ ng Ä‘á»u nÃªn quy vá» `can_ho`.
-- MÃ£ cÄƒn pháº£i Ä‘Æ°á»£c parser chuáº©n hÃ³a trÆ°á»›c khi tra cá»©u hoáº·c Ä‘á»‘i soÃ¡t.
-
-## Parser mÃ£ cÄƒn
-
-Parser mÃ£ cÄƒn lÃ  thuáº­t toÃ¡n lÃµi cá»§a há»‡ thá»‘ng.
-
-NÃ³ cÃ³ nhiá»‡m vá»¥ chuyá»ƒn input tá»± nhiÃªn thÃ nh mÃ£ cÄƒn chuáº©n, vÃ­ dá»¥:
-
-- `L1.115`
-- `l1 115`
-- `can 115 lo 1`
-- `lo hai 306`
-- `lÃ´ bá»‘n b cÄƒn 124`
-
-Parser Ä‘Æ°á»£c dÃ¹ng á»Ÿ:
-
-- trang chá»§ cÆ° dÃ¢n
-- trang tra cá»©u phÃ­
-- dashboard admin
-- import/Ä‘á»‘i soÃ¡t sao kÃª ngÃ¢n hÃ ng
-
-NguyÃªn táº¯c phÃ¡t triá»ƒn parser:
-
-- Má»—i rule má»›i pháº£i cÃ³ test.
-- KhÃ´ng Ä‘Æ°á»£c match nháº§m sá»‘ Ä‘iá»‡n thoáº¡i, sá»‘ tÃ i khoáº£n, sá»‘ tiá»n hoáº·c mÃ£ tham chiáº¿u ngÃ¢n hÃ ng.
-- Náº¿u input mÆ¡ há»“, há»‡ thá»‘ng pháº£i yÃªu cáº§u chá»n rÃµ, khÃ´ng tá»± Ä‘oÃ¡n.
-- Khi import sao kÃª, cáº§n lÆ°u `matchReason`, `confidence`, `phien_ban_parser`.
-
-TÃ i liá»‡u chi tiáº¿t:
-
-- [parser-ma-can-ho.md](parser-ma-can-ho.md)
-
-## Dá»¯ liá»‡u phÃ­ public
-
-Nguá»“n váº­n hÃ nh hiá»‡n táº¡i:
-
-- Excel theo dÃµi thu phÃ­, hiá»‡n táº¡i lÃ  `docs/Theo dÃµi thu phÃ­ T5.xlsx`
-
-Luá»“ng dá»¯ liá»‡u:
+Luồng:
 
 ```text
-Excel theo dÃµi thu phÃ­
-  -> import staging
-  -> táº¡o batch tráº¡ng thÃ¡i phÃ­ public
-  -> Super Admin chá»‘t cÃ´ng khai
-  -> cÆ° dÃ¢n tra cá»©u
+Cư dân nhập mã căn
+  -> parse input
+  -> tìm batch public hiện hành
+  -> đọc trang_thai_phi_can_ho_public
+  -> hiển thị tháng đã đóng đến
 ```
 
-Báº£ng liÃªn quan:
+Đặc điểm hiện hành:
 
-- `dong_theo_doi_thu_phi_tho`
-- `batch_trang_thai_phi_public`
-- `trang_thai_phi_can_ho_public`
+- Có rate limit cơ bản theo IP trong memory.
+- Nếu input mơ hồ và match nhiều căn cùng tiền tố, UI yêu cầu chọn rõ căn.
+- Nếu có đóng lẻ tiền, hiển thị cảnh báo nhẹ.
+- Public chỉ đọc dữ liệu đã `DA_PUBLIC`.
 
-NguyÃªn táº¯c:
+## Public Footer Và Liên Hệ
 
-- Public page chá»‰ Ä‘á»c batch Ä‘Ã£ chá»‘t cÃ´ng khai.
-- CÆ° dÃ¢n khÃ´ng Ä‘á»c trá»±c tiáº¿p file Excel/raw staging.
-- Khi cÃ³ batch má»›i, batch cÅ© khÃ´ng bá»‹ xÃ³a ngay Ä‘á»ƒ cÃ²n audit.
-- CÃ¡c trÆ°á»ng há»£p Ä‘Ã³ng láº» tiá»n Ä‘Æ°á»£c lÃ m trÃ²n xuá»‘ng khi thá»‘ng kÃª theo thÃ¡ng, nhÆ°ng váº«n cáº§n lÆ°u dáº¥u hiá»‡u báº¥t thÆ°á»ng.
+Trang public hiện có footer cư dân:
 
-VÃ­ dá»¥ nghiá»‡p vá»¥ thÃ¡ng:
+- Đầu mối liên hệ nhanh: kỹ thuật, bảo vệ.
+- Dialog danh bạ 8 bộ phận.
+- Dialog góp ý/phản ánh mở Zalo theo nhóm vấn đề.
+- Thông tin chuyển khoản QLVH.
 
-- nÄƒm gá»‘c lÃ  2026
-- Ä‘Ã³ng háº¿t thÃ¡ng 11/2025 cÃ³ thá»ƒ biá»ƒu diá»…n ná»™i bá»™ lÃ  `-1`
-- Ä‘Ã³ng háº¿t thÃ¡ng 2/2027 cÃ³ thá»ƒ biá»ƒu diá»…n ná»™i bá»™ lÃ  `14`
-- khi hiá»ƒn thá»‹ cho cÆ° dÃ¢n pháº£i hiá»ƒn thá»‹ thÃ nh thÃ¡ng/nÄƒm tháº­t, khÃ´ng hiá»ƒn thá»‹ sá»‘ `-1` hoáº·c `14`
+`app/actions.ts` hiện chỉ là stub server action cho feedback; chưa phải kênh xử lý phản ánh chính thức.
 
-## Dá»¯ liá»‡u liÃªn há»‡ cÆ° dÃ¢n
+## Thông Báo Công Khai
 
-Nguá»“n liÃªn há»‡ ban Ä‘áº§u náº±m trong Excel master/raw.
+Admin có thể tạo thông báo public với:
 
-Báº£ng liÃªn quan:
+- Tiêu đề.
+- Nội dung text.
+- File đính kèm PDF hoặc ảnh.
+- Trạng thái nháp/công khai/ẩn.
 
-- `ung_vien_lien_he_can_ho`
-- `lien_he_can_ho`
+Cư dân xem thông báo trên trang chủ. Viewer:
 
-NguyÃªn táº¯c:
+- ảnh: hiển thị trực tiếp bằng `next/image`;
+- PDF: hiển thị bằng `react-pdf` trong dialog full-screen trên mobile.
 
-- Dá»¯ liá»‡u liÃªn há»‡ báº©n khÃ´ng nháº­p tháº³ng vÃ o danh báº¡ chÃ­nh.
-- Dá»¯ liá»‡u pháº£i Ä‘i qua staging/review.
-- Manager/ká»¹ thuáº­t cÃ³ thá»ƒ xem dá»¯ liá»‡u gá»‘c Ä‘á»ƒ gá»i nhanh, nhÆ°ng cáº§n hiá»ƒu Ä‘Ã¢y chÆ°a cháº¯c lÃ  danh báº¡ Ä‘Ã£ duyá»‡t.
-- Contact master hiá»‡n chÆ°a Ä‘áº§y Ä‘á»§; pháº§n lá»›n dá»¯ liá»‡u cÃ²n á»Ÿ staging/raw.
+Nguyên tắc:
 
-Luá»“ng chuáº©n:
+- Không upload tài liệu chứa dữ liệu cá nhân nhạy cảm.
+- Chỉ thông báo `CONG_KHAI` xuất hiện ngoài public.
+- File public phải nằm trong `public/uploads/announcements`.
+
+## Sao Kê Ngân Hàng Và Duyệt Giao Dịch
+
+Luồng:
 
 ```text
-Excel master/raw
-  -> parser contact
-  -> ung_vien_lien_he_can_ho
+Import sao kê
+  -> lưu raw/canonical
+  -> parser gợi ý mã căn
   -> admin review
-  -> lien_he_can_ho
+  -> phân bổ một hoặc nhiều căn
+  -> lưu lịch sử phí và bằng chứng
+  -> preview/public batch
 ```
 
-## Sao kÃª ngÃ¢n hÃ ng
+Nguyên tắc:
 
-Phase 1 Ä‘Ã£ cÃ³ pipeline ná»n import sao kÃª vÃ o DB, nhÆ°ng chÆ°a Ä‘á»§ Ä‘á»ƒ thay Excel váº­n hÃ nh.
+- Không tự động sửa trạng thái public chỉ vì import sao kê.
+- Giao dịch cần quyết định duyệt/từ chối/bảo lưu.
+- Bằng chứng có thể là ảnh/PDF/ghi chú.
+- Giao dịch đã public cần quy trình rollback riêng, không gỡ tùy tiện.
 
-Báº£ng liÃªn quan:
+## Bổ Sung Giao Dịch Quá Khứ
 
-- `dong_sao_ke_tho`
-- `giao_dich_sao_ke_tho_chuan`
-- `giao_dich_ngan_hang`
-- `ung_vien_khop_giao_dich`
-- `phan_bo_giao_dich`
+Dùng khi có khoản phí hợp lệ không đi từ sao kê import hoặc cần điều chỉnh.
 
-Má»¥c tiÃªu Phase 2:
+Nguyên tắc:
 
-- upload sao kÃª ngÃ¢n hÃ ng trá»±c tiáº¿p tá»« web admin
-- parser mÃ£ cÄƒn tá»« ná»™i dung giao dá»‹ch
-- chá»‘ng trÃ¹ng báº±ng mÃ£ tham chiáº¿u ngÃ¢n hÃ ng vÃ  fingerprint fallback
-- hiá»ƒn thá»‹ preview trÆ°á»›c khi ghi chÃ­nh thá»©c
-- cho admin rÃ  soÃ¡t dÃ²ng chÆ°a nháº­n diá»‡n/nhiá»u cÄƒn/nghi trÃ¹ng
-- hiá»ƒn thá»‹ giao dá»‹ch ngÃ¢n hÃ ng gáº§n nháº¥t trong tra cá»©u ná»™i bá»™
+- Không tạo `giao_dich_ngan_hang` giả.
+- Ghi `bo_sung_giao_dich_qua_khu`.
+- Sinh lịch sử phí hợp lệ.
+- Public ở batch tiếp theo sau khi preview/chốt.
 
-NguyÃªn táº¯c:
+## Admin Database Và Hồ Sơ Tài Chính Căn Hộ
 
-- Sao kÃª khÃ´ng tá»± Ä‘á»™ng thay Ä‘á»•i dá»¯ liá»‡u phÃ­ public cho cÆ° dÃ¢n á»Ÿ Phase 2.
-- Sao kÃª dÃ¹ng Ä‘á»ƒ Ä‘á»‘i soÃ¡t vÃ  há»— trá»£ kiá»ƒm tra.
-- Public fee váº«n láº¥y tá»« batch phÃ­ Ä‘Ã£ chá»‘t.
+`/admin/database` là màn tra cứu dữ liệu vận hành và xuất file. Phần hồ sơ tài chính căn hộ hiện có:
 
-TÃ i liá»‡u chi tiáº¿t:
+- Header căn hộ: mã căn, chủ hộ/liên hệ chính, diện tích.
+- Trạng thái đóng phí: chỉ giữ “Đã đóng đến”.
+- Lịch sử tài chính dạng bảng compact:
+  - thời gian;
+  - loại/kỳ phí;
+  - nội dung;
+  - chứng từ;
+  - số tiền.
 
-- [backlog-doi-soat-sao-ke.md](backlog-doi-soat-sao-ke.md)
-- [phase-2-roadmap.md](phase-2-roadmap.md)
+Không thêm các card tổng quan nếu số liệu chỉ lặp lại dữ liệu trong bảng hoặc không giúp quyết định nghiệp vụ.
 
-## ThÃ´ng bÃ¡o cÃ´ng khai
+## Xuất File Vận Hành
 
-TÃ­nh nÄƒng dá»± kiáº¿n Phase 2.
+Các file đang có:
 
-Má»¥c tiÃªu:
+- Báo cáo tiến độ phí.
+- Sổ tháng FINAL.
+- Sao kê tháng.
+- Checklist thông báo/cắt điện.
+- Word thông báo thu phí/cắt điện.
 
-- Admin upload PDF thÃ´ng bÃ¡o.
-- CÆ° dÃ¢n xem trÃªn trang chá»§, khÃ´ng cáº§n login.
+Export chỉ nên đọc dữ liệu đã chốt hoặc dữ liệu preview có trạng thái rõ, tránh xuất nhầm batch nháp thành tài liệu vận hành.
 
-VÃ­ dá»¥ thÃ´ng bÃ¡o:
+## Những Điều Không Được Làm Tùy Tiện
 
-- thÃ´ng bÃ¡o thu phÃ­
-- thÃ´ng bÃ¡o cáº¯t Ä‘iá»‡n/nÆ°á»›c
-- thÃ´ng bÃ¡o báº£o trÃ¬
-- lá»‹ch tiáº¿p dÃ¢n
-- quy Ä‘á»‹nh váº­n hÃ nh
-- hÆ°á»›ng dáº«n thanh toÃ¡n
-
-NguyÃªn táº¯c:
-
-- Chá»‰ public file Ä‘Æ°á»£c Admin chá»‘t.
-- Phase 2 chá»‰ nháº­n PDF.
-- KhÃ´ng upload file chá»©a dá»¯ liá»‡u cÃ¡ nhÃ¢n nháº¡y cáº£m.
-- Trang chá»§ váº«n Æ°u tiÃªn tra cá»©u phÃ­, thÃ´ng bÃ¡o chá»‰ lÃ  khu vá»±c phá»¥.
-
-## Dashboard admin
-
-Dashboard admin phá»¥c vá»¥ tra cá»©u nhanh vÃ  váº­n hÃ nh.
-
-Má»¥c tiÃªu chÃ­nh:
-
-- tra cá»©u cÄƒn há»™
-- xem tráº¡ng thÃ¡i phÃ­
-- xem liÃªn há»‡/dá»¯ liá»‡u gá»‘c
-- gá»i nhanh cÆ° dÃ¢n trÃªn mobile
-- xem cáº£nh bÃ¡o ká»³ phÃ­/cáº¯t Ä‘iá»‡n
-- xem thá»‘ng kÃª tá»•ng quan
-- Phase 2: xem giao dá»‹ch ngÃ¢n hÃ ng gáº§n nháº¥t vÃ  cháº¥t lÆ°á»£ng parser/import
-
-Dashboard khÃ´ng nÃªn trá»Ÿ thÃ nh mÃ n nghiá»‡p vá»¥ quÃ¡ náº·ng. CÃ¡c thao tÃ¡c phá»©c táº¡p nhÆ° import, duyá»‡t giao dá»‹ch, duyá»‡t liÃªn há»‡ nÃªn náº±m á»Ÿ trang riÃªng.
-
-## Quáº£n trá»‹ tÃ i khoáº£n
-
-TÃ i khoáº£n ná»™i bá»™ náº±m trong báº£ng:
-
-- `tai_khoan_quan_tri`
-
-TÃ­nh nÄƒng Ä‘Ã£ cÃ³:
-
-- Ä‘Äƒng nháº­p báº±ng username hoáº·c sá»‘ Ä‘iá»‡n thoáº¡i
-- táº¡o tÃ i khoáº£n
-- khÃ³a/má»Ÿ khÃ³a tÃ i khoáº£n
-- Ä‘á»•i role trong pháº¡m vi cho phÃ©p
-- trang há»“ sÆ¡ cÃ¡ nhÃ¢n
-
-Phase 2 dá»± kiáº¿n bá»• sung:
-
-- nháº­t kÃ½ Ä‘Äƒng nháº­p gáº§n nháº¥t
-- IP vÃ  thiáº¿t bá»‹ cÆ¡ báº£n
-- láº§n Ä‘Äƒng nháº­p cuá»‘i
-- reset máº­t kháº©u tÃ i khoáº£n ná»™i bá»™
-
-## Backup vÃ  váº­n hÃ nh production
-
-Production hiá»‡n cháº¡y táº¡i:
-
-- `https://noxhandong.vn`
-
-Háº¡ táº§ng:
-
-- VPS Windows Server
-- PostgreSQL local
-- Next.js service `noxh-an-dong`
-- Caddy service `caddy`
-- backup task `NoxhAnDongDailyBackup`
-
-Backup:
-
-- PostgreSQL dump: `C:\backups\noxh-an-dong\postgres`
-- Excel export: `C:\backups\noxh-an-dong\exports`
-
-NguyÃªn táº¯c:
-
-- TrÆ°á»›c migration production pháº£i backup DB.
-- TrÆ°á»›c import dá»¯ liá»‡u tháº­t lá»›n pháº£i backup DB.
-- KhÃ´ng sá»­a code trá»±c tiáº¿p trÃªn VPS náº¿u khÃ´ng kháº©n cáº¥p.
-- Local/Git lÃ  nguá»“n code chÃ­nh.
-- VPS lÃ  nÆ¡i cháº¡y production.
-
-Runbook:
-
-- [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md)
-
-## File cáº§n Ä‘á»c khi bÃ n giao
-
-Äá»c theo thá»© tá»±:
-
-1. [README.md](../README.md)
-2. [docs/README.md](README.md)
-3. [handoff.md](handoff.md)
-4. [roadmap.md](roadmap.md)
-5. [phase-2-roadmap.md](phase-2-roadmap.md)
-6. [database.md](database.md)
-7. [parser-ma-can-ho.md](parser-ma-can-ho.md)
-8. [backlog-doi-soat-sao-ke.md](backlog-doi-soat-sao-ke.md)
-9. [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md)
-
-## Nhá»¯ng Ä‘iá»u khÃ´ng Ä‘Æ°á»£c lÃ m tÃ¹y tiá»‡n
-
-- KhÃ´ng public sá»‘ Ä‘iá»‡n thoáº¡i/tÃªn cÆ° dÃ¢n ra trang khÃ´ng login.
-- KhÃ´ng Ä‘á»ƒ cÆ° dÃ¢n Ä‘á»c raw Excel hoáº·c sao kÃª.
-- KhÃ´ng tá»± Ä‘á»™ng dÃ¹ng sao kÃª Ä‘á»ƒ sá»­a tráº¡ng thÃ¡i phÃ­ public khi chÆ°a cÃ³ quy trÃ¬nh duyá»‡t.
-- KhÃ´ng xÃ³a dá»¯ liá»‡u production náº¿u chÆ°a backup.
-- KhÃ´ng Ä‘á»•i schema production náº¿u chÆ°a cÃ³ migration vÃ  káº¿ hoáº¡ch rollback.
-- KhÃ´ng Ä‘Æ°a `.env`, DB dump, file sao kÃª tháº­t lÃªn Git.
-
-
+- Không public dữ liệu cá nhân ra route cư dân.
+- Không sửa tay public snapshot thay cho quy trình preview/public.
+- Không xóa DB hoặc file upload thật nếu chưa backup và được duyệt.
+- Không import/restore local đè lên production.
+- Không thêm parser thứ hai bằng regex riêng trong UI.
+- Không để route public đọc raw import hoặc contact staging.

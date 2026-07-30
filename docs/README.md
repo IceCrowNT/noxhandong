@@ -1,45 +1,47 @@
 # Tài liệu dự án
 
-Thư mục `docs/` là nguồn tài liệu cấp cao của dự án. Khi mở project, vui lòng đọc các tài liệu tại đây để nắm bắt kiến trúc và luồng nghiệp vụ thay vì phải lục tìm trong lịch sử chat.
+Thư mục `docs/` là nguồn tài liệu cấp cao của project. Cập nhật gần nhất: 2026-07-28, theo trạng thái source hiện có trong workspace, bao gồm cả các thay đổi chưa commit.
 
 ## Tài Liệu Xương Sống
 
 | File | Vai trò |
 | --- | --- |
-| [handoff.md](handoff.md) | Trạng thái bàn giao hiện hành, dữ liệu thật và tài khoản thử nghiệm |
-| [roadmap.md](roadmap.md) | Bảng điều phối tiến độ: mục tiêu hiện tại, các task đang làm và backlog |
-| [database.md](database.md) | Thiết kế cơ sở dữ liệu hiện hành và nguyên tắc chuẩn hóa dữ liệu |
-| [parser-ma-can-ho.md](parser-ma-can-ho.md) | Tài liệu trung tâm cho bộ parse mã căn (rules, test cases, backlog) |
-| [module-map.md](module-map.md) | Cấu trúc thư mục source code và ranh giới các module |
-| [nghiep-vu-he-thong.md](nghiep-vu-he-thong.md) | Mô tả nghiệp vụ tổng quan để bàn giao cho người mới |
+| [handoff.md](handoff.md) | Trạng thái bàn giao hiện hành, môi trường, dữ liệu thật, điểm cần chú ý khi tiếp nhận |
+| [roadmap.md](roadmap.md) | Điều phối tiến độ: mục tiêu, phần đã xong, backlog gần |
+| [nghiep-vu-he-thong.md](nghiep-vu-he-thong.md) | Mô tả nghiệp vụ tổng quan, người dùng, luồng dữ liệu và giới hạn an toàn |
+| [database.md](database.md) | Mô hình dữ liệu hiện hành, bảng trung tâm và nguyên tắc ghi/đọc dữ liệu |
+| [module-map.md](module-map.md) | Bản đồ route/module/source và quy tắc đặt code mới |
+| [design-system.md](design-system.md) | Quy tắc UI/UX public/admin, component pattern và các quyết định thiết kế |
+| [parser-ma-can-ho.md](parser-ma-can-ho.md) | Rule parser mã căn và backlog test case |
 
-## Tài Liệu Triển Khai & Kiểm Thử
-
-| File | Vai trò |
-| --- | --- |
-| [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md) | Sổ tay (Runbook) duy nhất hướng dẫn quy trình deploy lên VPS production |
-| [checklist-trien-khai-va-nghiem-thu.md](checklist-trien-khai-va-nghiem-thu.md) | Cổng nghiệm thu chi tiết (review/check/test) cho các tính năng |
-| [checklist-duyet-truoc-deploy.md](checklist-duyet-truoc-deploy.md) | Checklist dừng thủ công để duyệt an toàn trước khi đẩy code lên production |
-| [production-deploy-vps.md](production-deploy-vps.md) | Tổng hợp các quyết định hạ tầng VPS (tham khảo, không dùng làm runbook) |
-| [setup-may-moi-va-database.md](setup-may-moi-va-database.md) | Hướng dẫn thiết lập môi trường cho máy tính lập trình viên mới |
-
-## Tài Liệu Thiết Kế (UI)
+## Tài Liệu Vận Hành
 
 | File | Vai trò |
 | --- | --- |
-| [design-system.md](design-system.md) | Global design system và patterns cho giao diện Mobile-first (Public & Admin) |
+| [setup-may-moi-va-database.md](setup-may-moi-va-database.md) | Dựng môi trường dev và database trên máy mới |
+| [deploy-vps-step-by-step.md](deploy-vps-step-by-step.md) | Runbook deploy VPS |
+| [production-deploy-vps.md](production-deploy-vps.md) | Ghi chú hạ tầng production |
+| [checklist-trien-khai-va-nghiem-thu.md](checklist-trien-khai-va-nghiem-thu.md) | Checklist nghiệm thu tính năng |
+| [checklist-duyet-truoc-deploy.md](checklist-duyet-truoc-deploy.md) | Checklist dừng tay trước deploy |
 
-## Nhóm Nghiệp Vụ Chuyên Biệt
+## Tài Liệu Nghiệp Vụ Chuyên Biệt
 
-Các văn bản mô tả logic và thuật toán xử lý đặc thù:
-- [resident-import-rules.vi.md](resident-import-rules.vi.md) (Quy tắc lọc dữ liệu cư dân)
-- [filter-rules.vi.md](filter-rules.vi.md) (Quy tắc lọc rác sao kê)
-- [doi-soat-sao-ke-va-bang-chung.md](doi-soat-sao-ke-va-bang-chung.md) (Quy trình đối soát)
-- [backlog-doi-soat-sao-ke.md](backlog-doi-soat-sao-ke.md) (Backlog tác vụ đối soát)
-- [task-developer-hidden-feature-flags.md](task-developer-hidden-feature-flags.md) (Quản lý các tính năng đang phát triển)
+- [resident-import-rules.vi.md](resident-import-rules.vi.md): quy tắc lọc dữ liệu cư dân.
+- [filter-rules.vi.md](filter-rules.vi.md): quy tắc lọc rác sao kê.
+- [doi-soat-sao-ke-va-bang-chung.md](doi-soat-sao-ke-va-bang-chung.md): quy trình đối soát sao kê và bằng chứng.
+- [backlog-doi-soat-sao-ke.md](backlog-doi-soat-sao-ke.md): backlog riêng cho đối soát sao kê.
+- [task-bo-sung-giao-dich-qua-khu.md](task-bo-sung-giao-dich-qua-khu.md): nghiệp vụ bổ sung giao dịch quá khứ.
+- [task-developer-hidden-feature-flags.md](task-developer-hidden-feature-flags.md): quản lý tính năng đang phát triển.
 
-## Ghi Chú Dọn Dẹp
+## Báo Cáo Và Dữ Liệu Kiểm Chứng
 
-- Không xóa thẳng file cũ nếu chưa chắc chắn.
-- Các file tài liệu cũ, nháp, thiết kế tính năng đã hoàn thiện hoặc không còn sử dụng đã được chuyển vào thư mục `archive/` để giữ thư mục `docs/` luôn sạch sẽ.
-- File xương sống phải có vai trò riêng biệt, tuyệt đối không lặp lại nội dung điều phối của nhau.
+- `docs/reports/`: báo cáo dữ liệu thật, file đối soát, parser summary.
+- `docs/preview-*`: output preview từ script import/review.
+- `docs/resources/`: file sao kê mẫu và tài nguyên kiểm chứng.
+
+## Quy Tắc Duy Trì Tài Liệu
+
+- File xương sống phải phản ánh source hiện tại, không chỉ lịch sử chat.
+- Khi thay đổi route, schema, luồng import/public, hoặc UI public/admin đáng kể, cập nhật ít nhất `handoff.md`, `module-map.md` và file nghiệp vụ liên quan.
+- Báo cáo lịch sử để trong `docs/reports/`; không trộn vào roadmap.
+- Không xóa tài liệu cũ nếu chưa chắc; chuyển vào `archive/` kèm README khi cần.

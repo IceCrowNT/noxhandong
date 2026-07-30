@@ -1,7 +1,8 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, UploadCloud, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,12 +21,27 @@ export function ImportProgressButton({
 }: ImportProgressButtonProps) {
   const { pending } = useFormStatus();
   const [progress, setProgress] = useState(0);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  const wasPendingRef = useRef(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Reset toàn bộ trạng thái khi URL thay đổi (trang đã reload/chuyển hướng xong)
+  useEffect(() => {
+    setIsRedirecting(false);
+    setProgress(0);
+    wasPendingRef.current = false;
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
+
     if (pending) {
+      wasPendingRef.current = true;
+      setIsRedirecting(false);
       setProgress(0);
-      // Simulate progress: rapid to 30%, then slow to 60%, then very slow to 95%
+
       interval = setInterval(() => {
         setProgress((prev) => {
           if (prev < 40) return prev + (Math.random() * 8 + 2);
@@ -35,14 +51,20 @@ export function ImportProgressButton({
         });
       }, 500);
     } else {
-      setProgress(100);
-      const timeout = setTimeout(() => setProgress(0), 500);
-      return () => clearTimeout(timeout);
+      // Khi pending về false, nếu trước đó form vừa thực sự submit
+      if (wasPendingRef.current) {
+        setIsRedirecting(true); // Khóa cứng nút chờ tải trang
+        setProgress(100);       // Kéo thanh chạy lên 100%
+        wasPendingRef.current = false;
+      }
     }
+
     return () => clearInterval(interval);
   }, [pending]);
 
-  if (!pending) {
+  const isLoading = pending || isRedirecting;
+
+  if (!isLoading) {
     return (
       <Button type="submit" className={className} {...props}>
         {icon}
@@ -52,21 +74,21 @@ export function ImportProgressButton({
   }
 
   return (
-    <Button 
-      type="submit" 
-      disabled 
+    <Button
+      type="submit"
+      disabled
       className={cn("relative overflow-hidden pointer-events-none", className)}
       {...props}
     >
       {/* Progress Fill */}
-      <div 
+      <div
         className="absolute bottom-0 left-0 top-0 bg-white/20 transition-all duration-500 ease-out"
         style={{ width: `${Math.min(progress, 100)}%` }}
       />
       {/* Text */}
       <div className="relative z-10 flex items-center justify-center gap-2">
         <Loader2 size={17} className="animate-spin" />
-        {pendingText} ({Math.round(Math.min(progress, 99))}%)
+        {isRedirecting ? "Đang xử lý dữ liệu..." : `${pendingText} (${Math.round(Math.min(progress, 99))}%)`}
       </div>
     </Button>
   );

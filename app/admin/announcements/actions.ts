@@ -8,8 +8,10 @@ import { redirect } from "next/navigation";
 import { requirePermission } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 
-const MAX_PDF_BYTES = 10 * 1024 * 1024;
+const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
 const ANNOUNCEMENT_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "announcements");
+const ALLOWED_ATTACHMENT_MIME_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED_ATTACHMENT_EXTENSIONS = new Set([".pdf", ".jpg", ".jpeg", ".png", ".webp", ".gif"]);
 
 function getString(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -33,6 +35,11 @@ function safeUrlFileName(value: string) {
   return `${slug || "announcement"}${extension}`;
 }
 
+function isAllowedAttachment(file: File) {
+  const extension = path.extname(file.name || "").toLowerCase();
+  return ALLOWED_ATTACHMENT_MIME_TYPES.has(file.type) || ALLOWED_ATTACHMENT_EXTENSIONS.has(extension);
+}
+
 export async function createAnnouncementAction(formData: FormData) {
   const account = await requirePermission("MANAGE_ANNOUNCEMENTS");
   const title = getString(formData, "title");
@@ -46,14 +53,15 @@ export async function createAnnouncementAction(formData: FormData) {
 
   let storedPathUrl = null;
   let originalName = null;
+  let mimeType = null;
   let fileSize = null;
 
   if (file instanceof File && file.size > 0) {
-    if (file.type && file.type !== "application/pdf") {
-      redirect("/admin/announcements?error=not_pdf");
+    if (!isAllowedAttachment(file)) {
+      redirect("/admin/announcements?error=unsupported_file");
     }
 
-    if (file.size > MAX_PDF_BYTES) {
+    if (file.size > MAX_ATTACHMENT_BYTES) {
       redirect("/admin/announcements?error=file_too_large");
     }
 
@@ -63,6 +71,7 @@ export async function createAnnouncementAction(formData: FormData) {
     const storedPath = path.join(ANNOUNCEMENT_UPLOAD_DIR, storedName);
     await writeFile(storedPath, Buffer.from(await file.arrayBuffer()));
     storedPathUrl = `/uploads/announcements/${storedName}`;
+    mimeType = file.type || null;
     fileSize = file.size;
   }
 
@@ -72,7 +81,7 @@ export async function createAnnouncementAction(formData: FormData) {
       mo_ta_ngan: description || null,
       ten_file_goc: originalName,
       duong_dan_file: storedPathUrl,
-      mime_type: storedPathUrl ? "application/pdf" : null,
+      mime_type: mimeType,
       kich_thuoc_byte: fileSize,
       trang_thai: status,
       ngay_cong_khai: status === "CONG_KHAI" ? new Date() : null,

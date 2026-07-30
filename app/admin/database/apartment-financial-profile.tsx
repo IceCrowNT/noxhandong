@@ -1,133 +1,176 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Building2,
+  DollarSign,
+  FileImage,
+  Paperclip,
+  ReceiptText,
+  User,
+} from "lucide-react";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ApartmentFinancialProfile, FinancialEvent } from "@/src/modules/apartments/financial-profile";
 import { formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
-import { ApartmentFinancialProfile } from "@/src/modules/apartments/financial-profile";
-import { FileImage, History, Building2, User, ArrowDownRight, ArrowUpRight, DollarSign } from "lucide-react";
+
+function formatMoney(value: number) {
+  return `${value.toLocaleString("vi-VN")} đ`;
+}
+
+function eventLabel(type: FinancialEvent["type"]) {
+  if (type === "MONTHLY_CLOSING") return "Chốt công nợ";
+  if (type === "BANK_TRANSFER") return "Tiền về ngân hàng";
+  if (type === "MANUAL_ADJUSTMENT") return "Điều chỉnh";
+  return "Giao dịch khác";
+}
+
+function eventIcon(type: FinancialEvent["type"]) {
+  if (type === "MONTHLY_CLOSING") return ArrowUpRight;
+  if (type === "BANK_TRANSFER") return ArrowDownRight;
+  if (type === "MANUAL_ADJUSTMENT") return DollarSign;
+  return ReceiptText;
+}
+
+function eventTone(type: FinancialEvent["type"]) {
+  if (type === "MONTHLY_CLOSING") return "bg-rose-50 text-rose-700";
+  if (type === "BANK_TRANSFER") return "bg-emerald-50 text-emerald-700";
+  if (type === "MANUAL_ADJUSTMENT") return "bg-blue-50 text-blue-700";
+  return "bg-slate-50 text-slate-700";
+}
+
+function isImageUrl(value: string) {
+  return /\.(jpeg|jpg|gif|png|webp)$/i.test(value);
+}
+
+function EvidenceLinks({ event }: { event: FinancialEvent }) {
+  if (!event.evidences.length) return <span className="text-xs text-[var(--muted)]">-</span>;
+
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {event.evidences.map((evidence, index) => {
+        const Icon = evidence.url && isImageUrl(evidence.url) ? FileImage : Paperclip;
+        return evidence.url ? (
+          <a
+            key={`${evidence.url}-${index}`}
+            href={evidence.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 rounded-md border border-[var(--line)] bg-white px-2 py-1 text-xs font-semibold text-[var(--accent)] hover:border-[var(--accent)]"
+          >
+            <Icon size={13} aria-hidden="true" />
+            {evidence.type || "File"}
+          </a>
+        ) : (
+          <span
+            key={`${evidence.type}-${index}`}
+            className="inline-flex items-center gap-1 rounded-md border border-[var(--line)] bg-[var(--surface)] px-2 py-1 text-xs font-semibold text-[var(--muted)]"
+          >
+            <Paperclip size={13} aria-hidden="true" />
+            {evidence.note || evidence.type || "Ghi chú"}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 export function ApartmentFinancialProfileView({ data }: { data: ApartmentFinancialProfile }) {
   const { apartment, events } = data;
-  
+  const paidThrough = apartment.currentFeeStatus?.thang_da_dong_den_hien_tai || "Chưa có dữ liệu";
+
   return (
-    <Card className="bg-white/90 shadow-sm border-[var(--line)]">
-      <CardHeader className="pb-4">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--accent)] border border-[var(--line)]">
-            <Building2 size={24} />
-          </div>
-          <div>
-            <CardTitle className="text-2xl text-[var(--text)]">Căn hộ {apartment.ma_can}</CardTitle>
-            <CardDescription className="flex items-center gap-2 text-sm mt-1">
-              <User size={16} /> {apartment.chu_ho}
-              <span className="text-[var(--muted)] mx-1">•</span>
-              {apartment.dien_tich} m²
-            </CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <h4 className="mb-6 flex items-center gap-2 font-semibold text-[var(--muted)] text-sm uppercase tracking-wider">
-          <History size={18} /> Lịch sử tài chính
-        </h4>
-        <div className="relative border-l-2 border-[var(--line)] pl-8 space-y-8 ml-4">
-          {events.length === 0 ? (
-            <div className="text-sm text-[var(--muted)] bg-[var(--surface)] p-4 rounded-md border border-[var(--line)]">
-              Chưa có dữ liệu giao dịch cho căn hộ này.
+    <Card className="border-[var(--line)] bg-white/90 shadow-sm">
+      <CardHeader className="border-b border-[var(--line)] pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[var(--line)] bg-[var(--surface)] text-[var(--accent)]">
+              <Building2 size={21} aria-hidden="true" />
             </div>
-          ) : (
-            events.map((event) => (
-              <div key={event.id} className="relative group">
-                {/* Timeline marker */}
-                <div 
-                  className={`absolute -left-[45px] flex h-8 w-8 items-center justify-center rounded-full border-2 border-white shadow-sm transition-transform group-hover:scale-110 
-                    ${event.type === "MONTHLY_CLOSING" ? "bg-rose-500" : event.type === "BANK_TRANSFER" ? "bg-emerald-500" : "bg-blue-500"} text-white`}
-                >
-                  {event.type === "MONTHLY_CLOSING" ? (
-                    <ArrowUpRight size={16} />
-                  ) : event.type === "BANK_TRANSFER" ? (
-                    <ArrowDownRight size={16} />
-                  ) : (
-                    <DollarSign size={16} />
-                  )}
-                </div>
-                
-                {/* Event Card */}
-                <div className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
-                    <div>
-                      <div className="font-bold text-base text-[var(--text)] flex items-center gap-2">
-                        {event.type === "MONTHLY_CLOSING"
-                          ? "Chốt công nợ tháng"
-                          : event.type === "BANK_TRANSFER"
-                          ? "Tiền về ngân hàng"
-                          : event.type === "MANUAL_ADJUSTMENT"
-                          ? "Điều chỉnh thủ công"
-                          : "Giao dịch khác"}
-                        {event.period && (
-                          <span className="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[var(--muted)] border border-[var(--line)]">
-                            {event.period}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-sm text-[var(--muted)] mt-1">
-                        {formatVietnamDateTime(event.date.toISOString())}
-                      </div>
-                    </div>
-                    
-                    <div className={`font-black text-lg whitespace-nowrap ${event.amount >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                      {event.amount > 0 ? "+" : ""}
-                      {event.amount.toLocaleString("vi-VN")} đ
-                    </div>
-                  </div>
-                  
-                  <div className="text-sm text-[var(--text)] bg-white/50 p-3 rounded-lg border border-[var(--line)]/50 mb-3 whitespace-pre-line leading-relaxed">
-                    {event.description}
-                  </div>
-                  
-                  {event.evidences.length > 0 && (
-                    <div className="mt-4 grid gap-3 border-t border-[var(--line)] pt-3">
-                      {event.evidences.map((evi, i) => (
-                        <div key={i}>
-                          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-                            {evi.type || "Bằng chứng đính kèm"}
-                          </div>
-                          {evi.note && (
-                            <div className="mb-3 text-sm text-[var(--text)] italic bg-yellow-50/50 p-2 rounded-md border border-yellow-100">
-                              {evi.note}
-                            </div>
-                          )}
-                          {evi.url && evi.url.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
-                            <a
-                              href={evi.url}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="block max-w-sm overflow-hidden rounded-md border border-[var(--line)] hover:border-[var(--accent)]"
-                            >
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={evi.url}
-                                alt="Evidence"
-                                className="max-h-[300px] w-full bg-[var(--surface)] object-contain"
-                              />
-                            </a>
-                          ) : evi.url ? (
-                            <a
-                              href={evi.url}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1.5 rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-[var(--accent)] border border-[var(--line)] shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50"
-                            >
-                              <FileImage size={14} />
-                              Mở file đính kèm {event.evidences.length > 1 ? `#${i + 1}` : ""}
-                            </a>
-                          ) : null}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
+            <div className="min-w-0">
+              <CardTitle className="text-xl text-[var(--text)]">Căn hộ {apartment.ma_can}</CardTitle>
+              <CardDescription className="mt-1 flex flex-wrap items-center gap-2 text-sm">
+                <User size={15} aria-hidden="true" />
+                {apartment.chu_ho}
+                <span className="text-[var(--muted)]">•</span>
+                {apartment.dien_tich} m²
+              </CardDescription>
+            </div>
+          </div>
+
+          <div className="rounded-md border border-[rgba(0,75,70,0.22)] bg-[var(--accent-soft)] px-4 py-2">
+            <span className="block text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">Đã đóng đến</span>
+            <strong className="block text-lg leading-6 text-[var(--accent)]">{paidThrough}</strong>
+          </div>
         </div>
+
+        {apartment.currentFeeStatus?.ghi_chu_public ? (
+          <p className="mt-3 rounded-md border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm leading-6 text-[var(--muted)]">
+            {apartment.currentFeeStatus.ghi_chu_public}
+          </p>
+        ) : null}
+      </CardHeader>
+
+      <CardContent className="pt-0">
+        {events.length === 0 ? (
+          <div className="p-4 text-sm text-[var(--muted)]">Chưa có dữ liệu giao dịch cho căn hộ này.</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[160px]">Thời gian</TableHead>
+                <TableHead className="w-[180px]">Loại / kỳ phí</TableHead>
+                <TableHead>Nội dung</TableHead>
+                <TableHead className="w-[150px]">Chứng từ</TableHead>
+                <TableHead className="w-[140px] text-right">Số tiền</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {events.map((event) => {
+                const Icon = eventIcon(event.type);
+                return (
+                  <TableRow key={event.id}>
+                    <TableCell className="whitespace-nowrap text-xs text-[var(--muted)]">
+                      {formatVietnamDateTime(event.date.toISOString())}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex min-w-0 items-start gap-2">
+                        <span className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full ${eventTone(event.type)}`}>
+                          <Icon size={14} aria-hidden="true" />
+                        </span>
+                        <div className="min-w-0">
+                          <strong className="block text-sm leading-5 text-[var(--text)]">{eventLabel(event.type)}</strong>
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {event.period ? (
+                              <span className="rounded-full border border-[var(--line)] bg-[var(--surface)] px-2 py-0.5 text-[11px] font-semibold text-[var(--muted)]">
+                                {event.period}
+                              </span>
+                            ) : null}
+                            {event.feePeriod ? (
+                              <span className="rounded-full border border-[rgba(0,75,70,0.22)] bg-[var(--accent-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--accent)]">
+                                Kỳ phí {event.feePeriod}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-[680px]">
+                      <p className="line-clamp-2 text-sm leading-6 text-[var(--text)]">{event.description}</p>
+                    </TableCell>
+                    <TableCell>
+                      <EvidenceLinks event={event} />
+                    </TableCell>
+                    <TableCell className={`whitespace-nowrap text-right text-base font-black ${event.amount >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
+                      {event.amount > 0 ? "+" : ""}
+                      {formatMoney(event.amount)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );

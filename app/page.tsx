@@ -10,6 +10,7 @@ import { PUBLIC_LOOKUP_MAX_LENGTH } from "@/src/modules/billing/fee-status";
 import { prisma } from "@/src/modules/database";
 import { formatVietnamDate } from "@/src/modules/shared/utils/date-time";
 import { AnnouncementDialog } from "@/components/resident/announcement-dialog";
+import { ResidentFooter } from "@/components/resident/resident-footer";
 
 export default async function HomePage() {
   const announcements = await prisma.thongBaoCongKhai.findMany({
@@ -21,6 +22,7 @@ export default async function HomePage() {
       tieu_de: true,
       mo_ta_ngan: true,
       duong_dan_file: true,
+      mime_type: true,
       ngay_cong_khai: true,
     },
   });
@@ -129,7 +131,7 @@ export default async function HomePage() {
                       <div className="min-w-0">
                         <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
                           <FileText size={15} aria-hidden="true" />
-                          {isPrimary ? "Thông báo mới nhất" : (item.duong_dan_file ? "PDF công khai" : "Thông báo")}
+                          {isPrimary ? "Thông báo mới nhất" : (item.duong_dan_file ? "Tài liệu công khai" : "Thông báo")}
                         </div>
                         <strong className={isPrimary ? "block text-lg leading-snug text-[var(--text)]" : "block truncate text-sm text-[var(--text)]"}>
                           {item.tieu_de}
@@ -154,6 +156,8 @@ export default async function HomePage() {
             </div>
           </section>
         ) : null}
+
+        <ResidentFooter />
       </section>
     </main>
   );

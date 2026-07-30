@@ -13,6 +13,7 @@ import {
   publicFeeDisplayText,
 } from "@/src/modules/billing/fee-status";
 import { prisma } from "@/src/modules/database";
+import { ResidentFooter } from "@/components/resident/resident-footer";
 
 type FeeLookupPageProps = {
   searchParams?: Promise<{
@@ -351,6 +352,7 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
           </Card>
         ) : null}
       </section>
+      <ResidentFooter />
     </main>
   );
 }

@@ -8,6 +8,7 @@ export type FinancialEvent = {
   amount: number;
   description: string;
   period: string | null;
+  feePeriod: string | null;
   evidences: Array<{
     url: string;
     type: string;
@@ -20,6 +21,10 @@ export type ApartmentFinancialProfile = {
     ma_can: string;
     chu_ho: string;
     dien_tich: number;
+    currentFeeStatus: {
+      thang_da_dong_den_hien_tai: string | null;
+      ghi_chu_public: string | null;
+    } | null;
   };
   events: FinancialEvent[];
 };
@@ -32,6 +37,10 @@ export async function getApartmentFinancialProfile(maCan: string): Promise<Apart
     include: {
       lien_he: {
         where: { la_lien_he_chinh: true },
+        take: 1,
+      },
+      trang_thai_phi_public: {
+        orderBy: [{ batch: { public_luc: "desc" } }, { ngay_tao: "desc" }],
         take: 1,
       },
     },
@@ -77,6 +86,7 @@ export async function getApartmentFinancialProfile(maCan: string): Promise<Apart
         amount: Number(item.so_tien),
         description: item.giao_dich_ngan_hang.noi_dung_chuan_hoa || item.giao_dich_ngan_hang.noi_dung_goc,
         period: item.ky_du_lieu,
+        feePeriod: item.thang_ap_dung,
         evidences: item.giao_dich_ngan_hang.chung_tu_doi_soat
           .filter((e) => e.duong_dan_file || e.ghi_chu)
           .map((e) => ({
@@ -93,6 +103,7 @@ export async function getApartmentFinancialProfile(maCan: string): Promise<Apart
         amount: Number(item.so_tien),
         description: item.bo_sung_qua_khu.ghi_chu_noi_bo || "Giao dịch bổ sung",
         period: item.ky_du_lieu,
+        feePeriod: item.thang_ap_dung,
         evidences: item.bo_sung_qua_khu.duong_dan_file || item.bo_sung_qua_khu.ghi_chu_noi_bo || item.bo_sung_qua_khu.noi_dung_xac_minh
           ? [
               {
@@ -111,6 +122,7 @@ export async function getApartmentFinancialProfile(maCan: string): Promise<Apart
         amount: Number(item.so_tien),
         description: item.ghi_chu || "Ghi nhận đóng phí",
         period: item.ky_du_lieu,
+        feePeriod: item.thang_ap_dung,
         evidences: [],
       });
     }
@@ -128,6 +140,7 @@ export async function getApartmentFinancialProfile(maCan: string): Promise<Apart
         "vi-VN",
       )}đ`,
       period: debt.so_chot_thang.ky_du_lieu,
+      feePeriod: debt.thang_da_dong_den_hien_tai,
       evidences: [],
     });
   }
@@ -142,6 +155,12 @@ export async function getApartmentFinancialProfile(maCan: string): Promise<Apart
       ma_can: canHo.ma_can,
       chu_ho: canHo.lien_he[0]?.ten_hien_thi || "Chưa có chủ hộ",
       dien_tich: Number(canHo.dien_tich_m2 || 0),
+      currentFeeStatus: canHo.trang_thai_phi_public[0]
+        ? {
+            thang_da_dong_den_hien_tai: canHo.trang_thai_phi_public[0].thang_da_dong_den_hien_tai,
+            ghi_chu_public: canHo.trang_thai_phi_public[0].ghi_chu_public,
+          }
+        : null,
     },
     events: filteredEvents,
   };

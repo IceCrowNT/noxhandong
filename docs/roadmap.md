@@ -1,60 +1,81 @@
 # Roadmap dự án
 
-## Vai Trò File Này
+Cập nhật: 2026-07-28.
 
-`docs/roadmap.md` là bảng điều phối tiến độ cấp cao của dự án. File này chỉ trả lời 3 câu hỏi cốt lõi:
-1. Mục tiêu hiện tại là gì?
-2. Trạng thái hiện tại (Những gì đã xong)?
-3. Các công việc cần làm tiếp theo (Backlog / To-Do)?
+## Vai Trò
 
-*(Các tài liệu xương sống khác vui lòng tra cứu tại `docs/README.md`)*
-
----
+File này là bảng điều phối cấp cao. Chi tiết kỹ thuật nằm ở `module-map.md`, schema nằm ở `database.md`, quyết định UI nằm ở `design-system.md`.
 
 ## 1. Mục Tiêu Sản Phẩm
-Dự án hướng tới một Web App quản lý thu phí căn hộ, gồm hai phân hệ:
-1. **Trang Public (noxhandong.vn)**: Dành cho cư dân tra cứu thông tin đóng phí, xem thông báo, không cần đăng nhập. Cư dân chỉ thấy dữ liệu đã được Ban Quản Trị (BQT) chốt công khai.
-2. **Khu vực Quản Trị (Admin/Manager)**: Hệ thống nội bộ để BQT đối soát sao kê ngân hàng, duyệt giao dịch, tạo thông báo phí và quản lý danh bạ.
 
-*Nguyên tắc vận hành cốt lõi:* Lấy dữ liệu Tháng 5/2026 làm mốc quá khứ chuẩn (Opening Balance). Từ Tháng 6/2026 trở đi, mọi dữ liệu phí phát sinh phải được duyệt từ Sao Kê Ngân Hàng.
+Xây dựng web app vận hành thu phí căn hộ cho BQT An Đồng:
 
----
+1. Cư dân tra cứu trạng thái đóng phí và xem thông báo public không cần đăng nhập.
+2. Admin/BQT nhập dữ liệu, duyệt sao kê ngân hàng, lưu bằng chứng, chốt public snapshot, xuất file vận hành.
+3. Dữ liệu phí sau mốc T5/2026 được hình thành từ quyết định duyệt sao kê hoặc bổ sung có bằng chứng, không sửa tay trực tiếp trạng thái public.
 
-## 2. Lịch Sử Triển Khai (Milestones)
+## 2. Đã Hoàn Thành
 
-- **Tháng 05/2026**: Hoàn thiện MVP Phase 1. Đã thiết lập xong database PostgreSQL (migrate sang V2), nhập dữ liệu gốc (934 căn hộ), xây dựng nền tảng Admin/Auth và trang tra cứu Public. Deploy production thành công lên VPS.
-- **Tháng 06/2026 - Nay**: Triển khai Phase 2. Mở rộng tính năng đối soát sao kê, lưu bằng chứng giao dịch (ảnh chụp/Zalo), xử lý quy trình chốt dữ liệu cuối kỳ (preview trước khi public), và hoàn thiện báo cáo/xuất file vận hành (Excel, Word).
+### Nền tảng
 
----
+- Next.js App Router, PostgreSQL, Prisma.
+- Auth nội bộ với `SUPER_ADMIN`, `MANAGER`, `TECHNICIAN`.
+- 934 căn hộ master trong `can_ho`.
+- Public snapshot theo batch: `batch_trang_thai_phi_public`, `trang_thai_phi_can_ho_public`.
+- Parser mã căn dùng chung cho public lookup, import và review sao kê.
 
-## 3. Trạng Thái Hiện Tại (Đã Hoàn Thành)
+### Public cư dân
 
-Dự án hiện đang vận hành ổn định trên Production. Các tính năng cốt lõi đã chạy mượt mà:
-- **Cư dân**: Tra cứu tiến trình đóng phí (mobile-first UI), tải thông báo phí định dạng PDF/Word.
-- **Dữ liệu**: Cơ sở dữ liệu PostgreSQL hoạt động an toàn với cơ chế Backup tự động lên Google Drive mỗi 2h sáng.
-- **Xử lý giao dịch**: Hệ thống Import sao kê tự động bóc tách mã căn. Màn hình duyệt sao kê cho phép duyệt nhanh, đính kèm bằng chứng, bảo lưu hoặc từ chối.
-- **Danh bạ cư dân**: Tính năng chuẩn hóa danh bạ từ dữ liệu thô, loại bỏ số trùng lặp, tối ưu thuật toán bóc tách và hỗ trợ gộp số tự động cho các luồng xuất file Excel vận hành (vd: Checklist Cắt điện).
-- **Hệ thống phân quyền**: `SUPER_ADMIN` (toàn quyền), `MANAGER` & `TECHNICIAN` (truy cập đọc, tra cứu, xuất file).
+- Trang chủ `/` có tra cứu nhanh, thông báo mới nhất và footer cư dân.
+- `/tra-cuu-phi` có parser input tự nhiên, rate limit cơ bản, xử lý trường hợp mơ hồ một mã có nhiều hậu tố.
+- Footer cư dân có đầu mối liên hệ, thông tin thanh toán QLVH, dialog danh bạ và nút góp ý/Zalo.
+- Thông báo public hỗ trợ nội dung text, ảnh và PDF.
+- PDF thông báo xem bằng `react-pdf`; ảnh xem trực tiếp trong dialog.
 
----
+### Admin
 
-## 4. Công Việc Tiếp Theo (Backlog / Ưu Tiên Gần)
+- `/admin/dashboard`: dashboard/tra cứu nội bộ.
+- `/admin/database`: tra cứu tài chính căn hộ, xuất báo cáo và danh sách thông báo. Hồ sơ tài chính căn hộ hiện dùng bảng compact, chỉ giữ trạng thái “Đã đóng đến” ở header.
+- `/admin/import`: nhập sao kê, nhập/chốt Excel, bổ sung giao dịch quá khứ; form import có trạng thái tiến trình client.
+- `/admin/import/public-preview`: preview batch trước public.
+- `/admin/transactions/review`: duyệt giao dịch, phân bổ nhiều căn, lưu bằng chứng, rollback giao dịch chưa public.
+- `/admin/contacts/review`: review danh bạ cư dân.
+- `/admin/announcements`: tạo/công khai/ẩn thông báo public kèm PDF hoặc ảnh.
+- `/admin/accounts`, `/admin/profile`: tài khoản nội bộ.
 
-1. **Hoàn thiện UI / Phân quyền nâng cao**: Tinh chỉnh lại thanh Menu nội bộ để ẩn/hiện chính xác theo Role của tài khoản.
-2. **Gỡ duyệt nâng cao**: Hoàn thiện tính năng rollback/gỡ duyệt cho các giao dịch bị sai sót (đặc biệt là các giao dịch đã public).
-3. **Làm sạch Database**: Tinh giản các bảng/cột thừa hoặc bảng test trong quá trình phát triển Phase 1 mà không gây ảnh hưởng dữ liệu thật.
-4. **Tối ưu Báo Cáo**: Cải thiện biểu đồ Dashboard hiển thị mức độ đóng phí theo tháng trực quan hơn.
+### Xuất file
 
----
+- Excel báo cáo tiến độ phí.
+- Excel sổ tháng FINAL.
+- Excel sao kê tháng.
+- Excel checklist thông báo/cắt điện.
+- Word thông báo phí/cắt điện từ template.
 
-## 5. Rủi Ro & Cổng Dừng Thủ Công
+## 3. Ưu Tiên Gần
 
-**Rủi ro lớn cần kiểm soát:**
-- Import sao kê ngân hàng chồng chéo ngày dẫn đến sinh rác dữ liệu thô (đã có cơ chế chống trùng lặp qua mã tham chiếu nhưng cần theo dõi thêm).
-- Local và VPS lệch schema trước khi restore DB.
+1. Hoàn thiện phản ánh cư dân: thay `app/actions.ts` stub bằng luồng thật, tối thiểu lưu DB hoặc gọi webhook đã cấu hình qua env.
+2. Kiểm tra lại `react-pdf` production: self-host worker nếu không muốn phụ thuộc CDN.
+3. Tắt dần `typescript.ignoreBuildErrors`: sửa nợ type còn lại, bắt build fail khi có lỗi TS.
+4. Hoàn thiện UI mobile cho `/admin/database` và `/admin/transactions/review`, ưu tiên không overflow ngang và không card lồng card.
+5. Chuẩn hóa quyền menu admin: ẩn/hiện mục theo role và theo permission source duy nhất.
+6. Hoàn thiện rollback/gỡ duyệt nâng cao cho giao dịch đã public theo quy trình có audit.
+7. Dọn dữ liệu/file test trong `public/uploads` sau khi xác nhận với chủ dự án.
 
-**Cổng dừng thủ công (Phải xin phép trước khi làm):**
-- Xóa/Reset Database thật.
-- Restore DB từ Local chép đè lên VPS.
-- Deploy code mới lên Production.
-- Đổi Schema làm ảnh hưởng dữ liệu thật.
+## 4. Rủi Ro Chính
+
+- Public file upload phải chặn path traversal và không public dữ liệu cá nhân nhạy cảm.
+- Sao kê import trùng ngày/file có thể sinh dữ liệu thô dư; cần dựa vào mã tham chiếu và fingerprint.
+- Local và VPS lệch schema hoặc dữ liệu trước deploy/restore.
+- `react-pdf` worker CDN là phụ thuộc ngoài runtime.
+- Build hiện có thể bỏ qua lỗi TS do `ignoreBuildErrors`; luôn chạy `npx tsc --noEmit`.
+
+## 5. Cổng Dừng Thủ Công
+
+Phải hỏi/xác nhận trước khi:
+
+- Xóa/reset database thật.
+- Restore DB local đè lên VPS.
+- Deploy production.
+- Đổi schema/migration ảnh hưởng dữ liệu thật.
+- Xóa file trong `public/uploads`.
+- Public batch phí mới hoặc rollback dữ liệu đã public.
