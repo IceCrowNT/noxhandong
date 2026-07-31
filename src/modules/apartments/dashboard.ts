@@ -4,13 +4,35 @@ import {
   publicFeeDisplayText,
 } from "@/src/modules/billing/fee-status";
 import { extractNumericPaidThrough, resolveRelativeMonth } from "@/src/modules/billing/paid-through";
+import { normalizeApartmentCode } from "@/src/modules/shared/utils/text";
 import type { Prisma } from "@prisma/client";
 
 const MAX_SEARCH_LENGTH = 80;
+const MAX_BULK_LOOKUP_LENGTH = 2000;
 const RESULT_LIMIT = 20;
 const BASE_YEAR = 2026;
 
 export type ApartmentDashboardData = Awaited<ReturnType<typeof getApartmentDashboardData>>;
+
+type BulkPaymentDetail = {
+  id: number;
+  amount: string | null;
+  eventAt: string | null;
+  sourceType: string;
+  feePeriod: string;
+  appliedMonth: string | null;
+  content: string | null;
+  transferer: string | null;
+  bankReference: string | null;
+  evidences: Array<{
+    id: string;
+    type: string;
+    filePath: string | null;
+    fileName: string | null;
+    note: string | null;
+    createdAt: string | null;
+  }>;
+};
 
 function formatDecimal(value: { toString(): string } | null) {
   return value ? value.toString() : null;
@@ -66,6 +88,271 @@ function getOperationalCurrentPeriod() {
     month,
     year,
     label: `T${month}-${year}`,
+  };
+}
+
+function monthKey(year: number, month: number) {
+  return `${year}-${String(month).padStart(2, "0")}`;
+}
+
+function monthIndex(year: number, month: number) {
+  return year * 12 + month - 1;
+}
+
+function monthFromAbsoluteIndex(index: number) {
+  return {
+    year: Math.floor(index / 12),
+    month: (index % 12) + 1,
+  };
+}
+
+function monthStartDate(year: number, month: number) {
+  return new Date(`${year}-${String(month).padStart(2, "0")}-01T00:00:00+07:00`);
+}
+
+const vietnamMonthFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Ho_Chi_Minh",
+  year: "numeric",
+  month: "2-digit",
+});
+
+function paymentMonthKey(value: Date) {
+  return vietnamMonthFormatter.format(value);
+}
+
+function normalizeBulkLookupRange(value: string | undefined) {
+  return value === "12" ? 12 : 6;
+}
+
+function buildBulkLookupMonths(range: number) {
+  const currentPeriod = getOperationalCurrentPeriod();
+  const endIndex = monthIndex(currentPeriod.year, currentPeriod.month);
+  return Array.from({ length: range }, (_, offset) => {
+    const item = monthFromAbsoluteIndex(endIndex - range + 1 + offset);
+    return {
+      key: monthKey(item.year, item.month),
+      label: `T${item.month}/${item.year}`,
+      month: item.month,
+      year: item.year,
+    };
+  });
+}
+
+function parseBulkApartmentCodes(rawValue: string) {
+  const rawInput = rawValue.trim().slice(0, MAX_BULK_LOOKUP_LENGTH);
+  const tokens = rawInput
+    .replace(/[,\n\r;|]+/g, " ")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+  const blockPattern = /^(L[1-9][A-C]?|LK[1-9]|LKV)$/i;
+  const roomPattern = /^[1-9]\d{0,2}[A-Z]?$/i;
+  const seen = new Set<string>();
+  const codes: string[] = [];
+
+  const pushCode = (value: string) => {
+    const code = normalizeApartmentCode(value);
+    if (!code || seen.has(code)) return;
+    seen.add(code);
+    codes.push(code);
+  };
+
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index].replace(/[()[\]{}"'`]+/g, "");
+    const nextToken = tokens[index + 1]?.replace(/[()[\]{}"'`]+/g, "");
+    if (blockPattern.test(token) && nextToken && roomPattern.test(nextToken)) {
+      pushCode(`${token}${nextToken}`);
+      index += 1;
+      continue;
+    }
+    pushCode(token);
+  }
+
+  return { rawInput, codes };
+}
+
+function paymentEventDate(history: {
+  ngay_tao: Date;
+  giao_dich_ngan_hang: { ngay_giao_dich: Date | null } | null;
+  bo_sung_qua_khu: { ngay_giao_dich_goc: Date | null } | null;
+}) {
+  return history.giao_dich_ngan_hang?.ngay_giao_dich || history.bo_sung_qua_khu?.ngay_giao_dich_goc || history.ngay_tao;
+}
+
+async function getBulkApartmentPaymentLookup(rawValue: string | undefined, requestedRange: string | undefined) {
+  const monthRange = normalizeBulkLookupRange(requestedRange);
+  const months = buildBulkLookupMonths(monthRange);
+  const { rawInput, codes } = parseBulkApartmentCodes(rawValue || "");
+  const firstMonth = months[0];
+  const lastMonth = months[months.length - 1];
+  const fromDate = monthStartDate(firstMonth.year, firstMonth.month);
+  const toDate = monthStartDate(lastMonth.month === 12 ? lastMonth.year + 1 : lastMonth.year, lastMonth.month === 12 ? 1 : lastMonth.month + 1);
+
+  if (!codes.length) {
+    return {
+      rawInput,
+      monthRange,
+      months,
+      parsedCodes: [],
+      missingCodes: [],
+      rows: [],
+    };
+  }
+
+  const apartments = await prisma.canHo.findMany({
+    where: { ma_can: { in: codes } },
+    select: {
+      id: true,
+      ma_can: true,
+      trang_thai_phi_public: {
+        where: {
+          batch: { la_batch_public_hien_hanh: true },
+        },
+        orderBy: { ngay_tao: "desc" },
+        take: 1,
+        select: {
+          thang_da_dong_den_hien_tai: true,
+          payload_public_json: true,
+        },
+      },
+    },
+  });
+
+  const apartmentByCode = new Map(apartments.map((apartment) => [apartment.ma_can, apartment]));
+  const apartmentById = new Map(apartments.map((apartment) => [apartment.id, apartment.ma_can]));
+  const missingCodes = codes.filter((code) => !apartmentByCode.has(code));
+  const monthlyPayments = new Map<
+    string,
+    Map<
+      string,
+      BulkPaymentDetail[]
+    >
+  >();
+
+  const histories = apartments.length
+    ? await prisma.lichSuDongPhiCanHo.findMany({
+        where: {
+          can_ho_id: { in: apartments.map((apartment) => apartment.id) },
+        },
+        orderBy: [{ ngay_tao: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          can_ho_id: true,
+          ky_du_lieu: true,
+          thang_ap_dung: true,
+          loai_nguon: true,
+          so_tien: true,
+          ghi_chu: true,
+          ngay_tao: true,
+          giao_dich_ngan_hang: {
+            select: {
+              id: true,
+              ngay_giao_dich: true,
+              noi_dung_goc: true,
+              tham_chieu_ngan_hang: true,
+              ten_nguoi_chuyen: true,
+              chung_tu_doi_soat: {
+                orderBy: { ngay_tao: "desc" },
+                take: 5,
+                select: {
+                  id: true,
+                  loai_chung_tu: true,
+                  duong_dan_file: true,
+                  ten_file_goc: true,
+                  ghi_chu: true,
+                  ngay_tao: true,
+                },
+              },
+            },
+          },
+          bo_sung_qua_khu: {
+            select: {
+              id: true,
+              loai_bang_chung: true,
+              duong_dan_file: true,
+              ten_file_goc: true,
+              noi_dung_xac_minh: true,
+              ghi_chu_noi_bo: true,
+              ngay_giao_dich_goc: true,
+              ngay_tao: true,
+            },
+          },
+        },
+      })
+    : [];
+
+  for (const history of histories) {
+    const eventDate = paymentEventDate(history);
+    if (eventDate < fromDate || eventDate >= toDate) continue;
+    if (Number(history.so_tien) <= 0) continue;
+
+    const code = apartmentById.get(history.can_ho_id);
+    if (!code) continue;
+    const key = paymentMonthKey(eventDate);
+    const byMonth = monthlyPayments.get(code) || new Map<string, BulkPaymentDetail[]>();
+    const bankEvidences =
+      history.giao_dich_ngan_hang?.chung_tu_doi_soat.map((evidence) => ({
+        id: `bank-${evidence.id}`,
+        type: evidence.loai_chung_tu,
+        filePath: evidence.duong_dan_file,
+        fileName: evidence.ten_file_goc,
+        note: evidence.ghi_chu,
+        createdAt: formatDate(evidence.ngay_tao),
+      })) || [];
+    const supplementEvidence = history.bo_sung_qua_khu
+      ? [
+          {
+            id: `supplement-${history.bo_sung_qua_khu.id}`,
+            type: history.bo_sung_qua_khu.loai_bang_chung,
+            filePath: history.bo_sung_qua_khu.duong_dan_file,
+            fileName: history.bo_sung_qua_khu.ten_file_goc,
+            note: history.bo_sung_qua_khu.noi_dung_xac_minh || history.bo_sung_qua_khu.ghi_chu_noi_bo,
+            createdAt: formatDate(history.bo_sung_qua_khu.ngay_tao),
+          },
+        ]
+      : [];
+    byMonth.set(key, [
+      ...(byMonth.get(key) || []),
+      {
+        id: history.id,
+        amount: formatDecimal(history.so_tien),
+        eventAt: formatDate(eventDate),
+        sourceType: history.loai_nguon,
+        feePeriod: history.ky_du_lieu,
+        appliedMonth: history.thang_ap_dung,
+        content:
+          history.giao_dich_ngan_hang?.noi_dung_goc ||
+          history.bo_sung_qua_khu?.noi_dung_xac_minh ||
+          history.ghi_chu ||
+          null,
+        transferer: history.giao_dich_ngan_hang?.ten_nguoi_chuyen || null,
+        bankReference: history.giao_dich_ngan_hang?.tham_chieu_ngan_hang || null,
+        evidences: [...bankEvidences, ...supplementEvidence],
+      },
+    ]);
+    monthlyPayments.set(code, byMonth);
+  }
+
+  return {
+    rawInput,
+    monthRange,
+    months,
+    parsedCodes: codes,
+    missingCodes,
+    rows: codes
+      .filter((code) => apartmentByCode.has(code))
+      .map((code) => {
+        const apartment = apartmentByCode.get(code)!;
+        const feeStatus = apartment.trang_thai_phi_public[0] ?? null;
+        const byMonth = monthlyPayments.get(code) || new Map<string, BulkPaymentDetail[]>();
+        return {
+          ma_can: code,
+          paymentsByMonth: Object.fromEntries(months.map((month) => [month.key, byMonth.get(month.key) || []])),
+          paidThrough: feeStatus
+            ? publicPayloadText(feeStatus.payload_public_json, feeStatus.thang_da_dong_den_hien_tai)
+            : null,
+        };
+      }),
   };
 }
 
@@ -462,6 +749,8 @@ export async function getApartmentDashboardData(
   rawQuery: string,
   requestedFeePeriod?: string,
   requestedPaidThrough?: string,
+  rawBulkLookup?: string,
+  requestedBulkRange?: string,
 ) {
   const { query, candidates, searchText, parseMessage } = normalizeSearchCandidates(rawQuery);
 
@@ -587,6 +876,7 @@ export async function getApartmentDashboardData(
             })
             .then((apartment) => (apartment ? getApartmentDetail(apartment.id) : null))
         : null;
+  const bulkLookup = await getBulkApartmentPaymentLookup(rawBulkLookup, requestedBulkRange);
 
   return {
     summary: {
@@ -633,6 +923,7 @@ export async function getApartmentDashboardData(
       results: searchResults,
       selectedApartment,
     },
+    bulkLookup,
   };
 }
 

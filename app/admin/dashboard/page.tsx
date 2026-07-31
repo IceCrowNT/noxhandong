@@ -15,12 +15,20 @@ import { DashboardScrollMemory } from "@/components/admin/dashboard-scroll-memor
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { requireAdmin } from "@/src/modules/auth/current-user";
-import { getApartmentDashboardData } from "@/src/modules/apartments/dashboard";
+import { getApartmentDashboardData, type ApartmentDashboardData } from "@/src/modules/apartments/dashboard";
 import {
   apartmentStatusLabel,
   apartmentTypeLabel,
@@ -41,6 +49,8 @@ type DashboardPageProps = {
     ma_can?: string;
     ky_phi?: string;
     thang_da_dong?: string;
+    bulk_apartments?: string;
+    bulk_months?: string;
   }>;
 };
 
@@ -75,6 +85,238 @@ function normalizePhone(value: string | null | undefined) {
 function pct(value: number, total: number) {
   if (!total) return 0;
   return Math.max(4, Math.round((value / total) * 100));
+}
+
+function isImageFile(value: string | null | undefined) {
+  return Boolean(value?.match(/\.(jpeg|jpg|gif|png|webp)$/i));
+}
+
+type BulkPaymentDetail =
+  ApartmentDashboardData["bulkLookup"]["rows"][number]["paymentsByMonth"][string][number];
+
+function BulkPaymentDetailSheet({
+  apartmentCode,
+  monthLabel,
+  payment,
+}: {
+  apartmentCode: string;
+  monthLabel: string;
+  payment: BulkPaymentDetail;
+}) {
+  const rows = [
+    ["Thời gian đóng", formatDateTime(payment.eventAt)],
+    ["Kỳ dữ liệu", compactText(payment.feePeriod)],
+    ["Tháng áp dụng", compactText(payment.appliedMonth)],
+    ["Người chuyển", compactText(payment.transferer)],
+    ["Mã tham chiếu", compactText(payment.bankReference)],
+  ];
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <button
+          type="button"
+          className="rounded-md px-2 py-1 text-right font-semibold text-emerald-700 underline-offset-4 transition-colors hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+          title="Xem chi tiết giao dịch"
+        >
+          {formatMoney(payment.amount)}
+        </button>
+      </SheetTrigger>
+      <SheetContent className="w-[min(94vw,560px)] overflow-y-auto">
+        <SheetHeader className="mb-4 border-b border-[var(--line)] pb-4">
+          <SheetTitle>Chi tiết giao dịch {apartmentCode}</SheetTitle>
+          <SheetDescription>
+            {monthLabel} · {formatMoney(payment.amount)}
+          </SheetDescription>
+        </SheetHeader>
+
+        <div className="grid gap-4">
+          <div className="grid gap-2 text-sm">
+            {rows.map(([label, value]) => (
+              <div key={label} className="rounded-lg border border-[var(--line)] bg-white p-3">
+                <span className="block text-[11px] font-semibold uppercase text-[var(--muted)]">{label}</span>
+                <strong className="mt-1 block min-w-0 leading-5">{value}</strong>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-lg border border-[var(--line)] bg-[#fbfcfb] p-3 text-sm leading-6">
+            <span className="block text-[11px] font-semibold uppercase text-[var(--muted)]">Nội dung chuyển khoản</span>
+            <p className="mt-1 whitespace-pre-wrap text-[var(--text)]">{compactText(payment.content)}</p>
+          </div>
+
+          <div className="grid gap-3">
+            <span className="text-xs font-bold uppercase text-[var(--muted)]">Bằng chứng</span>
+            {payment.evidences.length ? (
+              payment.evidences.map((evidence) => (
+                <div key={evidence.id} className="rounded-lg border border-[var(--line)] bg-white p-3 text-sm">
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <strong className="text-[var(--accent)]">{evidenceTypeLabel(evidence.type)}</strong>
+                    <span className="text-xs text-[var(--muted)]">{formatDateTime(evidence.createdAt)}</span>
+                  </div>
+                  {evidence.note ? <p className="mb-3 whitespace-pre-wrap text-[var(--text)]">{evidence.note}</p> : null}
+                  {evidence.filePath ? (
+                    isImageFile(evidence.filePath) ? (
+                      <a
+                        href={evidence.filePath}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block overflow-hidden rounded-md border border-[var(--line)] hover:border-[var(--accent)]"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={evidence.filePath}
+                          alt={evidence.fileName || "Bằng chứng giao dịch"}
+                          className="max-h-[340px] w-full bg-[var(--panel)] object-contain"
+                        />
+                      </a>
+                    ) : (
+                      <a
+                        href={evidence.filePath}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 font-semibold text-[var(--accent)] underline"
+                      >
+                        Mở file {evidence.fileName ? `(${evidence.fileName})` : ""}
+                      </a>
+                    )
+                  ) : null}
+                </div>
+              ))
+            ) : (
+              <div className="rounded-lg border border-dashed border-[var(--line)] bg-white/80 p-4 text-sm text-[var(--muted)]">
+                Chưa có bằng chứng đính kèm cho giao dịch này.
+              </div>
+            )}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function BulkApartmentLookupPanel({
+  bulkLookup,
+  selectedFeePeriod,
+  compact = false,
+  panelId = "bulk-lookup",
+}: {
+  bulkLookup: ApartmentDashboardData["bulkLookup"];
+  selectedFeePeriod: string | null;
+  compact?: boolean;
+  panelId?: string;
+}) {
+  const hasInput = bulkLookup.rawInput.length > 0;
+  const tableColSpan = bulkLookup.months.length + 2;
+
+  return (
+    <Card id={panelId} className="bg-white/90">
+      <CardHeader className="gap-4">
+        <div>
+          <CardTitle className={compact ? "text-xl" : undefined}>Tra cứu nhiều căn</CardTitle>
+          <CardDescription>
+            Nhập danh sách căn, chọn 6 hoặc 12 tháng; bảng hiển thị từng khoản nộp theo tháng.
+          </CardDescription>
+        </div>
+        <form className="grid gap-3" action={`/admin/dashboard#${panelId}`} data-preserve-scroll>
+          {selectedFeePeriod ? <input name="ky_phi" type="hidden" value={selectedFeePeriod} /> : null}
+          <Textarea
+            defaultValue={bulkLookup.rawInput}
+            maxLength={2000}
+            name="bulk_apartments"
+            placeholder="Ví dụ: L1 217 L1 415 L1 420 L4B 408"
+            className="min-h-[96px]"
+          />
+          <div className="grid gap-3 md:grid-cols-[180px_140px]">
+            <Select name="bulk_months" defaultValue={String(bulkLookup.monthRange)}>
+              <SelectTrigger aria-label="Khoảng tháng">
+                <SelectValue placeholder="Khoảng tháng" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="6">6 tháng</SelectItem>
+                <SelectItem value="12">12 tháng</SelectItem>
+              </SelectContent>
+            </Select>
+            <SubmitButton pendingText="Đang tra...">
+              <Search size={17} aria-hidden="true" />
+              Tra cứu
+            </SubmitButton>
+          </div>
+        </form>
+      </CardHeader>
+      <CardContent className="grid gap-3">
+        {hasInput && bulkLookup.missingCodes.length ? (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-900">
+            Không tìm thấy: {bulkLookup.missingCodes.join(", ")}
+          </div>
+        ) : null}
+
+        <div className="overflow-auto rounded-xl border border-[var(--line)] bg-white">
+          <Table className="min-w-[920px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="sticky left-0 z-10 min-w-[112px] bg-white">Mã căn</TableHead>
+                {bulkLookup.months.map((month) => (
+                  <TableHead key={month.key} className="min-w-[112px] text-right">
+                    {month.label}
+                  </TableHead>
+                ))}
+                <TableHead className="min-w-[150px]">Tháng đã đóng đến</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {hasInput && bulkLookup.rows.length ? (
+                bulkLookup.rows.map((row) => (
+                  <TableRow key={row.ma_can}>
+                    <TableCell className="sticky left-0 z-10 bg-white font-semibold">
+                      <Link
+                        href={`/admin/dashboard?ma_can=${encodeURIComponent(row.ma_can)}${
+                          selectedFeePeriod ? `&ky_phi=${encodeURIComponent(selectedFeePeriod)}` : ""
+                        }`}
+                        className="text-[var(--accent)] hover:underline"
+                      >
+                        {row.ma_can}
+                      </Link>
+                    </TableCell>
+                    {bulkLookup.months.map((month) => {
+                      const payments = row.paymentsByMonth[month.key] || [];
+                      return (
+                        <TableCell key={month.key} className="align-top text-right">
+                          {payments.length ? (
+                            <div className="grid gap-1 font-semibold text-emerald-700">
+                              {payments.map((payment, index) => (
+                                <BulkPaymentDetailSheet
+                                  key={`${row.ma_can}-${month.key}-${payment.id}-${index}`}
+                                  apartmentCode={row.ma_can}
+                                  monthLabel={month.label}
+                                  payment={payment}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-[var(--muted)]">-</span>
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                    <TableCell className="font-semibold">{compactText(row.paidThrough)}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell className="py-8 text-center text-[var(--muted)]" colSpan={tableColSpan}>
+                    {hasInput
+                      ? "Không có căn hợp lệ trong danh sách tra cứu."
+                      : "Nhập danh sách căn để xem bảng tiền nộp theo tháng."}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function FeeCompletionRing({
@@ -871,9 +1113,16 @@ function TransactionQualityStats({
 export default async function AdminDashboardPage({ searchParams }: DashboardPageProps) {
   const account = await requireAdmin();
   const params = await searchParams;
-  const data = await getApartmentDashboardData(params?.ma_can || "", params?.ky_phi, params?.thang_da_dong);
+  const data = await getApartmentDashboardData(
+    params?.ma_can || "",
+    params?.ky_phi,
+    params?.thang_da_dong,
+    params?.bulk_apartments,
+    params?.bulk_months,
+  );
   const selected = data.search.selectedApartment;
   const hasSearch = Boolean(data.search.query);
+  const defaultMobileTab = data.bulkLookup.rawInput ? "bulk" : "lookup";
   const feeOverview = data.summary.feeOverview;
   const distributionOverview = data.summary.distributionOverview;
 
@@ -924,10 +1173,11 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
     >
       <DashboardScrollMemory />
       <section className="lg:hidden">
-        <Tabs defaultValue="lookup" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue={defaultMobileTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Tổng quan</TabsTrigger>
             <TabsTrigger value="lookup">Tra cứu</TabsTrigger>
+            <TabsTrigger value="bulk">Nhiều căn</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="grid gap-4">
@@ -1120,6 +1370,15 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
                 Mở tab này khi cần tra cứu căn hộ, kiểm tra phí hoặc gọi nhanh cho cư dân.
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="bulk" className="grid gap-4">
+            <BulkApartmentLookupPanel
+              bulkLookup={data.bulkLookup}
+              selectedFeePeriod={data.summary.selectedFeePeriod}
+              compact
+              panelId="bulk-lookup-mobile"
+            />
           </TabsContent>
 
         </Tabs>
@@ -1392,6 +1651,11 @@ export default async function AdminDashboardPage({ searchParams }: DashboardPage
             )}
           </CardContent>
         </Card>
+
+        <BulkApartmentLookupPanel
+          bulkLookup={data.bulkLookup}
+          selectedFeePeriod={data.summary.selectedFeePeriod}
+        />
 
       </section>
 

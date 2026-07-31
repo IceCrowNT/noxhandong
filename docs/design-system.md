@@ -89,6 +89,22 @@ Quy tắc:
 - Card chỉ dùng cho nhóm chức năng, trạng thái quan trọng, form, modal hoặc item lặp lại có ý nghĩa.
 - Không thêm KPI/card nếu số liệu chỉ lặp lại dữ liệu kế bên hoặc không tạo hành động.
 
+## Màn `/admin/dashboard`
+
+Mục tiêu: tra cứu nội bộ nhanh cho quản lý/kỹ thuật, gồm một căn hoặc nhiều căn.
+
+### Tra cứu nhiều căn
+
+- Đặt trong cụm `Tra cứu nội bộ`, không đưa sang `/admin/database`.
+- Input là danh sách mã căn tự do, hỗ trợ kiểu `L1 217`, `L1.217`, `L1217`, xuống dòng hoặc cách nhau bằng dấu phẩy.
+- Bộ chọn khoảng tháng chỉ gồm `6 tháng` và `12 tháng`; cột tháng luôn lùi từ tháng tra xét hiện tại.
+- Output là bảng shadcn/ui `Table`, không dùng KPI/card tổng hợp.
+- Mỗi căn là một dòng. Nếu một căn có nhiều giao dịch trong cùng tháng, hiển thị nhiều dòng số tiền trong cùng ô, không cộng gộp.
+- Mỗi số tiền là nút mở chi tiết giao dịch bằng `Sheet`/dialog cùng theme, hiển thị thời gian đóng, nội dung chuyển khoản và bằng chứng ảnh/file/text nếu có.
+- Không có dòng tổng cộng, không có ghi chú, không có xuất Excel.
+- Cột cuối bắt buộc là `Tháng đã đóng đến`.
+- Desktop dùng bảng rộng có cuộn ngang trong khung; mobile nằm trong tab riêng để tránh làm tràn toàn trang.
+
 ## Màn `/admin/database`
 
 Mục tiêu: tra cứu dữ liệu tài chính căn hộ và xuất file vận hành.
