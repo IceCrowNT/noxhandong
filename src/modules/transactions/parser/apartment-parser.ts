@@ -433,6 +433,15 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildLkCandidate(match[1], match[2], "LK_BLOCK_ROOM_SPACED", 0.98));
   }
 
+  const lkSameBlockListPattern = new RegExp(
+    `\\b${LK_BLOCK_ALIAS_CAPTURE}\\s+${LK_ROOM_CAPTURE}\\s+(?:VA|VOI)\\s+${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(lkSameBlockListPattern)) {
+    push(buildLkCandidate(match[1], match[2], "LK_SAME_BLOCK_LIST_FIRST_ROOM", 0.985));
+    push(buildLkCandidate(match[1], match[3], "LK_SAME_BLOCK_LIST_NEXT_ROOM", 0.965));
+  }
+
   const lkSoNhaPattern = new RegExp(
     `\\b${LK_BLOCK_ALIAS_CAPTURE}\\b(?:\\s+(?:SO|NHA|SO\\s+NHA)){1,2}\\s+${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`,
     "g"
@@ -452,6 +461,15 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
   const separatedLkPattern = new RegExp(`\\b(?:LK|IK)\\s+([1-9])\\s+${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");
   for (const match of normalizedDescription.matchAll(separatedLkPattern)) {
     push(buildLkCandidate(`LK${match[1]}`, match[2], "LK_BLOCK_ROOM_SEPARATED", 0.97));
+  }
+
+  const separatedLkSameBlockListPattern = new RegExp(
+    `\\b(?:LK|IK)\\s+([1-9])\\s+${LK_ROOM_CAPTURE}\\s+(?:VA|VOI)\\s+${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`,
+    "g"
+  );
+  for (const match of normalizedDescription.matchAll(separatedLkSameBlockListPattern)) {
+    push(buildLkCandidate(`LK${match[1]}`, match[2], "LK_SEPARATED_SAME_BLOCK_LIST_FIRST_ROOM", 0.975));
+    push(buildLkCandidate(`LK${match[1]}`, match[3], "LK_SEPARATED_SAME_BLOCK_LIST_NEXT_ROOM", 0.955));
   }
 
   const lkCompactPattern = new RegExp(`\\b${LK_BLOCK_ALIAS_CAPTURE}${LK_ROOM_CAPTURE}(?=\\b|[^A-Z])`, "g");

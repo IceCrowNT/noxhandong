@@ -6,6 +6,28 @@ import { getApartmentDashboardData } from "@/src/modules/apartments/dashboard";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+function parsePeriodLabel(value: string) {
+  const match = value.match(/^T(\d{1,2})-(\d{4})$/i);
+  if (!match) return null;
+  return {
+    month: Number(match[1]),
+    year: Number(match[2]),
+  };
+}
+
+function parseDistributionLabel(value: string) {
+  const match = value.match(/(\d{1,2})\.(\d{4})/);
+  if (!match) return null;
+  return {
+    month: Number(match[1]),
+    year: Number(match[2]),
+  };
+}
+
+function absoluteMonthIndex(year: number, month: number) {
+  return year * 12 + month - 1;
+}
+
 export async function GET(request: Request) {
   try {
     const admin = await getCurrentAdmin();
@@ -41,41 +63,50 @@ export async function GET(request: Request) {
         .map((r: any) => r.ma_can)
     );
 
-    let newestY = 0, newestM = 0;
-    const firstMatch = distribution[0]?.label.match(/tháng (\d+)\.(\d+)/i);
-    if (firstMatch) {
-      newestM = parseInt(firstMatch[1], 10);
-      newestY = parseInt(firstMatch[2], 10);
-    }
+    const parsedDistribution = distribution
+      .map((item) => {
+        const period = parseDistributionLabel(item.label);
+        return period
+          ? {
+              item,
+              month: period.month,
+              year: period.year,
+              index: absoluteMonthIndex(period.year, period.month),
+            }
+          : null;
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item))
+      .sort((a, b) => b.index - a.index);
+    const reportPeriod = parsePeriodLabel(currentPeriodLabel) || parsedDistribution[0] || null;
 
     const fullDistribution = [];
-    if (newestY > 0) {
-      let currY = newestY;
-      let currM = newestM;
+    if (reportPeriod) {
+      let currY = reportPeriod.year;
+      let currM = reportPeriod.month;
       let distIndex = 0;
-      let lastSeenItem = distribution[0];
 
       while (currY > 2024 || (currY === 2024 && currM >= 3)) {
-        let foundItem = distribution[distIndex];
-        let foundY = 0, foundM = 0;
-        if (foundItem) {
-          const match = foundItem.label.match(/tháng (\d+)\.(\d+)/i);
-          if (match) {
-            foundM = parseInt(match[1], 10);
-            foundY = parseInt(match[2], 10);
-          }
+        const currIndex = absoluteMonthIndex(currY, currM);
+        while (parsedDistribution[distIndex]?.index > currIndex) {
+          distIndex++;
         }
 
-        if (foundY === currY && foundM === currM) {
-          lastSeenItem = foundItem;
+        const foundItem = parsedDistribution[distIndex];
+        const isExactMonth = foundItem?.index === currIndex;
+        const effectiveItem = isExactMonth ? foundItem.item : foundItem?.item || parsedDistribution[distIndex - 1]?.item;
+        if (!effectiveItem) {
+          break;
+        }
+
+        if (isExactMonth) {
           distIndex++;
         }
 
         fullDistribution.push({
           monthStr: `T${currM}/${String(currY).substring(2)}`,
-          completedCount: lastSeenItem.completedCount,
-          missingCount: lastSeenItem.missingCount,
-          missingApartments: lastSeenItem.missingApartments,
+          completedCount: effectiveItem.completedCount || 0,
+          missingCount: effectiveItem.missingCount || 0,
+          missingApartments: effectiveItem.missingApartments || [],
         });
 
         currM--;
@@ -87,7 +118,7 @@ export async function GET(request: Request) {
     } else {
       for (const item of distribution) {
         let monthStr = item.label;
-        const mMatch = item.label.match(/tháng (\d+)\.(\d+)/i);
+        const mMatch = item.label.match(/(\d{1,2})\.(\d{4})/);
         if (mMatch) {
           monthStr = `T${mMatch[1]}/${mMatch[2].substring(2)}`;
         }
@@ -180,7 +211,7 @@ export async function GET(request: Request) {
       row.getCell(5).value = unpaidPercent;
       row.getCell(6).value = noteStr;
 
-      const isRed = unpaidPercent >= 0.05;
+      const isRed = r === 4;
       const numFont = isRed ? { ...fontNormal, color: { argb: "FFFF0000" } } : fontNormal;
       const mainFont = isRed ? { ...fontBold, color: { argb: "FFFF0000" } } : fontBold;
       

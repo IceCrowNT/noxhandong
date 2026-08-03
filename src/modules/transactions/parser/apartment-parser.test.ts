@@ -37,4 +37,23 @@ describe("apartment parser bank statement edge cases", () => {
     expect(result.status).not.toBe("KHONG_LIEN_QUAN_CAN_HO");
     expect(result.matchedCode).toBe("L4C.406A");
   });
+
+  it("classifies same-LK-block room lists as multi-apartment transactions", () => {
+    const description =
+      "CT DEN:164T2671EJBTR72K MBVCB.15350932105.739652.LK1 46 va 48 0963161864 nop phi QLVH.CT tu 0031000231186 NGUYEN VINH TINH";
+    const parsed = parseApartmentCode(description);
+
+    expect(parsed.candidates.map((candidate) => candidate.code)).toEqual(["LK1.46", "LK1.48"]);
+
+    const result = classifyApartmentTransaction(
+      { description, amount: 2_400_000 },
+      new Set(["LK1.46", "LK1.48"]),
+      parsed,
+    );
+
+    expect(result.status).toBe("NHIEU_CAN");
+    expect(result.matchedCode).toBeNull();
+    expect(result.confidence).toBeLessThan(0.5);
+    expect(result.suggestions).toEqual(["LK1.46", "LK1.48"]);
+  });
 });
