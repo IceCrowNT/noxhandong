@@ -12,6 +12,7 @@ import {
   formatMoney,
   readStatementRows,
   resolveExistingInputArg,
+  statementIncomePeriods,
 } from "../src/modules/transactions/import/bank-statement-common";
 
 if (!process.env.DATABASE_URL) {
@@ -121,6 +122,7 @@ async function main() {
   fs.mkdirSync(outputDir, { recursive: true });
 
   const statement = readStatementRows(resolvedPath);
+  const incomePeriods = statementIncomePeriods(statement.records);
   const importCutoff = await resolveImportCutoff(rest);
   const [apartments, currentBatch, activeFeeRules] = await Promise.all([
     prisma.canHo.findMany({
@@ -230,6 +232,8 @@ async function main() {
     parserVersion: APARTMENT_CODE_PARSER_VERSION,
     currentFeeBatchId: currentBatch.id,
     currentFeePeriod: currentBatch.ky_du_lieu,
+    statementIncomePeriods: incomePeriods,
+    hasMultipleIncomePeriods: incomePeriods.length > 1,
     rawRows: statement.records.length,
     skippedExpenseRows: statement.records.length - allIncomeRecords.length,
     skippedBeforeOrAtClosingRows,

@@ -62,6 +62,7 @@ async function main() {
           },
           {
             loai_nguon: "BO_SUNG_QUA_KHU",
+            ky_du_lieu: { in: [period.label, period.historyLabel] },
           },
         ],
       },

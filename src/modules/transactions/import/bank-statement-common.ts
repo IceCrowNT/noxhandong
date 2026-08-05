@@ -70,6 +70,17 @@ export function formatMoney(value: number): string {
   return Number(value || 0).toLocaleString("vi-VN");
 }
 
+export function feePeriodLabelFromDate(date: Date): string {
+  return `T${date.getMonth() + 1}-${date.getFullYear()}`;
+}
+
+export function statementIncomePeriods(records: StatementRecord[]): string[] {
+  const periods = records
+    .filter((record) => record.transaction.amount > 0 && record.transaction.transactionDate)
+    .map((record) => feePeriodLabelFromDate(record.transaction.transactionDate as Date));
+  return [...new Set(periods)];
+}
+
 function rowToMappedObject(headers: string[], values: unknown[]): Record<string, unknown> {
   return headers.reduce((mapped, header, index) => {
     const key = safeString(header) || `__EMPTY_${index}`;

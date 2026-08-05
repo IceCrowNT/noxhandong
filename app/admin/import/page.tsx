@@ -49,6 +49,7 @@ type AdminImportPageProps = {
     statementMultiCandidateRows?: string;
     statementReviewRowsCreated?: string;
     statementError?: string;
+    periods?: string;
     historyPreviewed?: string;
     historyPublished?: string;
     historyPreviewCancelled?: string;
@@ -111,6 +112,7 @@ function statusMessage(params?: SearchParams) {
   if (params?.statementError === "missing_file") return "Chưa chọn file sao kê để nhập.";
   if (params?.statementError === "file_too_large") return "File sao kê quá lớn. Giới hạn hiện tại là 15 MB.";
   if (params?.statementError === "invalid_file_type") return "Chỉ hỗ trợ file sao kê .xlsx hoặc .xls.";
+  if (params?.statementError === "multi_month") return `File sao kê có giao dịch thu thuộc nhiều tháng${params.periods ? `: ${params.periods}` : ""}. Vui lòng tách file theo từng tháng trước khi nhập.`;
   if (params?.statementError === "import_failed") return "Không xử lý được file sao kê. Kiểm tra đúng file export từ ngân hàng.";
   if (params?.historyPublishError === "invalid_period") return "Kỳ dữ liệu cần dùng định dạng T6-2026.";
   if (params?.historyPublishError === "invalid_batch") return "Batch public cần chốt không hợp lệ.";
@@ -393,7 +395,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
           </div>
           <CardTitle>Nhập sao kê ngân hàng</CardTitle>
           <CardDescription>
-            Luồng chính từ T6/2026: upload sao kê, lọc dòng thu sau mốc chốt và đưa vào màn duyệt.
+            Mỗi file sao kê chỉ nhập dữ liệu thu của một tháng. File vắt nhiều tháng sẽ bị chặn trước khi ghi dữ liệu.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -415,7 +417,7 @@ export default async function AdminImportPage({ searchParams }: AdminImportPageP
             </div>
           </ClientActionForm>
           <div className="mt-4 grid gap-2 rounded-lg border border-[var(--border-subtle)] bg-white/70 p-4 text-sm leading-6 text-[var(--muted)] md:grid-cols-3">
-            <span><b>1.</b> Lưu raw chống trùng.</span>
+            <span><b>1.</b> Kiểm tra file một tháng.</span>
             <span><b>2.</b> Tạo giao dịch cần duyệt.</span>
             <span><b>3.</b> Chưa công khai cho cư dân.</span>
           </div>

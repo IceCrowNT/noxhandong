@@ -57,6 +57,19 @@ async function main() {
   }
 
   const metadata = batch.metadata_json && typeof batch.metadata_json === "object" ? batch.metadata_json : {};
+  if (metadata.source === "APPROVED_PAYMENT_HISTORY") {
+    const currentBatch = await prisma.batchTrangThaiPhiPublic.findFirst({
+      where: { la_batch_public_hien_hanh: true },
+      orderBy: { public_luc: "desc" },
+      select: { id: true },
+    });
+    if (currentBatch?.id && metadata.previousPublicBatchId && metadata.previousPublicBatchId !== currentBatch.id) {
+      throw new Error(
+        `Draft batch ${batch.id} is stale: it was prepared from public batch ${metadata.previousPublicBatchId}, current public batch is ${currentBatch.id}. Recreate preview before publishing.`
+      );
+    }
+  }
+
   const historyRecordIdsFromMetadata = Array.isArray(metadata.historyRecordIds)
     ? metadata.historyRecordIds.filter((id) => Number.isInteger(id) && id > 0)
     : [];
@@ -119,6 +132,7 @@ async function main() {
     JSON.stringify(
       {
         publicBatchId: published.id,
+        period: published.ky_du_lieu,
         status: published.trang_thai,
         isCurrentPublicBatch: published.la_batch_public_hien_hanh,
         publicBy: admin.ten_dang_nhap,

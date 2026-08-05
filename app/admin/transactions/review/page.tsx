@@ -3,7 +3,7 @@ import { AlertTriangle, ArrowDown, ArrowUp, ArrowUpDown, CheckCircle2, Copy, Rot
 
 import {
   prepareApprovedPaymentHistoryPublicBatchAction,
-  publishPreparedPublicBatchAction,
+  publishPreparedPublicBatchesAction,
 } from "@/app/admin/import/actions";
 import {
   approveMultiTransactionAction,
@@ -37,6 +37,7 @@ import {
 } from "@/src/modules/shared/labels";
 import { formatVietnamDate, formatVietnamDateTime } from "@/src/modules/shared/utils/date-time";
 import { suggestTransactionAllocations } from "@/src/modules/transactions/review/allocations";
+import { getDefaultReviewPeriod } from "@/src/modules/transactions/review/default-period";
 import { getMonthlyReconciliation } from "@/src/modules/transactions/review/monthly-reconciliation";
 import {
   sortMonthlyReconciliationRows,
@@ -104,8 +105,8 @@ function getDefaultMonth() {
   return formatter.format(now);
 }
 
-function parseMonthFilter(value: string | undefined) {
-  const normalized = typeof value === "string" && /^\d{4}-\d{2}$/.test(value) ? value : getDefaultMonth();
+function parseMonthFilter(value: string | undefined, fallbackValue = getDefaultMonth()) {
+  const normalized = typeof value === "string" && /^\d{4}-\d{2}$/.test(value) ? value : fallbackValue;
   const [yearRaw, monthRaw] = normalized.split("-");
   const year = Number(yearRaw);
   const month = Number(monthRaw);
@@ -242,7 +243,8 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
   const statusFilter = params?.status || "CAN_XU_LY";
   const requestedBatchId = Number(params?.batchId || 0);
   const q = (params?.q || "").trim();
-  const monthFilter = parseMonthFilter(params?.month);
+  const defaultReviewPeriod = await getDefaultReviewPeriod();
+  const monthFilter = parseMonthFilter(params?.month, defaultReviewPeriod.value);
   const showMonthlyPanel = params?.showMonthly === "1";
   const monthlySortOptions: MonthlyReconciliationSort[] = ["apartment", "amount", "payer", "date", "status"];
   const monthlySort: MonthlyReconciliationSort = monthlySortOptions.includes(params?.monthSort as MonthlyReconciliationSort)
@@ -278,15 +280,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
     prisma.lichSuDongPhiCanHo.count({
       where: {
         batch_phi_public_id: null,
-        OR: [
-          {
-            loai_nguon: "GIAO_DICH_DA_DUYET",
-            ky_du_lieu: { in: [monthFilter.label, `${monthFilter.label}+`] },
-          },
-          {
-            loai_nguon: "BO_SUNG_QUA_KHU",
-          },
-        ],
+        loai_nguon: { in: ["GIAO_DICH_DA_DUYET", "BO_SUNG_QUA_KHU"] },
       },
     }),
   ]);
@@ -763,7 +757,7 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
                   <Button asChild variant="secondary" size="sm">
                     <a href={`/admin/import/public-preview?batchId=${params.publicBatchId}`}>Xem preview</a>
                   </Button>
-                  <form action={publishPreparedPublicBatchAction}>
+                  <form action={publishPreparedPublicBatchesAction}>
                     <input type="hidden" name="publicBatchId" value={params.publicBatchId} />
                     <SubmitButton size="sm" pendingText="Đang chốt...">
                       <CheckCircle2 size={16} aria-hidden="true" />
@@ -776,10 +770,15 @@ export default async function TransactionReviewPage({ searchParams }: ReviewPage
               <form action={prepareApprovedPaymentHistoryPublicBatchAction} className="grid gap-2 md:grid-cols-[180px_minmax(0,1fr)_auto] md:items-end">
                 <Label className="grid gap-2">
                   Kỳ dữ liệu
-                  <Input name="period" defaultValue={monthFilter.label} maxLength={16} placeholder="T7-2026" />
+                  <Input name="period" defaultValue={defaultReviewPeriod.label} maxLength={16} placeholder="T7-2026" readOnly />
                 </Label>
                 <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-900">
                   Tạo preview trước để kiểm tra thay đổi từng căn. Chưa public ngay.
+                  {defaultReviewPeriod.unpublishedPeriods.length > 1 ? (
+                    <span className="mt-1 block">
+                      Đang chờ: {defaultReviewPeriod.unpublishedPeriods.map((period) => `${period.label}: ${period.count} dòng`).join(" · ")}
+                    </span>
+                  ) : null}
                 </div>
                 <SubmitButton pendingText="Đang tạo preview...">
                   <CheckCircle2 size={17} aria-hidden="true" />

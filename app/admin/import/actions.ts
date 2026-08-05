@@ -9,6 +9,7 @@ import { requirePermission } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 import { createMonthlyClosingLedgerFromPublicBatch } from "@/src/modules/imports/monthly-closing";
 import { runProjectScript } from "@/src/modules/imports/script-runner";
+import { getDefaultReviewPeriod } from "@/src/modules/transactions/review/default-period";
 import { feePeriodFromDate } from "@/src/modules/transactions/review/period";
 
 const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
@@ -30,6 +31,11 @@ function safeFileName(value: string) {
 function numberField(result: Record<string, unknown>, field: string) {
   const value = result[field];
   return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function stringField(result: Record<string, unknown>, field: string) {
+  const value = result[field];
+  return typeof value === "string" ? value : null;
 }
 
 function parseDateTimeInput(value: string) {
@@ -199,6 +205,26 @@ export async function importBankStatementAction(formData: FormData) {
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(storedPath, buffer);
 
+  let validationRedirectUrl: string | null = null;
+  try {
+    if (intent !== "check_statement") {
+      const validationResult = await runProjectScript("scripts/check-bank-statement-periods.cjs", [storedPath]);
+      const rawPeriods = validationResult.incomePeriods;
+      const periods = Array.isArray(rawPeriods)
+        ? rawPeriods.filter((period): period is string => typeof period === "string")
+        : [];
+      if (periods.length > 1) {
+        validationRedirectUrl = `/admin/import?statementError=multi_month&periods=${encodeURIComponent(periods.join(", "))}`;
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    redirect("/admin/import?statementError=import_failed");
+  }
+  if (validationRedirectUrl) {
+    redirect(validationRedirectUrl);
+  }
+
   let redirectUrl = "/admin/import";
   try {
     const result =
@@ -231,7 +257,8 @@ export async function importBankStatementAction(formData: FormData) {
 
 export async function prepareApprovedPaymentHistoryPublicBatchAction(formData: FormData) {
   await requirePermission("PUBLISH_DATA");
-  const period = getString(formData, "period") || feePeriodFromDate(new Date()).label;
+  const defaultReviewPeriod = await getDefaultReviewPeriod();
+  const period = defaultReviewPeriod.unpublishedPeriods[0]?.label || getString(formData, "period") || defaultReviewPeriod.label;
 
   if (!/^T\s*\d{1,2}\s*[-/]\s*\d{4}$/i.test(period)) {
     redirect("/admin/transactions/review?historyPublishError=invalid_period");
@@ -305,6 +332,84 @@ export async function publishPreparedPublicBatchAction(formData: FormData) {
   redirect(redirectUrl);
 }
 
+export async function publishPreparedPublicBatchesAction(formData: FormData) {
+  const account = await requirePermission("PUBLISH_DATA");
+  const batchId = getString(formData, "publicBatchId");
+
+  if (!/^\d+$/.test(batchId)) {
+    redirect("/admin/transactions/review?historyPublishError=invalid_batch");
+  }
+
+  let redirectUrl = "/admin/transactions/review";
+  try {
+    const publishedBatches: Array<{
+      id: number;
+      period: string | null;
+      snapshotCount: number;
+      historyRowsLinked: number;
+    }> = [];
+
+    async function publishAndClose(publicBatchId: number) {
+      const publishResult = await runProjectScript("scripts/publish-fee-public-batch-v2.cjs", [
+        `--batch-id=${publicBatchId}`,
+        `--admin=${account.ten_dang_nhap}`,
+      ]);
+      const snapshotCount = numberField(publishResult, "snapshotCount") || 0;
+      const historyRowsLinked = numberField(publishResult, "historyRowsLinked") || 0;
+
+      await createMonthlyClosingLedgerFromPublicBatch({
+        publicBatchId,
+        source: "SAO_KE_DA_DUYET",
+        accountId: account.id,
+        note: "So chot thang tao tu giao dich sao ke da duyet va duoc Super Admin chot public.",
+      });
+
+      publishedBatches.push({
+        id: publicBatchId,
+        period: stringField(publishResult, "period"),
+        snapshotCount,
+        historyRowsLinked,
+      });
+    }
+
+    await publishAndClose(Number(batchId));
+
+    for (let index = 0; index < 24; index += 1) {
+      const nextReviewPeriod = await getDefaultReviewPeriod();
+      const nextPeriod = nextReviewPeriod.unpublishedPeriods[0];
+      if (!nextPeriod) break;
+
+      const prepareResult = await runProjectScript("scripts/prepare-public-batch-from-history-v2.cjs", [
+        `--period=${nextPeriod.label}`,
+      ]);
+      const nextPublicBatchId = numberField(prepareResult, "draftPublicBatchId");
+      const approvedHistoryRows = numberField(prepareResult, "approvedHistoryRows") || 0;
+      if (!nextPublicBatchId || approvedHistoryRows <= 0) break;
+
+      await publishAndClose(nextPublicBatchId);
+    }
+
+    const snapshotCount = publishedBatches.reduce((sum, batch) => sum + batch.snapshotCount, 0);
+    const historyRowsLinked = publishedBatches.reduce((sum, batch) => sum + batch.historyRowsLinked, 0);
+    const publicBatchIds = publishedBatches.map((batch) => batch.id);
+
+    const params = new URLSearchParams({
+      historyPublished: "1",
+      publicBatchId: batchId,
+      publicBatchIds: publicBatchIds.join(","),
+      publicBatchCount: String(publishedBatches.length),
+      rows: String(snapshotCount || 0),
+      historyRowsLinked: String(historyRowsLinked || 0),
+    });
+    redirectUrl = `/admin/transactions/review?${params.toString()}`;
+  } catch (error) {
+    console.error(error);
+    redirect("/admin/transactions/review?historyPublishError=publish_failed");
+  }
+
+  redirect(redirectUrl);
+}
+
 export async function cancelPreparedPublicBatchAction(formData: FormData) {
   await requirePermission("PUBLISH_DATA");
   const batchId = getString(formData, "publicBatchId");
@@ -333,8 +438,8 @@ export async function createHistoricalSupplementAction(formData: FormData) {
   const account = await requirePermission("IMPORT_DATA");
   const apartmentCode = getString(formData, "apartmentCode").toUpperCase();
   const amountRaw = getString(formData, "amount").replace(/[^\d-]/g, "");
-  const sourcePeriod = feePeriodFromDate(new Date()).label;
   const occurredAt = parseDateTimeInput(getString(formData, "occurredAt"));
+  const sourcePeriod = feePeriodFromDate(new Date()).label;
   const evidenceType = getString(formData, "evidenceType") || "GHI_CHU_THU_CONG";
   const evidenceNote = getString(formData, "evidenceNote");
   const internalNote = getString(formData, "internalNote");

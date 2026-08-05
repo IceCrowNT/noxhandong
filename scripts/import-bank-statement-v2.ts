@@ -15,6 +15,7 @@ import {
   fileHash,
   readStatementRows,
   resolveExistingInputArg,
+  statementIncomePeriods,
   statementReferenceTokens,
   transactionFingerprint,
   transactionStableFingerprint,
@@ -153,6 +154,10 @@ async function main() {
   }
 
   const { sheetName, headerRowNumber, records } = readStatementRows(resolvedPath);
+  const incomePeriods = statementIncomePeriods(records);
+  if (incomePeriods.length > 1) {
+    throw new Error(`Bank statement spans multiple income periods: ${incomePeriods.join(", ")}. Split the file by month before import.`);
+  }
   const importCutoff = await resolveImportCutoff(rest);
   const validApartments = await prisma.canHo.findMany({ select: { id: true, ma_can: true } });
   const validCodes = new Set(validApartments.map((item) => item.ma_can));

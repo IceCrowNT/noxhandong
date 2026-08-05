@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle2, FileText, XCircle } from "lucide-react";
 
 import {
   cancelPreparedPublicBatchAction,
-  publishPreparedPublicBatchAction,
+  publishPreparedPublicBatchesAction,
 } from "@/app/admin/import/actions";
 import { AdminFrame } from "@/components/admin/admin-frame";
 import { EvidencePreviewDialog } from "@/components/admin/evidence-preview-dialog";
@@ -378,7 +378,7 @@ export default async function PublicPreviewPage({ searchParams }: PublicPreviewP
                         Hủy preview
                       </SubmitButton>
                     </form>
-                    <form action={publishPreparedPublicBatchAction}>
+                    <form action={publishPreparedPublicBatchesAction}>
                       <input type="hidden" name="publicBatchId" value={batch.id} />
                       <SubmitButton pendingText="Đang chốt batch...">
                         <CheckCircle2 size={16} aria-hidden="true" />
