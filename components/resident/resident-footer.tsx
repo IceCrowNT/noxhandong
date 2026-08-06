@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ContactDialog } from "@/components/resident/contact-dialog";
@@ -54,18 +55,32 @@ export function ResidentFooter() {
             </span>
             <h2 className="text-lg font-bold">Thanh toán phí QLVH</h2>
           </div>
-          <div className="grid gap-3 text-[15px] leading-relaxed">
-            <div>
-              <span className="block text-sm text-[var(--muted)]">Ngân hàng</span>
-              <strong className="text-[var(--text)]">Vietinbank Lê Chân</strong>
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_132px] md:items-start">
+            <div className="grid gap-3 text-[15px] leading-relaxed">
+              <div>
+                <span className="block text-sm text-[var(--muted)]">Ngân hàng</span>
+                <strong className="text-[var(--text)]">Vietinbank Lê Chân</strong>
+              </div>
+              <div>
+                <span className="block text-sm text-[var(--muted)]">Chủ tài khoản</span>
+                <strong className="text-[var(--text)]">Ban quản trị khu nhà ở xã hội tại xã An Đồng</strong>
+              </div>
+              <div>
+                <span className="block text-sm text-[var(--muted)]">Số tài khoản</span>
+                <strong className="text-xl tracking-wide text-[var(--accent)]">116 002 961 023</strong>
+              </div>
             </div>
-            <div>
-              <span className="block text-sm text-[var(--muted)]">Chủ tài khoản</span>
-              <strong className="text-[var(--text)]">Ban quản trị khu nhà ở xã hội tại xã An Đồng</strong>
-            </div>
-            <div>
-              <span className="block text-sm text-[var(--muted)]">Số tài khoản</span>
-              <strong className="text-xl tracking-wide text-[var(--accent)]">116 002 961 023</strong>
+            <div className="mx-auto grid w-[132px] gap-2 text-center md:mx-0">
+              <div className="rounded-xl border border-[rgba(0,75,70,0.14)] bg-white p-2 shadow-sm">
+                <Image
+                  src="/images/payment-qr-116002961023.png"
+                  alt="Mã QR chuyển khoản phí QLVH"
+                  width={116}
+                  height={116}
+                  className="h-auto w-full"
+                />
+              </div>
+              <span className="text-xs font-semibold text-[var(--accent)]">Quét mã để chuyển khoản</span>
             </div>
           </div>
           <div className="mt-5 rounded-xl border border-[var(--accent-soft)] bg-[#f2f7f4] p-3 text-center text-sm font-medium text-[var(--accent)]">
