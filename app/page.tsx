@@ -16,7 +16,7 @@ export default async function HomePage() {
   const announcements = await prisma.thongBaoCongKhai.findMany({
     where: { trang_thai: "CONG_KHAI" },
     orderBy: [{ ngay_cong_khai: "desc" }, { id: "desc" }],
-    take: 3,
+    take: 5,
     select: {
       id: true,
       tieu_de: true,
@@ -115,7 +115,7 @@ export default async function HomePage() {
               </span>
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid max-h-[430px] gap-2 overflow-y-auto pr-1">
               {announcements.map((item, index) => {
                 const isPrimary = index === 0;
                 return (
