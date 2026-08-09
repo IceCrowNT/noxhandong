@@ -40,17 +40,27 @@ const ROLE_PERMISSIONS = [
   {
     role: "SUPER_ADMIN",
     label: "Quản trị cao nhất",
-    permissions: ["Tra cứu nội bộ", "Nhập/chốt dữ liệu phí", "Quản lý tài khoản", "Duyệt liên hệ", "Tài khoản cá nhân"],
+    permissions: [
+      "Tra cứu nội bộ",
+      "Xem danh bạ cư dân",
+      "Duyệt danh bạ cư dân",
+      "Quản lý thông báo",
+      "Nhập dữ liệu",
+      "Duyệt sao kê",
+      "Public dữ liệu phí",
+      "Quản lý tài khoản",
+      "Tài khoản cá nhân",
+    ],
   },
   {
     role: "MANAGER",
     label: "Quản lý",
-    permissions: ["Tra cứu nội bộ", "Xem liên hệ", "Gọi nhanh cư dân", "Tài khoản cá nhân"],
+    permissions: ["Tra cứu nội bộ", "Xem danh bạ cư dân", "Quản lý thông báo", "Tài khoản cá nhân"],
   },
   {
     role: "TECHNICIAN",
     label: "Kỹ thuật",
-    permissions: ["Tra cứu nội bộ", "Xem liên hệ", "Gọi nhanh cư dân", "Tài khoản cá nhân"],
+    permissions: ["Tra cứu nội bộ", "Xem danh bạ cư dân", "Tài khoản cá nhân"],
   },
 ] as const;
 
