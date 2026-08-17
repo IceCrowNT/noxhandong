@@ -326,6 +326,15 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildCandidate(match[1], match[2], "BLOCK_ROOM_SPACED", 0.98));
   }
 
+  const sameBlockRoomListPattern = new RegExp(
+    `\\bL${BLOCK_CAPTURE}\\s+${ROOM_CAPTURE}\\s+(?:(?:VA|VOI)\\s+)?${ROOM_CAPTURE}(?=\\s+(?:${fillerWordPattern})\\b|\\b(?!\\d)|[^A-Z0-9])`,
+    "g",
+  );
+  for (const match of normalizedDescription.matchAll(sameBlockRoomListPattern)) {
+    push(buildCandidate(match[1], match[2], "BLOCK_SAME_BLOCK_LIST_FIRST_ROOM", 0.985));
+    push(buildCandidate(match[1], match[3], "BLOCK_SAME_BLOCK_LIST_NEXT_ROOM", 0.965));
+  }
+
   const separatedLBlockPattern = new RegExp(`\\bL\\s+${BLOCK_CAPTURE}\\s+${ROOM_CAPTURE}(?=${fillerWordPattern}|\\b|[^A-Z])`, "g");
   for (const match of normalizedDescription.matchAll(separatedLBlockPattern)) {
     push(buildCandidate(match[1], match[2], "L_BLOCK_ROOM_SPACED", 0.97));
