@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <defs>
+    <style>
+      .bg{fill:#f7faf8}
+      .panel{fill:#ffffff;stroke:#c9d8d4;stroke-width:1.2}
+      .soft{fill:#eef8f4;stroke:#b9d9ce;stroke-width:1}
+      .accent{fill:#005b4f}
+      .accentText{fill:#005b4f}
+      .text{fill:#17211f;font-family:Arial,Helvetica,sans-serif}
+      .muted{fill:#66736f;font-family:Arial,Helvetica,sans-serif}
+      .line{stroke:#d7e2df;stroke-width:1}
+      .head{fill:#f1f7f4}
+      .warn{fill:#fff7ed;stroke:#fed7aa;stroke-width:1}
+      .done{fill:#e7f8ef;stroke:#a7e5c4;stroke-width:1}
+      .danger{fill:#fff1f2;stroke:#fecdd3;stroke-width:1}
+      .btn{fill:#005b4f}
+      .btnText{fill:white;font-family:Arial,Helvetica,sans-serif;font-weight:700}
+      .chip{fill:#f4f8f7;stroke:#c9d8d4;stroke-width:1}
+    </style>
+  </defs>
+
+  <rect class="bg" width="1440" height="900"/>
+
+  <rect x="0" y="0" width="210" height="900" fill="#ffffff" stroke="#c9d8d4"/>
+  <rect x="20" y="24" width="32" height="32" rx="6" fill="#f4f8f7" stroke="#c9d8d4"/>
+  <text class="text" x="64" y="36" font-size="15" font-weight="700">BQT An Dong</text>
+  <text class="muted" x="64" y="55" font-size="12">Vung quan tri</text>
+  <text class="muted" x="18" y="112" font-size="11" font-weight="700">VAN HANH</text>
+  <rect x="10" y="132" width="190" height="38" rx="6" class="accent"/>
+  <text x="42" y="156" fill="#fff" font-family="Arial" font-size="14" font-weight="700">Cong viec van hanh</text>
+  <text class="muted" x="42" y="202" font-size="14">Tra cuu noi bo</text>
+  <text class="muted" x="42" y="244" font-size="14">Thong bao</text>
+  <text class="muted" x="18" y="302" font-size="11" font-weight="700">CO SO DU LIEU</text>
+  <text class="muted" x="42" y="334" font-size="14">Nhap du lieu</text>
+  <text class="muted" x="42" y="376" font-size="14">Duyet sao ke</text>
+
+  <rect x="210" y="0" width="1230" height="56" fill="#ffffff" stroke="#c9d8d4"/>
+  <text class="text" x="236" y="35" font-size="14">Cong viec van hanh</text>
+  <rect x="378" y="16" width="104" height="26" rx="6" class="chip"/>
+  <text class="text" x="394" y="34" font-size="12">Quan tri</text>
+  <text class="text" x="1348" y="35" font-size="14">Dang xuat</text>
+
+  <text class="text" x="238" y="104" font-size="30" font-weight="700">Quan ly cong viec</text>
+  <text class="muted" x="238" y="130" font-size="14">Admin/Quan ly tao viec, phong ban bao xong, admin nghiem thu hoan thanh.</text>
+
+  <rect x="238" y="158" width="1174" height="134" rx="8" class="panel"/>
+  <text class="text" x="262" y="190" font-size="18" font-weight="700">Tao cong viec moi</text>
+  <text class="muted" x="262" y="214" font-size="13">Bo phan la dropdown text cung: Ky thuat hoac Ve sinh.</text>
+  <rect x="262" y="234" width="284" height="38" rx="6" fill="#fff" stroke="#c9d8d4"/>
+  <text class="muted" x="278" y="258" font-size="13">Ten cong viec</text>
+  <rect x="558" y="234" width="160" height="38" rx="6" fill="#fff" stroke="#c9d8d4"/>
+  <text class="text" x="574" y="258" font-size="13">Ky thuat</text>
+  <text class="muted" x="690" y="258" font-size="13">v</text>
+  <rect x="730" y="234" width="164" height="38" rx="6" fill="#fff" stroke="#c9d8d4"/>
+  <text class="muted" x="746" y="258" font-size="13">Deadline</text>
+  <rect x="906" y="234" width="286" height="38" rx="6" fill="#fff" stroke="#c9d8d4"/>
+  <text class="muted" x="922" y="258" font-size="13">Ghi chu ngan</text>
+  <rect x="1210" y="234" width="176" height="38" rx="6" class="btn"/>
+  <text class="btnText" x="1261" y="258" font-size="14">Tao viec</text>
+
+  <rect x="238" y="314" width="1174" height="404" rx="8" class="panel"/>
+  <text class="text" x="262" y="348" font-size="20" font-weight="700">Danh sach cong viec</text>
+  <rect x="1052" y="326" width="130" height="34" rx="6" class="chip"/>
+  <text class="text" x="1070" y="348" font-size="13">Tat ca bo phan</text>
+  <rect x="1194" y="326" width="164" height="34" rx="6" class="chip"/>
+  <text class="text" x="1212" y="348" font-size="13">Chua hoan thanh</text>
+
+  <rect x="262" y="376" width="1126" height="38" class="head"/>
+  <line x1="262" y1="414" x2="1388" y2="414" class="line"/>
+  <text class="text" x="278" y="400" font-size="13" font-weight="700">STT</text>
+  <text class="text" x="338" y="400" font-size="13" font-weight="700">Thoi diem giao</text>
+  <text class="text" x="508" y="400" font-size="13" font-weight="700">Ten cong viec</text>
+  <text class="text" x="838" y="400" font-size="13" font-weight="700">Bo phan</text>
+  <text class="text" x="962" y="400" font-size="13" font-weight="700">Deadline</text>
+  <text class="text" x="1090" y="393" font-size="12" font-weight="700">Xong</text>
+  <text class="text" x="1064" y="408" font-size="12" font-weight="700">cho nghiem thu</text>
+  <text class="text" x="1235" y="393" font-size="12" font-weight="700">Admin xac nhan</text>
+  <text class="text" x="1248" y="408" font-size="12" font-weight="700">hoan thanh</text>
+
+  <g>
+    <rect x="262" y="414" width="1126" height="62" fill="#ffffff"/>
+    <line x1="262" y1="476" x2="1388" y2="476" class="line"/>
+    <text class="text" x="282" y="451" font-size="14" font-weight="700">1</text>
+    <text class="text" x="338" y="442" font-size="13">26/08/2026</text>
+    <text class="muted" x="338" y="462" font-size="12">08:30</text>
+    <text class="text" x="508" y="442" font-size="14" font-weight="700">Sua den hanh lang tang 5 toa L4A</text>
+    <text class="muted" x="508" y="462" font-size="12">Can kiem tra lai sau khi thay bong</text>
+    <rect x="838" y="428" width="80" height="26" rx="13" class="soft"/>
+    <text class="accentText" x="856" y="446" font-size="12" font-weight="700">Ky thuat</text>
+    <text class="text" x="962" y="451" font-size="13">28/08/2026</text>
+    <rect x="1102" y="429" width="22" height="22" rx="4" fill="#fff" stroke="#a8bbb6"/>
+    <rect x="1278" y="429" width="22" height="22" rx="4" fill="#fff" stroke="#a8bbb6"/>
+  </g>
+
+  <g>
+    <rect x="262" y="476" width="1126" height="62" fill="#fbfefd"/>
+    <line x1="262" y1="538" x2="1388" y2="538" class="line"/>
+    <text class="text" x="282" y="513" font-size="14" font-weight="700">2</text>
+    <text class="text" x="338" y="504" font-size="13">26/08/2026</text>
+    <text class="muted" x="338" y="524" font-size="12">09:10</text>
+    <text class="text" x="508" y="504" font-size="14" font-weight="700">Ve sinh khu thang may L2-1</text>
+    <text class="muted" x="508" y="524" font-size="12">Uu tien truoc gio cao diem chieu</text>
+    <rect x="838" y="490" width="72" height="26" rx="13" class="chip"/>
+    <text class="text" x="854" y="508" font-size="12" font-weight="700">Ve sinh</text>
+    <text class="text" x="962" y="513" font-size="13">26/08/2026</text>
+    <rect x="1102" y="491" width="22" height="22" rx="4" fill="#e7f8ef" stroke="#1a9b6f"/>
+    <path d="M1107 502 l5 5 l8 -10" fill="none" stroke="#007d5f" stroke-width="2"/>
+    <rect x="1278" y="491" width="22" height="22" rx="4" fill="#fff" stroke="#a8bbb6"/>
+  </g>
+
+  <g>
+    <rect x="262" y="538" width="1126" height="62" fill="#ffffff"/>
+    <line x1="262" y1="600" x2="1388" y2="600" class="line"/>
+    <text class="text" x="282" y="575" font-size="14" font-weight="700">3</text>
+    <text class="text" x="338" y="566" font-size="13">25/08/2026</text>
+    <text class="muted" x="338" y="586" font-size="12">16:20</text>
+    <text class="text" x="508" y="566" font-size="14" font-weight="700">Kiem tra ro ri nuoc phong bom</text>
+    <text class="muted" x="508" y="586" font-size="12">Da bao xong, cho nghiem thu</text>
+    <rect x="838" y="552" width="80" height="26" rx="13" class="soft"/>
+    <text class="accentText" x="856" y="570" font-size="12" font-weight="700">Ky thuat</text>
+    <text class="text" x="962" y="575" font-size="13">25/08/2026</text>
+    <rect x="1102" y="553" width="22" height="22" rx="4" fill="#e7f8ef" stroke="#1a9b6f"/>
+    <path d="M1107 564 l5 5 l8 -10" fill="none" stroke="#007d5f" stroke-width="2"/>
+    <rect x="1278" y="553" width="22" height="22" rx="4" fill="#e7f8ef" stroke="#1a9b6f"/>
+    <path d="M1283 564 l5 5 l8 -10" fill="none" stroke="#007d5f" stroke-width="2"/>
+  </g>
+
+  <g>
+    <rect x="262" y="600" width="1126" height="62" fill="#fff7ed"/>
+    <line x1="262" y1="662" x2="1388" y2="662" class="line"/>
+    <text class="text" x="282" y="637" font-size="14" font-weight="700">4</text>
+    <text class="text" x="338" y="628" font-size="13">24/08/2026</text>
+    <text class="muted" x="338" y="648" font-size="12">10:05</text>
+    <text class="text" x="508" y="628" font-size="14" font-weight="700">Don rac khu nha xe so 1</text>
+    <text class="muted" x="508" y="648" font-size="12">Qua han, chua bao xong</text>
+    <rect x="838" y="614" width="72" height="26" rx="13" class="chip"/>
+    <text class="text" x="854" y="632" font-size="12" font-weight="700">Ve sinh</text>
+    <text class="text" x="962" y="637" font-size="13">25/08/2026</text>
+    <rect x="1102" y="615" width="22" height="22" rx="4" fill="#fff" stroke="#a8bbb6"/>
+    <rect x="1278" y="615" width="22" height="22" rx="4" fill="#fff" stroke="#a8bbb6"/>
+  </g>
+
+  <rect x="238" y="740" width="574" height="118" rx="8" class="panel"/>
+  <text class="text" x="262" y="774" font-size="18" font-weight="700">Nhat ky cong viec</text>
+  <text class="muted" x="262" y="802" font-size="13">09:32 - Nguyen Hoang bao xong viec #3</text>
+  <text class="muted" x="262" y="826" font-size="13">09:50 - Admin xac nhan hoan thanh viec #3</text>
+  <text class="muted" x="262" y="850" font-size="13">10:12 - Admin sua deadline viec #1 sang 28/08/2026</text>
+
+  <rect x="832" y="740" width="580" height="118" rx="8" class="panel"/>
+  <text class="text" x="856" y="774" font-size="18" font-weight="700">Tom tat</text>
+  <rect x="856" y="794" width="128" height="44" rx="8" class="soft"/>
+  <text class="muted" x="872" y="812" font-size="11">Chua xong</text>
+  <text class="text" x="872" y="832" font-size="20" font-weight="700">2</text>
+  <rect x="1000" y="794" width="152" height="44" rx="8" class="warn"/>
+  <text class="muted" x="1016" y="812" font-size="11">Cho nghiem thu</text>
+  <text class="text" x="1016" y="832" font-size="20" font-weight="700">1</text>
+  <rect x="1168" y="794" width="132" height="44" rx="8" class="done"/>
+  <text class="muted" x="1184" y="812" font-size="11">Hoan thanh</text>
+  <text class="text" x="1184" y="832" font-size="20" font-weight="700">1</text>
+</svg>
