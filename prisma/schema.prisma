@@ -80,6 +80,27 @@ enum TrangThaiTaiKhoan {
   BI_KHOA
 }
 
+enum BoPhanCongViecVanHanh {
+  KY_THUAT
+  VE_SINH
+}
+
+enum TrangThaiDongCongViecVanHanh {
+  DANG_MO
+  HOAN_THANH
+  BO_QUA
+  THAY_DOI
+}
+
+enum HanhDongNhatKyCongViecVanHanh {
+  TAO
+  SUA
+  BAO_XONG
+  DONG_VIEC
+  MO_LAI
+  XOA_MEM
+}
+
 enum VaiTroLienHe {
   CHU_HO
   CHU_MOI
@@ -531,8 +552,68 @@ model TaiKhoanQuanTri {
   lich_su_dong_phi_da_tao LichSuDongPhiCanHo[] @relation("NguoiTaoLichSuDongPhi")
   bo_sung_giao_dich_qua_khu_da_tao BoSungGiaoDichQuaKhu[] @relation("NguoiTaoBoSungQuaKhu")
   thong_bao_da_tao    ThongBaoCongKhai[] @relation("NguoiTaoThongBao")
+  cong_viec_van_hanh_da_tao CongViecVanHanh[] @relation("NguoiTaoCongViecVanHanh")
+  cong_viec_van_hanh_da_cap_nhat CongViecVanHanh[] @relation("NguoiCapNhatCongViecVanHanh")
+  cong_viec_van_hanh_da_bao_xong CongViecVanHanh[] @relation("NguoiBaoXongCongViecVanHanh")
+  cong_viec_van_hanh_da_dong CongViecVanHanh[] @relation("NguoiDongCongViecVanHanh")
+  nhat_ky_cong_viec_van_hanh_da_thuc_hien NhatKyCongViecVanHanh[] @relation("NguoiThucHienNhatKyCongViecVanHanh")
 
   @@map("tai_khoan_quan_tri")
+}
+
+model CongViecVanHanh {
+  id                  Int      @id @default(autoincrement())
+  stt_hien_thi        Int?
+  thoi_diem_giao_viec DateTime @default(now())
+  ten_cong_viec       String
+  mo_ta               String?
+  bo_phan             BoPhanCongViecVanHanh
+  deadline            DateTime
+  da_bao_xong         Boolean  @default(false)
+  bao_xong_luc        DateTime?
+  nguoi_bao_xong_id   Int?
+  trang_thai_dong     TrangThaiDongCongViecVanHanh @default(DANG_MO)
+  dong_luc            DateTime?
+  nguoi_dong_id       Int?
+  ghi_chu_dong        String?
+  da_xoa              Boolean  @default(false)
+  nguoi_tao_id        Int?
+  nguoi_cap_nhat_id   Int?
+  ngay_tao            DateTime @default(now())
+  ngay_cap_nhat       DateTime @updatedAt
+
+  nguoi_tao           TaiKhoanQuanTri? @relation("NguoiTaoCongViecVanHanh", fields: [nguoi_tao_id], references: [id], onDelete: SetNull)
+  nguoi_cap_nhat      TaiKhoanQuanTri? @relation("NguoiCapNhatCongViecVanHanh", fields: [nguoi_cap_nhat_id], references: [id], onDelete: SetNull)
+  nguoi_bao_xong      TaiKhoanQuanTri? @relation("NguoiBaoXongCongViecVanHanh", fields: [nguoi_bao_xong_id], references: [id], onDelete: SetNull)
+  nguoi_dong          TaiKhoanQuanTri? @relation("NguoiDongCongViecVanHanh", fields: [nguoi_dong_id], references: [id], onDelete: SetNull)
+  nhat_ky             NhatKyCongViecVanHanh[]
+
+  @@index([bo_phan])
+  @@index([trang_thai_dong])
+  @@index([deadline])
+  @@index([da_xoa])
+  @@index([nguoi_tao_id])
+  @@index([nguoi_cap_nhat_id])
+  @@index([nguoi_bao_xong_id])
+  @@index([nguoi_dong_id])
+  @@map("cong_viec_van_hanh")
+}
+
+model NhatKyCongViecVanHanh {
+  id                  Int      @id @default(autoincrement())
+  cong_viec_id        Int
+  hanh_dong           HanhDongNhatKyCongViecVanHanh
+  noi_dung            String?
+  nguoi_thuc_hien_id  Int?
+  payload_json        Json?
+  thoi_diem           DateTime @default(now())
+
+  cong_viec           CongViecVanHanh @relation(fields: [cong_viec_id], references: [id], onDelete: Cascade)
+  nguoi_thuc_hien     TaiKhoanQuanTri? @relation("NguoiThucHienNhatKyCongViecVanHanh", fields: [nguoi_thuc_hien_id], references: [id], onDelete: SetNull)
+
+  @@index([cong_viec_id, thoi_diem])
+  @@index([nguoi_thuc_hien_id])
+  @@map("nhat_ky_cong_viec_van_hanh")
 }
 
 model BoSungGiaoDichQuaKhu {

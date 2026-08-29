@@ -2,6 +2,8 @@ import type { AdminRole } from "@/src/modules/auth/session";
 
 export type Permission =
   | "VIEW_DASHBOARD"
+  | "VIEW_OPERATION_TASKS"
+  | "MANAGE_OPERATION_TASKS"
   | "VIEW_CONTACTS"
   | "REVIEW_CONTACTS"
   | "IMPORT_DATA"
@@ -14,6 +16,8 @@ export type Permission =
 const ROLE_PERMISSIONS: Record<AdminRole, ReadonlySet<Permission>> = {
   SUPER_ADMIN: new Set<Permission>([
     "VIEW_DASHBOARD",
+    "VIEW_OPERATION_TASKS",
+    "MANAGE_OPERATION_TASKS",
     "VIEW_CONTACTS",
     "REVIEW_CONTACTS",
     "IMPORT_DATA",
@@ -25,11 +29,13 @@ const ROLE_PERMISSIONS: Record<AdminRole, ReadonlySet<Permission>> = {
   ]),
   MANAGER: new Set<Permission>([
     "VIEW_DASHBOARD",
+    "VIEW_OPERATION_TASKS",
+    "MANAGE_OPERATION_TASKS",
     "VIEW_CONTACTS",
     "VIEW_PROFILE",
     "MANAGE_ANNOUNCEMENTS",
   ]),
-  TECHNICIAN: new Set<Permission>(["VIEW_DASHBOARD", "VIEW_CONTACTS", "VIEW_PROFILE"]),
+  TECHNICIAN: new Set<Permission>(["VIEW_DASHBOARD", "VIEW_OPERATION_TASKS", "VIEW_CONTACTS", "VIEW_PROFILE"]),
 };
 
 export function hasPermission(role: AdminRole, permission: Permission) {
@@ -38,6 +44,7 @@ export function hasPermission(role: AdminRole, permission: Permission) {
 
 export function permissionForAdminPath(pathname: string): Permission | null {
   if (pathname.startsWith("/admin/accounts")) return "MANAGE_ACCOUNTS";
+  if (pathname.startsWith("/admin/operation-tasks")) return "VIEW_OPERATION_TASKS";
   if (pathname.startsWith("/admin/import")) return "IMPORT_DATA";
   if (pathname.startsWith("/admin/transactions")) return "REVIEW_TRANSACTIONS";
   if (pathname.startsWith("/admin/announcements")) return "MANAGE_ANNOUNCEMENTS";

@@ -48,6 +48,7 @@ const ROLE_PERMISSIONS = [
       "Nhập dữ liệu",
       "Duyệt sao kê",
       "Public dữ liệu phí",
+      "Quản lý công việc vận hành",
       "Quản lý tài khoản",
       "Tài khoản cá nhân",
     ],
@@ -55,12 +56,12 @@ const ROLE_PERMISSIONS = [
   {
     role: "MANAGER",
     label: "Quản lý",
-    permissions: ["Tra cứu nội bộ", "Xem danh bạ cư dân", "Quản lý thông báo", "Tài khoản cá nhân"],
+    permissions: ["Tra cứu nội bộ", "Quản lý công việc vận hành", "Xem danh bạ cư dân", "Quản lý thông báo", "Tài khoản cá nhân"],
   },
   {
     role: "TECHNICIAN",
     label: "Kỹ thuật",
-    permissions: ["Tra cứu nội bộ", "Xem danh bạ cư dân", "Tài khoản cá nhân"],
+    permissions: ["Tra cứu nội bộ", "Xem và báo xong công việc vận hành", "Xem danh bạ cư dân", "Tài khoản cá nhân"],
   },
 ] as const;
 

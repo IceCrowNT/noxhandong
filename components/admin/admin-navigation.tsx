@@ -2,7 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, Database, FileSearch, LayoutDashboard, Menu, ShieldCheck, Upload, UserCircle, Users } from "lucide-react";
+import {
+  Bell,
+  ClipboardList,
+  Database,
+  FileSearch,
+  LayoutDashboard,
+  Menu,
+  ShieldCheck,
+  Upload,
+  UserCircle,
+  Users,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +43,14 @@ export const adminNavigation = [
     label: "Thông báo",
     icon: Bell,
     permission: "MANAGE_ANNOUNCEMENTS",
+    group: "Vận hành",
+  },
+  {
+    key: "operation-tasks",
+    href: "/admin/operation-tasks",
+    label: "Công việc vận hành",
+    icon: ClipboardList,
+    permission: "VIEW_OPERATION_TASKS",
     group: "Vận hành",
   },
   
@@ -193,4 +212,3 @@ export function AdminMobileMenu({ activeKey, role }: { activeKey: AdminNavigatio
     </Sheet>
   );
 }
-
