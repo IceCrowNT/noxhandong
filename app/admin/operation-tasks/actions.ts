@@ -7,7 +7,7 @@ import type { Prisma } from "@prisma/client";
 import { requirePermission } from "@/src/modules/auth/current-user";
 import { prisma } from "@/src/modules/database";
 
-const VALID_DEPARTMENTS = new Set(["KY_THUAT", "VE_SINH"]);
+const VALID_DEPARTMENTS = new Set(["KY_THUAT", "VE_SINH", "HANH_CHINH", "TONG_HOP"]);
 const VALID_CLOSE_STATUSES = new Set(["HOAN_THANH", "BO_QUA", "THAY_DOI"]);
 
 function getString(formData: FormData, name: string) {
@@ -83,7 +83,7 @@ export async function createOperationTaskAction(formData: FormData) {
       stt_hien_thi: displayOrder,
       ten_cong_viec: taskName,
       mo_ta: description || null,
-      bo_phan: department as "KY_THUAT" | "VE_SINH",
+      bo_phan: department as "KY_THUAT" | "VE_SINH" | "HANH_CHINH" | "TONG_HOP",
       deadline,
       nguoi_tao_id: account.id,
       nguoi_cap_nhat_id: account.id,
@@ -142,7 +142,7 @@ export async function updateOperationTaskAction(formData: FormData) {
       stt_hien_thi: displayOrder,
       ten_cong_viec: taskName,
       mo_ta: description || null,
-      bo_phan: department as "KY_THUAT" | "VE_SINH",
+      bo_phan: department as "KY_THUAT" | "VE_SINH" | "HANH_CHINH" | "TONG_HOP",
       deadline,
       nguoi_cap_nhat_id: account.id,
     },

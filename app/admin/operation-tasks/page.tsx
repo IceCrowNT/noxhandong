@@ -80,12 +80,12 @@ function vietnamDateTimeInputValue(value: Date) {
 }
 
 function departmentFilter(value: string | null | undefined) {
-  return value === "KY_THUAT" || value === "VE_SINH" ? value : "all";
+  return value === "KY_THUAT" || value === "VE_SINH" || value === "HANH_CHINH" || value === "TONG_HOP" ? value : "all";
 }
 
 function taskWhere(status: OperationTaskStatusFilter, department: string, now: Date): Prisma.CongViecVanHanhWhereInput {
   const where: Prisma.CongViecVanHanhWhereInput = { da_xoa: false };
-  if (department === "KY_THUAT" || department === "VE_SINH") {
+  if (department === "KY_THUAT" || department === "VE_SINH" || department === "HANH_CHINH" || department === "TONG_HOP") {
     where.bo_phan = department;
   }
 

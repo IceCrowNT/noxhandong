@@ -83,6 +83,8 @@ enum TrangThaiTaiKhoan {
 enum BoPhanCongViecVanHanh {
   KY_THUAT
   VE_SINH
+  HANH_CHINH
+  TONG_HOP
 }
 
 enum TrangThaiDongCongViecVanHanh {

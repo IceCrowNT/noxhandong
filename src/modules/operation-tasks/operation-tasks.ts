@@ -7,6 +7,8 @@ import type {
 export const OPERATION_TASK_DEPARTMENTS = [
   { value: "KY_THUAT", label: "Kỹ thuật" },
   { value: "VE_SINH", label: "Vệ sinh" },
+  { value: "HANH_CHINH", label: "Hành chính" },
+  { value: "TONG_HOP", label: "Tổng hợp" },
 ] as const satisfies ReadonlyArray<{ value: BoPhanCongViecVanHanh; label: string }>;
 
 export const OPERATION_TASK_CLOSE_STATUSES = [

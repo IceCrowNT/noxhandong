@@ -20,7 +20,7 @@
 
 ## 1. Muc tieu nghiep vu
 
-- [x] Admin/quan ly tao cong viec cho 2 bo phan: `KY_THUAT`, `VE_SINH`.
+- [x] Admin/quan ly tao cong viec cho cac bo phan: `KY_THUAT`, `VE_SINH`, `HANH_CHINH`, `TONG_HOP`.
 - [x] Bo phan xem danh sach cong viec trong menu `Van hanh`.
 - [x] Bo phan chi duoc tich `Da bao xong / Cho nghiem thu`.
 - [x] Sau khi bo phan tich xong, checkbox nay bi khoa, khong cho tu bo tich.
@@ -56,7 +56,7 @@ De xuat dung 2 bang.
 - [x] `thoi_diem_giao_viec`
 - [x] `ten_cong_viec`
 - [x] `mo_ta`
-- [x] `bo_phan`: `KY_THUAT` | `VE_SINH`
+- [x] `bo_phan`: `KY_THUAT` | `VE_SINH` | `HANH_CHINH` | `TONG_HOP`
 - [x] `deadline`
 - [x] `da_bao_xong`
 - [x] `bao_xong_luc`
@@ -121,7 +121,7 @@ Route de xuat:
 - [x] Form tao cong viec:
   - Ten cong viec.
   - Mo ta/ghi chu.
-  - Bo phan dropdown: Ky thuat, Ve sinh.
+  - Bo phan dropdown: Ky thuat, Ve sinh, Hanh chinh, Tong hop.
   - Deadline.
 - [x] Bang danh sach:
   - STT.
@@ -189,7 +189,7 @@ Nguyen tac:
 ## 7. Validation nghiep vu
 
 - [x] Ten cong viec bat buoc.
-- [x] Bo phan chi nhan `KY_THUAT` hoac `VE_SINH`.
+- [x] Bo phan chi nhan `KY_THUAT`, `VE_SINH`, `HANH_CHINH`, `TONG_HOP`.
 - [x] Deadline bat buoc hay optional can chot truoc khi code. De xuat: bat buoc.
 - [x] Khong cho bao xong neu task da dong.
 - [x] Khong cho dong viec neu da xoa.
