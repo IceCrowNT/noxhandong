@@ -12,6 +12,9 @@ import {
 } from "@/app/admin/operation-tasks/actions";
 import { AdminFrame, ScrollPanel } from "@/components/admin/admin-frame";
 import { Badge } from "@/components/ui/badge";
+import { PerformanceCharts, type StatRecord } from "./performance-charts";
+import { DepartmentFilterSelect } from "./task-filters";
+import { AjaxForm, DetailsCancelButton } from "./task-actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -52,6 +55,7 @@ type OperationTasksPageProps = {
     closed?: string;
     deleted?: string;
     error?: string;
+    statMonth?: string;
   }>;
 };
 
@@ -142,17 +146,20 @@ function SelectBox({
   defaultValue,
   children,
   className = "",
+  disabled,
 }: {
   name: string;
   defaultValue: string;
   children: ReactNode;
   className?: string;
+  disabled?: boolean;
 }) {
   return (
     <select
-      className={`h-9 rounded-md border border-[var(--line)] bg-white px-3 py-1 text-sm text-[var(--text)] shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${className}`}
+      className={`h-9 rounded-md border border-[var(--line)] bg-white px-3 py-1 text-sm text-[var(--text)] shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       defaultValue={defaultValue}
       name={name}
+      disabled={disabled}
     >
       {children}
     </select>
@@ -181,6 +188,7 @@ function SortHead({
       <Link
         className="inline-flex items-center gap-1 text-[var(--text)] hover:text-[var(--accent)]"
         href={buildHref({ status, department, sort, dir, nextSort: column })}
+        scroll={false}
       >
         {label}
         {sort === column ? <span className="text-xs text-[var(--muted)]">{dir === "asc" ? "↑" : "↓"}</span> : null}
@@ -214,7 +222,11 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
   const statusMessage = getStatusMessage(params);
   const isError = Boolean(params?.error);
 
-  const [tasks, counts, logs] = await Promise.all([
+  const statMonthStr = typeof params?.statMonth === "string" ? params.statMonth : now.toISOString().substring(0, 7);
+  const statYear = parseInt(statMonthStr.substring(0, 4)) || now.getFullYear();
+  const statMonthNum = parseInt(statMonthStr.substring(5, 7)) || now.getMonth() + 1;
+
+  const [tasks, counts, logs, stats] = await Promise.all([
     prisma.congViecVanHanh.findMany({
       where: taskWhere(status, department, now),
       orderBy: taskOrderBy(sort, dir),
@@ -239,6 +251,7 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
         nguoi_thuc_hien: { select: { ten_dang_nhap: true, ten_hien_thi: true } },
       },
     }),
+    canManage ? getMonthlyStats(statYear, statMonthNum) : Promise.resolve(null),
   ]);
 
   const [openCount, waitingReviewCount, overdueCount, closedCount] = counts;
@@ -256,32 +269,32 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
       title="Công việc vận hành"
       description="Theo dõi công việc kỹ thuật và vệ sinh; bộ phận báo xong, quản trị nghiệm thu và đóng việc."
     >
-      {statusMessage ? <Notice tone={isError ? "error" : "success"}>{statusMessage}</Notice> : null}
-
-      <div className="mb-5 grid gap-3 md:grid-cols-4">
-        {filters.map((item) => {
-          const Icon = item.icon;
-          const active = status === item.key;
-          return (
-            <Link
-              key={item.key}
-              className={
-                active
-                  ? "rounded-lg border border-[var(--accent)] bg-[var(--accent-soft)] p-4 text-[var(--accent)] shadow-sm"
-                  : "rounded-lg border border-[var(--line)] bg-white/90 p-4 text-[var(--text)] shadow-sm hover:border-[var(--accent)]"
-              }
-              href={buildHref({ status, department, sort, dir, nextStatus: item.key })}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-semibold">{item.label}</span>
-                <Icon size={18} aria-hidden="true" />
-              </div>
-              <strong className="mt-3 block text-3xl leading-none">{item.value}</strong>
-            </Link>
-          );
-        })}
-      </div>
-
+      {canManage ? (
+        <div className="mb-5 grid gap-3 md:grid-cols-4">
+          {filters.map((item) => {
+            const Icon = item.icon;
+            const active = status === item.key;
+            return (
+              <Link
+                key={item.key}
+                className={
+                  active
+                    ? "rounded-lg border border-[var(--accent)] bg-[var(--accent-soft)] p-4 text-[var(--accent)] shadow-sm"
+                    : "rounded-lg border border-[var(--line)] bg-white/90 p-4 text-[var(--text)] shadow-sm hover:border-[var(--accent)]"
+                }
+                href={buildHref({ status, department, sort, dir, nextStatus: item.key })}
+                scroll={false}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold">{item.label}</span>
+                  <Icon size={18} aria-hidden="true" />
+                </div>
+                <strong className="mt-3 block text-3xl leading-none">{item.value}</strong>
+              </Link>
+            );
+          })}
+        </div>
+      ) : null}
       {canManage ? (
         <Card className="mb-5 bg-white/90">
           <CardHeader>
@@ -289,7 +302,7 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
             <CardDescription>Admin và quản lý tạo việc cho kỹ thuật hoặc vệ sinh.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={createOperationTaskAction} className="grid gap-4 lg:grid-cols-[1fr_180px_220px_auto] lg:items-end">
+            <AjaxForm action={createOperationTaskAction} resetOnSuccess className="grid gap-4 lg:grid-cols-[1fr_180px_220px_auto] lg:items-end">
               <label className="grid gap-2 text-sm font-semibold">
                 Tên công việc
                 <Input name="taskName" required />
@@ -308,14 +321,14 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                 Deadline
                 <Input name="deadline" type="date" required />
               </label>
-              <SubmitButton size="lg" pendingText="Đang tạo...">
-                Tạo việc
-              </SubmitButton>
+                <SubmitButton size="lg" pendingText="Đang tạo...">
+                  Tạo việc
+                </SubmitButton>
               <label className="grid gap-2 text-sm font-semibold lg:col-span-4">
                 Mô tả
                 <Textarea name="description" placeholder="Thông tin thêm nếu cần" />
               </label>
-            </form>
+            </AjaxForm>
           </CardContent>
         </Card>
       ) : null}
@@ -328,30 +341,7 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
               <CardDescription>Closed task mặc định được ẩn; dùng bộ lọc để xem lại khi cần.</CardDescription>
             </div>
             <div>
-              <form id="department-filter-form" className="flex flex-wrap items-center gap-2" method="get">
-                <input name="status" type="hidden" value={status} />
-                <input name="sort" type="hidden" value={sort} />
-                <input name="dir" type="hidden" value={dir} />
-                <SelectBox name="department" defaultValue={department}>
-                  <option value="all">Tất cả bộ phận</option>
-                  {OPERATION_TASK_DEPARTMENTS.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.label}
-                    </option>
-                  ))}
-                </SelectBox>
-                <noscript>
-                  <Button type="submit" variant="outline">
-                    <Filter size={16} aria-hidden="true" />
-                    Lọc
-                  </Button>
-                </noscript>
-              </form>
-              <script
-                dangerouslySetInnerHTML={{
-                  __html: `document.getElementById('department-filter-form')?.addEventListener('change', function(e) { e.currentTarget.submit(); });`,
-                }}
-              />
+              <DepartmentFilterSelect defaultValue={department} />
             </div>
           </div>
         </CardHeader>
@@ -395,12 +385,12 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                           <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700">Quá hạn</span>
                         ) : null}
                         {task.trang_thai_dong === "DANG_MO" && (account.vai_tro === "SUPER_ADMIN" || task.nguoi_bao_xong_id === account.id) ? (
-                          <form action={markOperationTaskDoneAction}>
+                          <AjaxForm action={markOperationTaskDoneAction}>
                             <input name="id" type="hidden" value={task.id} />
                             <SubmitButton variant="ghost" size="sm" className="h-auto p-0 text-[10px] font-bold uppercase text-[var(--muted)] underline hover:text-red-600" pendingText="...">
                               CHƯA XONG
                             </SubmitButton>
-                          </form>
+                          </AjaxForm>
                         ) : null}
                       </div>
                       <span className="text-xs text-[var(--muted)]">
@@ -409,13 +399,14 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                       </span>
                     </div>
                   ) : task.trang_thai_dong === "DANG_MO" ? (
-                    <form action={markOperationTaskDoneAction}>
+                    <AjaxForm action={markOperationTaskDoneAction}>
                       <input name="id" type="hidden" value={task.id} />
+                      <input name="isReportDone" type="hidden" value="1" />
                       <SubmitButton className="w-full" size="lg" pendingText="Đang ghi nhận...">
                         <CheckCircle2 size={18} className="mr-2" aria-hidden="true" />
                         Tích xong
                       </SubmitButton>
-                    </form>
+                    </AjaxForm>
                   ) : (
                     <div className="text-center text-sm font-medium text-[var(--muted)]">Công việc đã đóng</div>
                   )}
@@ -429,7 +420,7 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                       </summary>
                       <div className="mt-3 grid gap-4">
                         {task.trang_thai_dong === "DANG_MO" ? (
-                          <form action={closeOperationTaskAction} className="grid gap-2 rounded border border-[var(--line)] bg-[var(--bg-subtle)] p-3" title={!task.da_bao_xong ? "Yêu cầu nhân viên báo xong trước khi đóng" : undefined}>
+                          <AjaxForm action={closeOperationTaskAction} className="grid gap-2 rounded border border-[var(--line)] bg-[var(--bg-subtle)] p-3" title={!task.da_bao_xong ? "Yêu cầu nhân viên báo xong trước khi đóng" : undefined}>
                             <div className="text-sm font-semibold">Đóng việc</div>
                             <input name="id" type="hidden" value={task.id} />
                             <SelectBox name="closeStatus" defaultValue="HOAN_THANH" disabled={!task.da_bao_xong}>
@@ -441,7 +432,7 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                             </SelectBox>
                             <Input name="closeNote" placeholder="Ghi chú đóng việc" disabled={!task.da_bao_xong} />
                             <SubmitButton size="sm" pendingText="Đang đóng..." disabled={!task.da_bao_xong}>Đóng</SubmitButton>
-                          </form>
+                          </AjaxForm>
                         ) : (
                           <div className="grid gap-1 rounded border border-[var(--line)] bg-[var(--bg-subtle)] p-3 text-sm">
                             <strong>{operationTaskCloseStatusLabel(task.trang_thai_dong)}</strong>
@@ -455,30 +446,39 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                         )}
 
                         {task.trang_thai_dong === "DANG_MO" && !task.da_bao_xong ? (
-                          <form action={updateOperationTaskAction} className="grid gap-2 rounded border border-[var(--line)] bg-[var(--bg-subtle)] p-3">
-                            <div className="text-sm font-semibold">Sửa việc</div>
-                            <input name="id" type="hidden" value={task.id} />
-                            <Input name="taskName" defaultValue={task.ten_cong_viec} required />
-                            <SelectBox name="department" defaultValue={task.bo_phan}>
-                              {OPERATION_TASK_DEPARTMENTS.map((item) => (
-                                <option key={item.value} value={item.value}>
-                                  {item.label}
-                                </option>
-                              ))}
-                            </SelectBox>
-                            <Input name="deadline" type="date" defaultValue={vietnamDateInputValue(task.deadline)} required />
-                            <Textarea name="description" defaultValue={task.mo_ta || ""} />
-                            <SubmitButton size="sm" pendingText="Đang lưu...">Lưu sửa</SubmitButton>
-                          </form>
+                          <details className="group">
+                            <summary className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-[var(--accent)] group-open:hidden">
+                              <Pencil size={15} aria-hidden="true" />
+                              Sửa công việc
+                            </summary>
+                            <AjaxForm action={updateOperationTaskAction} resetOnSuccess className="grid gap-2 rounded border border-[var(--line)] bg-[var(--bg-subtle)] p-3">
+                              <div className="text-sm font-semibold text-[var(--accent)]">Sửa việc</div>
+                              <input name="id" type="hidden" value={task.id} />
+                              <Input name="taskName" defaultValue={task.ten_cong_viec} required />
+                              <SelectBox name="department" defaultValue={task.bo_phan}>
+                                {OPERATION_TASK_DEPARTMENTS.map((item) => (
+                                  <option key={item.value} value={item.value}>
+                                    {item.label}
+                                  </option>
+                                ))}
+                              </SelectBox>
+                              <Input name="deadline" type="date" defaultValue={vietnamDateInputValue(task.deadline)} required />
+                              <Textarea name="description" defaultValue={task.mo_ta || ""} />
+                              <div className="flex items-center gap-2 mt-1">
+                                <SubmitButton size="sm" className="flex-1" pendingText="Đang lưu...">Lưu sửa</SubmitButton>
+                                <DetailsCancelButton className="flex-1" />
+                              </div>
+                            </AjaxForm>
+                          </details>
                         ) : null}
                         
                         {task.trang_thai_dong === "DANG_MO" && !task.da_bao_xong ? (
-                          <form action={deleteOperationTaskAction}>
+                          <AjaxForm action={deleteOperationTaskAction} confirmMessage="Bạn có chắc chắn muốn xóa công việc này không? Thao tác này không thể hoàn tác.">
                             <input name="id" type="hidden" value={task.id} />
                             <SubmitButton className="w-full" size="sm" variant="destructive" pendingText="Đang xóa...">
                               <Trash2 size={15} className="mr-2" aria-hidden="true" /> Xóa công việc
                             </SubmitButton>
-                          </form>
+                          </AjaxForm>
                         ) : null}
                       </div>
                     </details>
@@ -493,15 +493,15 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
               <Table>
               <TableHeader>
                 <TableRow>
-                  <SortHead label="STT" column="stt" status={status} department={department} sort={sort} dir={dir} className="min-w-[60px]" />
-                  <SortHead label="Thời điểm giao" column="assignedAt" status={status} department={department} sort={sort} dir={dir} className="min-w-[150px]" />
-                  <SortHead label="Công việc" column="task" status={status} department={department} sort={sort} dir={dir} className="min-w-[240px]" />
-                  <SortHead label="Bộ phận" column="department" status={status} department={department} sort={sort} dir={dir} className="min-w-[130px]" />
-                  <SortHead label="Deadline" column="deadline" status={status} department={department} sort={sort} dir={dir} className="min-w-[110px]" />
-                  <TableHead className="min-w-[180px]">Báo xong</TableHead>
-                  <SortHead label="Trạng thái" column="status" status={status} department={department} sort={sort} dir={dir} className="min-w-[130px]" />
-                  {canManage ? <TableHead className="min-w-[280px]">Đóng việc</TableHead> : null}
-                  {canManage ? <TableHead className="min-w-[80px]">Sửa/xóa</TableHead> : null}
+                  <SortHead label="STT" column="stt" status={status} department={department} sort={sort} dir={dir} className="w-[50px] min-w-[50px]" />
+                  <SortHead label="Thời điểm giao" column="assignedAt" status={status} department={department} sort={sort} dir={dir} className="w-[130px] min-w-[130px]" />
+                  <SortHead label="Công việc" column="task" status={status} department={department} sort={sort} dir={dir} className="min-w-[200px]" />
+                  <SortHead label="Bộ phận" column="department" status={status} department={department} sort={sort} dir={dir} className="w-[110px] min-w-[110px]" />
+                  <SortHead label="Deadline" column="deadline" status={status} department={department} sort={sort} dir={dir} className="w-[100px] min-w-[100px]" />
+                  <TableHead className="w-[120px] min-w-[120px]">Báo xong</TableHead>
+                  <SortHead label="Trạng thái" column="status" status={status} department={department} sort={sort} dir={dir} className="w-[110px] min-w-[110px]" />
+                  {canManage ? <TableHead className="min-w-[240px]">Đóng việc</TableHead> : null}
+                  {canManage ? <TableHead className="w-[80px]">Sửa/xóa</TableHead> : null}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -534,12 +534,12 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                               <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700">Quá hạn</span>
                             ) : null}
                             {task.trang_thai_dong === "DANG_MO" && (account.vai_tro === "SUPER_ADMIN" || task.nguoi_bao_xong_id === account.id) ? (
-                              <form action={markOperationTaskDoneAction}>
+                              <AjaxForm action={markOperationTaskDoneAction}>
                                 <input name="id" type="hidden" value={task.id} />
                                 <SubmitButton variant="ghost" size="sm" className="h-auto p-0 text-[10px] font-bold uppercase text-[var(--muted)] underline hover:text-red-600" pendingText="...">
                                   CHƯA XONG
                                 </SubmitButton>
-                              </form>
+                              </AjaxForm>
                             ) : null}
                           </div>
                           <span className="text-xs text-[var(--muted)] block w-full whitespace-normal break-words">
@@ -549,13 +549,14 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                           </span>
                         </div>
                       ) : task.trang_thai_dong === "DANG_MO" ? (
-                        <form action={markOperationTaskDoneAction}>
+                        <AjaxForm action={markOperationTaskDoneAction}>
                           <input name="id" type="hidden" value={task.id} />
+                          <input name="isReportDone" type="hidden" value="1" />
                           <SubmitButton size="sm" variant="outline" pendingText="Đang ghi nhận...">
                             <span className="h-4 w-4 rounded border border-[var(--line)] bg-white" aria-hidden="true" />
                             Tích xong
                           </SubmitButton>
-                        </form>
+                        </AjaxForm>
                       ) : (
                         "-"
                       )}
@@ -566,20 +567,22 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                     {canManage ? (
                       <TableCell>
                         {task.trang_thai_dong === "DANG_MO" ? (
-                          <form action={closeOperationTaskAction} className="grid min-w-[260px] gap-2" title={!task.da_bao_xong ? "Yêu cầu nhân viên báo xong trước khi đóng" : undefined}>
+                          <AjaxForm action={closeOperationTaskAction} className="grid min-w-[260px] gap-2" title={!task.da_bao_xong ? "Yêu cầu nhân viên báo xong trước khi đóng" : undefined}>
                             <input name="id" type="hidden" value={task.id} />
-                            <SelectBox name="closeStatus" defaultValue="HOAN_THANH" disabled={!task.da_bao_xong}>
-                              {OPERATION_TASK_CLOSE_STATUSES.map((item) => (
-                                <option key={item.value} value={item.value}>
-                                  {item.label}
-                                </option>
-                              ))}
-                            </SelectBox>
+                            <div className="flex gap-2">
+                              <SelectBox className="flex-1" name="closeStatus" defaultValue="HOAN_THANH" disabled={!task.da_bao_xong}>
+                                {OPERATION_TASK_CLOSE_STATUSES.map((item) => (
+                                  <option key={item.value} value={item.value}>
+                                    {item.label}
+                                  </option>
+                                ))}
+                              </SelectBox>
+                              <SubmitButton className="shrink-0 h-9" size="sm" pendingText="..." disabled={!task.da_bao_xong}>
+                                Đóng
+                              </SubmitButton>
+                            </div>
                             <Input name="closeNote" placeholder="Ghi chú đóng việc" disabled={!task.da_bao_xong} />
-                            <SubmitButton size="sm" pendingText="Đang đóng..." disabled={!task.da_bao_xong}>
-                              Đóng
-                            </SubmitButton>
-                          </form>
+                          </AjaxForm>
                         ) : (
                           <div className="grid gap-1 text-sm">
                             <strong>{operationTaskCloseStatusLabel(task.trang_thai_dong)}</strong>
@@ -596,43 +599,45 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                     {canManage ? (
                       <TableCell>
                         {task.trang_thai_dong === "DANG_MO" && !task.da_bao_xong ? (
-                          <details className="min-w-[280px]">
-                            <summary className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-[var(--accent)]">
-                              <Pencil size={15} aria-hidden="true" />
-                              Sửa
-                            </summary>
-                            <form action={updateOperationTaskAction} className="mt-3 grid gap-2 rounded-md border border-[var(--line)] bg-white p-3">
+                          <div className="flex items-start gap-2">
+                            <details className="group relative">
+                              <summary className="inline-flex h-9 w-[80px] cursor-pointer items-center justify-center gap-1.5 rounded-md border border-[var(--accent)] text-[var(--accent)] bg-white px-2 text-xs font-semibold hover:bg-[var(--accent)] hover:text-white group-open:hidden transition-colors">
+                                <Pencil size={14} aria-hidden="true" />
+                                Sửa
+                              </summary>
+                              <AjaxForm resetOnSuccess action={updateOperationTaskAction} className="absolute right-0 top-0 z-10 w-[280px] grid gap-3 rounded-md border border-[var(--line)] bg-white p-3 shadow-lg">
+                                <div className="text-sm font-semibold text-[var(--accent)]">Sửa công việc</div>
+                                <input name="id" type="hidden" value={task.id} />
+                                <Input name="taskName" defaultValue={task.ten_cong_viec} required />
+                                <SelectBox name="department" defaultValue={task.bo_phan}>
+                                  {OPERATION_TASK_DEPARTMENTS.map((item) => (
+                                    <option key={item.value} value={item.value}>
+                                      {item.label}
+                                    </option>
+                                  ))}
+                                </SelectBox>
+                                <Input name="deadline" type="date" defaultValue={vietnamDateInputValue(task.deadline)} required />
+                                <Textarea name="description" defaultValue={task.mo_ta || ""} />
+                                <div className="flex items-center gap-2 mt-1">
+                                  <SubmitButton size="sm" className="flex-1" pendingText="Đang lưu...">Lưu sửa</SubmitButton>
+                                  <DetailsCancelButton className="flex-1" />
+                                </div>
+                              </AjaxForm>
+                            </details>
+                            
+                            <AjaxForm action={deleteOperationTaskAction} confirmMessage="Bạn có chắc chắn muốn xóa công việc này không? Thao tác này không thể hoàn tác.">
                               <input name="id" type="hidden" value={task.id} />
-                              <Input name="taskName" defaultValue={task.ten_cong_viec} required />
-                              <SelectBox name="department" defaultValue={task.bo_phan}>
-                                {OPERATION_TASK_DEPARTMENTS.map((item) => (
-                                  <option key={item.value} value={item.value}>
-                                    {item.label}
-                                  </option>
-                                ))}
-                              </SelectBox>
-                              <Input name="deadline" type="date" defaultValue={vietnamDateInputValue(task.deadline)} required />
-                              <Textarea name="description" defaultValue={task.mo_ta || ""} />
-                              <SubmitButton size="sm" pendingText="Đang lưu...">
-                                Lưu sửa
+                              <SubmitButton className="h-9 w-[80px]" size="sm" variant="destructive" pendingText="Đang xóa...">
+                                <Trash2 size={14} aria-hidden="true" className="mr-1.5" />
+                                Xóa
                               </SubmitButton>
-                            </form>
-                          </details>
+                            </AjaxForm>
+                          </div>
                         ) : task.da_bao_xong && task.trang_thai_dong === "DANG_MO" ? (
                           <span className="text-sm font-medium text-[var(--muted)]" title="Đã báo xong, không thể sửa/xóa">-</span>
                         ) : (
                           <span className="text-sm text-[var(--muted)]">Đã đóng</span>
                         )}
-                        
-                        {task.trang_thai_dong === "DANG_MO" && !task.da_bao_xong ? (
-                          <form action={deleteOperationTaskAction} className="mt-2">
-                            <input name="id" type="hidden" value={task.id} />
-                            <SubmitButton size="sm" variant="destructive" pendingText="Đang xóa...">
-                              <Trash2 size={15} aria-hidden="true" />
-                              Xóa
-                            </SubmitButton>
-                          </form>
-                        ) : null}
                       </TableCell>
                     ) : null}
                   </TableRow>
@@ -643,6 +648,8 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
           </div>
         </CardContent>
       </Card>
+
+      {canManage && stats ? <PerformanceCharts stats={stats} statMonth={statMonthStr} /> : null}
 
       <Card className="bg-white/90">
         <CardHeader>
@@ -665,4 +672,55 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
       </Card>
     </AdminFrame>
   );
+}
+
+async function getMonthlyStats(year: number, month: number) {
+  const startOfMonth = new Date(year, month - 1, 1, 0, 0, 0);
+  const endOfMonth = new Date(year, month, 1, 0, 0, 0);
+
+  const tasks = await prisma.congViecVanHanh.findMany({
+    where: {
+      da_xoa: false,
+      deadline: {
+        gte: startOfMonth,
+        lt: endOfMonth,
+      },
+    },
+    select: {
+      bo_phan: true,
+      da_bao_xong: true,
+      bao_xong_luc: true,
+      deadline: true,
+    },
+  });
+
+  const stats: Record<string, StatRecord> = {
+    VE_SINH: { department: "Vệ sinh", onTime: 0, late: 0, incomplete: 0, total: 0 },
+    KY_THUAT: { department: "Kỹ thuật", onTime: 0, late: 0, incomplete: 0, total: 0 },
+    HANH_CHINH: { department: "Hành chính", onTime: 0, late: 0, incomplete: 0, total: 0 },
+    TONG_HOP: { department: "Tổng hợp", onTime: 0, late: 0, incomplete: 0, total: 0 },
+  };
+
+  for (const task of tasks) {
+    const s = stats[task.bo_phan];
+    if (!s) continue;
+
+    s.total++;
+    if (!task.da_bao_xong) {
+      s.incomplete++;
+    } else {
+      if (task.bao_xong_luc && task.deadline && task.bao_xong_luc > task.deadline) {
+        s.late++;
+      } else {
+        s.onTime++;
+      }
+    }
+  }
+
+  return {
+    veSinh: stats.VE_SINH,
+    kyThuat: stats.KY_THUAT,
+    hanhChinh: stats.HANH_CHINH,
+    tongHop: stats.TONG_HOP,
+  };
 }

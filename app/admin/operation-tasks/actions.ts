@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
 
 import { requirePermission } from "@/src/modules/auth/current-user";
@@ -74,7 +73,7 @@ export async function createOperationTaskAction(formData: FormData) {
   const displayOrder = await nextDisplayOrder();
 
   if (!taskName || !VALID_DEPARTMENTS.has(department) || !deadline) {
-    redirect("/admin/operation-tasks?error=invalid");
+    return { error: "Vui lòng nhập đầy đủ tên công việc, bộ phận và deadline." };
   }
 
   const task = await prisma.congViecVanHanh.create({
@@ -102,7 +101,7 @@ export async function createOperationTaskAction(formData: FormData) {
   });
 
   revalidatePath("/admin/operation-tasks");
-  redirect("/admin/operation-tasks?created=1");
+  return { success: true, message: "Đã tạo công việc mới thành công!" };
 }
 
 export async function updateOperationTaskAction(formData: FormData) {
@@ -114,7 +113,7 @@ export async function updateOperationTaskAction(formData: FormData) {
   const deadline = parseVietnamDateLocalEnd(getString(formData, "deadline"));
 
   if (!id || !taskName || !VALID_DEPARTMENTS.has(department) || !deadline) {
-    redirect("/admin/operation-tasks?error=invalid");
+    return { error: "Dữ liệu cập nhật không hợp lệ." };
   }
 
   const before = await prisma.congViecVanHanh.findFirst({
@@ -132,10 +131,10 @@ export async function updateOperationTaskAction(formData: FormData) {
   });
 
   if (!before) {
-    redirect("/admin/operation-tasks?error=not_found");
+    return { error: "Không tìm thấy công việc, hoặc công việc đã bị xóa/đóng." };
   }
   if (before.da_bao_xong) {
-    redirect("/admin/operation-tasks?error=cannot_edit");
+    return { error: "Không thể sửa công việc đã được nhân viên báo xong." };
   }
 
   const updated = await prisma.congViecVanHanh.update({
@@ -167,45 +166,32 @@ export async function updateOperationTaskAction(formData: FormData) {
   });
 
   revalidatePath("/admin/operation-tasks");
-  redirect("/admin/operation-tasks?updated=1");
+  return { success: true, message: "Đã cập nhật công việc thành công!" };
 }
 
 export async function markOperationTaskDoneAction(formData: FormData) {
   const account = await requirePermission("VIEW_OPERATION_TASKS");
   const id = getRequiredId(formData);
-  if (!id) redirect("/admin/operation-tasks?error=invalid");
+  const isReportDone = getString(formData, "isReportDone") === "1";
+  
+  if (!id) return { error: "ID công việc không hợp lệ." };
 
-  const task = await prisma.congViecVanHanh.findFirst({
+  const before = await prisma.congViecVanHanh.findFirst({
     where: { id, da_xoa: false, trang_thai_dong: "DANG_MO" },
     select: { id: true, ten_cong_viec: true, da_bao_xong: true, nguoi_bao_xong_id: true },
   });
 
-  if (!task) {
-    redirect("/admin/operation-tasks?error=not_found");
+  if (!before) {
+    return { error: "Không tìm thấy công việc, hoặc công việc đã bị xóa/đóng." };
   }
 
-  if (!task.da_bao_xong) {
-    await prisma.congViecVanHanh.update({
-      where: { id },
-      data: {
-        da_bao_xong: true,
-        bao_xong_luc: new Date(),
-        nguoi_bao_xong_id: account.id,
-        nguoi_cap_nhat_id: account.id,
-      },
-    });
-
-    await writeTaskLog({
-      taskId: id,
-      action: "BAO_XONG",
-      accountId: account.id,
-      content: `Báo xong công việc: ${task.ten_cong_viec}`,
-    });
-    revalidatePath("/admin/operation-tasks");
-    redirect("/admin/operation-tasks?reported=1");
-  } else {
-    if (account.vai_tro !== "SUPER_ADMIN" && task.nguoi_bao_xong_id !== account.id) {
-      redirect("/admin/operation-tasks?error=cannot_unmark");
+  if (before.da_bao_xong) {
+    if (isReportDone) {
+      return { success: true, message: "Công việc này đã được báo xong từ trước." };
+    }
+    const canUnmark = before.nguoi_bao_xong_id === account.id || account.vai_tro === "SUPER_ADMIN";
+    if (!canUnmark) {
+      return { error: "Bạn không có quyền bỏ tích báo xong (chỉ người đánh dấu hoặc Super Admin mới được bỏ)." };
     }
 
     await prisma.congViecVanHanh.update({
@@ -222,11 +208,33 @@ export async function markOperationTaskDoneAction(formData: FormData) {
       taskId: id,
       action: "BAO_XONG",
       accountId: account.id,
-      content: `Hủy báo xong công việc: ${task.ten_cong_viec}`,
+      content: `Hủy báo xong công việc: ${before.ten_cong_viec}`,
     });
-    revalidatePath("/admin/operation-tasks");
-    redirect("/admin/operation-tasks?unmarked=1");
+  } else {
+    if (!isReportDone) {
+      return { success: true, message: "Công việc này chưa được báo xong." };
+    }
+
+    await prisma.congViecVanHanh.update({
+      where: { id },
+      data: {
+        da_bao_xong: true,
+        bao_xong_luc: new Date(),
+        nguoi_bao_xong_id: account.id,
+        nguoi_cap_nhat_id: account.id,
+      },
+    });
+
+    await writeTaskLog({
+      taskId: id,
+      action: "BAO_XONG",
+      accountId: account.id,
+      content: `Báo xong công việc: ${before.ten_cong_viec}`,
+    });
   }
+
+  revalidatePath("/admin/operation-tasks");
+  return { success: true, message: isReportDone ? "Đã báo xong công việc!" : "Đã bỏ tích báo xong!" };
 }
 
 export async function closeOperationTaskAction(formData: FormData) {
@@ -236,19 +244,19 @@ export async function closeOperationTaskAction(formData: FormData) {
   const closeNote = getString(formData, "closeNote");
 
   if (!id || !VALID_CLOSE_STATUSES.has(closeStatus)) {
-    redirect("/admin/operation-tasks?error=invalid");
+    return { error: "Trạng thái đóng không hợp lệ." };
   }
 
-  const task = await prisma.congViecVanHanh.findFirst({
+  const before = await prisma.congViecVanHanh.findFirst({
     where: { id, da_xoa: false, trang_thai_dong: "DANG_MO" },
     select: { id: true, ten_cong_viec: true, da_bao_xong: true },
   });
 
-  if (!task) {
-    redirect("/admin/operation-tasks?error=not_found");
+  if (!before) {
+    return { error: "Không tìm thấy công việc, hoặc công việc đã bị đóng/xóa." };
   }
-  if (!task.da_bao_xong) {
-    redirect("/admin/operation-tasks?error=must_report_first");
+  if (!before.da_bao_xong) {
+    return { error: "Phải đợi bộ phận liên quan báo xong mới có thể đóng việc." };
   }
 
   await prisma.congViecVanHanh.update({
@@ -266,18 +274,18 @@ export async function closeOperationTaskAction(formData: FormData) {
     taskId: id,
     action: "DONG_VIEC",
     accountId: account.id,
-    content: `Đóng công việc: ${task.ten_cong_viec}`,
+    content: `Đóng công việc: ${before.ten_cong_viec}`,
     payload: { trang_thai_dong: closeStatus, ghi_chu_dong: closeNote || null },
   });
 
   revalidatePath("/admin/operation-tasks");
-  redirect("/admin/operation-tasks?closed=1");
+  return { success: true, message: "Đã đóng công việc thành công!" };
 }
 
 export async function deleteOperationTaskAction(formData: FormData) {
   const account = await requirePermission("MANAGE_OPERATION_TASKS");
   const id = getRequiredId(formData);
-  if (!id) redirect("/admin/operation-tasks?error=invalid");
+  if (!id) return { error: "ID công việc không hợp lệ." };
 
   const task = await prisma.congViecVanHanh.findFirst({
     where: { id, da_xoa: false },
@@ -285,10 +293,10 @@ export async function deleteOperationTaskAction(formData: FormData) {
   });
 
   if (!task) {
-    redirect("/admin/operation-tasks?error=not_found");
+    return { error: "Không tìm thấy công việc." };
   }
   if (task.trang_thai_dong !== "DANG_MO" || task.da_bao_xong) {
-    redirect("/admin/operation-tasks?error=cannot_delete");
+    return { error: "Không thể xóa công việc đã đóng hoặc đã báo xong." };
   }
 
   await prisma.congViecVanHanh.update({
@@ -307,5 +315,5 @@ export async function deleteOperationTaskAction(formData: FormData) {
   });
 
   revalidatePath("/admin/operation-tasks");
-  redirect("/admin/operation-tasks?deleted=1");
+  return { success: true, message: "Đã xóa công việc thành công." };
 }
