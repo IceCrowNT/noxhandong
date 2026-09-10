@@ -27,10 +27,9 @@ function getRequiredId(formData: FormData) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-function parseVietnamDateTimeLocal(value: string) {
+function parseVietnamDateLocalEnd(value: string) {
   if (!value) return null;
-  const normalized = value.length === 16 ? `${value}:00` : value;
-  const date = new Date(`${normalized}+07:00`);
+  const date = new Date(`${value}T23:59:59.999+07:00`);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
@@ -71,8 +70,8 @@ export async function createOperationTaskAction(formData: FormData) {
   const taskName = getString(formData, "taskName");
   const description = getString(formData, "description");
   const department = getString(formData, "department");
-  const deadline = parseVietnamDateTimeLocal(getString(formData, "deadline"));
-  const displayOrder = getPositiveInt(formData, "displayOrder") || (await nextDisplayOrder());
+  const deadline = parseVietnamDateLocalEnd(getString(formData, "deadline"));
+  const displayOrder = await nextDisplayOrder();
 
   if (!taskName || !VALID_DEPARTMENTS.has(department) || !deadline) {
     redirect("/admin/operation-tasks?error=invalid");
@@ -112,8 +111,7 @@ export async function updateOperationTaskAction(formData: FormData) {
   const taskName = getString(formData, "taskName");
   const description = getString(formData, "description");
   const department = getString(formData, "department");
-  const deadline = parseVietnamDateTimeLocal(getString(formData, "deadline"));
-  const displayOrder = getPositiveInt(formData, "displayOrder");
+  const deadline = parseVietnamDateLocalEnd(getString(formData, "deadline"));
 
   if (!id || !taskName || !VALID_DEPARTMENTS.has(department) || !deadline) {
     redirect("/admin/operation-tasks?error=invalid");
@@ -129,17 +127,20 @@ export async function updateOperationTaskAction(formData: FormData) {
       bo_phan: true,
       deadline: true,
       trang_thai_dong: true,
+      da_bao_xong: true,
     },
   });
 
   if (!before) {
     redirect("/admin/operation-tasks?error=not_found");
   }
+  if (before.da_bao_xong) {
+    redirect("/admin/operation-tasks?error=cannot_edit");
+  }
 
   const updated = await prisma.congViecVanHanh.update({
     where: { id },
     data: {
-      stt_hien_thi: displayOrder,
       ten_cong_viec: taskName,
       mo_ta: description || null,
       bo_phan: department as "KY_THUAT" | "VE_SINH" | "HANH_CHINH" | "TONG_HOP",
@@ -176,7 +177,7 @@ export async function markOperationTaskDoneAction(formData: FormData) {
 
   const task = await prisma.congViecVanHanh.findFirst({
     where: { id, da_xoa: false, trang_thai_dong: "DANG_MO" },
-    select: { id: true, ten_cong_viec: true, da_bao_xong: true },
+    select: { id: true, ten_cong_viec: true, da_bao_xong: true, nguoi_bao_xong_id: true },
   });
 
   if (!task) {
@@ -200,10 +201,32 @@ export async function markOperationTaskDoneAction(formData: FormData) {
       accountId: account.id,
       content: `Báo xong công việc: ${task.ten_cong_viec}`,
     });
-  }
+    revalidatePath("/admin/operation-tasks");
+    redirect("/admin/operation-tasks?reported=1");
+  } else {
+    if (account.vai_tro !== "SUPER_ADMIN" && task.nguoi_bao_xong_id !== account.id) {
+      redirect("/admin/operation-tasks?error=cannot_unmark");
+    }
 
-  revalidatePath("/admin/operation-tasks");
-  redirect("/admin/operation-tasks?reported=1");
+    await prisma.congViecVanHanh.update({
+      where: { id },
+      data: {
+        da_bao_xong: false,
+        bao_xong_luc: null,
+        nguoi_bao_xong_id: null,
+        nguoi_cap_nhat_id: account.id,
+      },
+    });
+
+    await writeTaskLog({
+      taskId: id,
+      action: "BAO_XONG",
+      accountId: account.id,
+      content: `Hủy báo xong công việc: ${task.ten_cong_viec}`,
+    });
+    revalidatePath("/admin/operation-tasks");
+    redirect("/admin/operation-tasks?unmarked=1");
+  }
 }
 
 export async function closeOperationTaskAction(formData: FormData) {
@@ -217,12 +240,15 @@ export async function closeOperationTaskAction(formData: FormData) {
   }
 
   const task = await prisma.congViecVanHanh.findFirst({
-    where: { id, da_xoa: false },
-    select: { id: true, ten_cong_viec: true },
+    where: { id, da_xoa: false, trang_thai_dong: "DANG_MO" },
+    select: { id: true, ten_cong_viec: true, da_bao_xong: true },
   });
 
   if (!task) {
     redirect("/admin/operation-tasks?error=not_found");
+  }
+  if (!task.da_bao_xong) {
+    redirect("/admin/operation-tasks?error=must_report_first");
   }
 
   await prisma.congViecVanHanh.update({
@@ -255,11 +281,14 @@ export async function deleteOperationTaskAction(formData: FormData) {
 
   const task = await prisma.congViecVanHanh.findFirst({
     where: { id, da_xoa: false },
-    select: { id: true, ten_cong_viec: true },
+    select: { id: true, ten_cong_viec: true, trang_thai_dong: true, da_bao_xong: true },
   });
 
   if (!task) {
     redirect("/admin/operation-tasks?error=not_found");
+  }
+  if (task.trang_thai_dong !== "DANG_MO" || task.da_bao_xong) {
+    redirect("/admin/operation-tasks?error=cannot_delete");
   }
 
   await prisma.congViecVanHanh.update({
