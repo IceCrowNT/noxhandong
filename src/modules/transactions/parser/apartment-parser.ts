@@ -595,7 +595,7 @@ function collectCandidates(normalizedDescription: string): ApartmentParseCandida
     push(buildCandidate(match[1], match[2], "BLOCK_SO_NHA_COMPACT_ROOM", 0.94));
   }
 
-  const blockRoomTrailingWordPattern = new RegExp(`\\bL${BLOCK_CAPTURE}\\s+([1-9]\\d{2})(?=[A-Z]{2,}\\b)`, "g");
+  const blockRoomTrailingWordPattern = new RegExp(`\\bL${BLOCK_CAPTURE}\\s*([1-9]\\d{2}[A-C]?)(?=[A-Z]{2,})`, "g");
   for (const match of normalizedDescription.matchAll(blockRoomTrailingWordPattern)) {
     push(buildCandidate(match[1], match[2], "BLOCK_ROOM_TRAILING_WORD", 0.9));
   }
