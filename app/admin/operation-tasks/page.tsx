@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { PerformanceCharts, type StatRecord } from "./performance-charts";
 import { DepartmentFilterSelect } from "./task-filters";
 import { AjaxForm, DetailsCancelButton } from "./task-actions";
+import { MediaGallery } from "./media-gallery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -402,31 +403,8 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                           {task.ghi_chu_bao_xong}
                         </span>
                       ) : null}
-                      {task.hinh_anh_bao_xong && Array.isArray(task.hinh_anh_bao_xong) && task.hinh_anh_bao_xong.length > 0 ? (
-                        <div className="mt-2 flex flex-wrap gap-2 justify-center">
-                          {(task.hinh_anh_bao_xong as string[]).map((mediaUrl, i) => {
-                            const isVideo = mediaUrl.match(/\.(mp4|webm|mov)$/i);
-                            return (
-                              <a key={i} href={mediaUrl} target="_blank" className="block shrink-0">
-                                {isVideo ? (
-                                  <video src={mediaUrl} className="h-20 object-contain rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
-                                ) : (
-                                  /* eslint-disable-next-line @next/next/no-img-element */
-                                  <img src={mediaUrl} alt={`Bằng chứng ${i+1}`} className="h-20 object-contain rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
-                                )}
-                              </a>
-                            );
-                          })}
-                        </div>
-                      ) : typeof task.hinh_anh_bao_xong === 'string' ? (
-                        <a href={task.hinh_anh_bao_xong as string} target="_blank" className="mt-2 block shrink-0 flex justify-center">
-                          {task.hinh_anh_bao_xong.match(/\.(mp4|webm|mov)$/i) ? (
-                            <video src={task.hinh_anh_bao_xong as string} className="h-20 object-contain rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
-                          ) : (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img src={task.hinh_anh_bao_xong as string} alt="Bằng chứng" className="h-20 object-contain rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
-                          )}
-                        </a>
+                      {task.hinh_anh_bao_xong ? (
+                        <MediaGallery mediaUrls={task.hinh_anh_bao_xong as string | string[]} thumbnailClassName="h-20 object-contain" />
                       ) : null}
                     </div>
                   ) : task.trang_thai_dong === "DANG_MO" ? (
@@ -595,31 +573,8 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                               {task.ghi_chu_bao_xong}
                             </span>
                           ) : null}
-                          {task.hinh_anh_bao_xong && Array.isArray(task.hinh_anh_bao_xong) && task.hinh_anh_bao_xong.length > 0 ? (
-                            <div className="mt-2 flex flex-wrap gap-1">
-                              {(task.hinh_anh_bao_xong as string[]).map((mediaUrl, i) => {
-                                const isVideo = mediaUrl.match(/\.(mp4|webm|mov)$/i);
-                                return (
-                                  <a key={i} href={mediaUrl} target="_blank" className="block shrink-0">
-                                    {isVideo ? (
-                                      <video src={mediaUrl} className="h-16 w-16 object-cover rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
-                                    ) : (
-                                      /* eslint-disable-next-line @next/next/no-img-element */
-                                      <img src={mediaUrl} alt={`Bằng chứng ${i+1}`} className="h-16 w-16 object-cover rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
-                                    )}
-                                  </a>
-                                );
-                              })}
-                            </div>
-                          ) : typeof task.hinh_anh_bao_xong === 'string' ? (
-                            <a href={task.hinh_anh_bao_xong as string} target="_blank" className="mt-1 block shrink-0">
-                              {task.hinh_anh_bao_xong.match(/\.(mp4|webm|mov)$/i) ? (
-                                <video src={task.hinh_anh_bao_xong as string} className="h-16 w-16 object-cover rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
-                              ) : (
-                                /* eslint-disable-next-line @next/next/no-img-element */
-                                <img src={task.hinh_anh_bao_xong as string} alt="Bằng chứng" className="h-16 w-16 object-cover rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
-                              )}
-                            </a>
+                          {task.hinh_anh_bao_xong ? (
+                            <MediaGallery mediaUrls={task.hinh_anh_bao_xong as string | string[]} thumbnailClassName="h-16 w-16 object-cover" />
                           ) : null}
                         </div>
                       ) : task.trang_thai_dong === "DANG_MO" ? (
