@@ -574,6 +574,8 @@ model CongViecVanHanh {
   da_bao_xong         Boolean  @default(false)
   bao_xong_luc        DateTime?
   nguoi_bao_xong_id   Int?
+  ghi_chu_bao_xong    String?
+  hinh_anh_bao_xong   Json?
   trang_thai_dong     TrangThaiDongCongViecVanHanh @default(DANG_MO)
   dong_luc            DateTime?
   nguoi_dong_id       Int?

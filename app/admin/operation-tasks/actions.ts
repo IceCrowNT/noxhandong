@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import type { Prisma } from "@prisma/client";
 
 import { requirePermission } from "@/src/modules/auth/current-user";
@@ -8,6 +10,32 @@ import { prisma } from "@/src/modules/database";
 
 const VALID_DEPARTMENTS = new Set(["KY_THUAT", "VE_SINH", "HANH_CHINH", "TONG_HOP"]);
 const VALID_CLOSE_STATUSES = new Set(["HOAN_THANH", "BO_QUA", "THAY_DOI"]);
+const MAX_MEDIA_BYTES = 50 * 1024 * 1024;
+const OPERATION_TASK_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "operation-tasks");
+const ALLOWED_MEDIA_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "video/mp4", "video/quicktime", "video/webm"]);
+const ALLOWED_MEDIA_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".webm"]);
+
+function safeUrlImageName(value: string) {
+  const originalBaseName = path.basename(value || "image.jpg");
+  const originalExtension = path.extname(originalBaseName).toLowerCase();
+  const extension = originalExtension || ".jpg";
+  const nameWithoutExtension = path.basename(originalBaseName, path.extname(originalBaseName));
+  const slug = nameWithoutExtension
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\u0111/g, "d")
+    .replace(/\u0110/g, "D")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return `${slug || "image"}${extension}`;
+}
+
+function isAllowedMedia(file: File) {
+  const extension = path.extname(file.name || "").toLowerCase();
+  return ALLOWED_MEDIA_TYPES.has(file.type) || ALLOWED_MEDIA_EXTS.has(extension);
+}
 
 function getString(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -200,6 +228,8 @@ export async function markOperationTaskDoneAction(formData: FormData) {
         da_bao_xong: false,
         bao_xong_luc: null,
         nguoi_bao_xong_id: null,
+        ghi_chu_bao_xong: null,
+        hinh_anh_bao_xong: [],
         nguoi_cap_nhat_id: account.id,
       },
     });
@@ -215,12 +245,39 @@ export async function markOperationTaskDoneAction(formData: FormData) {
       return { success: true, message: "Công việc này chưa được báo xong." };
     }
 
+    const note = getString(formData, "note") || null;
+    const files = formData.getAll("image");
+    const storedPathUrls: string[] = [];
+
+    await mkdir(OPERATION_TASK_UPLOAD_DIR, { recursive: true });
+
+    for (const file of files) {
+      if (file instanceof File && file.size > 0) {
+        if (!isAllowedMedia(file)) {
+          return { error: "Định dạng file không được hỗ trợ (chỉ nhận ảnh JPG, PNG, WEBP hoặc video MP4, MOV, WEBM)." };
+        }
+        if (file.size > MAX_MEDIA_BYTES) {
+          return { error: "Có file tải lên quá lớn (tối đa 50MB)." };
+        }
+
+        const originalName = path.basename(file.name || "image.jpg").trim() || "image.jpg";
+        const storedName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${Math.random().toString(36).substring(2, 6)}-${safeUrlImageName(originalName)}`;
+        const storedPath = path.join(OPERATION_TASK_UPLOAD_DIR, storedName);
+        await writeFile(storedPath, Buffer.from(await file.arrayBuffer()));
+        storedPathUrls.push(`/uploads/operation-tasks/${storedName}`);
+      }
+    }
+
+    const hinhAnhJson = storedPathUrls;
+
     await prisma.congViecVanHanh.update({
       where: { id },
       data: {
         da_bao_xong: true,
         bao_xong_luc: new Date(),
         nguoi_bao_xong_id: account.id,
+        ghi_chu_bao_xong: note,
+        hinh_anh_bao_xong: hinhAnhJson,
         nguoi_cap_nhat_id: account.id,
       },
     });
@@ -230,6 +287,7 @@ export async function markOperationTaskDoneAction(formData: FormData) {
       action: "BAO_XONG",
       accountId: account.id,
       content: `Báo xong công việc: ${before.ten_cong_viec}`,
+      payload: note || hinhAnhJson.length > 0 ? { ghi_chu: note, hinh_anh: hinhAnhJson } : undefined,
     });
   }
 

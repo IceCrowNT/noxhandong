@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, ClipboardList, Clock, Filter, ListChecks, Pencil, Trash2 } from "lucide-react";
+import { CheckCircle2, ClipboardList, Clock, Filter, ListChecks, Pencil, Trash2, Upload } from "lucide-react";
 import type { Prisma } from "@prisma/client";
 import type { ReactNode } from "react";
 
@@ -397,16 +397,59 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                         {formatVietnamDateTime(task.bao_xong_luc)} ·{" "}
                         {task.nguoi_bao_xong?.ten_hien_thi || task.nguoi_bao_xong?.ten_dang_nhap || "-"}
                       </span>
+                      {task.ghi_chu_bao_xong ? (
+                        <span className="text-xs font-medium block w-full whitespace-pre-wrap break-words mt-1 border-t border-[var(--line)] pt-1">
+                          {task.ghi_chu_bao_xong}
+                        </span>
+                      ) : null}
+                      {task.hinh_anh_bao_xong && Array.isArray(task.hinh_anh_bao_xong) && task.hinh_anh_bao_xong.length > 0 ? (
+                        <div className="mt-2 flex flex-wrap gap-2 justify-center">
+                          {(task.hinh_anh_bao_xong as string[]).map((mediaUrl, i) => {
+                            const isVideo = mediaUrl.match(/\.(mp4|webm|mov)$/i);
+                            return (
+                              <a key={i} href={mediaUrl} target="_blank" className="block shrink-0">
+                                {isVideo ? (
+                                  <video src={mediaUrl} className="h-20 object-contain rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
+                                ) : (
+                                  /* eslint-disable-next-line @next/next/no-img-element */
+                                  <img src={mediaUrl} alt={`Bằng chứng ${i+1}`} className="h-20 object-contain rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
+                                )}
+                              </a>
+                            );
+                          })}
+                        </div>
+                      ) : typeof task.hinh_anh_bao_xong === 'string' ? (
+                        <a href={task.hinh_anh_bao_xong as string} target="_blank" className="mt-2 block shrink-0 flex justify-center">
+                          {task.hinh_anh_bao_xong.match(/\.(mp4|webm|mov)$/i) ? (
+                            <video src={task.hinh_anh_bao_xong as string} className="h-20 object-contain rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
+                          ) : (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img src={task.hinh_anh_bao_xong as string} alt="Bằng chứng" className="h-20 object-contain rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
+                          )}
+                        </a>
+                      ) : null}
                     </div>
                   ) : task.trang_thai_dong === "DANG_MO" ? (
-                    <AjaxForm action={markOperationTaskDoneAction}>
-                      <input name="id" type="hidden" value={task.id} />
-                      <input name="isReportDone" type="hidden" value="1" />
-                      <SubmitButton className="w-full" size="lg" pendingText="Đang ghi nhận...">
-                        <CheckCircle2 size={18} className="mr-2" aria-hidden="true" />
+                    <details className="group">
+                      <summary className="inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-md bg-[var(--accent)] text-white w-full h-11 text-sm font-semibold hover:bg-[var(--accent-hover)] group-open:hidden">
+                        <CheckCircle2 size={18} aria-hidden="true" />
                         Tích xong
-                      </SubmitButton>
-                    </AjaxForm>
+                      </summary>
+                      <AjaxForm action={markOperationTaskDoneAction} className="grid gap-3 rounded border border-[var(--line)] bg-white p-3 shadow-sm">
+                        <div className="text-sm font-semibold text-[var(--accent)]">Xác nhận báo xong</div>
+                        <input name="id" type="hidden" value={task.id} />
+                        <input name="isReportDone" type="hidden" value="1" />
+                        <Textarea name="note" placeholder="Ghi chú thêm (không bắt buộc)" className="h-16 resize-none" />
+                        <div className="flex items-center gap-2">
+                          <Upload size={16} className="shrink-0 text-[var(--muted)]" />
+                          <Input type="file" name="image" multiple accept="image/jpeg, image/png, image/webp, video/mp4, video/quicktime, video/webm" className="h-8 text-xs file:h-full file:bg-transparent file:text-xs file:border-0" />
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <SubmitButton size="sm" className="flex-1" pendingText="Đang ghi nhận...">Xác nhận</SubmitButton>
+                          <DetailsCancelButton className="flex-1" />
+                        </div>
+                      </AjaxForm>
+                    </details>
                   ) : (
                     <div className="text-center text-sm font-medium text-[var(--muted)]">Công việc đã đóng</div>
                   )}
@@ -547,16 +590,61 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
                             <br />
                             {task.nguoi_bao_xong?.ten_hien_thi || task.nguoi_bao_xong?.ten_dang_nhap || "-"}
                           </span>
+                          {task.ghi_chu_bao_xong ? (
+                            <span className="text-xs font-medium block w-full whitespace-pre-wrap break-words mt-1 border-t border-[var(--line)] pt-1">
+                              {task.ghi_chu_bao_xong}
+                            </span>
+                          ) : null}
+                          {task.hinh_anh_bao_xong && Array.isArray(task.hinh_anh_bao_xong) && task.hinh_anh_bao_xong.length > 0 ? (
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {(task.hinh_anh_bao_xong as string[]).map((mediaUrl, i) => {
+                                const isVideo = mediaUrl.match(/\.(mp4|webm|mov)$/i);
+                                return (
+                                  <a key={i} href={mediaUrl} target="_blank" className="block shrink-0">
+                                    {isVideo ? (
+                                      <video src={mediaUrl} className="h-16 w-16 object-cover rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
+                                    ) : (
+                                      /* eslint-disable-next-line @next/next/no-img-element */
+                                      <img src={mediaUrl} alt={`Bằng chứng ${i+1}`} className="h-16 w-16 object-cover rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
+                                    )}
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          ) : typeof task.hinh_anh_bao_xong === 'string' ? (
+                            <a href={task.hinh_anh_bao_xong as string} target="_blank" className="mt-1 block shrink-0">
+                              {task.hinh_anh_bao_xong.match(/\.(mp4|webm|mov)$/i) ? (
+                                <video src={task.hinh_anh_bao_xong as string} className="h-16 w-16 object-cover rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
+                              ) : (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img src={task.hinh_anh_bao_xong as string} alt="Bằng chứng" className="h-16 w-16 object-cover rounded border border-[var(--line)] hover:opacity-80 bg-slate-50" />
+                              )}
+                            </a>
+                          ) : null}
                         </div>
                       ) : task.trang_thai_dong === "DANG_MO" ? (
-                        <AjaxForm action={markOperationTaskDoneAction}>
-                          <input name="id" type="hidden" value={task.id} />
-                          <input name="isReportDone" type="hidden" value="1" />
-                          <SubmitButton size="sm" variant="outline" pendingText="Đang ghi nhận...">
-                            <span className="h-4 w-4 rounded border border-[var(--line)] bg-white" aria-hidden="true" />
+                        <details className="group relative">
+                          <summary className="inline-flex cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded border border-[var(--line)] bg-white px-3 py-1.5 text-sm font-semibold hover:bg-slate-50 group-open:bg-slate-100 group-open:border-[var(--accent)] group-open:text-[var(--accent)]">
+                            <span className="block h-4 w-4 rounded border border-current bg-transparent" aria-hidden="true" />
                             Tích xong
-                          </SubmitButton>
-                        </AjaxForm>
+                          </summary>
+                          <div className="absolute right-0 top-full z-10 mt-1 w-[280px] rounded-lg border border-[var(--line)] bg-white p-3 shadow-lg">
+                            <div className="mb-2 text-sm font-semibold text-[var(--text)]">Xác nhận báo xong</div>
+                            <AjaxForm action={markOperationTaskDoneAction} className="grid gap-3">
+                              <input name="id" type="hidden" value={task.id} />
+                              <input name="isReportDone" type="hidden" value="1" />
+                              <Textarea name="note" placeholder="Ghi chú thêm (không bắt buộc)" className="h-16 resize-none" />
+                              <div className="flex items-center gap-2">
+                                <Upload size={16} className="shrink-0 text-[var(--muted)]" />
+                                <Input type="file" name="image" multiple accept="image/jpeg, image/png, image/webp, video/mp4, video/quicktime, video/webm" className="h-8 text-xs file:h-full file:bg-transparent file:text-xs file:border-0" />
+                              </div>
+                              <div className="flex gap-2">
+                                <SubmitButton className="flex-1" size="sm" pendingText="...">Xác nhận</SubmitButton>
+                                <DetailsCancelButton className="flex-1" />
+                              </div>
+                            </AjaxForm>
+                          </div>
+                        </details>
                       ) : (
                         "-"
                       )}

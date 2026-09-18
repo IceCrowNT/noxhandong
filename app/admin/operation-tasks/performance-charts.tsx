@@ -62,7 +62,7 @@ function CustomPieChart({ data }: { data: StatRecord }) {
               ))}
             </Pie>
             <Tooltip 
-              formatter={(value: number) => [`${value} việc (${((value / data.total) * 100).toFixed(0)}%)`, ""]} 
+              formatter={(value: any) => [`${value} việc (${((Number(value) / data.total) * 100).toFixed(0)}%)`, ""]} 
               contentStyle={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', border: '1px solid var(--line)', color: 'var(--text)' }}
               itemStyle={{ color: 'var(--text)' }}
             />
@@ -166,7 +166,7 @@ export function PerformanceCharts({ stats, statMonth }: PerformanceChartsProps) 
                   <XAxis type="number" hide />
                   <YAxis dataKey="department" type="category" hide />
                   <Tooltip 
-                    formatter={(value: number) => [`${value} việc`, ""]} 
+                    formatter={(value: any) => [`${value} việc`, ""]} 
                     cursor={{fill: 'transparent'}} 
                     contentStyle={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', border: '1px solid var(--line)', color: 'var(--text)' }}
                     itemStyle={{ color: 'var(--text)' }}
