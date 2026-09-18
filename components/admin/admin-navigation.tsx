@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -53,8 +53,8 @@ export const adminNavigation = [
     permission: "VIEW_OPERATION_TASKS",
     group: "Vận hành",
   },
-  
-  
+
+
   {
     key: "import",
     href: "/admin/import",
@@ -109,7 +109,7 @@ export type AdminNavigationKey = (typeof adminNavigation)[number]["key"];
 
 function AdminBrand() {
   return (
-    <Link href="/admin/dashboard" className="flex min-w-0 items-center gap-3 text-[var(--accent)]">
+    <Link href="/" className="flex min-w-0 items-center gap-3 text-[var(--accent)]">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--line)] bg-white shadow-sm">
         <Image
           alt="Hoang Huy Group"

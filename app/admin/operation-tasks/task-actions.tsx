@@ -24,6 +24,18 @@ export function AjaxForm({
   const formAction = async (formData: FormData) => {
     if (confirmMessage && !window.confirm(confirmMessage)) return;
     
+    // Kiểm tra dung lượng tổng của tất cả các file trước khi gửi
+    let totalSize = 0;
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        totalSize += value.size;
+      }
+    }
+    if (totalSize > 19 * 1024 * 1024) {
+      toast.error("Tổng dung lượng tải lên vượt quá 19MB. Vui lòng chọn file nhỏ hơn.");
+      return;
+    }
+    
     try {
       const res = await action(formData);
       if (res?.error) {

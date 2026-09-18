@@ -10,7 +10,7 @@ import { prisma } from "@/src/modules/database";
 
 const VALID_DEPARTMENTS = new Set(["KY_THUAT", "VE_SINH", "HANH_CHINH", "TONG_HOP"]);
 const VALID_CLOSE_STATUSES = new Set(["HOAN_THANH", "BO_QUA", "THAY_DOI"]);
-const MAX_MEDIA_BYTES = 50 * 1024 * 1024;
+const MAX_MEDIA_BYTES = 19 * 1024 * 1024;
 const OPERATION_TASK_UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "operation-tasks");
 const ALLOWED_MEDIA_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "video/mp4", "video/quicktime", "video/webm"]);
 const ALLOWED_MEDIA_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".webm"]);
@@ -257,7 +257,7 @@ export async function markOperationTaskDoneAction(formData: FormData) {
           return { error: "Định dạng file không được hỗ trợ (chỉ nhận ảnh JPG, PNG, WEBP hoặc video MP4, MOV, WEBM)." };
         }
         if (file.size > MAX_MEDIA_BYTES) {
-          return { error: "Có file tải lên quá lớn (tối đa 50MB)." };
+          return { error: "Có file tải lên quá lớn (tối đa 19MB)." };
         }
 
         const originalName = path.basename(file.name || "image.jpg").trim() || "image.jpg";
