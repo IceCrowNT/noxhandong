@@ -52,7 +52,7 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
                 name="username"
                 autoComplete="username"
                 inputMode="tel"
-                placeholder="0912345678 hoặc admin"
+                placeholder="0912345678"
                 required
               />
             </label>
