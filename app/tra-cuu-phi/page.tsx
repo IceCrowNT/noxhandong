@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { AlertCircle, CheckCircle2, Search } from "lucide-react";
+import { AlertCircle, CheckCircle2, Search, Landmark } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -142,19 +142,19 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
   const feeStatuses =
     currentBatch && lookup?.ok && !rateLimit.limited
       ? await prisma.trangThaiPhiCanHoPublic.findMany({
-          where: {
-            batch_id: currentBatch.id,
-            ma_can: {
-              in: lookup.candidates,
-            },
+        where: {
+          batch_id: currentBatch.id,
+          ma_can: {
+            in: lookup.candidates,
           },
-        })
+        },
+      })
       : [];
   const feeStatus =
     lookup?.ok && feeStatuses.length > 0
       ? lookup.candidates
-          .map((candidate) => feeStatuses.find((status) => status.ma_can === candidate))
-          .find((status) => Boolean(status)) || null
+        .map((candidate) => feeStatuses.find((status) => status.ma_can === candidate))
+        .find((status) => Boolean(status)) || null
       : null;
   const expandableCandidatePrefixes =
     lookup?.ok && !feeStatus
@@ -163,18 +163,18 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
   const expandedFeeStatuses =
     currentBatch && lookup?.ok && !feeStatus && expandableCandidatePrefixes.length > 0 && !rateLimit.limited
       ? await prisma.trangThaiPhiCanHoPublic.findMany({
-          where: {
-            batch_id: currentBatch.id,
-            OR: expandableCandidatePrefixes.map((candidate) => ({
-              ma_can: {
-                startsWith: candidate,
-              },
-            })),
-          },
-          orderBy: {
-            ma_can: "asc",
-          },
-        })
+        where: {
+          batch_id: currentBatch.id,
+          OR: expandableCandidatePrefixes.map((candidate) => ({
+            ma_can: {
+              startsWith: candidate,
+            },
+          })),
+        },
+        orderBy: {
+          ma_can: "asc",
+        },
+      })
       : [];
   const resolvedFeeStatus = feeStatus || (expandedFeeStatuses.length === 1 ? expandedFeeStatuses[0] : null);
   const ambiguousFeeStatuses = !feeStatus && expandedFeeStatuses.length > 1 ? expandedFeeStatuses : [];
@@ -322,6 +322,50 @@ export default async function FeeLookupPage({ searchParams }: FeeLookupPageProps
                 <strong className="text-2xl leading-snug text-emerald-800">
                   {publicFeeDisplayText(resolvedFeeStatus.payload_public_json, resolvedFeeStatus.thang_da_dong_den_hien_tai)}
                 </strong>
+              </div>
+
+              {/* Mobile Payment Info */}
+              <div className="mt-2 grid gap-4 rounded-xl border border-[rgba(0,75,70,0.14)] bg-white p-4 shadow-sm md:hidden">
+                <div className="mb-2 flex items-center gap-2 text-[var(--accent)]">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)]">
+                    <Landmark size={16} aria-hidden="true" />
+                  </span>
+                  <h3 className="font-bold">Thông tin chuyển khoản</h3>
+                </div>
+                <div className="grid gap-3 text-[15px] leading-relaxed">
+                  <div>
+                    <span className="block text-sm text-[var(--muted)]">Số tiền cần thanh toán</span>
+                    <strong className="text-[var(--text)]">1.500.000 VNĐ</strong>
+                  </div>
+                  <div>
+                    <span className="block text-sm text-[var(--muted)]">Nội dung chuyển khoản</span>
+                    <strong className="text-[var(--text)]">Căn hộ + Số điện thoại</strong>
+                  </div>
+                  <div>
+                    <span className="block text-sm text-[var(--muted)]">Ngân hàng</span>
+                    <strong className="text-[var(--text)]">Vietinbank Lê Chân</strong>
+                  </div>
+                  <div>
+                    <span className="block text-sm text-[var(--muted)]">Chủ tài khoản</span>
+                    <strong className="text-[var(--text)]">Ban quản trị khu nhà ở xã hội tại xã An Đồng</strong>
+                  </div>
+                  <div>
+                    <span className="block text-sm text-[var(--muted)]">Số tài khoản</span>
+                    <strong className="text-xl tracking-wide text-[var(--accent)]">116 002 961 023</strong>
+                  </div>
+                </div>
+                <div className="mx-auto mt-2 grid w-[132px] gap-2 text-center">
+                  <div className="rounded-xl border border-[rgba(0,75,70,0.14)] bg-white p-2 shadow-sm">
+                    <Image
+                      src="/images/payment-qr-116002961023.png"
+                      alt="Mã QR chuyển khoản phí QLVH"
+                      width={116}
+                      height={116}
+                      className="h-auto w-full"
+                    />
+                  </div>
+                  <span className="text-xs font-semibold text-[var(--accent)]">Quét mã để chuyển khoản</span>
+                </div>
               </div>
 
               {payloadFlag(resolvedFeeStatus.payload_public_json, "isPartialPayment") ? (

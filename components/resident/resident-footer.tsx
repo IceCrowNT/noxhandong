@@ -47,7 +47,7 @@ export function ResidentFooter() {
       </Card>
 
       {/* Payment Card */}
-      <Card className="border-[rgba(0,75,70,0.14)] bg-white/88 shadow-[0_16px_48px_rgba(25,28,28,0.10)] backdrop-blur">
+      <Card className="hidden border-[rgba(0,75,70,0.14)] bg-white/88 shadow-[0_16px_48px_rgba(25,28,28,0.10)] backdrop-blur md:block">
         <CardContent className="p-4 md:p-5">
           <div className="mb-4 flex items-center gap-2 text-[var(--accent)]">
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)]">
