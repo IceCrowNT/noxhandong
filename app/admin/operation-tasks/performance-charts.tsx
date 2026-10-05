@@ -1,9 +1,12 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from "recharts";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Download, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export type StatRecord = {
   department: string;
@@ -108,35 +111,68 @@ function CustomPieChart({ data }: { data: StatRecord }) {
   );
 }
 
-export function PerformanceCharts({ stats, statMonth }: PerformanceChartsProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export function PerformanceCharts({ stats: initialStats, statMonth: initialStatMonth }: PerformanceChartsProps) {
+  const [stats, setStats] = useState(initialStats);
+  const [month, setMonth] = useState(initialStatMonth);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (month === initialStatMonth) {
+      setStats(initialStats);
+      return;
+    }
+    let ignore = false;
+    setIsLoading(true);
+    fetch(`/api/stats/operation-tasks?month=${month}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!ignore) {
+          setStats(data);
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!ignore) setIsLoading(false);
+      });
+    return () => { ignore = true; };
+  }, [month, initialStatMonth, initialStats]);
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    const params = new URLSearchParams(searchParams.toString());
-    if (val) {
-      params.set("statMonth", val);
-    } else {
-      params.delete("statMonth");
-    }
-    router.push(`/admin/operation-tasks?${params.toString()}`);
+    setMonth(e.target.value);
   };
 
   const barData = [stats.tongHop];
+
+  const handleExport = () => {
+    setIsExporting(true);
+    window.location.href = `/api/export/operation-report?month=${month}`;
+    setTimeout(() => setIsExporting(false), 2000);
+  };
 
   return (
     <Card className="mb-5 bg-white/90">
       <CardHeader>
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <CardTitle>Thống kê hiệu suất theo tháng</CardTitle>
+            <CardTitle>Thống kê hiệu suất theo tháng {isLoading && <Loader2 size={16} className="inline animate-spin text-[var(--accent)]" />}</CardTitle>
             <CardDescription>KPI tính theo mốc Deadline của công việc</CardDescription>
           </div>
-          <label className="flex items-center gap-2 text-sm font-semibold text-[var(--text)]">
-            Tháng:
-            <Input type="month" value={statMonth} onChange={handleMonthChange} className="w-auto" />
-          </label>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={isExporting || isLoading}
+              className="gap-2 text-[var(--accent)] border-[var(--accent-soft)] hover:bg-[var(--accent-soft)]"
+            >
+              {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+              Xuất
+            </Button>
+            <label className="flex items-center gap-2 text-sm font-semibold text-[var(--text)]">
+              Tháng:
+              <Input type="month" value={month} onChange={handleMonthChange} className="w-auto" disabled={isLoading} />
+            </label>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
