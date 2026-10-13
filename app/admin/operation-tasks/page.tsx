@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CheckCircle2, ClipboardList, Clock, Filter, ListChecks, Pencil, Trash2, Upload } from "lucide-react";
+import { Suspense, type ReactNode } from "react";
 import type { Prisma } from "@prisma/client";
-import type { ReactNode } from "react";
 
 import {
   closeOperationTaskAction,
@@ -342,7 +342,9 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
               <CardDescription>Closed task mặc định được ẩn; dùng bộ lọc để xem lại khi cần.</CardDescription>
             </div>
             <div>
-              <DepartmentFilterSelect defaultValue={department} />
+              <Suspense fallback={<div className="h-9 w-32 rounded bg-slate-100" />}>
+                <DepartmentFilterSelect defaultValue={department} />
+              </Suspense>
             </div>
           </div>
         </CardHeader>
@@ -692,7 +694,11 @@ export default async function OperationTasksPage({ searchParams }: OperationTask
         </CardContent>
       </Card>
 
-      {canManage && stats ? <PerformanceCharts stats={stats} statMonth={statMonthStr} /> : null}
+      {canManage && stats ? (
+        <Suspense fallback={<div className="mb-5 h-48 rounded-lg bg-slate-100 animate-pulse" />}>
+          <PerformanceCharts stats={stats} statMonth={statMonthStr} />
+        </Suspense>
+      ) : null}
 
       <Card className="bg-white/90">
         <CardHeader>

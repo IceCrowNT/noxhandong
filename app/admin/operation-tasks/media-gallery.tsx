@@ -9,7 +9,8 @@ type MediaGalleryProps = {
 };
 
 export function MediaGallery({ mediaUrls, thumbnailClassName = "h-20 object-contain" }: MediaGalleryProps) {
-  const urls = Array.isArray(mediaUrls) ? mediaUrls : [mediaUrls];
+  const rawList = Array.isArray(mediaUrls) ? mediaUrls : (typeof mediaUrls === "string" ? [mediaUrls] : []);
+  const urls = rawList.filter((u): u is string => typeof u === "string" && u.trim().length > 0);
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -43,11 +44,14 @@ export function MediaGallery({ mediaUrls, thumbnailClassName = "h-20 object-cont
 
   if (urls.length === 0) return null;
 
+  const currentItem = urls[currentIndex] || urls[0] || "";
+  const isCurrentVideo = Boolean(currentItem.match(/\.(mp4|webm|mov)$/i));
+
   return (
     <>
       <div className="mt-2 flex flex-wrap gap-2 justify-center">
         {urls.map((mediaUrl, i) => {
-          const isVideo = mediaUrl.match(/\.(mp4|webm|mov)$/i);
+          const isVideo = Boolean(mediaUrl.match(/\.(mp4|webm|mov)$/i));
           return (
             <button
               key={i}
@@ -103,9 +107,9 @@ export function MediaGallery({ mediaUrls, thumbnailClassName = "h-20 object-cont
           )}
 
           <div className="relative z-0 max-h-full max-w-full">
-            {urls[currentIndex].match(/\.(mp4|webm|mov)$/i) ? (
+            {isCurrentVideo ? (
               <video
-                src={urls[currentIndex]}
+                src={currentItem}
                 controls
                 autoPlay
                 className="max-h-[85vh] max-w-[90vw] object-contain shadow-2xl"
@@ -113,7 +117,7 @@ export function MediaGallery({ mediaUrls, thumbnailClassName = "h-20 object-cont
             ) : (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
-                src={urls[currentIndex]}
+                src={currentItem}
                 alt={`Bằng chứng ${currentIndex + 1}`}
                 className="max-h-[85vh] max-w-[90vw] object-contain shadow-2xl"
               />

@@ -112,10 +112,15 @@ function CustomPieChart({ data }: { data: StatRecord }) {
 }
 
 export function PerformanceCharts({ stats: initialStats, statMonth: initialStatMonth }: PerformanceChartsProps) {
+  const [mounted, setMounted] = useState(false);
   const [stats, setStats] = useState(initialStats);
   const [month, setMonth] = useState(initialStatMonth);
   const [isExporting, setIsExporting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (month === initialStatMonth) {
@@ -127,7 +132,7 @@ export function PerformanceCharts({ stats: initialStats, statMonth: initialStatM
     fetch(`/api/stats/operation-tasks?month=${month}`)
       .then(res => res.json())
       .then(data => {
-        if (!ignore) {
+        if (!ignore && data) {
           setStats(data);
           setIsLoading(false);
         }
@@ -142,13 +147,34 @@ export function PerformanceCharts({ stats: initialStats, statMonth: initialStatM
     setMonth(e.target.value);
   };
 
-  const barData = [stats.tongHop];
+  const tongHopStat = stats?.tongHop || { department: "Tổng hợp", onTime: 0, late: 0, incomplete: 0, total: 0 };
+  const kyThuatStat = stats?.kyThuat || { department: "Kỹ thuật", onTime: 0, late: 0, incomplete: 0, total: 0 };
+  const veSinhStat = stats?.veSinh || { department: "Vệ sinh", onTime: 0, late: 0, incomplete: 0, total: 0 };
+  const hanhChinhStat = stats?.hanhChinh || { department: "Hành chính", onTime: 0, late: 0, incomplete: 0, total: 0 };
+
+  const barData = [tongHopStat];
 
   const handleExport = () => {
     setIsExporting(true);
     window.location.href = `/api/export/operation-report?month=${month}`;
     setTimeout(() => setIsExporting(false), 2000);
   };
+
+  if (!mounted) {
+    return (
+      <Card className="mb-5 bg-white/90">
+        <CardHeader>
+          <CardTitle>Thống kê hiệu suất theo tháng</CardTitle>
+          <CardDescription>KPI tính theo mốc Deadline của công việc</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-[200px] items-center justify-center text-sm text-[var(--muted)]">
+            Đang tải biểu đồ thống kê...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mb-5 bg-white/90">
@@ -179,21 +205,21 @@ export function PerformanceCharts({ stats: initialStats, statMonth: initialStatM
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="rounded-lg border border-[var(--line)] p-4">
             <h3 className="mb-2 text-center text-sm font-bold">Kỹ thuật</h3>
-            <CustomPieChart data={stats.kyThuat} />
+            <CustomPieChart data={kyThuatStat} />
           </div>
           <div className="rounded-lg border border-[var(--line)] p-4">
             <h3 className="mb-2 text-center text-sm font-bold">Vệ sinh</h3>
-            <CustomPieChart data={stats.veSinh} />
+            <CustomPieChart data={veSinhStat} />
           </div>
           <div className="rounded-lg border border-[var(--line)] p-4">
             <h3 className="mb-2 text-center text-sm font-bold">Hành chính</h3>
-            <CustomPieChart data={stats.hanhChinh} />
+            <CustomPieChart data={hanhChinhStat} />
           </div>
         </div>
 
         <div className="mt-6 rounded-lg border border-[var(--line)] p-4">
           <h3 className="mb-4 text-center text-sm font-bold">Công việc Tổng hợp (Toàn BQT)</h3>
-          {stats.tongHop.total === 0 ? (
+          {tongHopStat.total === 0 ? (
             <div className="py-8 text-center text-sm text-[var(--muted)]">Không có công việc tổng hợp</div>
           ) : (
             <div className="h-[100px] w-full">
